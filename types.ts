@@ -9,7 +9,7 @@ export interface User {
   id: string;
   fullName: string;
   email: string;
-  password_hash: string; // In a real app, never store plain text passwords
+  password_hash?: string; // In a real app, never store plain text passwords
   role: UserRole;
   bankInfo?: string; // For finders
 }

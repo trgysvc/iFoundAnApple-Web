@@ -17,7 +17,7 @@ const RegisterPage: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -26,7 +26,7 @@ const RegisterPage: React.FC = () => {
         return;
     }
 
-    const success = register({
+    const success = await register({
       email,
       fullName,
       bankInfo: bankInfo || undefined,
@@ -35,7 +35,7 @@ const RegisterPage: React.FC = () => {
     if (success) {
       navigate('/dashboard');
     } else {
-      setError('A user with this email already exists.');
+      setError(t('userAlreadyExists')); // Use translation for consistency
     }
   };
   

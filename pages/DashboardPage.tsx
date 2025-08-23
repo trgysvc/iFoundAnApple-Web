@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { UserRole } from '../types';
+import { Device, UserRole } from '../types';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
 import DeviceCard from '../components/DeviceCard';
@@ -11,11 +11,33 @@ const DashboardPage: React.FC = () => {
   const { currentUser, getUserDevices, t } = useAppContext();
   const navigate = useNavigate();
 
+  const [userDevices, setUserDevices] = useState<Device[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+      if (currentUser) {
+        setIsLoading(true);
+        const devices = await getUserDevices(currentUser.id);
+        setUserDevices(devices);
+        setIsLoading(false);
+      }
+    };
+    fetchDevices();
+  }, [currentUser, getUserDevices]);
+
+  const handleClearDevices = () => {
+    localStorage.removeItem('devices');
+    window.location.reload(); // Reload to reflect changes
+  };
+
   if (!currentUser) {
+    console.log("DashboardPage: currentUser is null");
     return null; // Or a loading spinner
   }
 
-  const userDevices = getUserDevices(currentUser.id);
+  console.log("DashboardPage: currentUser", currentUser);
+  console.log("DashboardPage: userDevices", userDevices);
 
   return (
     <Container>
@@ -30,20 +52,27 @@ const DashboardPage: React.FC = () => {
                 <PlusCircle className="w-5 h-5 mr-2"/>
                 {t('reportFoundDevice')}
             </Button>
+            <Button onClick={handleClearDevices} variant="destructive" className="w-full justify-center">
+              {t('clearAllDevices')}
+            </Button>
         </div>
       </div>
       
-      {userDevices.length > 0 ? (
-        <div className="space-y-4">
-          {userDevices.sort((a,b) => b.id.localeCompare(a.id)).map(device => (
-            <DeviceCard key={device.id} device={device} />
-          ))}
-        </div>
+      {isLoading ? (
+        <p className="text-center py-16 text-brand-gray-500">{t('loading')}</p>
       ) : (
-        <div className="text-center py-16 border-2 border-dashed border-brand-gray-300 rounded-xl">
-            <h3 className="text-xl font-medium text-brand-gray-600">{t('noDevicesReported')}</h3>
-            <p className="text-brand-gray-400 mt-2">Click one of the buttons above to get started.</p>
-        </div>
+        userDevices.length > 0 ? (
+          <div className="space-y-4">
+            {userDevices.sort((a,b) => b.id.localeCompare(a.id)).map(device => (
+              <DeviceCard key={device.id} device={device} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 border-2 border-dashed border-brand-gray-300 rounded-xl">
+              <h3 className="text-xl font-medium text-brand-gray-600">{t('noDevicesReported')}</h3>
+              <p className="text-brand-gray-400 mt-2">Click one of the buttons above to get started.</p>
+          </div>
+        )
       )}
     </Container>
   );

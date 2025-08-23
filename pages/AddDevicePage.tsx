@@ -1,29 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
 import Container from '../components/ui/Container';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import { GoogleGenAI, Type } from "@google/genai";
-import { Sparkles, Upload } from 'lucide-react';
+import { Sparkles, Upload, PlusCircle } from 'lucide-react';
+// import { APPLE_DEVICE_MODELS } from '../constants'; // Removed as models are now fetched from Supabase
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://zokkxkyhabihxjskdcfg.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva2t4a3loYWJpaHhqc2tkY2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MTQyMDMsImV4cCI6MjA3MTE5MDIwM30.Dvnl7lUwezVDGY9I6IIgfoJXWtaw1Un_idOxTlI0xwQ';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AddDevicePage: React.FC = () => {
-  const { addDevice, t } = useAppContext();
+  const { addDevice, t, currentUser } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const reportType = queryParams.get('type');
   const isLostReport = reportType === 'lost';
 
-  const [model, setModel] = useState('');
+  const [deviceModels, setDeviceModels] = useState<string[]>([]);
+  const [loadingModels, setLoadingModels] = useState(true);
+  const [model, setModel] = useState(''); // Initialize with empty string, will be set after fetching
   const [serialNumber, setSerialNumber] = useState('');
   const [color, setColor] = useState('');
   const [description, setDescription] = useState('');
   const [rewardAmount, setRewardAmount] = useState<number | undefined>();
   const [marketValue, setMarketValue] = useState<number | undefined>();
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // For AI suggestions and form submission
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchDeviceModels = async () => {
+      setLoadingModels(true);
+      const { data, error } = await supabase.from('device_models').select('name').order('name', { ascending: true });
+      if (error) {
+        console.error("Error fetching device models:", error.message);
+        setError(t('failedToLoadDeviceModels')); // Add this translation key
+      } else if (data) {
+        const models = data.map(item => item.name);
+        setDeviceModels(models);
+        if (models.length > 0) {
+          setModel(models[0]); // Set initial model to the first fetched model
+        }
+      }
+      setLoadingModels(false);
+    };
+    fetchDeviceModels();
+  }, [t]);
 
   const title = isLostReport ? t('addLostDevice') : t('reportFoundDevice');
   
@@ -128,8 +155,13 @@ const AddDevicePage: React.FC = () => {
         }
     }
 
-    addDevice({ model, serialNumber, color, description, rewardAmount, invoiceDataUrl }, isLostReport);
-    navigate('/dashboard');
+    console.log("AddDevicePage: Current User ID before addDevice call:", currentUser?.id); // Added for debugging
+    const success = await addDevice({ model, serialNumber, color, description, rewardAmount, invoiceDataUrl }, isLostReport);
+    if (success) {
+      navigate('/dashboard');
+    } else {
+      setError(t('failedToAddDevice')); // You might want to add this translation key
+    }
   };
 
   return (
@@ -138,14 +170,6 @@ const AddDevicePage: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-brand-gray-600 mb-6">{title}</h2>
         {error && <p className="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input 
-            label={t('deviceModel')} 
-            id="model" 
-            type="text" 
-            value={model} 
-            onChange={(e) => setModel(e.target.value)} 
-            required 
-          />
           <Input 
             label={t('deviceSerialNumber')} 
             id="serialNumber" 
@@ -162,6 +186,32 @@ const AddDevicePage: React.FC = () => {
             onChange={(e) => setColor(e.target.value)} 
             required 
           />
+
+          <div className="w-full">
+            <label htmlFor="model" className="block text-sm font-medium text-brand-gray-600 mb-1">
+              {t('deviceModel')}
+            </label>
+            {loadingModels ? (
+              <p className="text-brand-gray-500">{t('loadingDeviceModels')}</p> // Add this translation key
+            ) : (
+              <select
+                id="model"
+                name="model"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                required
+                disabled={deviceModels.length === 0}
+              >
+                {deviceModels.length === 0 && <option value="">{t('noModelsAvailable')}</option>} // Add this translation key
+                {deviceModels.map((deviceModel) => (
+                  <option key={deviceModel} value={deviceModel}>
+                    {deviceModel}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           
           {isLostReport && (
             <div>
