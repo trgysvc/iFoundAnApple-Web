@@ -1,24 +1,62 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { useAppContext } from '../contexts/AppContext';
-import { UserRole } from '../types';
-import { Globe, LogOut, UserCircle, Bell, CheckCheck, Shield } from 'lucide-react';
-import Button from './ui/Button';
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, useNavigate, Link } from "react-router-dom";
+import { useAppContext } from "../contexts/AppContext";
+import { UserRole } from "../types";
+import {
+  Globe,
+  LogOut,
+  UserCircle,
+  Bell,
+  CheckCheck,
+  Shield,
+} from "lucide-react";
+import Button from "./ui/Button";
 
 const Header: React.FC = () => {
-  const { currentUser, logout, t, setLanguage, language, notifications, markNotificationAsRead, markAllAsReadForCurrentUser } = useAppContext();
+  const {
+    currentUser,
+    logout,
+    t,
+    setLanguage,
+    language,
+    notifications,
+    markNotificationAsRead,
+    markAllAsReadForCurrentUser,
+    refreshNotifications,
+    checkForExistingMatches,
+  } = useAppContext();
   const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
-  
-  const userNotifications = currentUser ? notifications.filter(n => n.userId === currentUser.id) : [];
-  const unreadCount = userNotifications.filter(n => !n.isRead).length;
+
+  const userNotifications = currentUser
+    ? notifications.filter((n) => n.user_id === currentUser.id)
+    : [];
+  const unreadCount = userNotifications.filter((n) => !n.is_read).length;
+
+  // Debug logging
+  console.log("Header - currentUser:", currentUser);
+  console.log("Header - all notifications:", notifications);
+  console.log("Header - userNotifications:", userNotifications);
+  console.log("Header - unreadCount:", unreadCount);
+
+  // Debug individual notification objects
+  if (userNotifications.length > 0) {
+    console.log("First notification object:", userNotifications[0]);
+    console.log(
+      "First notification message_key:",
+      userNotifications[0].message_key
+    );
+    console.log(
+      "First notification messageKey (camelCase):",
+      (userNotifications[0] as any).messageKey
+    );
+  }
 
   const handleNotificationClick = (notificationId: string, link: string) => {
     markNotificationAsRead(notificationId);
@@ -27,13 +65,16 @@ const Header: React.FC = () => {
   };
 
   const handleMarkAllRead = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      markAllAsReadForCurrentUser();
-  }
+    e.stopPropagation();
+    markAllAsReadForCurrentUser();
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(event.target as Node)
+      ) {
         setIsNotifOpen(false);
       }
     };
@@ -44,7 +85,9 @@ const Header: React.FC = () => {
   }, []);
 
   const timeSince = (date: string) => {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+    const seconds = Math.floor(
+      (new Date().getTime() - new Date(date).getTime()) / 1000
+    );
     let interval = seconds / 31536000;
     if (interval > 1) return Math.floor(interval) + "y ago";
     interval = seconds / 2592000;
@@ -58,36 +101,65 @@ const Header: React.FC = () => {
     return Math.floor(seconds) + "s ago";
   };
 
-
   return (
     <header className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-brand-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <NavLink to="/" className="text-2xl font-bold text-brand-blue">
-              {t('appName')}
+              {t("appName")}
             </NavLink>
             <nav className="hidden md:flex space-x-6">
-              <NavLink to="/" className={({ isActive }) => `text-sm font-medium ${isActive ? 'text-brand-blue' : 'text-brand-gray-500 hover:text-brand-blue'}`}>
-                {t('home')}
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `text-sm font-medium ${
+                    isActive
+                      ? "text-brand-blue"
+                      : "text-brand-gray-500 hover:text-brand-blue"
+                  }`
+                }
+              >
+                {t("home")}
               </NavLink>
               {currentUser && (
-                <NavLink to="/dashboard" className={({ isActive }) => `text-sm font-medium ${isActive ? 'text-brand-blue' : 'text-brand-gray-500 hover:text-brand-blue'}`}>
-                  {t('dashboard')}
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    `text-sm font-medium ${
+                      isActive
+                        ? "text-brand-blue"
+                        : "text-brand-gray-500 hover:text-brand-blue"
+                    }`
+                  }
+                >
+                  {t("dashboard")}
                 </NavLink>
               )}
               {currentUser && currentUser.role === UserRole.ADMIN && (
-                 <NavLink to="/admin" className={({ isActive }) => `flex items-center text-sm font-medium ${isActive ? 'text-brand-blue' : 'text-brand-gray-500 hover:text-brand-blue'}`}>
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    `flex items-center text-sm font-medium ${
+                      isActive
+                        ? "text-brand-blue"
+                        : "text-brand-gray-500 hover:text-brand-blue"
+                    }`
+                  }
+                >
                   <Shield className="w-4 h-4 mr-1.5" />
-                  {t('adminDashboard')}
+                  {t("adminDashboard")}
                 </NavLink>
               )}
             </nav>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-             {currentUser && (
+            {currentUser && (
               <div className="relative" ref={notifRef}>
-                <button onClick={() => setIsNotifOpen(prev => !prev)} className="p-2 rounded-full hover:bg-brand-gray-200 transition-colors">
+                <button
+                  onClick={() => setIsNotifOpen((prev) => !prev)}
+                  className="p-2 rounded-full hover:bg-brand-gray-200 transition-colors"
+                >
                   <Bell className="w-5 h-5 text-brand-gray-500" />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
@@ -98,30 +170,72 @@ const Header: React.FC = () => {
                 {isNotifOpen && (
                   <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-brand-gray-200 overflow-hidden">
                     <div className="p-3 flex justify-between items-center border-b">
-                      <h3 className="font-semibold text-brand-gray-600">{t('notifications.title')}</h3>
-                       {unreadCount > 0 && (
-                         <button onClick={handleMarkAllRead} className="text-xs text-brand-blue hover:underline flex items-center space-x-1">
-                           <CheckCheck className="w-4 h-4" />
-                           <span>{t('notifications.markAllAsRead')}</span>
-                         </button>
+                      <h3 className="font-semibold text-brand-gray-600">
+                        {t("notifications.title")}
+                      </h3>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={refreshNotifications}
+                          className="text-xs text-brand-blue hover:underline flex items-center space-x-1"
+                        >
+                          <span>🔄</span>
+                          <span>Refresh</span>
+                        </button>
+                        <button
+                          onClick={checkForExistingMatches}
+                          className="text-xs text-brand-blue hover:underline flex items-center space-x-1"
+                        >
+                          <span>🔍</span>
+                          <span>Check Matches</span>
+                        </button>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={handleMarkAllRead}
+                            className="text-xs text-brand-blue hover:underline flex items-center space-x-1"
+                          >
+                            <CheckCheck className="w-4 h-4" />
+                            <span>{t("notifications.markAllAsRead")}</span>
+                          </button>
                         )}
+                      </div>
                     </div>
                     <div className="max-h-96 overflow-y-auto">
                       {userNotifications.length > 0 ? (
-                        userNotifications.map(n => (
-                          <div 
-                            key={n.id} 
-                            onClick={() => handleNotificationClick(n.id, n.link)}
-                            className={`p-3 border-b border-brand-gray-100 cursor-pointer hover:bg-brand-gray-100 ${!n.isRead ? 'bg-brand-blue-light' : ''}`}
+                        userNotifications.map((n) => (
+                          <div
+                            key={n.id}
+                            onClick={() =>
+                              handleNotificationClick(n.id, n.link)
+                            }
+                            className={`p-3 border-b border-brand-gray-100 cursor-pointer hover:bg-brand-gray-100 ${
+                              !n.is_read ? "bg-brand-blue-light" : ""
+                            }`}
                           >
                             <p className="text-sm text-brand-gray-600">
-                              {t(`notifications.${n.messageKey}`, n.replacements)}
+                              {(() => {
+                                const translationKey = `notifications.${n.message_key}`;
+                                const translation = t(
+                                  translationKey,
+                                  n.replacements
+                                );
+                                console.log("Notification translation debug:", {
+                                  messageKey: n.message_key,
+                                  translationKey,
+                                  translation,
+                                  replacements: n.replacements,
+                                });
+                                return translation;
+                              })()}
                             </p>
-                            <p className="text-xs text-brand-gray-400 mt-1">{timeSince(n.createdAt)}</p>
+                            <p className="text-xs text-brand-gray-400 mt-1">
+                              {timeSince(n.created_at)}
+                            </p>
                           </div>
                         ))
                       ) : (
-                        <p className="p-4 text-center text-sm text-brand-gray-400">{t('notifications.noNotifications')}</p>
+                        <p className="p-4 text-center text-sm text-brand-gray-400">
+                          {t("notifications.noNotifications")}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -129,8 +243,12 @@ const Header: React.FC = () => {
               </div>
             )}
             <div className="relative">
-              <select 
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'tr' | 'fr' | 'ja' | 'es')} 
+              <select
+                onChange={(e) =>
+                  setLanguage(
+                    e.target.value as "en" | "tr" | "fr" | "ja" | "es"
+                  )
+                }
                 value={language}
                 className="pl-8 pr-4 py-2 text-sm bg-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue appearance-none"
               >
@@ -145,18 +263,32 @@ const Header: React.FC = () => {
             {currentUser ? (
               <>
                 <div className="flex items-center space-x-2">
-                    <UserCircle className="w-6 h-6 text-brand-gray-500" />
-                    <span className="text-sm font-medium text-brand-gray-600 hidden sm:block">{currentUser.fullName}</span>
+                  <UserCircle className="w-6 h-6 text-brand-gray-500" />
+                  <span className="text-sm font-medium text-brand-gray-600 hidden sm:block">
+                    {currentUser.fullName}
+                  </span>
                 </div>
                 <Button onClick={handleLogout} variant="secondary" size="sm">
-                    <LogOut className="w-4 h-4 sm:mr-2"/>
-                    <span className="hidden sm:inline">{t('logout')}</span>
+                  <LogOut className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("logout")}</span>
                 </Button>
               </>
             ) : (
               <div className="space-x-2">
-                <Button onClick={() => navigate('/login')} variant="secondary" size="sm">{t('login')}</Button>
-                <Button onClick={() => navigate('/register')} variant="primary" size="sm">{t('register')}</Button>
+                <Button
+                  onClick={() => navigate("/login")}
+                  variant="secondary"
+                  size="sm"
+                >
+                  {t("login")}
+                </Button>
+                <Button
+                  onClick={() => navigate("/register")}
+                  variant="primary"
+                  size="sm"
+                >
+                  {t("register")}
+                </Button>
               </div>
             )}
           </div>
