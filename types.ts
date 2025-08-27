@@ -15,18 +15,18 @@ export interface User {
 }
 
 export enum DeviceStatus {
-  LOST = 'Lost', // Owner adds device
-  REPORTED = 'Reported', // Finder adds device
-  MATCHED = 'Matched', // System finds a match
-  PAYMENT_PENDING = 'Payment Pending', // Owner needs to pay
-  PAYMENT_COMPLETE = 'Payment Complete', // Owner has paid
-  EXCHANGE_PENDING = 'Exchange Pending', // Physical exchange in progress
-  COMPLETED = 'Completed', // Exchange confirmed by both
+  LOST = 'lost', // Owner adds device
+  REPORTED = 'reported', // Finder adds device
+  MATCHED = 'matched', // System finds a match
+  PAYMENT_PENDING = 'payment_pending', // Owner needs to pay
+  PAYMENT_COMPLETE = 'payment_complete', // Owner has paid
+  EXCHANGE_PENDING = 'exchange_pending', // Physical exchange in progress
+  COMPLETED = 'completed', // Exchange confirmed by both
 }
 
 export interface Device {
   id: string;
-  userId: string;
+  userId: string; // The ID of the user who owns/reported the device
   model: string;
   serialNumber: string;
   color: string;
@@ -39,10 +39,10 @@ export interface Device {
 
 export interface AppNotification {
   id: string;
-  userId: string;
-  messageKey: keyof (typeof translations.en.notifications);
+  user_id: string;
+  message_key: keyof (typeof translations.en.notifications);
   link: string; // e.g., /device/deviceId
-  isRead: boolean;
-  createdAt: string; // ISO string
+  is_read: boolean;
+  created_at: string; // ISO string
   replacements?: Record<string, string | number>;
 }

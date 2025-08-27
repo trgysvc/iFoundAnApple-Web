@@ -63,9 +63,10 @@ const DashboardPage: React.FC = () => {
       ) : (
         userDevices.length > 0 ? (
           <div className="space-y-4">
-            {userDevices.sort((a,b) => b.id.localeCompare(a.id)).map(device => (
-              <DeviceCard key={device.id} device={device} />
-            ))}
+            {userDevices.sort((a,b) => b.id.localeCompare(a.id)).map(device => {
+              console.log("DashboardPage: Rendering DeviceCard for device:", device.id, "Status:", device.status, "Full Device Object:", device);
+              return <DeviceCard key={device.id} device={device} />;
+            })}
           </div>
         ) : (
           <div className="text-center py-16 border-2 border-dashed border-brand-gray-300 rounded-xl">

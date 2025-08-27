@@ -70,7 +70,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Supabase will manage current user
   // const [users, setUsers] = useLocalStorage<User[]>('users', [defaultAdminUser]); // Removed as users are now managed by Supabase
   const [devices, setDevices] = useLocalStorage<Device[]>('devices', []);
-  const [notifications, setNotifications] = useLocalStorage<AppNotification[]>('notifications', []);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   // const navigate = useNavigate(); // Removed as useNavigate cannot be used in AppContext
 
   useEffect(() => {
@@ -103,6 +103,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch initial notifications and subscribe to real-time updates
+  useEffect(() => {
+    if (!currentUser) {
+      setNotifications([]);
+      return;
+    }
+
+    const fetchNotifications = async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching notifications:', error.message);
+      } else {
+        setNotifications(data as AppNotification[]);
+      }
+    };
+
+    fetchNotifications();
+
+    // Real-time subscription for notifications
+    const channel = supabase
+      .channel('notifications_changes')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'notifications', 
+        filter: `user_id=eq.${currentUser.id}`
+      }, payload => {
+        if (payload.eventType === 'INSERT') {
+          setNotifications(prev => [payload.new as AppNotification, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new as AppNotification : n));
+        } else if (payload.eventType === 'DELETE') {
+          setNotifications(prev => prev.filter(n => n.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser]); // Re-run when currentUser changes
 
   const t = useCallback((key: string, replacements?: Record<string, string | number>) => {
     const keys = key.split('.');
@@ -126,24 +172,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return finalTranslation;
   }, [language]);
   
-  const addNotification = useCallback((
-    userId: string, 
-    messageKey: keyof typeof translations.en.notifications, 
-    link: string, 
+  const addNotification = useCallback(async (
+    userId: string,
+    messageKey: keyof typeof translations.en.notifications,
+    link: string,
     replacements?: Record<string, string | number>
   ) => {
-    console.log("addNotification: Function called with:", { userId, messageKey, link, replacements }); // Added for debugging
-    const newNotification: AppNotification = {
-      id: `notif_${Date.now()}_${Math.random()}`,
-      userId,
-      messageKey,
+    console.log("addNotification: Function called with:", { userId, messageKey, link, replacements });
+    const { data, error } = await supabase.from('notifications').insert({
+      user_id: userId,
+      message_key: messageKey,
       link,
-      isRead: false,
-      createdAt: new Date().toISOString(),
-      replacements
-    };
-    setNotifications(prev => [newNotification, ...prev]);
-  }, [setNotifications]);
+      is_read: false,
+      created_at: new Date().toISOString(),
+      replacements,
+    });
+    if (error) {
+      console.error('Error adding notification to Supabase:', error.message);
+    } else {
+      console.log('Notification added to Supabase:', data);
+    }
+  }, []);
 
   const login = async (email: string, pass: string): Promise<boolean> => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -257,7 +306,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             .eq('status', DeviceStatus.REPORTED)
             .eq('serialNumber', newDevice.serialNumber)
             .eq('model', newDevice.model)
-            .neq('userId', newDevice.userId)
+            // .neq('userId', newDevice.userId) // Geçici olarak devre dışı bırakıldı
             .single();
           
           if (matchedData) {
@@ -271,7 +320,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             .eq('status', DeviceStatus.LOST)
             .eq('serialNumber', newDevice.serialNumber)
             .eq('model', newDevice.model)
-            .neq('userId', newDevice.userId)
+            // .neq('userId', newDevice.userId) // Geçici olarak devre dışı bırakıldı
             .single();
 
           if (matchedData) {
@@ -295,6 +344,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           addNotification(foundDevice.userId, 'matchFoundFinder', `/device/${foundDevice.id}`, { model: foundDevice.model });
         }
 
+        // Send a notification to the user who added the device, regardless of a match
+        const messageKey = isLost ? 'deviceLostConfirmation' : 'deviceReportedConfirmation'; // Need to add these keys to constants.ts
+        addNotification(currentUser.id, messageKey, `/device/${newDevice.id}`, { model: newDevice.model });
         return true;
       }
     } catch (e) {
@@ -308,7 +360,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.warn("getUserDevices: No userId provided.");
       return [];
     }
-    const { data, error } = await supabase.from('devices').select('*').eq('userId', userId).order('createdAt', { ascending: false }); // Order by createdAt
+    const { data, error } = await supabase.from('devices').select('*').eq('userId', userId).order('created_at', { ascending: false }); // Order by created_at
     if (error) {
       console.error("Error fetching devices from Supabase:", error.message);
       return [];
@@ -405,14 +457,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const markNotificationAsRead = (notificationId: string) => {
-    setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n));
-  };
+  const markNotificationAsRead = useCallback(async (notificationId: string) => {
+    const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', notificationId);
+    if (error) {
+      console.error('Error marking notification as read:', error.message);
+    }
+  }, []);
 
-  const markAllAsReadForCurrentUser = () => {
+  const markAllAsReadForCurrentUser = useCallback(async () => {
     if (!currentUser) return;
-    setNotifications(prev => prev.map(n => n.userId === currentUser.id ? { ...n, isRead: true } : n));
-  };
+    const { error } = await supabase.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id);
+    if (error) {
+      console.error('Error marking all notifications as read:', error.message);
+    }
+  }, [currentUser]);
 
 
   const value = {
