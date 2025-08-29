@@ -37,7 +37,7 @@ interface AppContextType {
   ) => Promise<boolean>;
   getUserDevices: (userId: string) => Promise<Device[]>;
   getDeviceById: (deviceId: string) => Promise<Device | undefined>;
-  makePayment: (deviceId: string) => void;
+  makePayment: (deviceId: string) => Promise<void>;
   confirmExchange: (deviceId: string, userId: string) => void;
   notifications: AppNotification[];
   markNotificationAsRead: (notificationId: string) => void;
@@ -745,41 +745,92 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // --- Core Logic: Payment ---
   // When the owner makes a payment for a matched device.
-  const makePayment = (deviceId: string) => {
-    setDevices((prev) => {
-      const ownerDevice = prev.find((d) => d.id === deviceId);
-      if (!ownerDevice) return prev;
+  const makePayment = async (deviceId: string) => {
+    console.log("makePayment: Processing payment for device:", deviceId);
+    console.log("makePayment: Current user:", currentUser?.id);
 
-      // Find the corresponding finder's device.
-      const finderDevice = prev.find(
-        (d) =>
-          d.serialNumber.toLowerCase() ===
-            ownerDevice.serialNumber.toLowerCase() &&
-          d.model.toLowerCase() === ownerDevice.model.toLowerCase() &&
-          d.id !== ownerDevice.id
-      );
+    try {
+      // First, get the current device from the database to ensure we have the latest data
+      const { data: ownerDevice, error: ownerError } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("id", deviceId)
+        .single();
 
-      // Notify the finder that payment has been received.
-      if (finderDevice) {
-        addNotification(
-          finderDevice.userId,
-          "paymentReceivedFinder",
-          `/device/${finderDevice.id}`,
-          { model: finderDevice.model }
-        );
+      if (ownerError || !ownerDevice) {
+        console.error("Error fetching owner device:", ownerError);
+        return;
       }
 
-      // Update both devices to EXCHANGE_PENDING status.
-      return prev.map((d) => {
-        if (
-          d.id === ownerDevice.id ||
-          (finderDevice && d.id === finderDevice.id)
-        ) {
-          return { ...d, status: DeviceStatus.EXCHANGE_PENDING };
-        }
-        return d;
+      console.log("makePayment: Owner device found:", ownerDevice);
+
+      // Find the corresponding finder's device in the database
+      const { data: finderDevice, error: finderError } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("serialNumber", ownerDevice.serialNumber)
+        .eq("model", ownerDevice.model)
+        .eq("status", DeviceStatus.MATCHED)
+        .neq("id", ownerDevice.id)
+        .maybeSingle();
+
+      if (finderError) {
+        console.error("Error finding matching device:", finderError);
+        return;
+      }
+
+      if (!finderDevice) {
+        console.error("No matching finder device found");
+        return;
+      }
+
+      console.log("makePayment: Finder device found:", finderDevice);
+
+      // Update both devices to EXCHANGE_PENDING status in the database
+      const { error: updateOwnerError } = await supabase
+        .from("devices")
+        .update({ status: DeviceStatus.EXCHANGE_PENDING })
+        .eq("id", ownerDevice.id);
+
+      if (updateOwnerError) {
+        console.error("Error updating owner device:", updateOwnerError);
+        return;
+      }
+
+      const { error: updateFinderError } = await supabase
+        .from("devices")
+        .update({ status: DeviceStatus.EXCHANGE_PENDING })
+        .eq("id", finderDevice.id);
+
+      if (updateFinderError) {
+        console.error("Error updating finder device:", updateFinderError);
+        return;
+      }
+
+      console.log("makePayment: Both devices updated to EXCHANGE_PENDING");
+
+      // Update local state
+      setDevices((prev) => {
+        return prev.map((d) => {
+          if (d.id === ownerDevice.id || d.id === finderDevice.id) {
+            return { ...d, status: DeviceStatus.EXCHANGE_PENDING };
+          }
+          return d;
+        });
       });
-    });
+
+      // Send notification to the finder that payment has been received
+      addNotification(
+        finderDevice.userId,
+        "paymentReceivedFinder",
+        `/device/${finderDevice.id}`,
+        { model: finderDevice.model }
+      );
+
+      console.log("makePayment: Payment processed successfully");
+    } catch (error) {
+      console.error("Error in makePayment:", error);
+    }
   };
 
   // --- Core Logic: Exchange Confirmation ---
