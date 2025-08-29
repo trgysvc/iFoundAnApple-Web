@@ -16,11 +16,26 @@ const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     const fetchDevices = async () => {
+      console.log("DashboardPage: fetchDevices called");
+      console.log("DashboardPage: currentUser:", currentUser);
+
       if (currentUser) {
+        console.log(
+          "DashboardPage: Fetching devices for user:",
+          currentUser.id
+        );
         setIsLoading(true);
-        const devices = await getUserDevices(currentUser.id);
-        setUserDevices(devices);
-        setIsLoading(false);
+        try {
+          const devices = await getUserDevices(currentUser.id);
+          console.log("DashboardPage: Devices fetched:", devices);
+          setUserDevices(devices);
+        } catch (error) {
+          console.error("DashboardPage: Error fetching devices:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        console.log("DashboardPage: No currentUser, cannot fetch devices");
       }
     };
     fetchDevices();
@@ -28,7 +43,19 @@ const DashboardPage: React.FC = () => {
 
   if (!currentUser) {
     console.log("DashboardPage: currentUser is null");
-    return null; // Or a loading spinner
+    return (
+      <Container>
+        <div className="text-center py-16">
+          <h2 className="text-2xl font-bold text-brand-gray-600 mb-4">
+            Authentication Required
+          </h2>
+          <p className="text-brand-gray-500 mb-6">
+            You need to be logged in to view your devices.
+          </p>
+          <Button onClick={() => navigate("/login")}>Go to Login</Button>
+        </div>
+      </Container>
+    );
   }
 
   console.log("DashboardPage: currentUser", currentUser);

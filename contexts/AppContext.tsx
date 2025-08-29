@@ -705,20 +705,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getUserDevices = async (userId: string): Promise<Device[]> => {
+    console.log("getUserDevices: Called with userId:", userId);
+
     if (!userId) {
       console.warn("getUserDevices: No userId provided.");
       return [];
     }
+
+    // First, let's test if we can access the devices table at all
+    console.log("getUserDevices: Testing Supabase connection...");
+    const { data: testData, error: testError } = await supabase
+      .from("devices")
+      .select("id")
+      .limit(1);
+
+    console.log(
+      "getUserDevices: Connection test - data:",
+      testData,
+      "error:",
+      testError
+    );
+
+    if (testError) {
+      console.error(
+        "getUserDevices: Cannot access devices table:",
+        testError.message
+      );
+      return [];
+    }
+
+    console.log("getUserDevices: Querying Supabase for devices...");
     const { data, error } = await supabase
       .from("devices")
       .select("*")
       .eq("userId", userId)
       .order("created_at", { ascending: false }); // Order by created_at
+
+    console.log(
+      "getUserDevices: Supabase response - data:",
+      data,
+      "error:",
+      error
+    );
+
     if (error) {
       console.error("Error fetching devices from Supabase:", error.message);
       return [];
     }
-    return (data as Device[]) || [];
+
+    const devices = (data as Device[]) || [];
+    console.log("getUserDevices: Returning devices:", devices);
+    return devices;
   };
 
   const getDeviceById = async (
