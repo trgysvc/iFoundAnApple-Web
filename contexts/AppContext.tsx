@@ -44,6 +44,11 @@ interface AppContextType {
   markAllAsReadForCurrentUser: () => void;
   refreshNotifications: () => Promise<void>;
   checkForExistingMatches: () => Promise<void>;
+  fetchUserProfile: (userId: string) => Promise<any>;
+  updateUserProfile: (profileData: {
+    fullName: string;
+    bankInfo?: string;
+  }) => Promise<boolean>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -131,16 +136,55 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(
+        "Auth state change:",
+        event,
+        session ? "Session exists" : "No session"
+      );
+
       if (session) {
-        setCurrentUser({
+        console.log("Setting current user from session:", session.user.id);
+
+        // Set initial user data from session
+        const initialUser = {
           id: session.user.id,
           email: session.user.email!,
           fullName: session.user.user_metadata.full_name || session.user.email!,
           role: UserRole.USER,
-        });
+        };
+
+        setCurrentUser(initialUser);
+
+        // Fetch additional profile data from userProfile table
+        fetchUserProfile(session.user.id)
+          .then((profileData) => {
+            console.log(
+              "Auth state change: Profile fetch result:",
+              profileData
+            );
+            if (profileData) {
+              console.log("Profile data loaded:", profileData);
+              setCurrentUser((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      bankInfo: profileData.bank_info || undefined,
+                    }
+                  : null
+              );
+            } else {
+              console.log("No profile data found - user may be new");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching profile data:", error);
+          });
       } else {
+        console.log("Clearing current user - no session");
         setCurrentUser(null);
+        setDevices([]);
+        setNotifications([]);
       }
     });
 
@@ -389,11 +433,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Logout error:", error.message);
-    } else {
+    console.log("logout: Starting logout process...");
+
+    try {
+      // Clear local state first
       setCurrentUser(null);
+      setDevices([]);
+      setNotifications([]);
+
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Logout error:", error.message);
+        throw error;
+      } else {
+        console.log("logout: Successfully signed out from Supabase");
+      }
+
+      console.log("logout: Logout completed successfully");
+    } catch (error) {
+      console.error("logout: Error during logout:", error);
+      throw error;
     }
   };
 
@@ -1089,6 +1149,106 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [currentUser, addNotification]);
 
+  // Fetch user profile data from userProfile table
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      console.log("fetchUserProfile: Fetching profile for user:", userId);
+
+      const { data, error } = await supabase
+        .from("userProfile")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 = no rows returned
+        console.error("fetchUserProfile: Error fetching profile:", error);
+        return null;
+      }
+
+      console.log("fetchUserProfile: Profile data fetched:", data);
+      return data;
+    } catch (error) {
+      console.error("fetchUserProfile: Error:", error);
+      return null;
+    }
+  };
+
+  // Update user profile information
+  const updateUserProfile = async (profileData: {
+    fullName: string;
+    bankInfo?: string;
+  }): Promise<boolean> => {
+    if (!currentUser) {
+      console.error("updateUserProfile: No current user");
+      return false;
+    }
+
+    try {
+      console.log(
+        "updateUserProfile: Updating profile for user:",
+        currentUser.id
+      );
+      console.log("updateUserProfile: Profile data:", profileData);
+
+      // Step 1: Update fullName in Supabase Auth user metadata
+      const { error: authError } = await supabase.auth.updateUser({
+        data: {
+          full_name: profileData.fullName,
+        },
+      });
+
+      if (authError) {
+        console.error(
+          "updateUserProfile: Error updating auth user:",
+          authError
+        );
+        throw authError;
+      }
+
+      console.log("updateUserProfile: Auth user updated successfully");
+
+      // Step 2: Update or insert profile data in userProfile table
+      const { error: profileError } = await supabase.from("userProfile").upsert(
+        {
+          user_id: currentUser.id,
+          bank_info: profileData.bankInfo || null,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id",
+        }
+      );
+
+      if (profileError) {
+        console.error(
+          "updateUserProfile: Error updating profile table:",
+          profileError
+        );
+        throw profileError;
+      }
+
+      console.log("updateUserProfile: Profile table updated successfully");
+
+      // Step 3: Update local state
+      setCurrentUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              fullName: profileData.fullName,
+              bankInfo: profileData.bankInfo,
+            }
+          : null
+      );
+
+      console.log("updateUserProfile: Profile updated successfully");
+      return true;
+    } catch (error) {
+      console.error("updateUserProfile: Error updating profile:", error);
+      return false;
+    }
+  };
+
   const value = {
     language,
     setLanguage,
@@ -1109,6 +1269,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     markAllAsReadForCurrentUser,
     refreshNotifications,
     checkForExistingMatches,
+    fetchUserProfile,
+    updateUserProfile,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

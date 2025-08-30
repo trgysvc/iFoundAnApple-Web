@@ -29,9 +29,13 @@ const Header: React.FC = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const userNotifications = currentUser
@@ -123,18 +127,20 @@ const Header: React.FC = () => {
                 {t("home")}
               </NavLink>
               {currentUser && (
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    `text-sm font-medium ${
-                      isActive
-                        ? "text-brand-blue"
-                        : "text-brand-gray-500 hover:text-brand-blue"
-                    }`
-                  }
-                >
-                  {t("dashboard")}
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) =>
+                      `text-sm font-medium ${
+                        isActive
+                          ? "text-brand-blue"
+                          : "text-brand-gray-500 hover:text-brand-blue"
+                      }`
+                    }
+                  >
+                    {t("dashboard")}
+                  </NavLink>
+                </>
               )}
               {currentUser && currentUser.role === UserRole.ADMIN && (
                 <NavLink
@@ -263,15 +269,27 @@ const Header: React.FC = () => {
             {currentUser ? (
               <>
                 <div className="flex items-center space-x-2">
-                  <UserCircle className="w-6 h-6 text-brand-gray-500" />
-                  <span className="text-sm font-medium text-brand-gray-600 hidden sm:block">
-                    {currentUser.fullName}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <UserCircle className="w-6 h-6 text-brand-gray-500" />
+                    <span className="text-sm font-medium text-brand-gray-600 hidden sm:block">
+                      {currentUser.fullName}
+                    </span>
+                  </div>
                 </div>
-                <Button onClick={handleLogout} variant="secondary" size="sm">
-                  <LogOut className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">{t("logout")}</span>
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    onClick={() => navigate("/profile")}
+                    variant="secondary"
+                    size="sm"
+                    className="hidden sm:inline-flex"
+                  >
+                    Profile
+                  </Button>
+                  <Button onClick={handleLogout} variant="secondary" size="sm">
+                    <LogOut className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">{t("logout")}</span>
+                  </Button>
+                </div>
               </>
             ) : (
               <div className="space-x-2">
