@@ -79,11 +79,40 @@ If you encounter issues:
 - **Check console logs** for any database errors
 - **Ensure the table exists** in your Supabase schema
 
+## Device Models Setup
+
+### 1. Update Device Models Table
+
+Run the SQL script `update_device_models.sql` in your Supabase SQL Editor:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **SQL Editor**
+3. Copy and paste the contents of `update_device_models.sql`
+4. Click **Run** to execute the script
+
+This script will:
+- Create the `device_models` table if it doesn't exist
+- Insert all current Apple device models (2020-2025)
+- Set up proper indexes and RLS policies
+- Handle conflicts by updating existing records
+
+### 2. Verify Device Models
+
+After running the script, you should see:
+- **iPhone**: 22+ models
+- **iPad**: 12+ models  
+- **Mac**: 35+ models (MacBook, iMac, Mac Studio, Mac Pro, Mac mini)
+- **Apple Watch**: 9+ models
+- **AirPods**: 6+ models
+- **Apple TV**: 3+ models
+- **Accessories**: 15+ models (keyboards, pencils, displays)
+
 ## Next Steps
 
 Once the database is set up:
 
 1. **Test the profile functionality** in the app
-2. **Add more profile fields** as needed
-3. **Implement additional profile features** (avatar upload, etc.)
-4. **Add profile data validation** and error handling
+2. **Test device model selection** with new models
+3. **Add more profile fields** as needed
+4. **Implement additional profile features** (avatar upload, etc.)
+5. **Add profile data validation** and error handling
