@@ -11,7 +11,25 @@ export interface User {
   email: string;
   password_hash?: string; // In a real app, never store plain text passwords
   role: UserRole;
-  bankInfo?: string; // For finders
+  // Extended profile information
+  tcKimlikNo?: string; // TC Kimlik Numarası
+  phoneNumber?: string; // Telefon Numarası
+  address?: string; // Adres
+  iban?: string; // IBAN numarası
+  bankInfo?: string; // Eski alan - geriye uyumluluk için
+}
+
+// New interface for comprehensive user profile data
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  tc_kimlik_no?: string;
+  phone_number?: string;
+  address?: string;
+  iban?: string;
+  bank_info?: string; // Legacy field
+  updated_at: string;
+  created_at: string;
 }
 
 export enum DeviceStatus {

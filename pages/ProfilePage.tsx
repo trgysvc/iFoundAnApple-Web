@@ -4,7 +4,7 @@ import { useAppContext } from "../contexts/AppContext";
 import Container from "../components/ui/Container";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import { ArrowLeft, Save, User, CreditCard, Shield } from "lucide-react";
+import { ArrowLeft, Save, User, CreditCard, Shield, Phone, MapPin, Hash } from "lucide-react";
 
 const ProfilePage: React.FC = () => {
   const { currentUser, t, updateUserProfile } = useAppContext();
@@ -12,7 +12,11 @@ const ProfilePage: React.FC = () => {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [bankInfo, setBankInfo] = useState("");
+  const [tcKimlikNo, setTcKimlikNo] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [iban, setIban] = useState("");
+  // Legacy bankInfo field removed - using IBAN instead
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [message, setMessage] = useState<{
@@ -32,7 +36,10 @@ const ProfilePage: React.FC = () => {
 
       setFullName(currentUser.fullName || "");
       setEmail(currentUser.email || "");
-      setBankInfo(currentUser.bankInfo || "");
+      setTcKimlikNo(currentUser.tcKimlikNo || "");
+      setPhoneNumber(currentUser.phoneNumber || "");
+      setAddress(currentUser.address || "");
+      setIban(currentUser.iban || currentUser.bankInfo || ""); // IBAN yoksa legacy bankInfo'yu kullan
 
       // Profile data is loaded - we have the user data, so stop loading
       // Note: bankInfo might be undefined if user hasn't set it yet, which is fine
@@ -64,7 +71,10 @@ const ProfilePage: React.FC = () => {
       if (updateUserProfile) {
         const success = await updateUserProfile({
           fullName,
-          bankInfo: bankInfo || undefined,
+          tcKimlikNo: tcKimlikNo || undefined,
+          phoneNumber: phoneNumber || undefined,
+          address: address || undefined,
+          iban: iban || undefined,
         });
 
         if (success) {
@@ -172,7 +182,7 @@ const ProfilePage: React.FC = () => {
                 </div>
 
                 <Input
-                  label="Full Name"
+                  label={t("fullName")}
                   id="fullName"
                   type="text"
                   value={fullName}
@@ -181,7 +191,7 @@ const ProfilePage: React.FC = () => {
                 />
 
                 <Input
-                  label="Email"
+                  label={t("email")}
                   id="email"
                   type="email"
                   value={email}
@@ -191,6 +201,39 @@ const ProfilePage: React.FC = () => {
                   Email cannot be changed. Contact support if you need to update
                   your email address.
                 </p>
+
+                <Input
+                  label={t("tcKimlikNo")}
+                  id="tcKimlikNo"
+                  type="text"
+                  value={tcKimlikNo}
+                  onChange={(e) => setTcKimlikNo(e.target.value)}
+                  placeholder="12345678901"
+                  maxLength={11}
+                />
+
+                <Input
+                  label={t("phoneNumber")}
+                  id="phoneNumber"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="+90 555 123 45 67"
+                />
+
+                <div className="space-y-2">
+                  <label htmlFor="address" className="block text-sm font-medium text-brand-gray-700">
+                    {t("address")}
+                  </label>
+                  <textarea
+                    id="address"
+                    rows={3}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent resize-none"
+                    placeholder="Mahalle, Sokak, No, İlçe, İl"
+                  />
+                </div>
               </div>
 
               {/* Bank Information Section */}
@@ -206,17 +249,16 @@ const ProfilePage: React.FC = () => {
                 </div>
 
                 <Input
-                  label="Bank Account Details"
-                  id="bankInfo"
+                  label={t("iban")}
+                  id="iban"
                   type="text"
-                  value={bankInfo}
-                  onChange={(e) => setBankInfo(e.target.value)}
-                  placeholder="e.g., IBAN, Account Number, Bank Name"
+                  value={iban}
+                  onChange={(e) => setIban(e.target.value.toUpperCase().replace(/\s/g, ''))}
+                  placeholder="TR12 3456 7890 1234 5678 9012 34"
+                  maxLength={26}
                 />
                 <p className="text-sm text-brand-gray-500 mt-1">
-                  This information is used for reward payouts when you find and
-                  return devices. It's stored securely and only accessible to
-                  you.
+                  IBAN numaranızı TR ile başlayarak girin. Bu bilgi ödül ödemeleri için kullanılır.
                 </p>
               </div>
 

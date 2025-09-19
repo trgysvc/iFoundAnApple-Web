@@ -47,7 +47,10 @@ interface AppContextType {
   fetchUserProfile: (userId: string) => Promise<any>;
   updateUserProfile: (profileData: {
     fullName: string;
-    bankInfo?: string;
+    tcKimlikNo?: string;
+    phoneNumber?: string;
+    address?: string;
+    iban?: string;
   }) => Promise<boolean>;
 }
 
@@ -169,6 +172,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 prev
                   ? {
                       ...prev,
+                      tcKimlikNo: profileData.tc_kimlik_no || undefined,
+                      phoneNumber: profileData.phone_number || undefined,
+                      address: profileData.address || undefined,
+                      iban: profileData.iban || undefined,
                       bankInfo: profileData.bank_info || undefined,
                     }
                   : null
@@ -1177,7 +1184,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Update user profile information
   const updateUserProfile = async (profileData: {
     fullName: string;
-    bankInfo?: string;
+    tcKimlikNo?: string;
+    phoneNumber?: string;
+    address?: string;
+    iban?: string;
   }): Promise<boolean> => {
     if (!currentUser) {
       console.error("updateUserProfile: No current user");
@@ -1212,7 +1222,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { error: profileError } = await supabase.from("userProfile").upsert(
         {
           user_id: currentUser.id,
-          bank_info: profileData.bankInfo || null,
+          tc_kimlik_no: profileData.tcKimlikNo || null,
+          phone_number: profileData.phoneNumber || null,
+          address: profileData.address || null,
+          iban: profileData.iban || null,
+          bank_info: profileData.iban || null, // IBAN'ı bank_info'ya da kaydet (geriye uyumluluk)
           updated_at: new Date().toISOString(),
         },
         {
@@ -1236,7 +1250,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           ? {
               ...prev,
               fullName: profileData.fullName,
-              bankInfo: profileData.bankInfo,
+              tcKimlikNo: profileData.tcKimlikNo,
+              phoneNumber: profileData.phoneNumber,
+              address: profileData.address,
+              iban: profileData.iban,
+              bankInfo: profileData.iban, // IBAN'ı legacy bankInfo'ya da kaydet
             }
           : null
       );
