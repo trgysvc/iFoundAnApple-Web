@@ -25,10 +25,12 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - 💰 **Güvenli Emanet Sistemi**: Ödemenin güvenli bir şekilde tutulması
 - 🤖 **AI Destekli Öneriler**: Google Gemini ile akıllı ödül ve açıklama önerileri
 - 🌍 **Çoklu Dil Desteği**: 5 farklı dilde tam destek (EN, TR, FR, JA, ES)
+- 👤 **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN bilgileri
 - 📱 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - 🔔 **Gerçek Zamanlı Bildirimler**: Anlık güncellemeler ve bildirimler
 - 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi
 - 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
+- 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
 
 ---
 
@@ -168,7 +170,13 @@ CREATE TABLE users (
 CREATE TABLE userProfile (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  bank_info TEXT,
+  tc_kimlik_no VARCHAR(11),
+  phone_number VARCHAR(20),
+  address TEXT,
+  iban VARCHAR(34),
+  bank_info TEXT, -- Legacy field
+  preferences JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
@@ -228,16 +236,70 @@ CREATE TABLE notifications (
 ## 🌍 Çoklu Dil Desteği
 
 ### Desteklenen Diller
-- 🇺🇸 **English** (en) - Varsayılan
-- 🇹🇷 **Türkçe** (tr) - Tam destek
-- 🇫🇷 **Français** (fr) - Tam destek
-- 🇯🇵 **日本語** (ja) - Tam destek
-- 🇪🇸 **Español** (es) - Tam destek
+- 🇺🇸 **English** (en) - Varsayılan dil, tam destek
+- 🇹🇷 **Türkçe** (tr) - Ana dil, tam destek
+- 🇫🇷 **Français** (fr) - Tam destek, güncel çeviriler
+- 🇯🇵 **日本語** (ja) - Tam destek, doğal çeviriler
+- 🇪🇸 **Español** (es) - Tam destek, tutarlı terminoloji
+
+### Çeviri Özellikleri
+- **200+ Çeviri Anahtarı**: Tüm UI elementleri için eksiksiz çeviriler
+- **Dinamik Dil Değiştirme**: Sayfa yenilemeden anlık dil değişimi
+- **Tutarlı Terminoloji**: Her dilde tutarlı teknik terimler
+- **Kültürel Uyum**: Her dile özel ifade tarzları
+- **Form Validasyonları**: Dil-spesifik hata mesajları
+
+### Çeviri Kalite Kontrolleri
+- ✅ Eksik çeviri anahtarları tespit edildi ve tamamlandı
+- ✅ Karışık dil içerikleri düzeltildi (FR, JA, ES)
+- ✅ Tüm form alanları ve hata mesajları çevrildi
+- ✅ Admin paneli ve bildirim sistemi çevirileri
+- ✅ AI öneriler ve durum mesajları çevirileri
 
 ### Yeni Dil Ekleme
 1. `constants.ts` dosyasına yeni dil çevirilerini ekleyin
 2. `AppContext.tsx` içinde `Language` tipini güncelleyin
 3. Header bileşenindeki dil seçicisine yeni seçeneği ekleyin
+4. Tüm çeviri anahtarlarının eksiksiz olduğundan emin olun
+
+---
+
+## 👤 Gelişmiş Profil Yönetimi
+
+### Kullanıcı Profil Alanları
+- **Temel Bilgiler**: Ad, soyad, e-posta
+- **Kimlik Bilgileri**: TC Kimlik Numarası (Türkiye için)
+- **İletişim**: Telefon numarası ve adres bilgileri
+- **Banka Bilgileri**: IBAN numarası (ödül ödemeleri için)
+
+### Profil Güvenliği
+- **Veri Şifreleme**: Hassas bilgiler şifreli saklanır
+- **Erişim Kontrolü**: Sadece kullanıcı kendi profilini görebilir
+- **Opsiyonel Alanlar**: Zorunlu olmayan bilgiler için kullanıcı kontrolü
+- **Veri Doğrulama**: Client-side ve server-side validasyon
+
+### Profil Özellikleri
+- **Gerçek Zamanlı Güncelleme**: Anında profil değişiklikleri
+- **Form Validasyonu**: Akıllı form kontrolleri
+  - TC Kimlik: 11 haneli sayı kontrolü
+  - IBAN: Format ve uzunluk kontrolü
+  - Telefon: Geçerli format kontrolü
+- **Otomatik Kaydetme**: Değişikliklerin güvenli saklanması
+- **Hata Yönetimi**: Kullanıcı dostu hata mesajları
+
+### Veritabanı Entegrasyonu
+```sql
+-- Profil güncellemeleri için kullanılan tablo yapısı
+ALTER TABLE userProfile 
+ADD COLUMN tc_kimlik_no VARCHAR(11),
+ADD COLUMN phone_number VARCHAR(20),
+ADD COLUMN address TEXT,
+ADD COLUMN iban VARCHAR(34);
+
+-- İndeksler ve performans optimizasyonu
+CREATE INDEX idx_userprofile_user_id ON userProfile(user_id);
+CREATE INDEX idx_userprofile_iban ON userProfile(iban);
+```
 
 ---
 
@@ -316,6 +378,25 @@ Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
 
 ---
 
+## 🔄 Son Güncellemeler (2025)
+
+### v2.1.0 - Çeviri ve Profil Güncellemeleri
+- ✅ **Çeviri Sistemi Yenilendi**: 200+ çeviri anahtarı güncellendi
+- ✅ **5 Dil Tam Desteği**: EN, TR, FR, JA, ES dillerinde eksiksiz çeviriler
+- ✅ **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN alanları
+- ✅ **Karışık Çeviri Düzeltmeleri**: Tüm dillerde tutarlı terminoloji
+- ✅ **Form Validasyonları**: Akıllı form kontrolleri ve hata mesajları
+- ✅ **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
+- ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
+
+### Yaklaşan Özellikler
+- 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
+- 🔄 **Push Notifications**: Mobil bildirimler
+- 🔄 **Gelişmiş AI**: Daha akıllı cihaz eşleştirme
+- 🔄 **Blockchain Entegrasyonu**: Güvenli ödeme sistemi
+
+---
+
 ## 🙏 Teşekkürler
 
 - **Supabase** - Backend altyapısı için
@@ -323,6 +404,7 @@ Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
 - **React Team** - Muhteşem framework için
 - **Lucide** - Güzel ikonlar için
 - **Vercel** - Hosting ve deployment için
+- **Google Gemini** - AI destekli öneriler için
 
 ---
 
