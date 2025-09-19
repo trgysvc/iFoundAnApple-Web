@@ -4,67 +4,47 @@ Bu dosya, sistemde desteklenen güncel Apple cihaz modellerini listeler.
 
 ## 📊 Cihaz Kategorileri
 
-### 📱 iPhone (22 Model)
-#### 2024 Series
-- iPhone 16 Pro Max
-- iPhone 16 Pro  
-- iPhone 16 Plus
-- iPhone 16
+### 📱 iPhone (49 Model)
+#### Complete iPhone History (2007-2025)
+**Latest Models (2024-2025):**
+- iPhone 16 Pro Max, iPhone 16 Pro, iPhone 16 Plus, iPhone 16
+- iPhone 15 Pro Max, iPhone 15 Pro, iPhone 15 Plus, iPhone 15
+- iPhone 14 Pro Max, iPhone 14 Pro, iPhone 14 Plus, iPhone 14
+- iPhone 13 Pro Max, iPhone 13 Pro, iPhone 13 Mini, iPhone 13
+- iPhone 12 Pro Max, iPhone 12 Pro, iPhone 12 Mini, iPhone 12
 
-#### 2023 Series
-- iPhone 15 Pro Max
-- iPhone 15 Pro
-- iPhone 15 Plus
-- iPhone 15
+**SE Series:**
+- iPhone SE (3rd gen), iPhone SE (2nd gen), iPhone SE (1st gen)
 
-#### 2022 Series
-- iPhone 14 Pro Max
-- iPhone 14 Pro
-- iPhone 14 Plus
-- iPhone 14
+**Classic Models:**
+- iPhone 11 Pro Max, iPhone 11 Pro, iPhone 11
+- iPhone XS Max, iPhone XS, iPhone XR, iPhone X
+- iPhone 8 Plus, iPhone 8, iPhone 7 Plus, iPhone 7
+- iPhone 6S Plus, iPhone 6S, iPhone 6 Plus, iPhone 6
+- iPhone 5S, iPhone 5C, iPhone 5
+- iPhone 4S, iPhone 4, iPhone 3GS, iPhone 3G, iPhone 2G (1st gen)
 
-#### 2021 Series
-- iPhone 13 Pro Max
-- iPhone 13 Pro
-- iPhone 13 mini
-- iPhone 13
-
-#### 2020 Series
-- iPhone 12 Pro Max
-- iPhone 12 Pro
-- iPhone 12 mini
-- iPhone 12
-
-#### SE Series
-- iPhone SE (3rd generation) - 2022
-- iPhone SE (2nd generation) - 2020
+**Future Models (Expected):**
+- iPhone 17 Pro Max, iPhone 17 Pro, iPhone 17
+- iPhone Air, iPhone 16e
 
 ---
 
-### 📟 iPad (12+ Models)
-#### 2024 Series
-- iPad Pro 13-inch (M4)
-- iPad Pro 11-inch (M4)
-- iPad Air 13-inch (M2)
-- iPad Air 11-inch (M2)
+### 📟 iPad (95 Model)
+#### Complete iPad History (2010-2025)
+**iPad Pro Series:** 13 models (9.7", 10.5", 11", 12.9", 13" with various generations)
+**iPad Air Series:** 7 models (1st gen to M2)
+**iPad Standard Series:** 11 models (1st to 11th generation)  
+**iPad mini Series:** 7 models (1st to 7th generation)
 
-#### 2022-2023 Series
-- iPad (10th generation) - 2022
-- iPad Air (5th generation) - 2022
-
-#### 2021 Series
-- iPad mini (6th generation)
-- iPad Pro 12.9-inch (5th generation)
-- iPad Pro 11-inch (3rd generation)
-- iPad (9th generation)
-
-#### 2020 Series
-- iPad Air (4th generation)
-- iPad (8th generation)
+**Latest Models:**
+- iPad Pro 13-inch (M4), iPad Pro 11-inch (M4)
+- iPad Air 13-inch (M2), iPad Air 11-inch (M2)
+- iPad (11th generation), iPad mini (7th generation)
 
 ---
 
-### 💻 Mac (35+ Models)
+### 💻 Mac (89 Model)
 
 #### MacBook Air
 - MacBook Air 15-inch (M3) - 2024
@@ -207,14 +187,16 @@ Cihazlar kategori bazında gruplanmıştır:
 
 | Kategori | Model Sayısı | Yıl Aralığı |
 |----------|--------------|-------------|
-| iPhone | 22+ | 2020-2024 |
-| iPad | 12+ | 2020-2024 |
-| Mac | 35+ | 2020-2024 |
-| Apple Watch | 9 | 2020-2024 |
-| AirPods | 6 | 2019-2024 |
-| Apple TV | 3 | 2015-2022 |
-| Accessories | 15+ | 2015-2024 |
-| **TOPLAM** | **100+** | **2015-2024** |
+| iPhone | 49 | 2007-2025 |
+| iPad | 38 | 2010-2025 |
+| Mac | 89 | 2009-2025 |
+| Apple Watch | 15 | 2014-2024 |
+| AirPods | 9 | 2016-2024 |
+| Apple TV | 7 | 2007-2022 |
+| HomePod | 3 | 2017-2023 |
+| iPod | 23 | 2001-2019 |
+| Accessories | 25+ | 2009-2024 |
+| **TOPLAM** | **250+** | **2001-2025** |
 
 ---
 
