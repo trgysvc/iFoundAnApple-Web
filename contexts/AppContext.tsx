@@ -14,6 +14,7 @@ import {
 } from "../types";
 import { translations } from "../constants";
 import { createClient } from "@supabase/supabase-js";
+import { getSecureConfig, secureLogger } from "../utils/security";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
 type Language = "en" | "tr" | "fr" | "ja" | "es";
@@ -92,9 +93,8 @@ const useLocalStorage = <T,>(
 
 // Removed defaultAdminUser as user management is now handled by Supabase
 
-const supabaseUrl = "https://zokkxkyhabihxjskdcfg.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva2t4a3loYWJpaHhqc2tkY2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MTQyMDMsImV4cCI6MjA3MTE5MDIwM30.Dvnl7lUwezVDGY9I6IIgfoJXWtaw1Un_idOxTlI0xwQ";
+// Get secure configuration from environment variables
+const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -387,21 +387,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         replacements,
       };
 
-      console.log("Inserting notification payload:", notificationPayload);
+      secureLogger.info("Inserting notification", { userId: userId.slice(-4) });
 
       const { data, error } = await supabase
         .from("notifications")
         .insert([notificationPayload])
         .select();
       if (error) {
-        console.error("Error adding notification to Supabase:", error.message);
-        console.error("Error details:", error);
+        secureLogger.error("Error adding notification to Supabase:", error);
       } else {
-        console.log("Notification added to Supabase:", data);
-        console.log("Inserted notification data:", data[0]);
-        console.log(
-          "✅ Real-time update should be triggered for this notification"
-        );
+        secureLogger.info("Notification added successfully");
+        secureLogger.info("✅ Real-time update should be triggered for this notification");
 
         // Replace temporary notification with real one from database
         const newNotification = data[0] as AppNotification;
@@ -410,9 +406,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           const filtered = prev.filter((n) => !n.id.startsWith("temp-"));
           return [newNotification, ...filtered];
         });
-        console.log(
-          "✅ Temporary notification replaced with real one from database"
-        );
+        secureLogger.info("✅ Temporary notification replaced with real one from database");
       }
     },
     []
@@ -424,7 +418,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       password: pass,
     });
     if (error) {
-      console.error("Login error:", error.message);
+      secureLogger.error("Login error:", error);
       return false;
     }
     if (data.user) {

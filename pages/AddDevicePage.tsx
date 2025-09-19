@@ -5,13 +5,14 @@ import Container from "../components/ui/Container";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { GoogleGenAI, Type } from "@google/genai";
-import { Sparkles, Upload, PlusCircle } from "lucide-react";
-// import { APPLE_DEVICE_MODELS } from '../constants'; // Removed as models are now fetched from Supabase
+import { Sparkles, Upload, PlusCircle, CheckCircle, AlertCircle } from "lucide-react";
+import { getColorsForDevice } from '../constants';
 import { createClient } from "@supabase/supabase-js";
+import { uploadInvoiceDocument } from '../utils/fileUpload';
+import { getSecureConfig, secureLogger, validators, sanitizers } from '../utils/security';
 
-const supabaseUrl = "https://zokkxkyhabihxjskdcfg.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva2t4a3loYWJpaHhqc2tkY2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MTQyMDMsImV4cCI6MjA3MTE5MDIwM30.Dvnl7lUwezVDGY9I6IIgfoJXWtaw1Un_idOxTlI0xwQ";
+// Get secure configuration from environment variables
+const { supabaseUrl, supabaseAnonKey, geminiApiKey } = getSecureConfig();
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -42,10 +43,13 @@ const AddDevicePage: React.FC = () => {
   const [model, setModel] = useState(""); // Initialize with empty string, will be set after fetching
   const [serialNumber, setSerialNumber] = useState("");
   const [color, setColor] = useState("");
+  const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [rewardAmount, setRewardAmount] = useState<number | undefined>();
   const [marketValue, setMarketValue] = useState<number | undefined>();
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false); // For AI suggestions and form submission
   const [error, setError] = useState("");
 
@@ -71,6 +75,18 @@ const AddDevicePage: React.FC = () => {
     fetchDeviceModels();
   }, [t]);
 
+  // Update available colors when model changes
+  useEffect(() => {
+    if (model) {
+      const colors = getColorsForDevice(model);
+      setAvailableColors(colors);
+      // Reset color selection when model changes
+      if (!colors.includes(color)) {
+        setColor(colors.length > 0 ? colors[0] : "");
+      }
+    }
+  }, [model]);
+
   const title = isLostReport ? t("addLostDevice") : t("reportFoundDevice");
 
   const fileToBase64 = (file: File): Promise<string> => {
@@ -82,15 +98,40 @@ const AddDevicePage: React.FC = () => {
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      if (e.target.files[0].size > 10 * 1024 * 1024) {
-        // 10MB limit
+      const file = e.target.files[0];
+      
+      // Basic validation
+      if (file.size > 10 * 1024 * 1024) {
         setError("File is too large. Maximum size is 10MB.");
         return;
       }
-      setInvoiceFile(e.target.files[0]);
+
+      setInvoiceFile(file);
       setError("");
+
+      // Upload file immediately when selected
+      if (currentUser) {
+        setIsUploadingFile(true);
+        try {
+          const result = await uploadInvoiceDocument(file, currentUser.id);
+          
+          if (result.success && result.url) {
+            setUploadedFileUrl(result.url);
+            console.log("File uploaded successfully:", result.url);
+          } else {
+            setError(result.error || "Failed to upload file. Please try again.");
+            setInvoiceFile(null);
+          }
+        } catch (error) {
+          console.error("File upload error:", error);
+          setError("Failed to upload file. Please try again.");
+          setInvoiceFile(null);
+        } finally {
+          setIsUploadingFile(false);
+        }
+      }
     }
   };
 
@@ -105,7 +146,11 @@ const AddDevicePage: React.FC = () => {
     setMarketValue(undefined);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      if (!geminiApiKey) {
+        setError("AI service is not available. Please contact support.");
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
       const prompt = `As an expert on Apple products, analyze the following device: Model: "${model}", Color: "${color}".`;
       let schema;
       let finalPrompt = prompt;
@@ -178,30 +223,41 @@ const AddDevicePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!model || !serialNumber || !color) {
-      alert("Please fill in all required fields.");
+    
+    // Input validation and sanitization
+    const sanitizedModel = sanitizers.text(model);
+    const sanitizedSerialNumber = sanitizers.text(serialNumber);
+    const sanitizedColor = sanitizers.text(color);
+    const sanitizedDescription = sanitizers.text(description);
+
+    if (!sanitizedModel || !sanitizedSerialNumber || !sanitizedColor) {
+      setError("Please fill in all required fields.");
       return;
     }
 
-    let invoiceDataUrl: string | undefined = undefined;
-    if (invoiceFile && isLostReport) {
-      try {
-        invoiceDataUrl = await fileToBase64(invoiceFile);
-      } catch (error) {
-        console.error("Error converting file to Base64", error);
-        setError("Could not process the invoice file. Please try again.");
-        return;
-      }
+    if (!validators.serialNumber(sanitizedSerialNumber)) {
+      setError("Please enter a valid serial number (8-12 characters, letters and numbers only).");
+      return;
     }
+
+    // Use uploaded file URL instead of Base64
+    const deviceData = {
+      model: sanitizedModel,
+      serialNumber: sanitizedSerialNumber,
+      color: sanitizedColor,
+      description: sanitizedDescription,
+      rewardAmount,
+      marketValue,
+      invoice_url: uploadedFileUrl || undefined, // Use Supabase Storage URL
+    };
 
     console.log(
       "AddDevicePage: Current User ID before addDevice call:",
       currentUser?.id
-    ); // Added for debugging
-    const success = await addDevice(
-      { model, serialNumber, color, description, rewardAmount, invoiceDataUrl },
-      isLostReport
     );
+    console.log("AddDevicePage: Device data with invoice URL:", deviceData);
+    
+    const success = await addDevice(deviceData, isLostReport);
     if (success) {
       navigate("/dashboard");
     } else {
@@ -229,14 +285,32 @@ const AddDevicePage: React.FC = () => {
             onChange={(e) => setSerialNumber(e.target.value)}
             required
           />
-          <Input
-            label={t("deviceColor")}
-            id="color"
-            type="text"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            required
-          />
+          <div className="w-full">
+            <label
+              htmlFor="color"
+              className="block text-sm font-medium text-brand-gray-600 mb-1"
+            >
+              {t("deviceColor")}
+            </label>
+            <select
+              id="color"
+              name="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+              required
+              disabled={availableColors.length === 0}
+            >
+              {availableColors.length === 0 && (
+                <option value="">{t("selectModelFirst")}</option>
+              )}
+              {availableColors.map((colorOption) => (
+                <option key={colorOption} value={colorOption}>
+                  {colorOption}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="w-full">
             <label
@@ -278,15 +352,34 @@ const AddDevicePage: React.FC = () => {
               >
                 {t("deviceInvoice")}
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-brand-gray-300 border-dashed rounded-md">
+              <div className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors ${
+                uploadedFileUrl ? 'border-green-300 bg-green-50' : 
+                isUploadingFile ? 'border-blue-300 bg-blue-50' : 
+                'border-brand-gray-300'
+              }`}>
                 <div className="space-y-1 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-brand-gray-400" />
+                  {isUploadingFile ? (
+                    <div className="animate-spin mx-auto h-12 w-12 text-blue-500">
+                      <Upload className="h-12 w-12" />
+                    </div>
+                  ) : uploadedFileUrl ? (
+                    <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+                  ) : (
+                    <Upload className="mx-auto h-12 w-12 text-brand-gray-400" />
+                  )}
+                  
                   <div className="flex text-sm text-brand-gray-600">
                     <label
                       htmlFor="invoice-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-brand-blue hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-blue px-1"
+                      className={`relative cursor-pointer bg-white rounded-md font-medium hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-blue px-1 ${
+                        uploadedFileUrl ? 'text-green-600' : 'text-brand-blue'
+                      }`}
                     >
-                      <span>Upload a file</span>
+                      <span>
+                        {isUploadingFile ? 'Uploading...' : 
+                         uploadedFileUrl ? 'File uploaded successfully' : 
+                         'Upload a file'}
+                      </span>
                       <input
                         id="invoice-upload"
                         name="invoice-upload"
@@ -294,16 +387,25 @@ const AddDevicePage: React.FC = () => {
                         className="sr-only"
                         onChange={handleFileChange}
                         accept="image/*,.pdf"
+                        disabled={isUploadingFile}
                       />
                     </label>
                   </div>
+                  
                   {invoiceFile ? (
-                    <p className="text-xs text-brand-gray-500 font-semibold">
-                      {invoiceFile.name}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-brand-gray-700 font-semibold">
+                        {invoiceFile.name}
+                      </p>
+                      {uploadedFileUrl && (
+                        <p className="text-xs text-green-600">
+                          ✓ Saved to secure storage
+                        </p>
+                      )}
+                    </div>
                   ) : (
                     <p className="text-xs text-brand-gray-500">
-                      PNG, JPG, PDF up to 10MB
+                      PNG, JPG, WebP, PDF up to 10MB
                     </p>
                   )}
                 </div>

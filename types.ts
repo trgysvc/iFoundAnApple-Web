@@ -48,10 +48,12 @@ export interface Device {
   model: string;
   serialNumber: string;
   color: string;
-  invoiceDataUrl?: string; // Storing as base64 data URL for localStorage friendliness
+  invoice_url?: string; // URL to invoice file in Supabase Storage
+  invoiceDataUrl?: string; // Legacy field - will be removed after migration
   description?: string;
   status: DeviceStatus;
   rewardAmount?: number;
+  marketValue?: number; // AI estimated market value
   exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed
 }
 

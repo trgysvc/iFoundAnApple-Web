@@ -105,7 +105,7 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
    - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
 
 4. **Geliştirme sunucusunu başlatın:**
-   ```bash
+    ```bash
    npm run dev
    ```
 

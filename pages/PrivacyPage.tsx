@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import Container from '../components/ui/Container';
+import { sanitizers } from '../utils/security';
 
 const PrivacyPage: React.FC = () => {
     const { t } = useAppContext();
@@ -12,7 +13,7 @@ const PrivacyPage: React.FC = () => {
                 <h1 className="text-3xl font-bold text-center text-brand-gray-600 mb-8">{t('privacyTitle')}</h1>
                 <div 
                     className="prose max-w-none text-brand-gray-600"
-                    dangerouslySetInnerHTML={{ __html: content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizers.html(content) }}
                 />
             </div>
         </Container>

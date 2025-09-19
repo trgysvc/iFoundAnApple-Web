@@ -124,6 +124,7 @@ export const translations = {
     failedToLoadDeviceModels: "Failed to load device models.",
     loadingDeviceModels: "Loading device models...",
     noModelsAvailable: "No models available",
+    selectModelFirst: "Select a device model first",
     // Admin Panel
     totalUsers: "Total Users",
     totalDevices: "Total Devices",
@@ -278,6 +279,7 @@ export const translations = {
     failedToLoadDeviceModels: "Cihaz modelleri yüklenemedi.",
     loadingDeviceModels: "Cihaz modelleri yükleniyor...",
     noModelsAvailable: "Hiç model yok",
+    selectModelFirst: "Önce bir cihaz modeli seçin",
     // Statuses
     Lost: "Kayıp",
     Reported: "Bildirildi",
@@ -464,6 +466,7 @@ export const translations = {
     failedToLoadDeviceModels: "Échec du chargement des modèles d'appareils.",
     loadingDeviceModels: "Chargement des modèles d'appareils...",
     noModelsAvailable: "Aucun modèle disponible",
+    selectModelFirst: "Sélectionnez d'abord un modèle d'appareil",
     // Statuses
     Lost: "Perdu",
     Reported: "Signalé",
@@ -628,6 +631,7 @@ export const translations = {
     failedToLoadDeviceModels: "デバイスモデルの読み込みに失敗しました。",
     loadingDeviceModels: "デバイスモデルを読み込み中...",
     noModelsAvailable: "利用可能なモデルはありません",
+    selectModelFirst: "最初にデバイスモデルを選択してください",
     // Statuses
     Lost: "紛失",
     Reported: "報告済み",
@@ -792,6 +796,7 @@ export const translations = {
     failedToLoadDeviceModels: "No se pudieron cargar los modelos de dispositivos.",
     loadingDeviceModels: "Cargando modelos de dispositivos...",
     noModelsAvailable: "No hay modelos disponibles",
+    selectModelFirst: "Selecciona primero un modelo de dispositivo",
     // Statuses
     Lost: "Perdido",
     Reported: "Reportado",
@@ -863,6 +868,132 @@ export const translations = {
     termsContent: `...`, // Content should be translated
     privacyContent: `...`, // Content should be translated
   },
+};
+
+// Apple Device Colors - Organized by category
+export const APPLE_DEVICE_COLORS = {
+  // iPhone Colors (Current and Popular)
+  iPhone: [
+    'Black',
+    'White', 
+    'Blue',
+    'Pink',
+    'Yellow',
+    'Green',
+    'Purple',
+    'Red',
+    'Starlight',
+    'Midnight',
+    'Silver',
+    'Gold',
+    'Rose Gold',
+    'Space Gray',
+    'Space Black',
+    'Deep Purple',
+    'Dynamic Island',
+    'Natural Titanium',
+    'Blue Titanium',
+    'White Titanium',
+    'Black Titanium'
+  ],
+  
+  // iPad Colors
+  iPad: [
+    'Silver',
+    'Space Gray',
+    'Gold',
+    'Rose Gold',
+    'Green',
+    'Blue',
+    'Purple',
+    'Pink',
+    'Yellow',
+    'Starlight',
+    'Midnight'
+  ],
+  
+  // Mac Colors
+  Mac: [
+    'Silver',
+    'Space Gray',
+    'Gold',
+    'Rose Gold',
+    'Starlight',
+    'Midnight',
+    'Space Black'
+  ],
+  
+  // Apple Watch Colors
+  AppleWatch: [
+    'Silver',
+    'Gold',
+    'Space Gray',
+    'Space Black',
+    'Rose Gold',
+    'Blue',
+    'Green',
+    'Red',
+    'Purple',
+    'Pink',
+    'Starlight',
+    'Midnight',
+    'Natural Titanium',
+    'Blue Titanium',
+    'White Titanium',
+    'Black Titanium'
+  ],
+  
+  // AirPods Colors
+  AirPods: [
+    'White',
+    'Silver',
+    'Space Gray',
+    'Gold',
+    'Rose Gold',
+    'Green',
+    'Blue',
+    'Purple',
+    'Pink',
+    'Yellow',
+    'Orange',
+    'Red'
+  ],
+  
+  // General Apple Colors (for other devices)
+  General: [
+    'Silver',
+    'Space Gray',
+    'Gold',
+    'Rose Gold',
+    'White',
+    'Black',
+    'Blue',
+    'Green',
+    'Purple',
+    'Pink',
+    'Red',
+    'Yellow',
+    'Orange',
+    'Starlight',
+    'Midnight'
+  ]
+};
+
+// Function to get colors based on device model
+export const getColorsForDevice = (model: string): string[] => {
+  if (model.toLowerCase().includes('iphone')) {
+    return APPLE_DEVICE_COLORS.iPhone;
+  } else if (model.toLowerCase().includes('ipad')) {
+    return APPLE_DEVICE_COLORS.iPad;
+  } else if (model.toLowerCase().includes('mac') || model.toLowerCase().includes('imac')) {
+    return APPLE_DEVICE_COLORS.Mac;
+  } else if (model.toLowerCase().includes('watch')) {
+    return APPLE_DEVICE_COLORS.AppleWatch;
+  } else if (model.toLowerCase().includes('airpods')) {
+    return APPLE_DEVICE_COLORS.AirPods;
+  } else {
+    return APPLE_DEVICE_COLORS.General;
+  }
 };
 
 /*

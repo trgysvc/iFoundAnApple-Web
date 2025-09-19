@@ -5,6 +5,7 @@ import { Device, DeviceStatus, UserRole } from "../types";
 import Container from "../components/ui/Container";
 import Button from "../components/ui/Button";
 import NotFoundPage from "./NotFoundPage";
+import { getSecureInvoiceUrl } from "../utils/fileUpload";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -49,6 +50,8 @@ const DeviceDetailPage: React.FC = () => {
   const location = useLocation();
   const [device, setDevice] = useState<Device | undefined | null>(undefined);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [secureInvoiceUrl, setSecureInvoiceUrl] = useState<string | null>(null);
+  const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -79,6 +82,19 @@ const DeviceDetailPage: React.FC = () => {
         const foundDevice = await getDeviceById(deviceId);
         console.log("DeviceDetailPage: Device found:", foundDevice);
         setDevice(foundDevice);
+        
+        // Generate secure URL for invoice if it exists
+        if (foundDevice?.invoice_url) {
+          setIsLoadingInvoice(true);
+          try {
+            const secureUrl = await getSecureInvoiceUrl(foundDevice.invoice_url);
+            setSecureInvoiceUrl(secureUrl);
+          } catch (error) {
+            console.error("Failed to generate secure invoice URL:", error);
+          } finally {
+            setIsLoadingInvoice(false);
+          }
+        }
       }
     };
 
@@ -380,19 +396,31 @@ const DeviceDetailPage: React.FC = () => {
             title={isOriginalOwnerPerspective ? t("Lost") : t("Reported")}
             description="The device is registered in the system. We will notify you when a match is found."
           >
-            {isOriginalOwnerPerspective && device.invoiceDataUrl && (
+            {isOriginalOwnerPerspective && (device.invoice_url || device.invoiceDataUrl) && (
               <div className="border-t border-brand-gray-200 mt-6 pt-6 w-full max-w-sm">
-                <a
-                  href={device.invoiceDataUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full"
-                >
-                  <Button variant="secondary" className="w-full">
-                    <Paperclip className="w-4 h-4 mr-2" />
-                    {t("viewInvoice")}
+                {isLoadingInvoice ? (
+                  <Button variant="secondary" className="w-full" disabled>
+                    <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                    Loading invoice...
                   </Button>
-                </a>
+                ) : secureInvoiceUrl || device.invoiceDataUrl ? (
+                  <a
+                    href={secureInvoiceUrl || device.invoiceDataUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full"
+                  >
+                    <Button variant="secondary" className="w-full">
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      {t("viewInvoice")}
+                    </Button>
+                  </a>
+                ) : (
+                  <Button variant="secondary" className="w-full" disabled>
+                    <Paperclip className="w-4 h-4 mr-2" />
+                    Invoice unavailable
+                  </Button>
+                )}
               </div>
             )}
           </StatusView>

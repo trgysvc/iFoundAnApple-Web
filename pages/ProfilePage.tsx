@@ -5,6 +5,7 @@ import Container from "../components/ui/Container";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { ArrowLeft, Save, User, CreditCard, Shield, Phone, MapPin, Hash } from "lucide-react";
+import { validators, sanitizers, secureLogger } from "../utils/security";
 
 const ProfilePage: React.FC = () => {
   const { currentUser, t, updateUserProfile } = useAppContext();
@@ -25,14 +26,10 @@ const ProfilePage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    console.log("ProfilePage: useEffect triggered, currentUser:", currentUser);
+    secureLogger.info("ProfilePage: useEffect triggered");
 
     if (currentUser) {
-      console.log("ProfilePage: Setting profile data:", {
-        fullName: currentUser.fullName,
-        email: currentUser.email,
-        bankInfo: currentUser.bankInfo,
-      });
+      secureLogger.userAction("Profile page loaded", currentUser.id);
 
       setFullName(currentUser.fullName || "");
       setEmail(currentUser.email || "");
@@ -43,10 +40,10 @@ const ProfilePage: React.FC = () => {
 
       // Profile data is loaded - we have the user data, so stop loading
       // Note: bankInfo might be undefined if user hasn't set it yet, which is fine
-      console.log("ProfilePage: Stopping loading state");
+      secureLogger.info("ProfilePage: Stopping loading state");
       setIsLoadingProfile(false);
     } else {
-      console.log("ProfilePage: No currentUser, staying in loading state");
+      secureLogger.info("ProfilePage: No currentUser, staying in loading state");
     }
   }, [currentUser]);
 
@@ -54,7 +51,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isLoadingProfile) {
-        console.warn("Profile loading timeout - forcing stop");
+        secureLogger.warn("Profile loading timeout - forcing stop");
         setIsLoadingProfile(false);
       }
     }, 5000); // 5 second timeout
@@ -68,13 +65,61 @@ const ProfilePage: React.FC = () => {
     setMessage(null);
 
     try {
+      // Input validation and sanitization
+      const sanitizedFullName = sanitizers.text(fullName);
+      const sanitizedTcKimlik = tcKimlikNo ? sanitizers.tcKimlik(tcKimlikNo) : "";
+      const sanitizedPhone = phoneNumber ? sanitizers.phoneNumber(phoneNumber) : "";
+      const sanitizedAddress = address ? sanitizers.text(address) : "";
+      const sanitizedIban = iban ? sanitizers.iban(iban) : "";
+
+      // Validate required fields
+      if (!sanitizedFullName.trim()) {
+        setMessage({
+          type: "error",
+          text: "Full name is required.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate TC Kimlik if provided
+      if (sanitizedTcKimlik && !validators.tcKimlik(sanitizedTcKimlik)) {
+        setMessage({
+          type: "error",
+          text: "Please enter a valid TC Identity Number.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate phone number if provided
+      if (sanitizedPhone && !validators.phoneNumber(sanitizedPhone)) {
+        setMessage({
+          type: "error",
+          text: "Please enter a valid Turkish phone number.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate IBAN if provided
+      if (sanitizedIban && !validators.iban(sanitizedIban)) {
+        setMessage({
+          type: "error",
+          text: "Please enter a valid Turkish IBAN (TR + 24 digits).",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       if (updateUserProfile) {
+        secureLogger.userAction("Profile update attempt", currentUser?.id);
         const success = await updateUserProfile({
-          fullName,
-          tcKimlikNo: tcKimlikNo || undefined,
-          phoneNumber: phoneNumber || undefined,
-          address: address || undefined,
-          iban: iban || undefined,
+          fullName: sanitizedFullName,
+          tcKimlikNo: sanitizedTcKimlik || undefined,
+          phoneNumber: sanitizedPhone || undefined,
+          address: sanitizedAddress || undefined,
+          iban: sanitizedIban || undefined,
         });
 
         if (success) {
