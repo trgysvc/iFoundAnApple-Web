@@ -28,6 +28,8 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // New state for user menu
+  const userMenuRef = useRef<HTMLDivElement>(null); // New ref for user menu
 
   const handleLogout = async () => {
     try {
@@ -88,6 +90,21 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const timeSince = (date: string) => {
     const seconds = Math.floor(
       (new Date().getTime() - new Date(date).getTime()) / 1000
@@ -126,22 +143,6 @@ const Header: React.FC = () => {
               >
                 {t("home")}
               </NavLink>
-              {currentUser && (
-                <>
-                  <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) =>
-                      `text-sm font-medium ${
-                        isActive
-                          ? "text-brand-blue"
-                          : "text-brand-gray-500 hover:text-brand-blue"
-                      }`
-                    }
-                  >
-                    {t("dashboard")}
-                  </NavLink>
-                </>
-              )}
               {currentUser && currentUser.role === UserRole.ADMIN && (
                 <NavLink
                   to="/admin"
@@ -248,49 +249,112 @@ const Header: React.FC = () => {
                 )}
               </div>
             )}
-            <div className="relative">
-              <select
-                onChange={(e) =>
-                  setLanguage(
-                    e.target.value as "en" | "tr" | "fr" | "ja" | "es"
-                  )
-                }
-                value={language}
-                className="pl-8 pr-4 py-2 text-sm bg-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue appearance-none"
-              >
-                <option value="en">English</option>
-                <option value="tr">Türkçe</option>
-                <option value="fr">Français</option>
-                <option value="ja">日本語</option>
-                <option value="es">Español</option>
-              </select>
-              <Globe className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray-400 pointer-events-none" />
-            </div>
+            {/* User Profile Menu */}
             {currentUser ? (
-              <>
-                <div className="flex items-center space-x-2">
-                  <div className="flex items-center space-x-2">
-                    <UserCircle className="w-6 h-6 text-brand-gray-500" />
-                    <span className="text-sm font-medium text-brand-gray-600 hidden sm:block">
-                      {currentUser.fullName}
-                    </span>
+              <div className="relative" ref={userMenuRef}>
+                <Button
+                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                  variant="secondary"
+                  size="sm"
+                  className="hidden sm:inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-brand-gray-200 hover:bg-white hover:border-brand-blue hover:shadow-md transition-all duration-200"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-brand-blue to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {currentUser.fullName.charAt(0).toUpperCase()}
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={() => navigate("/profile")}
-                    variant="secondary"
-                    size="sm"
-                    className="hidden sm:inline-flex"
-                  >
-                    Profile
-                  </Button>
-                  <Button onClick={handleLogout} variant="secondary" size="sm">
-                    <LogOut className="w-4 h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">{t("logout")}</span>
-                  </Button>
-                </div>
-              </>
+                  <span className="hidden sm:inline font-medium text-brand-gray-700">{currentUser.fullName}</span>
+                </Button>
+                
+                {/* Mobile button */}
+                <button
+                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                  className="sm:hidden p-2 rounded-full hover:bg-brand-gray-200 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-brand-blue to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {currentUser.fullName.charAt(0).toUpperCase()}
+                  </div>
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-brand-gray-200 overflow-hidden z-50">
+                    {/* User Info Header */}
+                    <div className="bg-gradient-to-r from-brand-blue to-blue-600 px-4 py-3 text-white">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-semibold">
+                          {currentUser.fullName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{currentUser.fullName}</p>
+                          <p className="text-blue-100 text-xs">{currentUser.email}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      <NavLink
+                        to="/profile"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-4 py-3 text-sm text-brand-gray-700 hover:bg-brand-blue-light hover:text-brand-blue transition-colors duration-200 group"
+                      >
+                        <UserCircle className="w-5 h-5 mr-3 text-brand-gray-400 group-hover:text-brand-blue transition-colors" />
+                        <span className="font-medium">{t("profile")}</span>
+                      </NavLink>
+                      
+                      <NavLink
+                        to="/dashboard"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-4 py-3 text-sm text-brand-gray-700 hover:bg-brand-blue-light hover:text-brand-blue transition-colors duration-200 group"
+                      >
+                        <svg className="w-5 h-5 mr-3 text-brand-gray-400 group-hover:text-brand-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        <span className="font-medium">{t("dashboard")}</span>
+                      </NavLink>
+
+                      {/* Language Selector */}
+                      <div className="px-4 py-3 border-t border-brand-gray-100">
+                        <div className="flex items-center mb-2">
+                          <Globe className="w-5 h-5 mr-3 text-brand-gray-400" />
+                          <span className="text-sm font-medium text-brand-gray-700">{t("language")}</span>
+                        </div>
+                        <div className="relative">
+                          <select
+                            onChange={(e) =>
+                              setLanguage(
+                                e.target.value as "en" | "tr" | "fr" | "ja" | "es"
+                              )
+                            }
+                            value={language}
+                            className="w-full py-2 pl-3 pr-8 text-sm bg-brand-gray-100 border border-brand-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent appearance-none cursor-pointer hover:bg-brand-gray-200 transition-colors"
+                          >
+                            <option value="en">🇺🇸 English</option>
+                            <option value="tr">🇹🇷 Türkçe</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="ja">🇯🇵 日本語</option>
+                            <option value="es">🇪🇸 Español</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg className="w-4 h-4 text-brand-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t border-brand-gray-100">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 group"
+                        >
+                          <LogOut className="w-5 h-5 mr-3 text-red-500 group-hover:text-red-600 transition-colors" />
+                          <span className="font-medium">{t("logout")}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="space-x-2">
                 <Button
