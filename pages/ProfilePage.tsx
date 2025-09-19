@@ -1,0 +1,261 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../contexts/AppContext";
+import Container from "../components/ui/Container";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import { ArrowLeft, Save, User, CreditCard, Shield } from "lucide-react";
+
+const ProfilePage: React.FC = () => {
+  const { currentUser, t, updateUserProfile } = useAppContext();
+  const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bankInfo, setBankInfo] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  useEffect(() => {
+    console.log("ProfilePage: useEffect triggered, currentUser:", currentUser);
+
+    if (currentUser) {
+      console.log("ProfilePage: Setting profile data:", {
+        fullName: currentUser.fullName,
+        email: currentUser.email,
+        bankInfo: currentUser.bankInfo,
+      });
+
+      setFullName(currentUser.fullName || "");
+      setEmail(currentUser.email || "");
+      setBankInfo(currentUser.bankInfo || "");
+
+      // Profile data is loaded - we have the user data, so stop loading
+      // Note: bankInfo might be undefined if user hasn't set it yet, which is fine
+      console.log("ProfilePage: Stopping loading state");
+      setIsLoadingProfile(false);
+    } else {
+      console.log("ProfilePage: No currentUser, staying in loading state");
+    }
+  }, [currentUser]);
+
+  // Fallback timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoadingProfile) {
+        console.warn("Profile loading timeout - forcing stop");
+        setIsLoadingProfile(false);
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [isLoadingProfile]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage(null);
+
+    try {
+      if (updateUserProfile) {
+        const success = await updateUserProfile({
+          fullName,
+          bankInfo: bankInfo || undefined,
+        });
+
+        if (success) {
+          setMessage({
+            type: "success",
+            text: "Profile updated successfully!",
+          });
+        } else {
+          setMessage({
+            type: "error",
+            text: "Failed to update profile. Please try again.",
+          });
+        }
+      }
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: "An error occurred while updating your profile.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <Container>
+        <div className="text-center py-16">
+          <h2 className="text-2xl font-bold text-brand-gray-600 mb-4">
+            Authentication Required
+          </h2>
+          <p className="text-brand-gray-500 mb-6">
+            You need to be logged in to view your profile.
+          </p>
+          <Button onClick={() => navigate("/login")}>Go to Login</Button>
+        </div>
+      </Container>
+    );
+  }
+
+  // Show loading state while profile data is being fetched
+  if (isLoadingProfile) {
+    return (
+      <Container>
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto mb-4"></div>
+          <p className="text-brand-gray-600">Loading profile data...</p>
+        </div>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <div className="mb-6">
+        <Button
+          onClick={() => navigate("/dashboard")}
+          variant="secondary"
+          className="inline-flex items-center text-sm font-medium text-brand-blue hover:underline"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Dashboard
+        </Button>
+      </div>
+
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-brand-blue to-brand-blue-dark px-6 py-8 text-white">
+            <div className="flex items-center space-x-4">
+              <div className="bg-white/20 p-3 rounded-full">
+                <User className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">Profile Settings</h1>
+                <p className="text-blue-100 mt-1">
+                  Manage your personal information
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="p-6">
+            {message && (
+              <div
+                className={`mb-6 p-4 rounded-lg ${
+                  message.type === "success"
+                    ? "bg-green-100 text-green-700 border border-green-300"
+                    : "bg-red-100 text-red-700 border border-red-300"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Personal Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <User className="w-5 h-5 text-brand-blue" />
+                  <h3 className="text-lg font-semibold text-brand-gray-700">
+                    Personal Information
+                  </h3>
+                </div>
+
+                <Input
+                  label="Full Name"
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+
+                <Input
+                  label="Email"
+                  id="email"
+                  type="email"
+                  value={email}
+                  disabled
+                />
+                <p className="text-sm text-brand-gray-500 mt-1">
+                  Email cannot be changed. Contact support if you need to update
+                  your email address.
+                </p>
+              </div>
+
+              {/* Bank Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <CreditCard className="w-5 h-5 text-brand-blue" />
+                  <h3 className="text-lg font-semibold text-brand-gray-700">
+                    Bank Account Information
+                  </h3>
+                  <span className="text-sm text-brand-gray-500">
+                    (Optional - for reward payouts)
+                  </span>
+                </div>
+
+                <Input
+                  label="Bank Account Details"
+                  id="bankInfo"
+                  type="text"
+                  value={bankInfo}
+                  onChange={(e) => setBankInfo(e.target.value)}
+                  placeholder="e.g., IBAN, Account Number, Bank Name"
+                />
+                <p className="text-sm text-brand-gray-500 mt-1">
+                  This information is used for reward payouts when you find and
+                  return devices. It's stored securely and only accessible to
+                  you.
+                </p>
+              </div>
+
+              {/* Security Note */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Shield className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-blue-800">
+                      Security & Privacy
+                    </h4>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Your personal information is stored securely and is only
+                      used for account management and reward payouts. We never
+                      share your data with third parties without your explicit
+                      consent.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  <Save className="w-5 h-5 mr-2" />
+                  {isLoading ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </Container>
+  );
+};
+
+export default ProfilePage;
