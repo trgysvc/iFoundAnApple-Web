@@ -8,7 +8,7 @@ import Button from "../components/ui/Button";
 import Select from "../components/ui/Select";
 
 const RegisterPage: React.FC = () => {
-  const { register, t, currentUser } = useAppContext();
+  const { register, t, currentUser, signInWithOAuth } = useAppContext();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,6 +60,12 @@ const RegisterPage: React.FC = () => {
     } else {
       setError(t("userAlreadyExists")); // Use translation for consistency
     }
+  };
+
+  const handleSocialLogin = async (provider: "google" | "apple") => {
+    setError("");
+    await signInWithOAuth(provider);
+    // Supabase handles the redirect, so no local navigation needed here
   };
 
   const termsText = t("agreeToTerms", {
@@ -134,6 +140,41 @@ const RegisterPage: React.FC = () => {
             </Button>
           </div>
         </form>
+
+        <div className="relative my-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-brand-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-brand-gray-500">
+              {t("orContinueWith")}
+            </span>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <Button
+            onClick={() => handleSocialLogin("google")}
+            className="w-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+            size="lg"
+          >
+            <img
+              src="/icons/google.svg"
+              alt="Google"
+              className="h-5 w-5 mr-3"
+            />
+            {t("loginWithGoogle")}
+          </Button>
+          <Button
+            onClick={() => handleSocialLogin("apple")}
+            className="w-full bg-gray-800 hover:bg-gray-900 text-white flex items-center justify-center"
+            size="lg"
+          >
+            <img src="/icons/apple.svg" alt="Apple" className="h-5 w-5 mr-3" />
+            {t("loginWithApple")}
+          </Button>
+        </div>
+
         <p className="mt-6 text-center text-sm text-brand-gray-500">
           {t("alreadyHaveAccount")}{" "}
           <Link
