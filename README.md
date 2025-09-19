@@ -37,28 +37,33 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 ## 🛠 Teknoloji Yığını
 
 ### Frontend
-- **React 19** - Modern React hooks ve özellikleri
-- **TypeScript** - Tip güvenliği ve geliştirici deneyimi
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Router DOM** - Client-side routing
-- **Lucide React** - Modern ikonlar
-- **Vite** - Hızlı build tool
+- **React 19.1.0** - Modern React hooks ve özellikleri
+- **TypeScript 5.7.2** - Tip güvenliği ve geliştirici deneyimi
+- **Tailwind CSS** - Utility-first CSS framework (CDN)
+- **React Router DOM 7.6.3** - Client-side routing
+- **Lucide React 0.525.0** - Modern ikonlar
+- **Vite 6.2.0** - Hızlı build tool ve dev server
 
 ### Backend & Database
-- **Supabase** - Backend-as-a-Service
-  - PostgreSQL veritabanı
+- **Supabase 2.55.0** - Backend-as-a-Service
+  - PostgreSQL veritabanı (cloud-hosted)
   - Real-time subscriptions
-  - Authentication
+  - Authentication & Authorization
   - Row Level Security (RLS)
+  - Edge Functions (serverless)
 
 ### AI & APIs
-- **Google Gemini API** - AI destekli öneriler
-- **Supabase Edge Functions** - Serverless functions
+- **Google Gemini API** - AI destekli öneriler (@google/genai latest)
+  - Gemini 2.5 Flash model
+  - Structured JSON responses
+  - Akıllı ödül hesaplama
+  - Cihaz açıklaması önerileri
 
-### Development Tools
-- **ESLint & Prettier** - Kod kalitesi
-- **TypeScript Strict Mode** - Tip güvenliği
-- **Git Hooks** - Pre-commit kontrolleri
+### Development & Build Tools
+- **Vite** - Module bundler ve dev server
+- **TypeScript** - Static type checking
+- **ES Modules** - Modern JavaScript modules
+- **Environment Variables** - Güvenli API key yönetimi
 
 ---
 
@@ -87,11 +92,17 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 
 3. **Environment değişkenlerini ayarlayın:**
    ```bash
-   # .env.local dosyası oluşturun
-   VITE_SUPABASE_URL=your_supabase_url
+   # .env.local dosyası oluşturun (proje root dizininde)
+   VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GEMINI_API_KEY=your_gemini_api_key
+   GEMINI_API_KEY=your_google_gemini_api_key
    ```
+   
+   **Not**: 
+   - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
+   - Anon key, Supabase dashboard'tan alınır (public key)
+   - Gemini API key, Google AI Studio'dan alınır
+   - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
 
 4. **Geliştirme sunucusunu başlatın:**
    ```bash
@@ -153,10 +164,17 @@ iFoundAnApple-Web/
 
 ### Supabase Tabloları
 
-#### `users` (Kullanıcılar)
+#### `auth.users` (Kimlik Doğrulama - Supabase Auth)
 ```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-- Supabase Auth tarafından otomatik yönetilen tablo
+-- Kullanıcı kimlik doğrulama bilgileri burada saklanır
+-- Email, password hash, metadata vb.
+```
+
+#### `public.users` (Kullanıcı Profilleri)
+```sql
+CREATE TABLE public.users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'user',
@@ -165,49 +183,128 @@ CREATE TABLE users (
 );
 ```
 
-#### `userProfile` (Kullanıcı Profilleri)
+#### `public.userProfile` (Genişletilmiş Kullanıcı Bilgileri)
 ```sql
-CREATE TABLE userProfile (
+CREATE TABLE public.userProfile (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  tc_kimlik_no VARCHAR(11),
-  phone_number VARCHAR(20),
-  address TEXT,
-  iban VARCHAR(34),
-  bank_info TEXT, -- Legacy field
-  preferences JSONB DEFAULT '{}'::jsonb,
+  user_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  tc_kimlik_no VARCHAR(11), -- TC Kimlik Numarası (Türkiye)
+  phone_number VARCHAR(20), -- Telefon numarası
+  address TEXT, -- Adres bilgisi
+  iban VARCHAR(34), -- Banka IBAN numarası
+  bank_info TEXT, -- Legacy field (geriye uyumluluk)
+  city VARCHAR(100), -- Şehir bilgisi
+  country VARCHAR(100), -- Ülke bilgisi
+  postal_code VARCHAR(20), -- Posta kodu
+  date_of_birth DATE, -- Doğum tarihi
+  emergency_contact TEXT, -- Acil durum iletişim
+  preferences JSONB DEFAULT '{}'::jsonb, -- Kullanıcı tercihleri
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- İndeksler
+CREATE INDEX idx_userprofile_user_id ON public.userProfile(user_id);
+CREATE INDEX idx_userprofile_updated_at ON public.userProfile(updated_at);
+CREATE INDEX idx_userprofile_iban ON public.userProfile(iban);
+
+-- Trigger for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_userprofile_updated_at
+  BEFORE UPDATE ON public.userProfile
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 ```
 
-#### `devices` (Cihazlar)
+#### `public.devices` (Cihazlar)
 ```sql
-CREATE TABLE devices (
+CREATE TABLE public.devices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   userId UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  model TEXT NOT NULL,
-  serialNumber TEXT NOT NULL,
-  color TEXT NOT NULL,
-  description TEXT,
-  status TEXT NOT NULL,
-  rewardAmount NUMERIC,
-  exchangeConfirmedBy TEXT[],
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  model TEXT NOT NULL, -- Cihaz modeli (iPhone 15 Pro, iPad Air vb.)
+  serialNumber TEXT NOT NULL, -- Seri numarası (eşleştirme için kritik)
+  color TEXT NOT NULL, -- Cihaz rengi
+  description TEXT, -- Ek açıklamalar
+  status TEXT NOT NULL CHECK (status IN ('lost', 'reported', 'matched', 'payment_pending', 'payment_complete', 'exchange_pending', 'completed')),
+  rewardAmount NUMERIC(10,2), -- Ödül miktarı (TL)
+  marketValue NUMERIC(10,2), -- Tahmini piyasa değeri
+  invoice_url TEXT, -- Fatura/belge URL'i
+  exchangeConfirmedBy TEXT[] DEFAULT '{}', -- Takası onaylayan taraflar
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- İndeksler
+CREATE INDEX idx_devices_user_id ON public.devices(userId);
+CREATE INDEX idx_devices_serial_number ON public.devices(serialNumber);
+CREATE INDEX idx_devices_status ON public.devices(status);
+CREATE INDEX idx_devices_model ON public.devices(model);
+CREATE INDEX idx_devices_created_at ON public.devices(created_at);
+
+-- Eşleştirme için composite index
+CREATE INDEX idx_devices_matching ON public.devices(model, serialNumber, status);
 ```
 
-#### `notifications` (Bildirimler)
+#### `public.notifications` (Bildirimler)
 ```sql
-CREATE TABLE notifications (
+CREATE TABLE public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  message_key TEXT NOT NULL,
-  link TEXT NOT NULL,
-  is_read BOOLEAN DEFAULT FALSE,
-  replacements JSONB,
+  message_key TEXT NOT NULL, -- Çeviri anahtarı (notifications.matchFound vb.)
+  link TEXT NOT NULL, -- Yönlendirme URL'i
+  is_read BOOLEAN DEFAULT FALSE, -- Okundu durumu
+  replacements JSONB, -- Dinamik değerler ({model: "iPhone 15"} vb.)
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- İndeksler
+CREATE INDEX idx_notifications_user_id ON public.notifications(user_id);
+CREATE INDEX idx_notifications_is_read ON public.notifications(is_read);
+CREATE INDEX idx_notifications_created_at ON public.notifications(created_at);
+
+-- Kullanıcının okunmamış bildirimleri için composite index
+CREATE INDEX idx_notifications_user_unread ON public.notifications(user_id, is_read, created_at) 
+WHERE is_read = FALSE;
+```
+
+### Row Level Security (RLS) Politikaları
+```sql
+-- userProfile tablosu için RLS
+ALTER TABLE public.userProfile ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own profile" ON public.userProfile
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own profile" ON public.userProfile
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own profile" ON public.userProfile
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- devices tablosu için RLS
+ALTER TABLE public.devices ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own devices" ON public.devices
+  FOR SELECT USING (auth.uid() = userId);
+
+CREATE POLICY "Users can insert own devices" ON public.devices
+  FOR INSERT WITH CHECK (auth.uid() = userId);
+
+-- notifications tablosu için RLS
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own notifications" ON public.notifications
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own notifications" ON public.notifications
+  FOR UPDATE USING (auth.uid() = user_id);
 ```
 
 ---
@@ -311,17 +408,41 @@ CREATE INDEX idx_userprofile_iban ON userProfile(iban);
 - **GitHub Pages**
 - **AWS S3 + CloudFront**
 
+### Build ve Deployment
+```bash
+# Production build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
 ### Environment Variables
 ```bash
-# Production
-VITE_SUPABASE_URL=your_production_supabase_url
+# Production (.env.production)
+VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_production_anon_key
-GEMINI_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=your_google_gemini_api_key
 
-# Development
-VITE_SUPABASE_URL=your_dev_supabase_url
-VITE_SUPABASE_ANON_KEY=your_dev_anon_key
-GEMINI_API_KEY=your_gemini_api_key
+# Development (.env.local)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_development_anon_key
+GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+### Vite Konfigürasyonu
+Proje, Vite build tool kullanır ve environment değişkenlerini şu şekilde yönetir:
+```typescript
+// vite.config.ts
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '');
+  return {
+    define: {
+      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+    }
+  };
+});
 ```
 
 ---
@@ -378,6 +499,38 @@ Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
 
 ---
 
+## 🏗️ Sistem Mimarisi
+
+### Frontend Mimarisi
+```
+React App (SPA)
+├── 🎨 UI Layer (Tailwind CSS)
+├── 🔄 State Management (React Context)
+├── 🛣️ Routing (React Router DOM)
+├── 🌐 API Calls (Supabase Client)
+└── 🤖 AI Integration (Google Gemini)
+```
+
+### Backend Mimarisi
+```
+Supabase Backend-as-a-Service
+├── 🗄️ PostgreSQL Database (Cloud)
+├── 🔐 Authentication (JWT + OAuth)
+├── 📡 Real-time Subscriptions
+├── 🛡️ Row Level Security (RLS)
+├── ⚡ Edge Functions (Serverless)
+└── 📁 Storage (Dosya yükleme)
+```
+
+### Veri Akışı
+1. **Kullanıcı Girişi** → Supabase Auth → JWT Token
+2. **Cihaz Ekleme** → PostgreSQL → Real-time Notifications
+3. **AI Önerileri** → Google Gemini → Structured Response
+4. **Eşleştirme** → Database Query → Bildirim Sistemi
+5. **Profil Güncelleme** → RLS Kontrolü → Database Update
+
+---
+
 ## 🔄 Son Güncellemeler (2025)
 
 ### v2.1.0 - Çeviri ve Profil Güncellemeleri
@@ -388,6 +541,7 @@ Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
 - ✅ **Form Validasyonları**: Akıllı form kontrolleri ve hata mesajları
 - ✅ **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
 - ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
+- ✅ **Gerçek Sistem Dokümantasyonu**: README güncel sistemi yansıtacak şekilde güncellendi
 
 ### Yaklaşan Özellikler
 - 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
