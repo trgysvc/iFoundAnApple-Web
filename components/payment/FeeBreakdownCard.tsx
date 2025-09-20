@@ -112,7 +112,7 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
                 <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">Hizmet Bedeli</p>
-                  <p className="text-xs text-gray-500">Platform komisyonu (%30)</p>
+                  <p className="text-xs text-gray-500">Platform komisyonu (%20)</p>
                 </div>
               </div>
               <span className="text-sm font-semibold text-purple-600">
