@@ -140,14 +140,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(
-        "Auth state change:",
-        event,
-        session ? "Session exists" : "No session"
+      secureLogger.info(
+        `Auth state change: ${event}`,
+        session ? { hasSession: true } : { hasSession: false }
       );
 
       if (session) {
-        console.log("Setting current user from session:", session.user.id);
+        secureLogger.userAction("Setting current user from session", session.user.id);
 
         // Set initial user data from session
         const initialUser = {
@@ -162,12 +161,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         // Fetch additional profile data from userProfile table
         fetchUserProfile(session.user.id)
           .then((profileData) => {
-            console.log(
-              "Auth state change: Profile fetch result:",
-              profileData
-            );
+            secureLogger.info("Profile fetch completed", { hasData: !!profileData });
             if (profileData) {
-              console.log("Profile data loaded:", profileData);
+              secureLogger.info("Profile data loaded successfully");
               setCurrentUser((prev) =>
                 prev
                   ? {
@@ -181,14 +177,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                   : null
               );
             } else {
-              console.log("No profile data found - user may be new");
+              secureLogger.info("No profile data found - user may be new");
             }
           })
           .catch((error) => {
-            console.error("Error fetching profile data:", error);
+            secureLogger.error("Error fetching profile data", error);
           });
       } else {
-        console.log("Clearing current user - no session");
+        secureLogger.info("Clearing current user - no session");
         setCurrentUser(null);
         setDevices([]);
         setNotifications([]);

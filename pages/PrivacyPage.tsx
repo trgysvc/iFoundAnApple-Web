@@ -2,6 +2,7 @@ import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import Container from '../components/ui/Container';
 import { sanitizers } from '../utils/security';
+import DOMPurify from 'dompurify';
 
 const PrivacyPage: React.FC = () => {
     const { t } = useAppContext();
@@ -13,7 +14,13 @@ const PrivacyPage: React.FC = () => {
                 <h1 className="text-3xl font-bold text-center text-brand-gray-600 mb-8">{t('privacyTitle')}</h1>
                 <div 
                     className="prose max-w-none text-brand-gray-600"
-                    dangerouslySetInnerHTML={{ __html: sanitizers.html(content) }}
+                    dangerouslySetInnerHTML={{ 
+                        __html: DOMPurify.sanitize(content, {
+                            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'div'],
+                            ALLOWED_ATTR: ['href', 'class', 'target', 'mailto'],
+                            ALLOW_DATA_ATTR: false
+                        })
+                    }}
                 />
             </div>
         </Container>

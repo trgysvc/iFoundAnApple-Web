@@ -83,17 +83,28 @@ export const validators = {
  */
 export const sanitizers = {
   text: (input: string): string => {
-    return input.trim().replace(/[<>]/g, '');
+    return input.trim().replace(/[<>"'&]/g, '');
   },
   
   html: (input: string): string => {
-    // Basic HTML sanitization - in production, use DOMPurify
-    return input
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
+    // Use DOMPurify for secure HTML sanitization
+    if (typeof window !== 'undefined') {
+      // Client-side: use DOMPurify
+      try {
+        const DOMPurify = require('dompurify');
+        return DOMPurify.sanitize(input, {
+          ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a'],
+          ALLOWED_ATTR: ['href', 'class', 'target'],
+          ALLOW_DATA_ATTR: false
+        });
+      } catch (error) {
+        console.warn('DOMPurify not available, falling back to basic sanitization');
+        return basicHtmlSanitize(input);
+      }
+    } else {
+      // Server-side: basic sanitization
+      return basicHtmlSanitize(input);
+    }
   },
   
   tcKimlik: (input: string): string => {
@@ -193,6 +204,18 @@ export const securityHeaders = {
 /**
  * Secure configuration getter
  */
+/**
+ * Basic HTML sanitization fallback
+ */
+const basicHtmlSanitize = (input: string): string => {
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
 export const getSecureConfig = () => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;

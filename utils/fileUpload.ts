@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import { getSecureConfig } from './security';
 
-const supabaseUrl = "https://zokkxkyhabihxjskdcfg.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva2t4a3loYWJpaHhqc2tkY2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MTQyMDMsImV4cCI6MjA3MTE5MDIwM30.Dvnl7lUwezVDGY9I6IIgfoJXWtaw1Un_idOxTlI0xwQ";
+// Get secure configuration from environment variables
+const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -64,7 +64,10 @@ export const uploadFileToStorage = async (
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileName = `${folder}/${userId}/${timestamp}_${randomString}.${fileExtension}`;
 
-    console.log("uploadFileToStorage: Uploading file:", fileName);
+    // Secure logging - don't log full file paths in production
+    if (import.meta.env.DEV) {
+      console.log("uploadFileToStorage: Uploading file:", fileName);
+    }
 
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
@@ -75,20 +78,24 @@ export const uploadFileToStorage = async (
       });
 
     if (error) {
-      console.error("uploadFileToStorage: Upload error:", error);
+      console.error("uploadFileToStorage: Upload error:", error.message);
       return {
         success: false,
         error: `Upload failed: ${error.message}`
       };
     }
 
-    console.log("uploadFileToStorage: File uploaded successfully:", data);
+    if (import.meta.env.DEV) {
+      console.log("uploadFileToStorage: File uploaded successfully");
+    }
 
     // For private buckets, we'll store the file path instead of public URL
     // The actual signed URL will be generated when needed
     const filePath = fileName;
 
-    console.log("uploadFileToStorage: File path stored:", filePath);
+    if (import.meta.env.DEV) {
+      console.log("uploadFileToStorage: File path stored (dev only)");
+    }
 
     return {
       success: true,
