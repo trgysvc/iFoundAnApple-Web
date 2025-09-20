@@ -537,12 +537,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     }
 
+    // Map camelCase to snake_case for database
     const newDevicePayload = {
-      ...deviceData,
-      userId: currentUser.id,
+      model: deviceData.model,
+      serialnumber: deviceData.serialNumber, // camelCase to snake_case
+      color: deviceData.color,
+      description: deviceData.description,
+      rewardamount: deviceData.rewardAmount, // camelCase to snake_case
+      marketvalue: deviceData.marketValue, // camelCase to snake_case
+      invoice_url: deviceData.invoice_url,
+      userid: currentUser.id, // camelCase to snake_case
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
-      exchangeConfirmedBy: [],
-      // Remove updated_at as it doesn't exist in the database
+      exchangeconfirmedby: [], // camelCase to snake_case
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
@@ -558,7 +564,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         console.log("Device added to Supabase:", data);
 
-        const newDevice = (data as Device[])[0];
+        // Map database response to Device interface
+        const dbDevice = data[0];
+        const newDevice: Device = {
+          id: dbDevice.id,
+          userId: dbDevice.userid,
+          model: dbDevice.model,
+          serialNumber: dbDevice.serialnumber,
+          color: dbDevice.color,
+          description: dbDevice.description,
+          status: dbDevice.status,
+          rewardAmount: dbDevice.rewardamount,
+          marketValue: dbDevice.marketvalue,
+          invoice_url: dbDevice.invoice_url,
+          exchangeConfirmedBy: dbDevice.exchangeconfirmedby || []
+        };
         if (!newDevice) {
           console.error(
             "addDevice: Could not retrieve new device data after insertion."
@@ -604,9 +624,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             .from("devices")
             .select("*")
             .eq("status", DeviceStatus.REPORTED)
-            .eq("serialNumber", newDevice.serialNumber)
+            .eq("serialnumber", newDevice.serialNumber) // Use snake_case
             .eq("model", newDevice.model)
-            .neq("userId", newDevice.userId) // Don't match with same user
+            .neq("userid", newDevice.userId) // Use snake_case and don't match with same user
             .maybeSingle();
 
           if (matchError) {
@@ -619,7 +639,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           if (matchedData) {
             matched = true;
             lostDevice = newDevice;
-            foundDevice = matchedData as Device;
+            // Map database response to Device interface
+            foundDevice = {
+              id: matchedData.id,
+              userId: matchedData.userid,
+              model: matchedData.model,
+              serialNumber: matchedData.serialnumber,
+              color: matchedData.color,
+              description: matchedData.description,
+              status: matchedData.status,
+              rewardAmount: matchedData.rewardamount,
+              marketValue: matchedData.marketvalue,
+              invoice_url: matchedData.invoice_url,
+              exchangeConfirmedBy: matchedData.exchangeconfirmedby || []
+            };
           }
         } else if (newDevice.status === DeviceStatus.REPORTED) {
           // New device is REPORTED, look for a LOST one
@@ -654,9 +687,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             .from("devices")
             .select("*")
             .eq("status", DeviceStatus.LOST)
-            .eq("serialNumber", newDevice.serialNumber)
+            .eq("serialnumber", newDevice.serialNumber) // Use snake_case
             .eq("model", newDevice.model)
-            .neq("userId", newDevice.userId) // Don't match with same user
+            .neq("userid", newDevice.userId) // Use snake_case and don't match with same user
             .maybeSingle();
 
           if (matchError) {
@@ -668,7 +701,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (matchedData) {
             matched = true;
-            lostDevice = matchedData as Device;
+            // Map database response to Device interface
+            lostDevice = {
+              id: matchedData.id,
+              userId: matchedData.userid,
+              model: matchedData.model,
+              serialNumber: matchedData.serialnumber,
+              color: matchedData.color,
+              description: matchedData.description,
+              status: matchedData.status,
+              rewardAmount: matchedData.rewardamount,
+              marketValue: matchedData.marketvalue,
+              invoice_url: matchedData.invoice_url,
+              exchangeConfirmedBy: matchedData.exchangeconfirmedby || []
+            };
             foundDevice = newDevice;
           }
         }
@@ -795,7 +841,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const { data, error } = await supabase
       .from("devices")
       .select("*")
-      .eq("userId", userId)
+      .eq("userid", userId) // Use snake_case field name
       .order("created_at", { ascending: false }); // Order by created_at
 
     console.log(
@@ -810,8 +856,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return [];
     }
 
-    const devices = (data as Device[]) || [];
-    console.log("getUserDevices: Returning devices:", devices);
+    // Map database response to Device interface
+    const devices: Device[] = (data || []).map((dbDevice: any) => ({
+      id: dbDevice.id,
+      userId: dbDevice.userid,
+      model: dbDevice.model,
+      serialNumber: dbDevice.serialnumber,
+      color: dbDevice.color,
+      description: dbDevice.description,
+      status: dbDevice.status,
+      rewardAmount: dbDevice.rewardamount,
+      marketValue: dbDevice.marketvalue,
+      invoice_url: dbDevice.invoice_url,
+      exchangeConfirmedBy: dbDevice.exchangeconfirmedby || []
+    }));
+    
+    console.log("getUserDevices: Returning mapped devices:", devices);
     return devices;
   };
 
@@ -834,7 +894,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       return undefined;
     }
-    return (data as Device) || undefined;
+    
+    if (!data) return undefined;
+    
+    // Map database response to Device interface
+    const device: Device = {
+      id: data.id,
+      userId: data.userid,
+      model: data.model,
+      serialNumber: data.serialnumber,
+      color: data.color,
+      description: data.description,
+      status: data.status,
+      rewardAmount: data.rewardamount,
+      marketValue: data.marketvalue,
+      invoice_url: data.invoice_url,
+      exchangeConfirmedBy: data.exchangeconfirmedby || []
+    };
+    
+    return device;
   };
 
   // --- Core Logic: Payment ---
@@ -845,16 +923,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       // First, get the current device from the database to ensure we have the latest data
-      const { data: ownerDevice, error: ownerError } = await supabase
+      const { data: dbOwnerDevice, error: ownerError } = await supabase
         .from("devices")
         .select("*")
         .eq("id", deviceId)
         .single();
 
-      if (ownerError || !ownerDevice) {
+      if (ownerError || !dbOwnerDevice) {
         console.error("Error fetching owner device:", ownerError);
         return;
       }
+
+      // Map database response to Device interface
+      const ownerDevice: Device = {
+        id: dbOwnerDevice.id,
+        userId: dbOwnerDevice.userid,
+        model: dbOwnerDevice.model,
+        serialNumber: dbOwnerDevice.serialnumber,
+        color: dbOwnerDevice.color,
+        description: dbOwnerDevice.description,
+        status: dbOwnerDevice.status,
+        rewardAmount: dbOwnerDevice.rewardamount,
+        marketValue: dbOwnerDevice.marketvalue,
+        invoice_url: dbOwnerDevice.invoice_url,
+        exchangeConfirmedBy: dbOwnerDevice.exchangeconfirmedby || []
+      };
 
       console.log("makePayment: Owner device found:", ownerDevice);
 
@@ -862,7 +955,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: finderDevice, error: finderError } = await supabase
         .from("devices")
         .select("*")
-        .eq("serialNumber", ownerDevice.serialNumber)
+        .eq("serialnumber", ownerDevice.serialNumber) // Use snake_case
         .eq("model", ownerDevice.model)
         .eq("status", DeviceStatus.MATCHED)
         .neq("id", ownerDevice.id)
@@ -878,7 +971,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      console.log("makePayment: Finder device found:", finderDevice);
+      // Map database response to Device interface
+      const mappedFinderDevice: Device = {
+        id: finderDevice.id,
+        userId: finderDevice.userid,
+        model: finderDevice.model,
+        serialNumber: finderDevice.serialnumber,
+        color: finderDevice.color,
+        description: finderDevice.description,
+        status: finderDevice.status,
+        rewardAmount: finderDevice.rewardamount,
+        marketValue: finderDevice.marketvalue,
+        invoice_url: finderDevice.invoice_url,
+        exchangeConfirmedBy: finderDevice.exchangeconfirmedby || []
+      };
+
+      console.log("makePayment: Finder device found:", mappedFinderDevice);
 
       // Update both devices to EXCHANGE_PENDING status in the database
       const { error: updateOwnerError } = await supabase
@@ -894,7 +1002,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { error: updateFinderError } = await supabase
         .from("devices")
         .update({ status: DeviceStatus.EXCHANGE_PENDING })
-        .eq("id", finderDevice.id);
+        .eq("id", mappedFinderDevice.id);
 
       if (updateFinderError) {
         console.error("Error updating finder device:", updateFinderError);
@@ -906,7 +1014,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Update local state
       setDevices((prev) => {
         return prev.map((d) => {
-          if (d.id === ownerDevice.id || d.id === finderDevice.id) {
+          if (d.id === ownerDevice.id || d.id === mappedFinderDevice.id) {
             return { ...d, status: DeviceStatus.EXCHANGE_PENDING };
           }
           return d;
@@ -915,10 +1023,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Send notification to the finder that payment has been received
       addNotification(
-        finderDevice.userId,
+        mappedFinderDevice.userId,
         "paymentReceivedFinder",
-        `/device/${finderDevice.id}`,
-        { model: finderDevice.model }
+        `/device/${mappedFinderDevice.id}`,
+        { model: mappedFinderDevice.model }
       );
 
       console.log("makePayment: Payment processed successfully");

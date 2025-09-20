@@ -44,17 +44,17 @@ export enum DeviceStatus {
 
 export interface Device {
   id: string;
-  userId: string; // The ID of the user who owns/reported the device
+  userId: string; // The ID of the user who owns/reported the device (maps to user_id in DB)
   model: string;
-  serialNumber: string;
+  serialNumber: string; // Maps to serialnumber in DB 
   color: string;
   invoice_url?: string; // URL to invoice file in Supabase Storage
   invoiceDataUrl?: string; // Legacy field - will be removed after migration
   description?: string;
   status: DeviceStatus;
-  rewardAmount?: number;
-  marketValue?: number; // AI estimated market value
-  exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed
+  rewardAmount?: number; // Maps to rewardamount in DB
+  marketValue?: number; // AI estimated market value (maps to marketvalue in DB)
+  exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed (maps to exchangeconfirmedby in DB)
 }
 
 export interface AppNotification {
