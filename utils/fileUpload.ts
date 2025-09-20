@@ -79,8 +79,9 @@ export const uploadFileToStorage = async (
     ? deviceModel.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20)
     : 'device';
   
-  // Format: invoice_{userId}_{date}_{deviceModel}_{timestamp}_{random}.{ext}
-  const fileName = `${folder}/invoice_${userId}_${dateStr}_${sanitizedDeviceModel}_${timestamp}_${randomString}.${fileExtension}`;
+  // Format: {folder}/{userId}/{date}_{deviceModel}_{timestamp}_{random}.{ext}
+  // This matches RLS policy: (string_to_array(name, '/'))[2] = auth.uid()
+  const fileName = `${folder}/${userId}/${dateStr}_${sanitizedDeviceModel}_${timestamp}_${randomString}.${fileExtension}`;
 
     // Secure logging - don't log full file paths in production
     if (import.meta.env.DEV) {

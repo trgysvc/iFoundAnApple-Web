@@ -548,7 +548,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       invoice_url: deviceData.invoice_url,
       userId: currentUser.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
-      exchangeConfirmedBy: [],
+      exchangeConfirmedBy: null, // UUID array - start with null, will be populated later
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging

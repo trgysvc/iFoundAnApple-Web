@@ -45,24 +45,7 @@ const Header: React.FC = () => {
     : [];
   const unreadCount = userNotifications.filter((n) => !n.is_read).length;
 
-  // Debug logging
-  console.log("Header - currentUser:", currentUser);
-  console.log("Header - all notifications:", notifications);
-  console.log("Header - userNotifications:", userNotifications);
-  console.log("Header - unreadCount:", unreadCount);
-
-  // Debug individual notification objects
-  if (userNotifications.length > 0) {
-    console.log("First notification object:", userNotifications[0]);
-    console.log(
-      "First notification message_key:",
-      userNotifications[0].message_key
-    );
-    console.log(
-      "First notification messageKey (camelCase):",
-      (userNotifications[0] as any).messageKey
-    );
-  }
+  // Debug logging removed to prevent infinite re-renders
 
   const handleNotificationClick = (notificationId: string, link: string) => {
     markNotificationAsRead(notificationId);
@@ -219,20 +202,7 @@ const Header: React.FC = () => {
                             }`}
                           >
                             <p className="text-sm text-brand-gray-600">
-                              {(() => {
-                                const translationKey = `notifications.${n.message_key}`;
-                                const translation = t(
-                                  translationKey,
-                                  n.replacements
-                                );
-                                console.log("Notification translation debug:", {
-                                  messageKey: n.message_key,
-                                  translationKey,
-                                  translation,
-                                  replacements: n.replacements,
-                                });
-                                return translation;
-                              })()}
+                              {t(`notifications.${n.message_key}`, n.replacements)}
                             </p>
                             <p className="text-xs text-brand-gray-400 mt-1">
                               {timeSince(n.created_at)}
