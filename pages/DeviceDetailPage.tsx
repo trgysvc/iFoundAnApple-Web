@@ -61,18 +61,14 @@ const DeviceDetailPage: React.FC = () => {
       "DeviceDetailPage: handlePayment called with deviceId:",
       deviceId
     );
-    setIsProcessingPayment(true);
-    try {
-      console.log("DeviceDetailPage: Calling makePayment...");
-      await makePayment(deviceId);
-      console.log("DeviceDetailPage: makePayment completed successfully");
-      // The device status will be updated via the context, triggering a re-render
-    } catch (error) {
-      console.error("DeviceDetailPage: Payment failed:", error);
-    } finally {
-      setIsProcessingPayment(false);
-      console.log("DeviceDetailPage: Payment processing state reset");
+    
+    if (!device) {
+      console.error("DeviceDetailPage: No device found");
+      return;
     }
+    
+    // Navigate to new MatchPaymentPage with device details
+    navigate(`/match-payment?deviceId=${deviceId}&deviceModel=${encodeURIComponent(device.model)}`);
   };
 
   useEffect(() => {
@@ -206,8 +202,8 @@ const DeviceDetailPage: React.FC = () => {
             >
               <ShieldCheck className="w-5 h-5 mr-2" />{" "}
               {isProcessingPayment
-                ? "Processing Payment..."
-                : "Make Payment Securely (TEST)"}
+                ? "Yönlendiriliyor..."
+                : "Make Payment Securely"}
             </Button>
           </div>
         </StatusView>

@@ -26,11 +26,21 @@ export interface FileUploadResult {
  * @param userId - User ID for organizing files
  * @returns Upload result with URL or error
  */
+/**
+ * Enhanced file upload with security measures and better naming
+ * @param file - File to upload
+ * @param bucket - Storage bucket name
+ * @param folder - Folder path within bucket
+ * @param userId - User ID for organizing files
+ * @param deviceModel - Optional device model for filename
+ * @returns Upload result with URL or error
+ */
 export const uploadFileToStorage = async (
   file: File,
   bucket: string,
   folder: string,
-  userId: string
+  userId: string,
+  deviceModel?: string
 ): Promise<FileUploadResult> => {
   try {
     // Validate file size (10MB limit)
@@ -58,11 +68,19 @@ export const uploadFileToStorage = async (
       };
     }
 
-    // Generate unique file name
-    const fileExtension = file.name.split('.').pop();
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const fileName = `${folder}/${userId}/${timestamp}_${randomString}.${fileExtension}`;
+  // Generate secure and identifiable file name
+  const fileExtension = file.name.split('.').pop();
+  const timestamp = Date.now();
+  const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+  const randomString = Math.random().toString(36).substring(2, 8); // Shorter random string
+  
+  // Sanitize device model for filename
+  const sanitizedDeviceModel = deviceModel 
+    ? deviceModel.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20)
+    : 'device';
+  
+  // Format: invoice_{userId}_{date}_{deviceModel}_{timestamp}_{random}.{ext}
+  const fileName = `${folder}/invoice_${userId}_${dateStr}_${sanitizedDeviceModel}_${timestamp}_${randomString}.${fileExtension}`;
 
     // Secure logging - don't log full file paths in production
     if (import.meta.env.DEV) {
@@ -119,9 +137,10 @@ export const uploadFileToStorage = async (
  */
 export const uploadInvoiceDocument = async (
   file: File,
-  userId: string
+  userId: string,
+  deviceModel?: string
 ): Promise<FileUploadResult> => {
-  return uploadFileToStorage(file, 'device-documents', 'invoices', userId);
+  return uploadFileToStorage(file, 'device-documents', 'invoices', userId, deviceModel);
 };
 
 /**

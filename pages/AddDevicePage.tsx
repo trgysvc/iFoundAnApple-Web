@@ -115,7 +115,7 @@ const AddDevicePage: React.FC = () => {
       if (currentUser) {
         setIsUploadingFile(true);
         try {
-          const result = await uploadInvoiceDocument(file, currentUser.id);
+          const result = await uploadInvoiceDocument(file, currentUser.id, model);
           
           if (result.success && result.url) {
             setUploadedFileUrl(result.url);
@@ -257,11 +257,20 @@ const AddDevicePage: React.FC = () => {
     );
     console.log("AddDevicePage: Device data with invoice URL:", deviceData);
     
-    const success = await addDevice(deviceData, isLostReport);
-    if (success) {
-      navigate("/dashboard");
-    } else {
-      setError(t("failedToAddDevice")); // You might want to add this translation key
+    try {
+      const success = await addDevice(deviceData, isLostReport);
+      console.log("AddDevicePage: addDevice returned:", success);
+      
+      if (success) {
+        console.log("AddDevicePage: Success! Navigating to dashboard...");
+        navigate("/dashboard");
+      } else {
+        console.error("AddDevicePage: addDevice returned false");
+        setError(t("failedToAddDevice"));
+      }
+    } catch (error) {
+      console.error("AddDevicePage: Unexpected error in addDevice:", error);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 

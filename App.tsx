@@ -9,6 +9,9 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import AddDevicePage from "./pages/AddDevicePage";
+import PaymentFlowPage from "./pages/PaymentFlowPage";
+import MatchPaymentPage from "./pages/MatchPaymentPage";
+import PaymentSummaryPage from "./components/payment/PaymentSummaryPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import DeviceDetailPage from "./pages/DeviceDetailPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -17,6 +20,7 @@ import FAQPage from "./pages/FAQPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ContactPage from "./pages/ContactPage";
+import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -67,6 +71,30 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <AddDevicePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment-flow"
+                element={
+                  <ProtectedRoute>
+                    <PaymentFlowPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/match-payment"
+                element={
+                  <ProtectedRoute>
+                    <MatchPaymentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment/summary"
+                element={
+                  <ProtectedRoute>
+                    <PaymentSummaryPage />
                   </ProtectedRoute>
                 }
               />

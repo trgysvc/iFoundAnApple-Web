@@ -83,6 +83,7 @@ const DashboardPage: React.FC = () => {
             <PlusCircle className="w-5 h-5 mr-2" />
             {t("reportFoundDevice")}
           </Button>
+{/* Cihaz Ödemesi butonu gizlendi - Match ekranından erişilecek */}
         </div>
       </div>
 

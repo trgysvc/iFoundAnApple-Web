@@ -537,48 +537,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     }
 
-    // Map camelCase to snake_case for database
+    // Database uses camelCase field names - no mapping needed
     const newDevicePayload = {
       model: deviceData.model,
-      serialnumber: deviceData.serialNumber, // camelCase to snake_case
+      serialNumber: deviceData.serialNumber,
       color: deviceData.color,
       description: deviceData.description,
-      rewardamount: deviceData.rewardAmount, // camelCase to snake_case
-      marketvalue: deviceData.marketValue, // camelCase to snake_case
+      rewardAmount: deviceData.rewardAmount,
+      // marketValue field doesn't exist in database schema, removing
       invoice_url: deviceData.invoice_url,
-      userid: currentUser.id, // camelCase to snake_case
+      userId: currentUser.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
-      exchangeconfirmedby: [], // camelCase to snake_case
+      exchangeConfirmedBy: [],
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
 
     try {
+      console.log("addDevice: About to insert device with payload:", JSON.stringify(newDevicePayload, null, 2));
+      
       const { data, error } = await supabase
         .from("devices")
         .insert([newDevicePayload])
         .select();
+        
+      console.log("addDevice: Supabase response - data:", data, "error:", error);
+      
       if (error) {
-        console.error("Error adding device to Supabase:", error.message);
+        console.error("Error adding device to Supabase:", error);
+        console.error("Error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         return false;
       } else {
         console.log("Device added to Supabase:", data);
 
-        // Map database response to Device interface
-        const dbDevice = data[0];
-        const newDevice: Device = {
-          id: dbDevice.id,
-          userId: dbDevice.userid,
-          model: dbDevice.model,
-          serialNumber: dbDevice.serialnumber,
-          color: dbDevice.color,
-          description: dbDevice.description,
-          status: dbDevice.status,
-          rewardAmount: dbDevice.rewardamount,
-          marketValue: dbDevice.marketvalue,
-          invoice_url: dbDevice.invoice_url,
-          exchangeConfirmedBy: dbDevice.exchangeconfirmedby || []
-        };
+        // Database already uses camelCase - direct assignment
+        const newDevice: Device = data[0];
         if (!newDevice) {
           console.error(
             "addDevice: Could not retrieve new device data after insertion."
@@ -624,9 +622,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             .from("devices")
             .select("*")
             .eq("status", DeviceStatus.REPORTED)
-            .eq("serialnumber", newDevice.serialNumber) // Use snake_case
+            .eq("serialNumber", newDevice.serialNumber) // Use snake_case
             .eq("model", newDevice.model)
-            .neq("userid", newDevice.userId) // Use snake_case and don't match with same user
+            .neq("userId", newDevice.userId) // Use snake_case and don't match with same user
             .maybeSingle();
 
           if (matchError) {
@@ -639,20 +637,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           if (matchedData) {
             matched = true;
             lostDevice = newDevice;
-            // Map database response to Device interface
-            foundDevice = {
-              id: matchedData.id,
-              userId: matchedData.userid,
-              model: matchedData.model,
-              serialNumber: matchedData.serialnumber,
-              color: matchedData.color,
-              description: matchedData.description,
-              status: matchedData.status,
-              rewardAmount: matchedData.rewardamount,
-              marketValue: matchedData.marketvalue,
-              invoice_url: matchedData.invoice_url,
-              exchangeConfirmedBy: matchedData.exchangeconfirmedby || []
-            };
+            // Database uses camelCase - direct assignment
+            foundDevice = matchedData as Device;
           }
         } else if (newDevice.status === DeviceStatus.REPORTED) {
           // New device is REPORTED, look for a LOST one
@@ -687,9 +673,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             .from("devices")
             .select("*")
             .eq("status", DeviceStatus.LOST)
-            .eq("serialnumber", newDevice.serialNumber) // Use snake_case
+            .eq("serialNumber", newDevice.serialNumber) // Use snake_case
             .eq("model", newDevice.model)
-            .neq("userid", newDevice.userId) // Use snake_case and don't match with same user
+            .neq("userId", newDevice.userId) // Use snake_case and don't match with same user
             .maybeSingle();
 
           if (matchError) {
@@ -701,20 +687,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (matchedData) {
             matched = true;
-            // Map database response to Device interface
-            lostDevice = {
-              id: matchedData.id,
-              userId: matchedData.userid,
-              model: matchedData.model,
-              serialNumber: matchedData.serialnumber,
-              color: matchedData.color,
-              description: matchedData.description,
-              status: matchedData.status,
-              rewardAmount: matchedData.rewardamount,
-              marketValue: matchedData.marketvalue,
-              invoice_url: matchedData.invoice_url,
-              exchangeConfirmedBy: matchedData.exchangeconfirmedby || []
-            };
+            // Database uses camelCase - direct assignment
+            lostDevice = matchedData as Device;
             foundDevice = newDevice;
           }
         }
@@ -803,6 +777,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (e) {
       console.error("Unhandled error adding device:", e);
+      console.error("Error stack:", e.stack);
       return false;
     }
   };
@@ -841,7 +816,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     const { data, error } = await supabase
       .from("devices")
       .select("*")
-      .eq("userid", userId) // Use snake_case field name
+      .eq("userId", userId) // Use snake_case field name
       .order("created_at", { ascending: false }); // Order by created_at
 
     console.log(
@@ -856,20 +831,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return [];
     }
 
-    // Map database response to Device interface
-    const devices: Device[] = (data || []).map((dbDevice: any) => ({
-      id: dbDevice.id,
-      userId: dbDevice.userid,
-      model: dbDevice.model,
-      serialNumber: dbDevice.serialnumber,
-      color: dbDevice.color,
-      description: dbDevice.description,
-      status: dbDevice.status,
-      rewardAmount: dbDevice.rewardamount,
-      marketValue: dbDevice.marketvalue,
-      invoice_url: dbDevice.invoice_url,
-      exchangeConfirmedBy: dbDevice.exchangeconfirmedby || []
-    }));
+    // Database uses camelCase - direct assignment
+    const devices: Device[] = (data || []) as Device[];
     
     console.log("getUserDevices: Returning mapped devices:", devices);
     return devices;
@@ -897,20 +860,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     
     if (!data) return undefined;
     
-    // Map database response to Device interface
-    const device: Device = {
-      id: data.id,
-      userId: data.userid,
-      model: data.model,
-      serialNumber: data.serialnumber,
-      color: data.color,
-      description: data.description,
-      status: data.status,
-      rewardAmount: data.rewardamount,
-      marketValue: data.marketvalue,
-      invoice_url: data.invoice_url,
-      exchangeConfirmedBy: data.exchangeconfirmedby || []
-    };
+    // Database uses camelCase - direct assignment
+    const device: Device = data as Device;
     
     return device;
   };
@@ -934,20 +885,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      // Map database response to Device interface
-      const ownerDevice: Device = {
-        id: dbOwnerDevice.id,
-        userId: dbOwnerDevice.userid,
-        model: dbOwnerDevice.model,
-        serialNumber: dbOwnerDevice.serialnumber,
-        color: dbOwnerDevice.color,
-        description: dbOwnerDevice.description,
-        status: dbOwnerDevice.status,
-        rewardAmount: dbOwnerDevice.rewardamount,
-        marketValue: dbOwnerDevice.marketvalue,
-        invoice_url: dbOwnerDevice.invoice_url,
-        exchangeConfirmedBy: dbOwnerDevice.exchangeconfirmedby || []
-      };
+      // Database uses camelCase - direct assignment
+      const ownerDevice: Device = dbOwnerDevice as Device;
 
       console.log("makePayment: Owner device found:", ownerDevice);
 
@@ -955,7 +894,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: finderDevice, error: finderError } = await supabase
         .from("devices")
         .select("*")
-        .eq("serialnumber", ownerDevice.serialNumber) // Use snake_case
+        .eq("serialNumber", ownerDevice.serialNumber)
         .eq("model", ownerDevice.model)
         .eq("status", DeviceStatus.MATCHED)
         .neq("id", ownerDevice.id)
@@ -971,20 +910,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      // Map database response to Device interface
-      const mappedFinderDevice: Device = {
-        id: finderDevice.id,
-        userId: finderDevice.userid,
-        model: finderDevice.model,
-        serialNumber: finderDevice.serialnumber,
-        color: finderDevice.color,
-        description: finderDevice.description,
-        status: finderDevice.status,
-        rewardAmount: finderDevice.rewardamount,
-        marketValue: finderDevice.marketvalue,
-        invoice_url: finderDevice.invoice_url,
-        exchangeConfirmedBy: finderDevice.exchangeconfirmedby || []
-      };
+      // Database uses camelCase - direct assignment
+      const mappedFinderDevice: Device = finderDevice as Device;
 
       console.log("makePayment: Finder device found:", mappedFinderDevice);
 
