@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../../contexts/AppContext';
+import { useAppContext } from '../../contexts/AppContext.tsx';
 
 export type PaymentProvider = 'iyzico' | 'stripe' | 'test';
 

@@ -3,20 +3,20 @@
  * Güvenli ödeme blokajı ve serbest bırakma işlemleri
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { FeeBreakdown } from './feeCalculation';
+import { createClient } from "@supabase/supabase-js";
+import { FeeBreakdown } from "./feeCalculation.ts";
 
 // Supabase client (environment'dan gelecek)
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
 export interface EscrowAccount {
   id: string;
   paymentId: string;
   deviceId: string;
-  holderUserId: string;      // Ödemeyi yapan (cihaz sahibi)
+  holderUserId: string; // Ödemeyi yapan (cihaz sahibi)
   beneficiaryUserId: string; // Ödemeyi alacak (bulan kişi)
   totalAmount: number;
   rewardAmount: number;
@@ -24,7 +24,7 @@ export interface EscrowAccount {
   gatewayFee: number;
   cargoFee: number;
   netPayout: number;
-  status: 'pending' | 'held' | 'released' | 'refunded' | 'failed';
+  status: "pending" | "held" | "released" | "refunded" | "failed";
   releaseConditions: string[];
   confirmations: string[];
   createdAt: string;
@@ -34,7 +34,11 @@ export interface EscrowAccount {
 }
 
 export interface EscrowReleaseCondition {
-  type: 'device_received' | 'exchange_confirmed' | 'manual_approval' | 'time_based';
+  type:
+    | "device_received"
+    | "exchange_confirmed"
+    | "manual_approval"
+    | "time_based";
   description: string;
   requiredConfirmations: number;
   timeoutHours?: number;
@@ -42,7 +46,10 @@ export interface EscrowReleaseCondition {
 
 export interface EscrowConfirmation {
   userId: string;
-  confirmationType: 'device_received' | 'exchange_confirmed' | 'identity_verified';
+  confirmationType:
+    | "device_received"
+    | "exchange_confirmed"
+    | "identity_verified";
   timestamp: string;
   ipAddress?: string;
   userAgent?: string;
@@ -60,17 +67,17 @@ export const createEscrowAccount = async (
   feeBreakdown: FeeBreakdown
 ): Promise<{ success: boolean; escrowId?: string; error?: string }> => {
   try {
-    console.log('[ESCROW] Yeni escrow hesabı oluşturuluyor...', {
+    console.log("[ESCROW] Yeni escrow hesabı oluşturuluyor...", {
       paymentId,
       deviceId,
-      totalAmount: feeBreakdown.totalAmount
+      totalAmount: feeBreakdown.totalAmount,
     });
 
     // Varsayılan serbest bırakma koşulları
     const defaultReleaseConditions = [
-      'device_received_confirmation',
-      'exchange_both_parties_confirmed',
-      'identity_verification_completed'
+      "device_received_confirmation",
+      "exchange_both_parties_confirmed",
+      "identity_verification_completed",
     ];
 
     const escrowData = {
@@ -84,30 +91,29 @@ export const createEscrowAccount = async (
       gateway_fee: feeBreakdown.gatewayFee,
       cargo_fee: feeBreakdown.cargoFee,
       net_payout: feeBreakdown.netPayout,
-      status: 'pending',
+      status: "pending",
       release_conditions: defaultReleaseConditions,
-      confirmations: []
+      confirmations: [],
     };
 
     const { data, error } = await supabase
-      .from('escrow_accounts')
+      .from("escrow_accounts")
       .insert([escrowData])
       .select()
       .single();
 
     if (error) {
-      console.error('[ESCROW] Escrow hesabı oluşturma hatası:', error);
+      console.error("[ESCROW] Escrow hesabı oluşturma hatası:", error);
       return { success: false, error: error.message };
     }
 
-    console.log('[ESCROW] ✅ Escrow hesabı oluşturuldu:', data.id);
+    console.log("[ESCROW] ✅ Escrow hesabı oluşturuldu:", data.id);
     return { success: true, escrowId: data.id };
-
   } catch (error) {
-    console.error('[ESCROW] Escrow hesabı oluşturma hatası:', error);
+    console.error("[ESCROW] Escrow hesabı oluşturma hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -120,39 +126,38 @@ export const holdEscrowFunds = async (
   paymentConfirmation: any
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    console.log('[ESCROW] Escrow fonları bloke ediliyor...', escrowId);
+    console.log("[ESCROW] Escrow fonları bloke ediliyor...", escrowId);
 
     const { data, error } = await supabase
-      .from('escrow_accounts')
+      .from("escrow_accounts")
       .update({
-        status: 'held',
+        status: "held",
         held_at: new Date().toISOString(),
         // Payment confirmation bilgilerini metadata olarak sakla
         confirmations: [
           {
-            type: 'payment_confirmed',
+            type: "payment_confirmed",
             timestamp: new Date().toISOString(),
-            paymentData: paymentConfirmation
-          }
-        ]
+            paymentData: paymentConfirmation,
+          },
+        ],
       })
-      .eq('id', escrowId)
+      .eq("id", escrowId)
       .select()
       .single();
 
     if (error) {
-      console.error('[ESCROW] Escrow blokaj hatası:', error);
+      console.error("[ESCROW] Escrow blokaj hatası:", error);
       return { success: false, error: error.message };
     }
 
-    console.log('[ESCROW] ✅ Fonlar başarıyla bloke edildi');
+    console.log("[ESCROW] ✅ Fonlar başarıyla bloke edildi");
     return { success: true };
-
   } catch (error) {
-    console.error('[ESCROW] Escrow blokaj hatası:', error);
+    console.error("[ESCROW] Escrow blokaj hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -165,21 +170,21 @@ export const addEscrowConfirmation = async (
   confirmation: EscrowConfirmation
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    console.log('[ESCROW] Escrow onayı ekleniyor...', {
+    console.log("[ESCROW] Escrow onayı ekleniyor...", {
       escrowId,
       type: confirmation.confirmationType,
-      userId: confirmation.userId
+      userId: confirmation.userId,
     });
 
     // Mevcut escrow hesabını getir
     const { data: escrowAccount, error: fetchError } = await supabase
-      .from('escrow_accounts')
-      .select('*')
-      .eq('id', escrowId)
+      .from("escrow_accounts")
+      .select("*")
+      .eq("id", escrowId)
       .single();
 
     if (fetchError || !escrowAccount) {
-      return { success: false, error: 'Escrow hesabı bulunamadı' };
+      return { success: false, error: "Escrow hesabı bulunamadı" };
     }
 
     // Mevcut onayları al ve yenisini ekle
@@ -188,35 +193,34 @@ export const addEscrowConfirmation = async (
       ...existingConfirmations,
       {
         ...confirmation,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     ];
 
     // Escrow hesabını güncelle
     const { error: updateError } = await supabase
-      .from('escrow_accounts')
+      .from("escrow_accounts")
       .update({
-        confirmations: updatedConfirmations
+        confirmations: updatedConfirmations,
       })
-      .eq('id', escrowId);
+      .eq("id", escrowId);
 
     if (updateError) {
-      console.error('[ESCROW] Onay ekleme hatası:', updateError);
+      console.error("[ESCROW] Onay ekleme hatası:", updateError);
       return { success: false, error: updateError.message };
     }
 
-    console.log('[ESCROW] ✅ Onay başarıyla eklendi');
+    console.log("[ESCROW] ✅ Onay başarıyla eklendi");
 
     // Tüm koşullar sağlandıysa otomatik serbest bırakma kontrolü yap
     await checkAutoReleaseConditions(escrowId);
 
     return { success: true };
-
   } catch (error) {
-    console.error('[ESCROW] Onay ekleme hatası:', error);
+    console.error("[ESCROW] Onay ekleme hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -226,44 +230,47 @@ export const addEscrowConfirmation = async (
  */
 const checkAutoReleaseConditions = async (escrowId: string): Promise<void> => {
   try {
-    console.log('[ESCROW] Otomatik serbest bırakma koşulları kontrol ediliyor...', escrowId);
+    console.log(
+      "[ESCROW] Otomatik serbest bırakma koşulları kontrol ediliyor...",
+      escrowId
+    );
 
     const { data: escrowAccount, error } = await supabase
-      .from('escrow_accounts')
-      .select('*')
-      .eq('id', escrowId)
+      .from("escrow_accounts")
+      .select("*")
+      .eq("id", escrowId)
       .single();
 
-    if (error || !escrowAccount || escrowAccount.status !== 'held') {
+    if (error || !escrowAccount || escrowAccount.status !== "held") {
       return;
     }
 
     const confirmations = escrowAccount.confirmations || [];
-    const confirmationTypes = confirmations.map((c: any) => c.confirmationType || c.type);
+    const confirmationTypes = confirmations.map(
+      (c: any) => c.confirmationType || c.type
+    );
 
     // Gerekli onay türleri
-    const requiredConfirmations = [
-      'device_received',
-      'exchange_confirmed'
-    ];
+    const requiredConfirmations = ["device_received", "exchange_confirmed"];
 
     // Tüm gerekli onaylar var mı kontrol et
-    const allConfirmationsReceived = requiredConfirmations.every(
-      required => confirmationTypes.includes(required)
+    const allConfirmationsReceived = requiredConfirmations.every((required) =>
+      confirmationTypes.includes(required)
     );
 
     if (allConfirmationsReceived) {
-      console.log('[ESCROW] 🚀 Tüm koşullar sağlandı, otomatik serbest bırakma başlatılıyor...');
-      await releaseEscrowFunds(escrowId, 'Tüm onay koşulları sağlandı');
+      console.log(
+        "[ESCROW] 🚀 Tüm koşullar sağlandı, otomatik serbest bırakma başlatılıyor..."
+      );
+      await releaseEscrowFunds(escrowId, "Tüm onay koşulları sağlandı");
     } else {
-      console.log('[ESCROW] ⏳ Henüz tüm koşullar sağlanmadı:', {
+      console.log("[ESCROW] ⏳ Henüz tüm koşullar sağlanmadı:", {
         required: requiredConfirmations,
-        received: confirmationTypes
+        received: confirmationTypes,
       });
     }
-
   } catch (error) {
-    console.error('[ESCROW] Otomatik serbest bırakma kontrol hatası:', error);
+    console.error("[ESCROW] Otomatik serbest bırakma kontrol hatası:", error);
   }
 };
 
@@ -275,36 +282,41 @@ export const releaseEscrowFunds = async (
   releaseReason: string
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
   try {
-    console.log('[ESCROW] Escrow fonları serbest bırakılıyor...', { escrowId, releaseReason });
+    console.log("[ESCROW] Escrow fonları serbest bırakılıyor...", {
+      escrowId,
+      releaseReason,
+    });
 
     // Escrow hesabını güncelle
     const { data, error } = await supabase
-      .from('escrow_accounts')
+      .from("escrow_accounts")
       .update({
-        status: 'released',
+        status: "released",
         released_at: new Date().toISOString(),
-        release_reason: releaseReason
+        release_reason: releaseReason,
       })
-      .eq('id', escrowId)
+      .eq("id", escrowId)
       .select()
       .single();
 
     if (error) {
-      console.error('[ESCROW] Serbest bırakma hatası:', error);
+      console.error("[ESCROW] Serbest bırakma hatası:", error);
       return { success: false, error: error.message };
     }
 
     // Financial transaction kaydı oluştur
-    const transactionId = await createFinancialTransaction(data, 'reward_payout');
+    const transactionId = await createFinancialTransaction(
+      data,
+      "reward_payout"
+    );
 
-    console.log('[ESCROW] ✅ Fonlar başarıyla serbest bırakıldı');
+    console.log("[ESCROW] ✅ Fonlar başarıyla serbest bırakıldı");
     return { success: true, transactionId };
-
   } catch (error) {
-    console.error('[ESCROW] Serbest bırakma hatası:', error);
+    console.error("[ESCROW] Serbest bırakma hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -317,36 +329,41 @@ export const refundEscrowFunds = async (
   refundReason: string
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
   try {
-    console.log('[ESCROW] Escrow fonları iade ediliyor...', { escrowId, refundReason });
+    console.log("[ESCROW] Escrow fonları iade ediliyor...", {
+      escrowId,
+      refundReason,
+    });
 
     // Escrow hesabını güncelle
     const { data, error } = await supabase
-      .from('escrow_accounts')
+      .from("escrow_accounts")
       .update({
-        status: 'refunded',
+        status: "refunded",
         refunded_at: new Date().toISOString(),
-        refund_reason: refundReason
+        refund_reason: refundReason,
       })
-      .eq('id', escrowId)
+      .eq("id", escrowId)
       .select()
       .single();
 
     if (error) {
-      console.error('[ESCROW] İade hatası:', error);
+      console.error("[ESCROW] İade hatası:", error);
       return { success: false, error: error.message };
     }
 
     // Financial transaction kaydı oluştur
-    const transactionId = await createFinancialTransaction(data, 'refund_issued');
+    const transactionId = await createFinancialTransaction(
+      data,
+      "refund_issued"
+    );
 
-    console.log('[ESCROW] ✅ Fonlar başarıyla iade edildi');
+    console.log("[ESCROW] ✅ Fonlar başarıyla iade edildi");
     return { success: true, transactionId };
-
   } catch (error) {
-    console.error('[ESCROW] İade hatası:', error);
+    console.error("[ESCROW] İade hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -365,27 +382,30 @@ const createFinancialTransaction = async (
       from_user_id: escrowAccount.holder_user_id,
       to_user_id: escrowAccount.beneficiary_user_id,
       transaction_type: transactionType,
-      amount: transactionType === 'refund_issued' ? escrowAccount.total_amount : escrowAccount.net_payout,
-      currency: 'TRY',
-      status: 'completed',
+      amount:
+        transactionType === "refund_issued"
+          ? escrowAccount.total_amount
+          : escrowAccount.net_payout,
+      currency: "TRY",
+      status: "completed",
       description: `Escrow ${transactionType} - ${escrowAccount.id}`,
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
-      .from('financial_transactions')
+      .from("financial_transactions")
       .insert([transactionData])
       .select()
       .single();
 
     if (error) {
-      console.error('[ESCROW] Financial transaction oluşturma hatası:', error);
+      console.error("[ESCROW] Financial transaction oluşturma hatası:", error);
       throw error;
     }
 
     return data.id;
   } catch (error) {
-    console.error('[ESCROW] Financial transaction hatası:', error);
+    console.error("[ESCROW] Financial transaction hatası:", error);
     throw error;
   }
 };
@@ -395,17 +415,23 @@ const createFinancialTransaction = async (
  */
 export const getUserEscrowAccounts = async (
   userId: string
-): Promise<{ success: boolean; accounts?: EscrowAccount[]; error?: string }> => {
+): Promise<{
+  success: boolean;
+  accounts?: EscrowAccount[];
+  error?: string;
+}> => {
   try {
     const { data, error } = await supabase
-      .from('escrow_accounts')
-      .select(`
+      .from("escrow_accounts")
+      .select(
+        `
         *,
         devices!escrow_accounts_device_id_fkey(model, serialNumber),
         payments!escrow_accounts_payment_id_fkey(status, created_at)
-      `)
+      `
+      )
       .or(`holder_user_id.eq.${userId},beneficiary_user_id.eq.${userId}`)
-      .order('created_at', { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) {
       return { success: false, error: error.message };
@@ -415,7 +441,7 @@ export const getUserEscrowAccounts = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -428,13 +454,15 @@ export const getEscrowAccountDetails = async (
 ): Promise<{ success: boolean; account?: EscrowAccount; error?: string }> => {
   try {
     const { data, error } = await supabase
-      .from('escrow_accounts')
-      .select(`
+      .from("escrow_accounts")
+      .select(
+        `
         *,
         devices!escrow_accounts_device_id_fkey(*),
         payments!escrow_accounts_payment_id_fkey(*)
-      `)
-      .eq('id', escrowId)
+      `
+      )
+      .eq("id", escrowId)
       .single();
 
     if (error) {
@@ -445,7 +473,7 @@ export const getEscrowAccountDetails = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };

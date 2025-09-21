@@ -1,8 +1,8 @@
-import { translations } from './constants';
+import { translations } from "./constants.ts";
 
 export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
+  USER = "user",
+  ADMIN = "admin",
 }
 
 export interface User {
@@ -33,20 +33,20 @@ export interface UserProfile {
 }
 
 export enum DeviceStatus {
-  LOST = 'lost', // Owner adds device
-  REPORTED = 'reported', // Finder adds device
-  MATCHED = 'matched', // System finds a match
-  PAYMENT_PENDING = 'payment_pending', // Owner needs to pay
-  PAYMENT_COMPLETE = 'payment_complete', // Owner has paid
-  EXCHANGE_PENDING = 'exchange_pending', // Physical exchange in progress
-  COMPLETED = 'completed', // Exchange confirmed by both
+  LOST = "lost", // Owner adds device
+  REPORTED = "reported", // Finder adds device
+  MATCHED = "matched", // System finds a match
+  PAYMENT_PENDING = "payment_pending", // Owner needs to pay
+  PAYMENT_COMPLETE = "payment_complete", // Owner has paid
+  EXCHANGE_PENDING = "exchange_pending", // Physical exchange in progress
+  COMPLETED = "completed", // Exchange confirmed by both
 }
 
 export interface Device {
   id: string;
   userId: string; // The ID of the user who owns/reported the device (maps to user_id in DB)
   model: string;
-  serialNumber: string; // Maps to serialnumber in DB 
+  serialNumber: string; // Maps to serialnumber in DB
   color: string;
   invoice_url?: string; // URL to invoice file in Supabase Storage
   invoiceDataUrl?: string; // Legacy field - will be removed after migration
@@ -60,7 +60,7 @@ export interface Device {
 export interface AppNotification {
   id: string;
   user_id: string;
-  message_key: keyof (typeof translations.en.notifications);
+  message_key: keyof typeof translations.en.notifications;
   link: string; // e.g., /device/deviceId
   is_read: boolean;
   created_at: string; // ISO string

@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppContext } from '../../contexts/AppContext';
-import LoadingSpinner from './LoadingSpinner';
+import { useAppContext } from '../../contexts/AppContext.tsx';
+import LoadingSpinner from './LoadingSpinner.tsx';
 
 interface PageLoaderProps {
   message?: string;

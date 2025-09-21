@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "../contexts/AppContext.tsx";
 import { Device, UserRole } from "../types";
 import Container from "../components/ui/Container";
 import Button from "../components/ui/Button";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "../contexts/AppContext.tsx";
 import Container from "../components/ui/Container";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";

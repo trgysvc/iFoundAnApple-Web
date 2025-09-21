@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext.tsx';
 import { UserRole } from '../types';
 import Container from '../components/ui/Container';
 import { Users, Smartphone, BarChart2 } from 'lucide-react';

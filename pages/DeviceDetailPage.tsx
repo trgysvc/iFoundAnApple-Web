@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
-import { Device, DeviceStatus, UserRole } from "../types";
-import Container from "../components/ui/Container";
-import Button from "../components/ui/Button";
-import NotFoundPage from "./NotFoundPage";
-import { getSecureInvoiceUrl } from "../utils/fileUpload";
+import { useAppContext } from "../contexts/AppContext.tsx";
+import { Device, DeviceStatus, UserRole } from "../types.ts";
+import Container from "../components/ui/Container.tsx";
+import Button from "../components/ui/Button.tsx";
+import NotFoundPage from "./NotFoundPage.tsx";
+import { getSecureInvoiceUrl } from "../utils/fileUpload.ts";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -61,14 +61,18 @@ const DeviceDetailPage: React.FC = () => {
       "DeviceDetailPage: handlePayment called with deviceId:",
       deviceId
     );
-    
+
     if (!device) {
       console.error("DeviceDetailPage: No device found");
       return;
     }
-    
+
     // Navigate to new MatchPaymentPage with device details
-    navigate(`/match-payment?deviceId=${deviceId}&deviceModel=${encodeURIComponent(device.model)}`);
+    navigate(
+      `/match-payment?deviceId=${deviceId}&deviceModel=${encodeURIComponent(
+        device.model
+      )}`
+    );
   };
 
   useEffect(() => {
@@ -78,12 +82,14 @@ const DeviceDetailPage: React.FC = () => {
         const foundDevice = await getDeviceById(deviceId);
         console.log("DeviceDetailPage: Device found:", foundDevice);
         setDevice(foundDevice);
-        
+
         // Generate secure URL for invoice if it exists
         if (foundDevice?.invoice_url) {
           setIsLoadingInvoice(true);
           try {
-            const secureUrl = await getSecureInvoiceUrl(foundDevice.invoice_url);
+            const secureUrl = await getSecureInvoiceUrl(
+              foundDevice.invoice_url
+            );
             setSecureInvoiceUrl(secureUrl);
           } catch (error) {
             console.error("Failed to generate secure invoice URL:", error);
@@ -392,33 +398,34 @@ const DeviceDetailPage: React.FC = () => {
             title={isOriginalOwnerPerspective ? t("Lost") : t("Reported")}
             description="The device is registered in the system. We will notify you when a match is found."
           >
-            {isOriginalOwnerPerspective && (device.invoice_url || device.invoiceDataUrl) && (
-              <div className="border-t border-brand-gray-200 mt-6 pt-6 w-full max-w-sm">
-                {isLoadingInvoice ? (
-                  <Button variant="secondary" className="w-full" disabled>
-                    <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                    Loading invoice...
-                  </Button>
-                ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                  <a
-                    href={secureInvoiceUrl || device.invoiceDataUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
-                    <Button variant="secondary" className="w-full">
-                      <Paperclip className="w-4 h-4 mr-2" />
-                      {t("viewInvoice")}
+            {isOriginalOwnerPerspective &&
+              (device.invoice_url || device.invoiceDataUrl) && (
+                <div className="border-t border-brand-gray-200 mt-6 pt-6 w-full max-w-sm">
+                  {isLoadingInvoice ? (
+                    <Button variant="secondary" className="w-full" disabled>
+                      <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                      Loading invoice...
                     </Button>
-                  </a>
-                ) : (
-                  <Button variant="secondary" className="w-full" disabled>
-                    <Paperclip className="w-4 h-4 mr-2" />
-                    Invoice unavailable
-                  </Button>
-                )}
-              </div>
-            )}
+                  ) : secureInvoiceUrl || device.invoiceDataUrl ? (
+                    <a
+                      href={secureInvoiceUrl || device.invoiceDataUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full"
+                    >
+                      <Button variant="secondary" className="w-full">
+                        <Paperclip className="w-4 h-4 mr-2" />
+                        {t("viewInvoice")}
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button variant="secondary" className="w-full" disabled>
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      Invoice unavailable
+                    </Button>
+                  )}
+                </div>
+              )}
           </StatusView>
         );
     }

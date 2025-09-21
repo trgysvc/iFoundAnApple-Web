@@ -4,7 +4,7 @@ import FeeBreakdownCard, { FeeBreakdown } from './FeeBreakdownCard';
 import PaymentMethodSelector, { PaymentProvider } from './PaymentMethodSelector';
 import { calculateFeesByModelName } from '../../utils/feeCalculation';
 import { initiatePayment } from '../../utils/paymentGateway';
-import { useAppContext } from '../../contexts/AppContext';
+import { useAppContext } from '../../contexts/AppContext.tsx';
 
 interface PaymentSummaryPageProps {
   deviceId?: string;
