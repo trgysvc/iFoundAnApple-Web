@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import FeeBreakdownCard, { FeeBreakdown } from '../components/payment/FeeBreakdownCard';
-import PaymentMethodSelector, { PaymentProvider } from '../components/payment/PaymentMethodSelector';
-import { calculateFeesByModelName } from '../utils/feeCalculation';
-import { initiatePayment } from '../utils/paymentGateway';
-import { useAppContext } from '../contexts/AppContext';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import FeeBreakdownCard, {
+  FeeBreakdown,
+} from "../components/payment/FeeBreakdownCard.tsx";
+import PaymentMethodSelector, {
+  PaymentProvider,
+} from "../components/payment/PaymentMethodSelector.tsx";
+import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
+import { initiatePayment } from "../utils/paymentGateway.ts";
+import { useAppContext } from "../contexts/AppContext.tsx";
 
 interface PaymentSummaryPageProps {
   deviceId?: string;
@@ -15,19 +19,22 @@ interface PaymentSummaryPageProps {
 const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
   deviceId,
   deviceModel,
-  customRewardAmount
+  customRewardAmount,
 }) => {
   const router = useRouter();
   const { currentUser, showNotification, t } = useAppContext();
-  
+
   // URL'den parametreleri al
   const urlDeviceId = router.query.deviceId as string;
   const urlDeviceModel = router.query.deviceModel as string;
-  const urlCustomReward = router.query.customReward ? Number(router.query.customReward) : undefined;
-  
+  const urlCustomReward = router.query.customReward
+    ? Number(router.query.customReward)
+    : undefined;
+
   // State management
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentProvider>('iyzico');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<PaymentProvider>("iyzico");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +50,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
     if (finalDeviceModel) {
       loadFeeCalculation();
     } else {
-      setError(t('deviceModelNotSpecified'));
+      setError(t("deviceModelNotSpecified"));
       setLoading(false);
     }
   }, [finalDeviceModel, finalCustomReward]);
@@ -53,16 +60,19 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       setLoading(true);
       setError(null);
 
-      const result = await calculateFeesByModelName(finalDeviceModel, finalCustomReward);
-      
+      const result = await calculateFeesByModelName(
+        finalDeviceModel,
+        finalCustomReward
+      );
+
       if (result.success && result.fees) {
         setFees(result.fees);
       } else {
-        setError(result.error || t('feeCalculationFailed'));
+        setError(result.error || t("feeCalculationFailed"));
       }
     } catch (err) {
-      console.error('Fee calculation error:', err);
-      setError(t('feeCalculationError'));
+      console.error("Fee calculation error:", err);
+      setError(t("feeCalculationError"));
     } finally {
       setLoading(false);
     }
@@ -70,18 +80,18 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
 
   const handlePayment = async () => {
     if (!currentUser) {
-      showNotification(t('paymentLoginRequired'), 'error');
-      router.push('/login');
+      showNotification(t("paymentLoginRequired"), "error");
+      router.push("/login");
       return;
     }
 
     if (!fees || !finalDeviceId) {
-      showNotification(t('missingPaymentInfo'), 'error');
+      showNotification(t("missingPaymentInfo"), "error");
       return;
     }
 
     if (!agreementAccepted) {
-      showNotification(t('acceptTermsRequired'), 'error');
+      showNotification(t("acceptTermsRequired"), "error");
       return;
     }
 
@@ -100,32 +110,35 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
           serviceFee: fees.serviceFee,
           gatewayFee: fees.gatewayFee,
           totalAmount: fees.totalAmount,
-          netPayout: fees.netPayout
+          netPayout: fees.netPayout,
         },
         deviceInfo: {
           model: fees.deviceModel,
-          serialNumber: 'MOCK_SERIAL', // Should come from device data
-          description: 'Device payment'
+          serialNumber: "MOCK_SERIAL", // Should come from device data
+          description: "Device payment",
         },
         payerInfo: {
           name: currentUser.email, // Should come from user profile
           email: currentUser.email,
-          phone: '5555555555', // Should come from user profile
+          phone: "5555555555", // Should come from user profile
           address: {
-            street: 'Mock Street 123',
-            city: 'İstanbul',
-            district: 'Kadıköy',
-            postalCode: '34000'
-          }
+            street: "Mock Street 123",
+            city: "İstanbul",
+            district: "Kadıköy",
+            postalCode: "34000",
+          },
         },
-        paymentProvider: selectedPaymentMethod
+        paymentProvider: selectedPaymentMethod,
       };
 
-      const result = await initiatePayment(paymentRequest, selectedPaymentMethod);
+      const result = await initiatePayment(
+        paymentRequest,
+        selectedPaymentMethod
+      );
 
       if (result.success) {
-        showNotification(t('paymentInitiated'), 'success');
-        
+        showNotification(t("paymentInitiated"), "success");
+
         // Redirect to payment gateway if there's a redirect URL
         if (result.redirectUrl) {
           window.location.href = result.redirectUrl;
@@ -134,13 +147,13 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
           router.push(`/payment/success?paymentId=${result.paymentId}`);
         }
       } else {
-        setError(result.errorMessage || t('paymentFailed'));
-        showNotification(t('paymentFailed'), 'error');
+        setError(result.errorMessage || t("paymentFailed"));
+        showNotification(t("paymentFailed"), "error");
       }
     } catch (err) {
-      console.error('Payment error:', err);
-      setError(t('paymentError'));
-      showNotification(t('paymentFailed'), 'error');
+      console.error("Payment error:", err);
+      setError(t("paymentError"));
+      showNotification(t("paymentFailed"), "error");
     } finally {
       setProcessing(false);
     }
@@ -151,7 +164,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('calculatingFees')}</p>
+          <p className="text-gray-600">{t("calculatingFees")}</p>
         </div>
       </div>
     );
@@ -162,17 +175,27 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+            <svg
+              className="w-8 h-8 text-red-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('errorOccurred')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {t("errorOccurred")}
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => router.back()}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {t('goBack')}
+            {t("goBack")}
           </button>
         </div>
       </div>
@@ -186,17 +209,29 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('paymentSummary')}</h1>
-              <p className="text-gray-600 mt-1">{t('paymentSummarySubtitle')}</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t("paymentSummary")}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {t("paymentSummarySubtitle")}
+              </p>
             </div>
             <button
               onClick={() => router.back()}
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"/>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
-              {t('goBack')}
+              {t("goBack")}
             </button>
           </div>
         </div>
@@ -205,9 +240,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Fee Breakdown */}
-          <div>
-            {fees && <FeeBreakdownCard fees={fees} />}
-          </div>
+          <div>{fees && <FeeBreakdownCard fees={fees} />}</div>
 
           {/* Right Column - Payment Method & Checkout */}
           <div className="space-y-6">
@@ -219,8 +252,10 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
 
             {/* Agreement & Checkout */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('paymentConfirmation')}</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                {t("paymentConfirmation")}
+              </h3>
+
               {/* Terms Agreement */}
               <div className="mb-6">
                 <label className="flex items-start">
@@ -231,7 +266,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                     className="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <span className="text-sm text-gray-700 leading-relaxed">
-                    {t('termsAgreement')}
+                    {t("termsAgreement")}
                   </span>
                 </label>
               </div>
@@ -240,8 +275,16 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               {error && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex items-center">
-                    <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                    <svg
+                      className="w-5 h-5 text-red-500 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <p className="text-sm text-red-700">{error}</p>
                   </div>
@@ -254,26 +297,34 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                 disabled={!agreementAccepted || processing}
                 className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-200 ${
                   agreementAccepted && !processing
-                    ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 {processing ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                    {t('paymentProcessing')}
+                    {t("paymentProcessing")}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
-                    {t('securePayment')}
+                    {t("securePayment")}
                     {fees && (
                       <span className="ml-2 font-bold">
-                        {new Intl.NumberFormat('tr-TR', {
-                          style: 'currency',
-                          currency: 'TRY'
+                        {new Intl.NumberFormat("tr-TR", {
+                          style: "currency",
+                          currency: "TRY",
                         }).format(fees.totalAmount)}
                       </span>
                     )}
@@ -284,7 +335,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               {/* Security Notice */}
               <div className="mt-4 text-center">
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  {t('paymentSecurityNotice')}
+                  {t("paymentSecurityNotice")}
                 </p>
               </div>
             </div>
