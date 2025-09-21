@@ -84,7 +84,7 @@ const DashboardPage: React.FC = () => {
             <PlusCircle className="w-5 h-5 mr-2" />
             {t("reportFoundDevice")}
           </Button>
-{/* Cihaz Ödemesi butonu gizlendi - Match ekranından erişilecek */}
+          {/* Cihaz Ödemesi butonu gizlendi - Match ekranından erişilecek */}
         </div>
       </div>
 
@@ -93,19 +93,28 @@ const DashboardPage: React.FC = () => {
       ) : userDevices.length > 0 ? (
         <div className="space-y-6">
           {/* Eşleşen Cihazlar için Özel Bölüm */}
-          {userDevices.some(device => device.status === 'MATCHED' || device.status === 'PAYMENT_PENDING') && (
+          {userDevices.some(
+            (device) =>
+              device.status === "MATCHED" || device.status === "PAYMENT_PENDING"
+          ) && (
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">🎯 Eşleşen Cihazlarınız</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                🎯 Eşleşen Cihazlarınız
+              </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {userDevices
-                  .filter(device => device.status === 'MATCHED' || device.status === 'PAYMENT_PENDING')
+                  .filter(
+                    (device) =>
+                      device.status === "MATCHED" ||
+                      device.status === "PAYMENT_PENDING"
+                  )
                   .map((device) => (
                     <div key={`match-${device.id}`} className="flex gap-4">
                       <div className="flex-1">
                         <DeviceCard device={device} />
                       </div>
                       <div className="w-80">
-                        <MatchInfoCard 
+                        <MatchInfoCard
                           deviceModel={device.model}
                           matchStatus="Eşleşme Bulundu"
                           className="h-full"
@@ -119,7 +128,9 @@ const DashboardPage: React.FC = () => {
 
           {/* Diğer Tüm Cihazlar */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">📱 Tüm Cihazlarınız</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              📱 Tüm Cihazlarınız
+            </h2>
             <div className="space-y-4">
               {userDevices
                 .sort((a, b) => b.id.localeCompare(a.id))

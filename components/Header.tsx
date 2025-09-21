@@ -202,7 +202,10 @@ const Header: React.FC = () => {
                             }`}
                           >
                             <p className="text-sm text-brand-gray-600">
-                              {t(`notifications.${n.message_key}`, n.replacements)}
+                              {t(
+                                `notifications.${n.message_key}`,
+                                n.replacements
+                              )}
                             </p>
                             <p className="text-xs text-brand-gray-400 mt-1">
                               {timeSince(n.created_at)}
@@ -231,9 +234,11 @@ const Header: React.FC = () => {
                   <div className="w-8 h-8 bg-gradient-to-r from-brand-blue to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {currentUser.fullName.charAt(0).toUpperCase()}
                   </div>
-                  <span className="hidden sm:inline font-medium text-brand-gray-700">{currentUser.fullName}</span>
+                  <span className="hidden sm:inline font-medium text-brand-gray-700">
+                    {currentUser.fullName}
+                  </span>
                 </Button>
-                
+
                 {/* Mobile button */}
                 <button
                   onClick={() => setIsUserMenuOpen((prev) => !prev)}
@@ -253,8 +258,12 @@ const Header: React.FC = () => {
                           {currentUser.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-sm">{currentUser.fullName}</p>
-                          <p className="text-blue-100 text-xs">{currentUser.email}</p>
+                          <p className="font-medium text-sm">
+                            {currentUser.fullName}
+                          </p>
+                          <p className="text-blue-100 text-xs">
+                            {currentUser.email}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -269,14 +278,24 @@ const Header: React.FC = () => {
                         <UserCircle className="w-5 h-5 mr-3 text-brand-gray-400 group-hover:text-brand-blue transition-colors" />
                         <span className="font-medium">{t("profile")}</span>
                       </NavLink>
-                      
+
                       <NavLink
                         to="/dashboard"
                         onClick={() => setIsUserMenuOpen(false)}
                         className="flex items-center px-4 py-3 text-sm text-brand-gray-700 hover:bg-brand-blue-light hover:text-brand-blue transition-colors duration-200 group"
                       >
-                        <svg className="w-5 h-5 mr-3 text-brand-gray-400 group-hover:text-brand-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        <svg
+                          className="w-5 h-5 mr-3 text-brand-gray-400 group-hover:text-brand-blue transition-colors"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                          />
                         </svg>
                         <span className="font-medium">{t("dashboard")}</span>
                       </NavLink>
@@ -285,13 +304,20 @@ const Header: React.FC = () => {
                       <div className="px-4 py-3 border-t border-brand-gray-100">
                         <div className="flex items-center mb-2">
                           <Globe className="w-5 h-5 mr-3 text-brand-gray-400" />
-                          <span className="text-sm font-medium text-brand-gray-700">{t("language")}</span>
+                          <span className="text-sm font-medium text-brand-gray-700">
+                            {t("language")}
+                          </span>
                         </div>
                         <div className="relative">
                           <select
                             onChange={(e) =>
                               setLanguage(
-                                e.target.value as "en" | "tr" | "fr" | "ja" | "es"
+                                e.target.value as
+                                  | "en"
+                                  | "tr"
+                                  | "fr"
+                                  | "ja"
+                                  | "es"
                               )
                             }
                             value={language}
@@ -304,8 +330,18 @@ const Header: React.FC = () => {
                             <option value="es">🇪🇸 Español</option>
                           </select>
                           <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                            <svg className="w-4 h-4 text-brand-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            <svg
+                              className="w-4 h-4 text-brand-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
                             </svg>
                           </div>
                         </div>
