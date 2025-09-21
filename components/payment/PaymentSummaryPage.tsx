@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import FeeBreakdownCard, { FeeBreakdown } from './FeeBreakdownCard';
-import PaymentMethodSelector, { PaymentProvider } from './PaymentMethodSelector';
+import PaymentMethodSelector, { PaymentProvider } from './PaymentMethodSelector.tsx';
 import { calculateFeesByModelName } from '../../utils/feeCalculation';
 import { initiatePayment } from '../../utils/paymentGateway';
 import { useAppContext } from '../../contexts/AppContext.tsx';

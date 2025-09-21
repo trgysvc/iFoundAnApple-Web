@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext.tsx";
-import Container from "../components/ui/Container";
-import Input from "../components/ui/Input";
-import Button from "../components/ui/Button";
+import Container from "../components/ui/Container.tsx";
+import Input from "../components/ui/Input.tsx";
+import Button from "../components/ui/Button.tsx";
 import { GoogleGenAI, Type } from "@google/genai";
 import { Sparkles, Upload, PlusCircle, CheckCircle, AlertCircle } from "lucide-react";
 import { getColorsForDevice } from '../constants';

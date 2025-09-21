@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Container from '../components/ui/Container';
-import Button from '../components/ui/Button';
+import Container from '../components/ui/Container.tsx';
+import Button from '../components/ui/Button.tsx';
 
 const NotFoundPage: React.FC = () => {
   return (

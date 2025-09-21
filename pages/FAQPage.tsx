@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../contexts/AppContext.tsx';
-import Container from '../components/ui/Container';
+import Container from '../components/ui/Container.tsx';
 import { ChevronDown } from 'lucide-react';
 
 const FaqItem: React.FC<{ question: string, answer: string }> = ({ question, answer }) => {

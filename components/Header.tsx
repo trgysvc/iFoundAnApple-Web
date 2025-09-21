@@ -10,7 +10,7 @@ import {
   CheckCheck,
   Shield,
 } from "lucide-react";
-import Button from "./ui/Button";
+import Button from "./ui/Button.tsx";
 
 const Header: React.FC = () => {
   const {
