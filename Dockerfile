@@ -10,8 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
+# Copy source code (exclude supabase functions)
 COPY . .
+RUN rm -rf supabase/
 
 # Build the application
 RUN npm run build

@@ -1,0 +1,4 @@
+supabase/
+*.lock
+node_modules/
+dist/
