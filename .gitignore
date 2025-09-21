@@ -45,3 +45,6 @@ Icon?
 .env
 .env.local
 .env.production
+
+# Deno
+deno.lock

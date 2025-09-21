@@ -1,14 +1,10 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "lib": ["deno.window", "dom", "dom.iterable"],
     "strict": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
     "jsx": "react-jsx",
-    "module": "esnext",
-    "target": "es2022"
+    "module": "esnext"
   },
   "imports": {
     "react": "https://esm.sh/react@^18.2.0",
