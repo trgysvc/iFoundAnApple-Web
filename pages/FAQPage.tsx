@@ -36,7 +36,7 @@ const FAQPage: React.FC = () => {
         <Container>
             <div className="max-w-3xl mx-auto">
                 <h1 className="text-4xl font-bold text-center text-brand-gray-600 mb-2">{t('faqTitle')}</h1>
-                <p className="text-center text-lg text-brand-gray-500 mb-10">Find answers to common questions about our platform.</p>
+                <p className="text-center text-lg text-brand-gray-500 mb-10">{t('faqIntro')}</p>
                 <div className="space-y-2">
                     {questions.map((item, index) => (
                         <FaqItem key={index} question={item.question} answer={item.answer} />

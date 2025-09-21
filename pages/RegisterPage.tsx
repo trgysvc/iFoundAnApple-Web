@@ -32,7 +32,7 @@ const RegisterPage: React.FC = () => {
       <Container className="max-w-md">
         <div className="bg-white p-8 rounded-xl shadow-lg text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto mb-4"></div>
-          <p className="text-brand-gray-600">Redirecting to dashboard...</p>
+          <p className="text-brand-gray-600">{t('redirectingToDashboard')}</p>
         </div>
       </Container>
     );

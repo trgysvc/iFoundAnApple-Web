@@ -18,7 +18,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, showNotification } = useAppContext();
+  const { currentUser, showNotification, t } = useAppContext();
   
   // URL'den parametreleri al
   const queryParams = new URLSearchParams(location.search);
@@ -58,11 +58,11 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
       if (result.success && result.fees) {
         setFees(result.fees);
       } else {
-        setError(result.error || 'Ücret hesaplaması yapılamadı');
+        setError(result.error || t('feeCalculationFailed'));
       }
     } catch (err) {
       console.error('Fee calculation error:', err);
-      setError('Ücret hesaplaması sırasında bir hata oluştu');
+      setError(t('feeCalculationError'));
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
   const handleProceedToPayment = () => {
     if (!fees) {
-      setError('Ücret hesaplaması tamamlanmadı');
+      setError(t('feeCalculationFailed'));
       return;
     }
     setStep('payment');
@@ -95,18 +95,18 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
   const handlePayment = async () => {
     if (!currentUser) {
-      showNotification('Ödeme yapmak için giriş yapmalısınız', 'error');
+      showNotification(t('paymentLoginRequired'), 'error');
       navigate('/login');
       return;
     }
 
     if (!fees || !finalDeviceId || !selectedModel) {
-      showNotification('Eksik ödeme bilgileri', 'error');
+      showNotification(t('missingPaymentInfo'), 'error');
       return;
     }
 
     if (!agreementAccepted) {
-      showNotification('Lütfen kullanım koşullarını kabul edin', 'error');
+      showNotification(t('acceptTermsRequired'), 'error');
       return;
     }
 
@@ -140,7 +140,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
       const result = await initiatePayment(paymentRequest, selectedPaymentMethod);
 
       if (result.success) {
-        showNotification('Ödeme başarıyla başlatıldı!', 'success');
+        showNotification(t('paymentInitiated'), 'success');
         
         if (result.redirectUrl) {
           window.location.href = result.redirectUrl;
@@ -148,13 +148,13 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
           navigate(`/payment/success?paymentId=${result.paymentId}`);
         }
       } else {
-        setError(result.errorMessage || 'Ödeme işlemi başlatılamadı');
-        showNotification('Ödeme işlemi başarısız', 'error');
+        setError(result.errorMessage || t('paymentFailed'));
+        showNotification(t('paymentFailed'), 'error');
       }
     } catch (err) {
       console.error('Payment error:', err);
-      setError('Ödeme işlemi sırasında bir hata oluştu');
-      showNotification('Ödeme işlemi başarısız', 'error');
+      setError(t('paymentError'));
+      showNotification(t('paymentFailed'), 'error');
     } finally {
       setProcessing(false);
     }
@@ -172,7 +172,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
           }`}>
             {step === 'fees' || step === 'payment' ? '✓' : '1'}
           </div>
-          <span className="ml-2 font-medium">Cihaz Modeli</span>
+          <span className="ml-2 font-medium">{t('stepIndicatorModel')}</span>
         </div>
 
         <div className="w-8 h-0.5 bg-gray-300"></div>
@@ -186,7 +186,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
           }`}>
             {step === 'payment' ? '✓' : '2'}
           </div>
-          <span className="ml-2 font-medium">Ücret Detayları</span>
+          <span className="ml-2 font-medium">{t('stepIndicatorFees')}</span>
         </div>
 
         <div className="w-8 h-0.5 bg-gray-300"></div>
@@ -198,7 +198,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
           }`}>
             3
           </div>
-          <span className="ml-2 font-medium">Ödeme</span>
+          <span className="ml-2 font-medium">{t('stepIndicatorPayment')}</span>
         </div>
       </div>
     </div>
@@ -211,8 +211,8 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Cihaz Kurtarma Ödemesi</h1>
-              <p className="text-gray-600 mt-1">Kayıp cihazınızı güvenle geri alın</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('deviceRecoveryPayment')}</h1>
+              <p className="text-gray-600 mt-1">{t('deviceRecoverySubtitle')}</p>
             </div>
             <button
               onClick={() => navigate(-1)}
@@ -221,7 +221,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"/>
               </svg>
-              Geri Dön
+              {t('goBack')}
             </button>
           </div>
         </div>
@@ -250,7 +250,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                 {loading ? (
                   <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Ücret hesaplanıyor...</p>
+                    <p className="text-gray-600">{t('calculatingFees')}</p>
                   </div>
                 ) : fees ? (
                   <FeeBreakdownCard fees={fees} />
@@ -266,7 +266,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                       onClick={calculateFees}
                       className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                     >
-                      Tekrar Dene
+                      {t('tryAgain')}
                     </button>
                   </div>
                 ) : null}
@@ -276,9 +276,9 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
               <div className="space-y-6">
                 {/* Custom Reward Input */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Özel Ödül Miktarı</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('customRewardAmount')}</h3>
                   <p className="text-sm text-gray-600 mb-4">
-                    İsteğe bağlı: Bulan kişiye daha yüksek ödül vermek istiyorsanız buradan belirleyebilirsiniz.
+                    {t('customRewardDescription')}
                   </p>
                   <div className="relative">
                     <input
@@ -288,7 +288,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                       step="50"
                       value={customRewardAmount || ''}
                       onChange={(e) => handleCustomRewardChange(Number(e.target.value) || 0)}
-                      placeholder={selectedModelData ? `Varsayılan: ${selectedModelData.ifoundanapple_fee} TL` : 'Özel ödül miktarı'}
+                      placeholder={selectedModelData ? t('defaultReward', {amount: selectedModelData.ifoundanapple_fee}) : t('customRewardAmount')}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -297,7 +297,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                   </div>
                   {customRewardAmount && customRewardAmount > 0 && (
                     <p className="mt-2 text-sm text-green-600">
-                      ✓ Özel ödül miktarı: {customRewardAmount} TL
+                      {t('customRewardSet', {amount: customRewardAmount})}
                     </p>
                   )}
                 </div>
@@ -309,7 +309,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                       onClick={() => setStep('model')}
                       className="w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
                     >
-                      ← Cihaz Modelini Değiştir
+                      {t('changeDeviceModel')}
                     </button>
                     
                     <button
@@ -321,7 +321,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
-                      Ödemeye Geç →
+                      {t('proceedToPayment')}
                     </button>
                   </div>
                 </div>
@@ -346,31 +346,31 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
               <div className="space-y-6">
                 {/* Quick Fee Summary */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Özeti</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('paymentSummary')}</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Cihaz:</span>
+                      <span className="text-gray-600">{t('deviceModel')}:</span>
                       <span className="font-medium">{fees.deviceModel}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Bulan kişiye ödül:</span>
+                      <span className="text-gray-600">{t('finderRewardLabel')}</span>
                       <span className="font-medium">{fees.rewardAmount.toFixed(2)} TL</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Kargo:</span>
+                      <span className="text-gray-600">{t('cargoLabel')}</span>
                       <span className="font-medium">{fees.cargoFee.toFixed(2)} TL</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Hizmet bedeli:</span>
+                      <span className="text-gray-600">{t('serviceFeeLabel')}:</span>
                       <span className="font-medium">{fees.serviceFee.toFixed(2)} TL</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Ödeme komisyonu:</span>
+                      <span className="text-gray-600">{t('gatewayFeeLabel')}:</span>
                       <span className="font-medium">{fees.gatewayFee.toFixed(2)} TL</span>
                     </div>
                     <div className="border-t pt-2 mt-2">
                       <div className="flex justify-between">
-                        <span className="font-semibold text-gray-900">TOPLAM:</span>
+                        <span className="font-semibold text-gray-900">{t('totalLabel')}</span>
                         <span className="font-bold text-xl text-red-600">
                           {fees.totalAmount.toFixed(2)} TL
                         </span>
@@ -381,7 +381,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
                 {/* Agreement & Checkout */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Onayı</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('paymentConfirmation')}</h3>
                   
                   <div className="mb-6">
                     <label className="flex items-start">
@@ -392,8 +392,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                         className="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700 leading-relaxed">
-                        <strong>Kullanım Koşulları</strong> ve <strong>Gizlilik Politikası</strong>'nı okudum ve kabul ediyorum. 
-                        Ödememin güvenli escrow sisteminde tutulacağını ve cihaz teslim edildikten sonra bulan kişiye aktarılacağını anlıyorum.
+                        {t('termsAgreement')}
                       </span>
                     </label>
                   </div>
@@ -414,7 +413,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                       onClick={() => setStep('fees')}
                       className="w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
                     >
-                      ← Ücret Detaylarına Dön
+                      {t('backToFeeDetails')}
                     </button>
 
                     <button
@@ -429,14 +428,14 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                       {processing ? (
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                          Ödeme İşleniyor...
+                          {t('paymentProcessing')}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center">
                           <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
                           </svg>
-                          Güvenli Ödeme Yap ({fees.totalAmount.toFixed(2)} TL)
+                          {t('securePayment')} ({fees.totalAmount.toFixed(2)} TL)
                         </div>
                       )}
                     </button>
@@ -444,7 +443,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      🔒 Bu ödeme SSL ile korunmaktadır. Kart bilgileriniz güvenli şekilde şifrelenir ve saklanmaz.
+                      {t('paymentSecurityNotice')}
                     </p>
                   </div>
                 </div>

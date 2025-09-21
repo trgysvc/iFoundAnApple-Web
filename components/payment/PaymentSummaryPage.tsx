@@ -19,7 +19,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, showNotification } = useAppContext();
+  const { currentUser, showNotification, t } = useAppContext();
   
   // URL'den parametreleri al
   const queryParams = new URLSearchParams(location.search);
@@ -45,7 +45,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
     if (finalDeviceModel) {
       loadFeeCalculation();
     } else {
-      setError('Cihaz modeli belirtilmemiş');
+      setError(t('deviceModelNotSpecified'));
       setLoading(false);
     }
   }, [finalDeviceModel, finalCustomReward]);
@@ -60,11 +60,11 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       if (result.success && result.fees) {
         setFees(result.fees);
       } else {
-        setError(result.error || 'Ücret hesaplaması yapılamadı');
+        setError(result.error || t('feeCalculationFailed'));
       }
     } catch (err) {
       console.error('Fee calculation error:', err);
-      setError('Ücret hesaplaması sırasında bir hata oluştu');
+      setError(t('feeCalculationError'));
     } finally {
       setLoading(false);
     }
@@ -72,18 +72,18 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
 
   const handlePayment = async () => {
     if (!currentUser) {
-      showNotification('Ödeme yapmak için giriş yapmalısınız', 'error');
+      showNotification(t('paymentLoginRequired'), 'error');
       navigate('/login');
       return;
     }
 
     if (!fees || !finalDeviceId) {
-      showNotification('Eksik ödeme bilgileri', 'error');
+      showNotification(t('missingPaymentInfo'), 'error');
       return;
     }
 
     if (!agreementAccepted) {
-      showNotification('Lütfen kullanım koşullarını kabul edin', 'error');
+      showNotification(t('acceptTermsRequired'), 'error');
       return;
     }
 
@@ -125,7 +125,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       const result = await initiatePayment(paymentRequest, selectedPaymentMethod);
 
       if (result.success) {
-        showNotification('Ödeme başarıyla başlatıldı!', 'success');
+        showNotification(t('paymentInitiated'), 'success');
         
         // Redirect to payment gateway if there's a redirect URL
         if (result.redirectUrl) {
@@ -135,13 +135,13 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
           navigate(`/payment/success?paymentId=${result.paymentId}`);
         }
       } else {
-        setError(result.errorMessage || 'Ödeme işlemi başlatılamadı');
-        showNotification('Ödeme işlemi başarısız', 'error');
+        setError(result.errorMessage || t('paymentFailed'));
+        showNotification(t('paymentFailed'), 'error');
       }
     } catch (err) {
       console.error('Payment error:', err);
-      setError('Ödeme işlemi sırasında bir hata oluştu');
-      showNotification('Ödeme işlemi başarısız', 'error');
+      setError(t('paymentError'));
+      showNotification(t('paymentFailed'), 'error');
     } finally {
       setProcessing(false);
     }
@@ -152,7 +152,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Ücret hesaplanıyor...</p>
+          <p className="text-gray-600">{t('calculatingFees')}</p>
         </div>
       </div>
     );
@@ -167,13 +167,13 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Hata Oluştu</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('errorOccurred')}</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => navigate(-1)}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Geri Dön
+            {t('goBack')}
           </button>
         </div>
       </div>
@@ -187,8 +187,8 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Ödeme Özeti</h1>
-              <p className="text-gray-600 mt-1">Güvenli ödeme ile cihazınızı geri alın</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t('paymentSummary')}</h1>
+              <p className="text-gray-600 mt-1">{t('paymentSummarySubtitle')}</p>
             </div>
             <button
               onClick={() => navigate(-1)}
@@ -197,7 +197,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"/>
               </svg>
-              Geri Dön
+              {t('goBack')}
             </button>
           </div>
         </div>
@@ -220,7 +220,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
 
             {/* Agreement & Checkout */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Onayı</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('paymentConfirmation')}</h3>
               
               {/* Terms Agreement */}
               <div className="mb-6">
@@ -232,8 +232,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                     className="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <span className="text-sm text-gray-700 leading-relaxed">
-                    <strong>Kullanım Koşulları</strong> ve <strong>Gizlilik Politikası</strong>'nı okudum ve kabul ediyorum. 
-                    Ödememin güvenli escrow sisteminde tutulacağını ve cihaz teslim edildikten sonra bulan kişiye aktarılacağını anlıyorum.
+                    {t('termsAgreement')}
                   </span>
                 </label>
               </div>
@@ -263,14 +262,14 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                 {processing ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                    Ödeme İşleniyor...
+                    {t('paymentProcessing')}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
                     </svg>
-                    Güvenli Ödeme Yap
+                    {t('securePayment')}
                     {fees && (
                       <span className="ml-2 font-bold">
                         {new Intl.NumberFormat('tr-TR', {
@@ -286,7 +285,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               {/* Security Notice */}
               <div className="mt-4 text-center">
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  🔒 Bu ödeme SSL ile korunmaktadır. Kart bilgileriniz güvenli şekilde şifrelenir ve saklanmaz.
+                  {t('paymentSecurityNotice')}
                 </p>
               </div>
             </div>

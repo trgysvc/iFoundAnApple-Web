@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAppContext } from '../../contexts/AppContext';
 
 export interface FeeBreakdown {
   rewardAmount: number;
@@ -23,6 +24,7 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
   showDetailedBreakdown = true,
   className = ""
 }) => {
+  const { t } = useAppContext();
   const formatPrice = (price: number): string => {
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
@@ -37,11 +39,11 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-white font-semibold text-lg">Ücret Detayları</h3>
+            <h3 className="text-white font-semibold text-lg">{t('feeDetailsCard')}</h3>
             <p className="text-blue-100 text-sm">{fees.deviceModel}</p>
           </div>
           <div className="text-right">
-            <p className="text-white text-xs opacity-75">Kategori</p>
+            <p className="text-white text-xs opacity-75">{t('category')}</p>
             <span className="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-medium">
               {fees.category}
             </span>
@@ -60,8 +62,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-green-900">Eşleşen Cihaz</p>
-                <p className="text-xs text-green-700">Bulan kişi ile eşleştiniz</p>
+                <p className="text-sm font-medium text-green-900">{t('matchedDevice')}</p>
+                <p className="text-xs text-green-700">{t('matchedWithFinder')}</p>
               </div>
             </div>
             <div className="text-right">
@@ -75,7 +77,7 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
         {showDetailedBreakdown && (
           <div className="space-y-4 mb-6">
             <h4 className="text-sm font-semibold text-gray-900 border-b pb-2">
-              iFoundAnApple Ücret Dağılımı
+              {t('ifoundanappleFeeBreakdown')}
             </h4>
             
             {/* Reward Amount */}
@@ -83,8 +85,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Bulan Kişiye Ödül</p>
-                  <p className="text-xs text-gray-500">Cihazı bulan kişiye ödenecek</p>
+                  <p className="text-sm font-medium text-gray-900">{t('finderReward')}</p>
+                  <p className="text-xs text-gray-500">{t('finderRewardDesc')}</p>
                 </div>
               </div>
               <span className="text-sm font-semibold text-green-600">
@@ -97,8 +99,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Kargo Ücreti</p>
-                  <p className="text-xs text-gray-500">Güvenli teslimat için</p>
+                  <p className="text-sm font-medium text-gray-900">{t('cargoLabel').replace(':', '')}</p>
+                  <p className="text-xs text-gray-500">{t('cargoFeeDesc')}</p>
                 </div>
               </div>
               <span className="text-sm font-semibold text-blue-600">
@@ -111,8 +113,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Hizmet Bedeli</p>
-                  <p className="text-xs text-gray-500">Platform komisyonu (%20)</p>
+                  <p className="text-sm font-medium text-gray-900">{t('serviceFeeLabel').replace(':', '')}</p>
+                  <p className="text-xs text-gray-500">{t('serviceFeeDesc')}</p>
                 </div>
               </div>
               <span className="text-sm font-semibold text-purple-600">
@@ -125,8 +127,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Ödeme Komisyonu</p>
-                  <p className="text-xs text-gray-500">Güvenli ödeme için (%5.5)</p>
+                  <p className="text-sm font-medium text-gray-900">{t('gatewayFeeLabel').replace(':', '')}</p>
+                  <p className="text-xs text-gray-500">{t('paymentCommissionDesc')}</p>
                 </div>
               </div>
               <span className="text-sm font-semibold text-orange-600">
@@ -140,8 +142,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
         <div className="border-t pt-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-lg font-bold text-gray-900">Toplam Ödemeniz</p>
-              <p className="text-sm text-gray-500">Şimdi ödenecek tutar</p>
+              <p className="text-lg font-bold text-gray-900">{t('totalPayment')}</p>
+              <p className="text-sm text-gray-500">{t('paymentDue')}</p>
             </div>
             <span className="text-2xl font-bold text-red-600">
               {formatPrice(fees.totalAmount)}
@@ -158,8 +160,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-green-900">Bulan Kişiye Net Ödeme</p>
-                  <p className="text-xs text-green-700">Hizmet bedeli düşüldükten sonra</p>
+                  <p className="text-sm font-semibold text-green-900">{t('finderNetPayment')}</p>
+                  <p className="text-xs text-green-700">{t('afterServiceFeeDeduction')}</p>
                 </div>
               </div>
               <span className="text-lg font-bold text-green-700">
@@ -178,9 +180,9 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-blue-900 mb-1">Güvenli Ödeme Sistemi</p>
+              <p className="text-sm font-semibold text-blue-900 mb-1">{t('securePaymentSystem')}</p>
               <p className="text-xs text-blue-700 leading-relaxed">
-                Ödemeniz güvenli escrow sisteminde tutulur. Cihaz teslim edildikten ve her iki taraf onayladıktan sonra bulan kişiye aktarılır.
+                {t('escrowSystemDesc')}
               </p>
             </div>
           </div>

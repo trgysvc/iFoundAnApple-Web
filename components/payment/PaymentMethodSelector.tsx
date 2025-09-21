@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../../contexts/AppContext';
 
 export type PaymentProvider = 'iyzico' | 'stripe' | 'test';
 
@@ -24,34 +25,35 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   onMethodChange,
   className = ""
 }) => {
+  const { t } = useAppContext();
   const paymentMethods: PaymentMethod[] = [
     {
       id: 'iyzico',
       name: 'Iyzico',
-      description: 'Türkiye\'nin güvenilir ödeme sistemi',
+      description: t('turkeyTrustedPayment'),
       icon: '🇹🇷',
-      fees: '%2.9 komisyon',
-      processingTime: 'Anında',
+      fees: '%2.9 ' + t('commission'),
+      processingTime: t('instant'),
       isRecommended: true,
       isEnabled: true
     },
     {
       id: 'stripe',
       name: 'Stripe',
-      description: 'Uluslararası güvenli ödeme',
+      description: t('internationalSecurePayment'),
       icon: '💳',
-      fees: '%2.9 komisyon',
-      processingTime: 'Anında',
+      fees: '%2.9 ' + t('commission'),
+      processingTime: t('instant'),
       isRecommended: false,
       isEnabled: true
     },
     {
       id: 'test',
       name: 'Test Modu',
-      description: 'Geliştirme amaçlı test ödemesi',
+      description: t('developmentTestPayment'),
       icon: '🧪',
-      fees: 'Ücretsiz',
-      processingTime: 'Anında',
+      fees: t('free'),
+      processingTime: t('instant'),
       isRecommended: false,
       isEnabled: process.env.NODE_ENV === 'development'
     }
@@ -71,8 +73,8 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
             </svg>
           </div>
           <div>
-            <h3 className="text-white font-semibold text-lg">Ödeme Yöntemi</h3>
-            <p className="text-green-100 text-sm">Güvenli ödeme seçenekleri</p>
+            <h3 className="text-white font-semibold text-lg">{t('paymentMethod')}</h3>
+            <p className="text-green-100 text-sm">{t('securePaymentOptions')}</p>
           </div>
         </div>
       </div>
@@ -93,7 +95,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
               {method.isRecommended && (
                 <div className="absolute -top-2 left-4">
                   <span className="bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                    ÖNERİLEN
+                    {t('recommended')}
                   </span>
                 </div>
               )}
@@ -163,14 +165,14 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-blue-900 mb-1">
-                          {method.id === 'iyzico' && 'Türkiye\'nin En Güvenilir Ödeme Sistemi'}
-                          {method.id === 'stripe' && 'Dünya Standartında Güvenlik'}
-                          {method.id === 'test' && 'Geliştirme Test Modu'}
+                          {method.id === 'iyzico' && t('turkeyMostTrustedPayment')}
+                          {method.id === 'stripe' && t('worldStandardSecurity')}
+                          {method.id === 'test' && t('developmentTestMode')}
                         </p>
                         <p className="text-xs text-blue-700 leading-relaxed">
-                          {method.id === 'iyzico' && '3D Secure ile korumalı, PCI DSS sertifikalı güvenli ödeme. Tüm Türk bankaları desteklenir.'}
-                          {method.id === 'stripe' && 'Uluslararası standartlarda güvenlik, 256-bit SSL şifreleme ile korunur.'}
-                          {method.id === 'test' && 'Gerçek para transferi olmaz. Sadece geliştirme ve test amaçlıdır.'}
+                          {method.id === 'iyzico' && t('iyzico3DSecure')}
+                          {method.id === 'stripe' && t('stripeInternational')}
+                          {method.id === 'test' && t('testModeDesc')}
                         </p>
                       </div>
                     </div>
@@ -183,31 +185,31 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
 
         {/* Security Features */}
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <h4 className="text-sm font-semibold text-gray-900 mb-3">🔒 Güvenlik Özellikleri</h4>
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('securityFeatures')}</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="flex items-center text-sm text-gray-600">
               <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
-              256-bit SSL Şifreleme
+              {t('sslEncryption')}
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
-              PCI DSS Uyumluluk
+              {t('pciCompliance')}
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
-              Escrow Güvencesi
+              {t('escrowGuarantee')}
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
-              3D Secure Doğrulama
+              {t('threeDSecureVerification')}
             </div>
           </div>
         </div>

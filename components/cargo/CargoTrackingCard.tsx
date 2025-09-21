@@ -27,6 +27,7 @@ import {
   getShipmentTracking,
   getCargoTrackingUrl
 } from '../../utils/cargoSystem';
+import { useAppContext } from '../../contexts/AppContext';
 
 interface CargoTrackingCardProps {
   shipmentId: string;
@@ -43,6 +44,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
   className = '',
   onDeliveryConfirm
 }) => {
+  const { t } = useAppContext();
   const [trackingInfo, setTrackingInfo] = useState<ShipmentTrackingInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -58,14 +60,14 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
 
       const info = await getShipmentTracking(shipmentId, userId);
       if (!info) {
-        setError('Kargo takip bilgileri bulunamadı');
+        setError(t('cargoTrackingNotFound'));
         return;
       }
 
       setTrackingInfo(info);
     } catch (error) {
       console.error('Error loading tracking info:', error);
-      setError('Takip bilgileri yüklenirken hata oluştu');
+      setError(t('trackingInfoLoadError'));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -112,7 +114,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
         <CardContent className="pt-6">
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-gray-600">Kargo bilgileri yükleniyor...</span>
+            <span className="ml-2 text-gray-600">{t('cargoLoadingInfo')}</span>
           </div>
         </CardContent>
       </Card>
@@ -132,7 +134,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
             variant="outline" 
             className="mt-4"
           >
-            Tekrar Dene
+            {t('tryAgain')}
           </Button>
         </CardContent>
       </Card>
@@ -149,7 +151,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <Package className="w-5 h-5" />
-            <span>Kargo Takip</span>
+            <span>{t('cargoTracking')}</span>
           </CardTitle>
           <div className="flex items-center space-x-2">
             <Button
@@ -160,7 +162,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
               className="flex items-center space-x-1"
             >
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Yenile</span>
+              <span>{t('refresh')}</span>
             </Button>
             {trackingInfo.trackingNumber && (
               <Button
@@ -170,7 +172,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
                 className="flex items-center space-x-1"
               >
                 <ExternalLink className="w-4 h-4" />
-                <span>Detaylı Takip</span>
+                <span>{t('detailedTracking')}</span>
               </Button>
             )}
           </div>
@@ -183,7 +185,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-semibold text-blue-900 mb-1">
-                Mevcut Durum
+                {t('currentStatus')}
               </h4>
               <p className="text-blue-800">
                 {trackingInfo.statusDescription}
@@ -202,33 +204,33 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
         {/* Tracking Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <h5 className="font-medium text-gray-900">Takip Bilgileri</h5>
+            <h5 className="font-medium text-gray-900">{t('trackingInfo')}</h5>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Anonim Kimlik:</span>
+                <span className="text-gray-600">{t('anonymousId')}:</span>
                 <Badge variant="outline" className="text-xs">
                   {trackingInfo.userAnonymousId}
                 </Badge>
               </div>
               {trackingInfo.trackingNumber && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Takip No:</span>
+                  <span className="text-gray-600">{t('trackingNumber')}:</span>
                   <span className="font-mono text-xs">
                     {trackingInfo.trackingNumber}
                   </span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Rolünüz:</span>
+                <span className="text-gray-600">{t('yourRole')}:</span>
                 <Badge variant={trackingInfo.userRole === 'sender' ? 'default' : 'secondary'}>
-                  {trackingInfo.userRole === 'sender' ? 'Gönderici' : 'Alıcı'}
+                  {trackingInfo.userRole === 'sender' ? t('sender') : t('receiver')}
                 </Badge>
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <h5 className="font-medium text-gray-900">Cihaz Bilgileri</h5>
+            <h5 className="font-medium text-gray-900">{t('deviceInfo')}</h5>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Model:</span>
@@ -236,7 +238,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
               </div>
               {trackingInfo.estimatedDelivery && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tahmini Teslimat:</span>
+                  <span className="text-gray-600">{t('estimatedDelivery')}:</span>
                   <span className="font-medium text-green-700">
                     {trackingInfo.estimatedDelivery}
                   </span>
@@ -248,8 +250,8 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
 
         {/* Tracking Timeline */}
         <div className="space-y-4">
-          <h5 className="font-medium text-gray-900">Kargo Geçmişi</h5>
-          <TrackingTimeline events={trackingInfo.trackingEvents} />
+          <h5 className="font-medium text-gray-900">{t('cargoHistory')}</h5>
+          <TrackingTimeline events={trackingInfo.trackingEvents} t={t} />
         </div>
 
         {/* Delivery Confirmation */}
@@ -258,10 +260,10 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-medium text-green-800 mb-1">
-                  Teslimat Tamamlandı
+                  {t('deliveryCompleted')}
                 </h4>
                 <p className="text-sm text-green-700">
-                  Cihazı aldığınızı onaylamak için butona tıklayın
+                  {t('confirmDeliveryMessage')}
                 </p>
               </div>
               <Button
@@ -269,7 +271,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
                 className="bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Teslimatı Onayla
+                {t('confirmDelivery')}
               </Button>
             </div>
           </div>
@@ -279,9 +281,7 @@ const CargoTrackingCard: React.FC<CargoTrackingCardProps> = ({
         <Alert>
           <Phone className="h-4 w-4" />
           <AlertDescription>
-            <strong>Kargo Desteği:</strong> Kargo ile ilgili sorunlar için 
-            kargo firmasının müşteri hizmetlerini arayabilir veya 
-            anonim kimlik kodunuz ile bizimle iletişime geçebilirsiniz.
+            {t('cargoSupport')}
           </AlertDescription>
         </Alert>
       </CardContent>
@@ -326,12 +326,12 @@ const StatusBadge: React.FC<{ status: CargoStatus }> = ({ status }) => {
 };
 
 // Tracking Timeline Component
-const TrackingTimeline: React.FC<{ events: TrackingEvent[] }> = ({ events }) => {
+const TrackingTimeline: React.FC<{ events: TrackingEvent[], t: (key: string) => string }> = ({ events, t }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-4 text-gray-500">
         <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
-        <p>Henüz kargo hareketi bulunmuyor</p>
+        <p>{t('noCargoMovement')}</p>
       </div>
     );
   }
