@@ -3,8 +3,8 @@
  * Database'deki ifoundanapple_fee değerlerini dinamik olarak günceller
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { getSecureConfig } from './security';
+import { createClient } from "@supabase/supabase-js";
+import { getSecureConfig } from "./security.ts";
 
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -29,29 +29,34 @@ export interface BulkFeeUpdateRequest {
 /**
  * Tek bir cihaz modelinin ücretini güncelle
  */
-export const updateDeviceModelFee = async (request: FeeUpdateRequest): Promise<{
+export const updateDeviceModelFee = async (
+  request: FeeUpdateRequest
+): Promise<{
   success: boolean;
   message?: string;
   error?: string;
 }> => {
   try {
-    console.log('[FEE_UPDATE] Ücret güncelleme başlatılıyor:', request);
+    console.log("[FEE_UPDATE] Ücret güncelleme başlatılıyor:", request);
 
-    let query = supabase.from('device_models');
+    let query = supabase.from("device_models");
 
     // ID veya isim ile filtreleme
     if (request.deviceModelId) {
-      query = query.eq('id', request.deviceModelId);
+      query = query.eq("id", request.deviceModelId);
     } else if (request.deviceModelName) {
-      query = query.eq('name', request.deviceModelName);
+      query = query.eq("name", request.deviceModelName);
     } else {
-      return { success: false, error: 'Device model ID veya name belirtilmeli' };
+      return {
+        success: false,
+        error: "Device model ID veya name belirtilmeli",
+      };
     }
 
     // Güncelleme verilerini hazırla
     const updateData: any = {
       ifoundanapple_fee: request.newIfoundappleFee,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (request.newFeePercentage !== undefined) {
@@ -61,31 +66,32 @@ export const updateDeviceModelFee = async (request: FeeUpdateRequest): Promise<{
     const { data, error } = await query.update(updateData);
 
     if (error) {
-      console.error('[FEE_UPDATE] Database güncelleme hatası:', error);
+      console.error("[FEE_UPDATE] Database güncelleme hatası:", error);
       return { success: false, error: error.message };
     }
 
     // Audit log kaydet
     await logFeeUpdate({
-      action: 'UPDATE_SINGLE',
+      action: "UPDATE_SINGLE",
       deviceModelId: request.deviceModelId,
       deviceModelName: request.deviceModelName,
       oldFee: null, // Eski değeri almak için ek sorgu gerekir
       newFee: request.newIfoundappleFee,
-      reason: request.reason
+      reason: request.reason,
     });
 
-    console.log('[FEE_UPDATE] ✅ Ücret başarıyla güncellendi');
-    return { 
-      success: true, 
-      message: `${request.deviceModelName || request.deviceModelId} modeli için ücret ${request.newIfoundappleFee} TL olarak güncellendi` 
+    console.log("[FEE_UPDATE] ✅ Ücret başarıyla güncellendi");
+    return {
+      success: true,
+      message: `${
+        request.deviceModelName || request.deviceModelId
+      } modeli için ücret ${request.newIfoundappleFee} TL olarak güncellendi`,
     };
-
   } catch (error) {
-    console.error('[FEE_UPDATE] Genel hata:', error);
+    console.error("[FEE_UPDATE] Genel hata:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -93,7 +99,9 @@ export const updateDeviceModelFee = async (request: FeeUpdateRequest): Promise<{
 /**
  * Toplu ücret güncelleme
  */
-export const bulkUpdateDeviceModelFees = async (request: BulkFeeUpdateRequest): Promise<{
+export const bulkUpdateDeviceModelFees = async (
+  request: BulkFeeUpdateRequest
+): Promise<{
   success: boolean;
   successCount?: number;
   failureCount?: number;
@@ -101,7 +109,11 @@ export const bulkUpdateDeviceModelFees = async (request: BulkFeeUpdateRequest): 
   message?: string;
 }> => {
   try {
-    console.log('[FEE_UPDATE] Toplu ücret güncelleme başlatılıyor:', request.updates.length, 'model');
+    console.log(
+      "[FEE_UPDATE] Toplu ücret güncelleme başlatılıyor:",
+      request.updates.length,
+      "model"
+    );
 
     const results = [];
     const errors = [];
@@ -112,7 +124,7 @@ export const bulkUpdateDeviceModelFees = async (request: BulkFeeUpdateRequest): 
           deviceModelName: update.deviceModelName,
           newIfoundappleFee: update.newIfoundappleFee,
           newFeePercentage: update.newFeePercentage,
-          reason: request.reason
+          reason: request.reason,
         });
 
         results.push(result);
@@ -120,29 +132,37 @@ export const bulkUpdateDeviceModelFees = async (request: BulkFeeUpdateRequest): 
           errors.push(`${update.deviceModelName}: ${result.error}`);
         }
       } catch (error) {
-        errors.push(`${update.deviceModelName}: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+        errors.push(
+          `${update.deviceModelName}: ${
+            error instanceof Error ? error.message : "Bilinmeyen hata"
+          }`
+        );
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
-    console.log('[FEE_UPDATE] ✅ Toplu güncelleme tamamlandı:', { successCount, failureCount });
+    console.log("[FEE_UPDATE] ✅ Toplu güncelleme tamamlandı:", {
+      successCount,
+      failureCount,
+    });
 
     return {
       success: failureCount === 0,
       successCount,
       failureCount,
       errors: errors.length > 0 ? errors : undefined,
-      message: `${successCount} model başarıyla güncellendi${failureCount > 0 ? `, ${failureCount} model başarısız` : ''}`
+      message: `${successCount} model başarıyla güncellendi${
+        failureCount > 0 ? `, ${failureCount} model başarısız` : ""
+      }`,
     };
-
   } catch (error) {
-    console.error('[FEE_UPDATE] Toplu güncelleme genel hatası:', error);
+    console.error("[FEE_UPDATE] Toplu güncelleme genel hatası:", error);
     return {
       success: false,
-      errors: [error instanceof Error ? error.message : 'Bilinmeyen hata'],
-      message: 'Toplu güncelleme başarısız'
+      errors: [error instanceof Error ? error.message : "Bilinmeyen hata"],
+      message: "Toplu güncelleme başarısız",
     };
   }
 };
@@ -161,38 +181,45 @@ export const updateCategoryFees = async (
   error?: string;
 }> => {
   try {
-    console.log('[FEE_UPDATE] Kategori bazlı güncelleme:', { category, multiplier });
+    console.log("[FEE_UPDATE] Kategori bazlı güncelleme:", {
+      category,
+      multiplier,
+    });
 
     // Önce kategorideki tüm modelleri al
     const { data: models, error: fetchError } = await supabase
-      .from('device_models')
-      .select('id, name, ifoundanapple_fee')
-      .eq('category', category)
-      .eq('is_active', true);
+      .from("device_models")
+      .select("id, name, ifoundanapple_fee")
+      .eq("category", category)
+      .eq("is_active", true);
 
     if (fetchError) {
       return { success: false, error: fetchError.message };
     }
 
     if (!models || models.length === 0) {
-      return { success: false, error: `${category} kategorisinde aktif model bulunamadı` };
+      return {
+        success: false,
+        error: `${category} kategorisinde aktif model bulunamadı`,
+      };
     }
 
     // Her model için yeni ücreti hesapla ve güncelle
-    const updates = models.map(model => ({
+    const updates = models.map((model) => ({
       id: model.id,
-      newFee: Math.round((model.ifoundanapple_fee || 0) * multiplier * 100) / 100
+      newFee:
+        Math.round((model.ifoundanapple_fee || 0) * multiplier * 100) / 100,
     }));
 
     let updatedCount = 0;
     for (const update of updates) {
       const { error } = await supabase
-        .from('device_models')
+        .from("device_models")
         .update({
           ifoundanapple_fee: update.newFee,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', update.id);
+        .eq("id", update.id);
 
       if (!error) {
         updatedCount++;
@@ -201,25 +228,27 @@ export const updateCategoryFees = async (
 
     // Audit log kaydet
     await logFeeUpdate({
-      action: 'UPDATE_CATEGORY',
+      action: "UPDATE_CATEGORY",
       category,
       multiplier,
       updatedCount,
-      reason
+      reason,
     });
 
-    console.log('[FEE_UPDATE] ✅ Kategori güncelleme tamamlandı:', updatedCount);
+    console.log(
+      "[FEE_UPDATE] ✅ Kategori güncelleme tamamlandı:",
+      updatedCount
+    );
     return {
       success: true,
       updatedCount,
-      message: `${category} kategorisindeki ${updatedCount} model güncellendi (${multiplier}x çarpan)`
+      message: `${category} kategorisindeki ${updatedCount} model güncellendi (${multiplier}x çarpan)`,
     };
-
   } catch (error) {
-    console.error('[FEE_UPDATE] Kategori güncelleme hatası:', error);
+    console.error("[FEE_UPDATE] Kategori güncelleme hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -239,26 +268,24 @@ const logFeeUpdate = async (logData: {
   reason?: string;
 }): Promise<void> => {
   try {
-    const { error } = await supabase
-      .from('fee_update_logs')
-      .insert({
-        action: logData.action,
-        device_model_id: logData.deviceModelId,
-        device_model_name: logData.deviceModelName,
-        category: logData.category,
-        multiplier: logData.multiplier,
-        old_fee: logData.oldFee,
-        new_fee: logData.newFee,
-        updated_count: logData.updatedCount,
-        reason: logData.reason,
-        created_at: new Date().toISOString()
-      });
+    const { error } = await supabase.from("fee_update_logs").insert({
+      action: logData.action,
+      device_model_id: logData.deviceModelId,
+      device_model_name: logData.deviceModelName,
+      category: logData.category,
+      multiplier: logData.multiplier,
+      old_fee: logData.oldFee,
+      new_fee: logData.newFee,
+      updated_count: logData.updatedCount,
+      reason: logData.reason,
+      created_at: new Date().toISOString(),
+    });
 
     if (error) {
-      console.error('[FEE_UPDATE] Log kaydetme hatası:', error);
+      console.error("[FEE_UPDATE] Log kaydetme hatası:", error);
     }
   } catch (error) {
-    console.error('[FEE_UPDATE] Log kaydetme genel hatası:', error);
+    console.error("[FEE_UPDATE] Log kaydetme genel hatası:", error);
   }
 };
 
@@ -279,9 +306,9 @@ export const getFeeStatistics = async (): Promise<{
 }> => {
   try {
     const { data, error } = await supabase
-      .from('device_models')
-      .select('category, ifoundanapple_fee')
-      .eq('is_active', true);
+      .from("device_models")
+      .select("category, ifoundanapple_fee")
+      .eq("is_active", true);
 
     if (error) {
       return { success: false, error: error.message };
@@ -290,7 +317,7 @@ export const getFeeStatistics = async (): Promise<{
     // Kategori bazlı istatistikleri hesapla
     const categoryStats = new Map();
 
-    data?.forEach(model => {
+    data?.forEach((model) => {
       const category = model.category;
       const fee = model.ifoundanapple_fee || 0;
 
@@ -299,7 +326,7 @@ export const getFeeStatistics = async (): Promise<{
           category,
           modelCount: 0,
           totalFee: 0,
-          fees: []
+          fees: [],
         });
       }
 
@@ -309,22 +336,21 @@ export const getFeeStatistics = async (): Promise<{
       stats.fees.push(fee);
     });
 
-    const statistics = Array.from(categoryStats.values()).map(stats => ({
+    const statistics = Array.from(categoryStats.values()).map((stats) => ({
       category: stats.category,
       modelCount: stats.modelCount,
       avgFee: Math.round((stats.totalFee / stats.modelCount) * 100) / 100,
       minFee: Math.min(...stats.fees),
       maxFee: Math.max(...stats.fees),
-      totalFee: stats.totalFee
+      totalFee: stats.totalFee,
     }));
 
     return { success: true, statistics };
-
   } catch (error) {
-    console.error('[FEE_UPDATE] İstatistik getirme hatası:', error);
+    console.error("[FEE_UPDATE] İstatistik getirme hatası:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
+      error: error instanceof Error ? error.message : "Bilinmeyen hata",
     };
   }
 };
@@ -341,10 +367,11 @@ export const apiUpdateFees = async (
   error?: string;
 }> => {
   // API anahtarı kontrolü (environment variable'dan)
-  const validApiKey = process.env.VITE_FEE_UPDATE_API_KEY || 'your-secure-api-key';
-  
+  const validApiKey =
+    process.env.VITE_FEE_UPDATE_API_KEY || "your-secure-api-key";
+
   if (apiKey !== validApiKey) {
-    return { success: false, error: 'Geçersiz API anahtarı' };
+    return { success: false, error: "Geçersiz API anahtarı" };
   }
 
   return await bulkUpdateDeviceModelFees(updates);

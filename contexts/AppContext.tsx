@@ -11,10 +11,10 @@ import {
   UserRole,
   DeviceStatus,
   AppNotification,
-} from "../types";
-import { translations } from "../constants";
+} from "../types.ts";
+import { translations } from "../constants.ts";
 import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig, secureLogger } from "../utils/security";
+import { getSecureConfig, secureLogger } from "../utils/security.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
 type Language = "en" | "tr" | "fr" | "ja" | "es";
@@ -146,7 +146,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
 
       if (session) {
-        secureLogger.userAction("Setting current user from session", session.user.id);
+        secureLogger.userAction(
+          "Setting current user from session",
+          session.user.id
+        );
 
         // Set initial user data from session
         const initialUser = {
@@ -161,7 +164,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         // Fetch additional profile data from userProfile table
         fetchUserProfile(session.user.id)
           .then((profileData) => {
-            secureLogger.info("Profile fetch completed", { hasData: !!profileData });
+            secureLogger.info("Profile fetch completed", {
+              hasData: !!profileData,
+            });
             if (profileData) {
               secureLogger.info("Profile data loaded successfully");
               setCurrentUser((prev) =>
@@ -393,7 +398,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         secureLogger.error("Error adding notification to Supabase:", error);
       } else {
         secureLogger.info("Notification added successfully");
-        secureLogger.info("✅ Real-time update should be triggered for this notification");
+        secureLogger.info(
+          "✅ Real-time update should be triggered for this notification"
+        );
 
         // Replace temporary notification with real one from database
         const newNotification = data[0] as AppNotification;
@@ -402,7 +409,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           const filtered = prev.filter((n) => !n.id.startsWith("temp-"));
           return [newNotification, ...filtered];
         });
-        secureLogger.info("✅ Temporary notification replaced with real one from database");
+        secureLogger.info(
+          "✅ Temporary notification replaced with real one from database"
+        );
       }
     },
     []
@@ -554,22 +563,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
 
     try {
-      console.log("addDevice: About to insert device with payload:", JSON.stringify(newDevicePayload, null, 2));
-      
+      console.log(
+        "addDevice: About to insert device with payload:",
+        JSON.stringify(newDevicePayload, null, 2)
+      );
+
       const { data, error } = await supabase
         .from("devices")
         .insert([newDevicePayload])
         .select();
-        
-      console.log("addDevice: Supabase response - data:", data, "error:", error);
-      
+
+      console.log(
+        "addDevice: Supabase response - data:",
+        data,
+        "error:",
+        error
+      );
+
       if (error) {
         console.error("Error adding device to Supabase:", error);
         console.error("Error details:", {
           message: error.message,
           details: error.details,
           hint: error.hint,
-          code: error.code
+          code: error.code,
         });
         return false;
       } else {
@@ -833,7 +850,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Database uses camelCase - direct assignment
     const devices: Device[] = (data || []) as Device[];
-    
+
     console.log("getUserDevices: Returning mapped devices:", devices);
     return devices;
   };
@@ -857,12 +874,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       return undefined;
     }
-    
+
     if (!data) return undefined;
-    
+
     // Database uses camelCase - direct assignment
     const device: Device = data as Device;
-    
+
     return device;
   };
 

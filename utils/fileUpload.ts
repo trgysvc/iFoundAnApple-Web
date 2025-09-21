@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from './security';
+import { getSecureConfig } from "./security.ts";
 
 // Get secure configuration from environment variables
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
@@ -48,40 +48,41 @@ export const uploadFileToStorage = async (
     if (file.size > maxSize) {
       return {
         success: false,
-        error: "File size exceeds 10MB limit"
+        error: "File size exceeds 10MB limit",
       };
     }
 
     // Validate file type
     const allowedTypes = [
-      'image/jpeg',
-      'image/jpg', 
-      'image/png',
-      'image/webp',
-      'application/pdf'
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
     ];
-    
+
     if (!allowedTypes.includes(file.type)) {
       return {
         success: false,
-        error: "Invalid file type. Only JPEG, PNG, WebP and PDF files are allowed."
+        error:
+          "Invalid file type. Only JPEG, PNG, WebP and PDF files are allowed.",
       };
     }
 
-  // Generate secure and identifiable file name
-  const fileExtension = file.name.split('.').pop();
-  const timestamp = Date.now();
-  const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
-  const randomString = Math.random().toString(36).substring(2, 8); // Shorter random string
-  
-  // Sanitize device model for filename
-  const sanitizedDeviceModel = deviceModel 
-    ? deviceModel.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20)
-    : 'device';
-  
-  // Format: {folder}/{userId}/{date}_{deviceModel}_{timestamp}_{random}.{ext}
-  // This matches RLS policy: (string_to_array(name, '/'))[2] = auth.uid()
-  const fileName = `${folder}/${userId}/${dateStr}_${sanitizedDeviceModel}_${timestamp}_${randomString}.${fileExtension}`;
+    // Generate secure and identifiable file name
+    const fileExtension = file.name.split(".").pop();
+    const timestamp = Date.now();
+    const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD
+    const randomString = Math.random().toString(36).substring(2, 8); // Shorter random string
+
+    // Sanitize device model for filename
+    const sanitizedDeviceModel = deviceModel
+      ? deviceModel.replace(/[^a-zA-Z0-9]/g, "").substring(0, 20)
+      : "device";
+
+    // Format: {folder}/{userId}/{date}_{deviceModel}_{timestamp}_{random}.{ext}
+    // This matches RLS policy: (string_to_array(name, '/'))[2] = auth.uid()
+    const fileName = `${folder}/${userId}/${dateStr}_${sanitizedDeviceModel}_${timestamp}_${randomString}.${fileExtension}`;
 
     // Secure logging - don't log full file paths in production
     if (import.meta.env.DEV) {
@@ -92,15 +93,15 @@ export const uploadFileToStorage = async (
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file, {
-        cacheControl: '3600', // 1 hour cache
-        upsert: false // Don't overwrite existing files
+        cacheControl: "3600", // 1 hour cache
+        upsert: false, // Don't overwrite existing files
       });
 
     if (error) {
       console.error("uploadFileToStorage: Upload error:", error.message);
       return {
         success: false,
-        error: `Upload failed: ${error.message}`
+        error: `Upload failed: ${error.message}`,
       };
     }
 
@@ -118,14 +119,15 @@ export const uploadFileToStorage = async (
 
     return {
       success: true,
-      url: filePath // Store file path, not public URL
+      url: filePath, // Store file path, not public URL
     };
-
   } catch (error) {
     console.error("uploadFileToStorage: Unexpected error:", error);
     return {
       success: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
     };
   }
 };
@@ -141,7 +143,13 @@ export const uploadInvoiceDocument = async (
   userId: string,
   deviceModel?: string
 ): Promise<FileUploadResult> => {
-  return uploadFileToStorage(file, 'device-documents', 'invoices', userId, deviceModel);
+  return uploadFileToStorage(
+    file,
+    "device-documents",
+    "invoices",
+    userId,
+    deviceModel
+  );
 };
 
 /**
@@ -156,20 +164,18 @@ export const deleteFileFromStorage = async (
 ): Promise<boolean> => {
   try {
     // Extract file path from public URL
-    const urlParts = url.split('/');
-    const bucketIndex = urlParts.findIndex(part => part === bucket);
+    const urlParts = url.split("/");
+    const bucketIndex = urlParts.findIndex((part) => part === bucket);
     if (bucketIndex === -1 || bucketIndex === urlParts.length - 1) {
       console.error("deleteFileFromStorage: Invalid URL format");
       return false;
     }
-    
-    const filePath = urlParts.slice(bucketIndex + 1).join('/');
-    
+
+    const filePath = urlParts.slice(bucketIndex + 1).join("/");
+
     console.log("deleteFileFromStorage: Deleting file:", filePath);
 
-    const { error } = await supabase.storage
-      .from(bucket)
-      .remove([filePath]);
+    const { error } = await supabase.storage.from(bucket).remove([filePath]);
 
     if (error) {
       console.error("deleteFileFromStorage: Delete error:", error);
@@ -178,7 +184,6 @@ export const deleteFileFromStorage = async (
 
     console.log("deleteFileFromStorage: File deleted successfully");
     return true;
-
   } catch (error) {
     console.error("deleteFileFromStorage: Unexpected error:", error);
     return false;
@@ -216,7 +221,6 @@ export const getSecureFileUrl = async (
 
     console.log("getSecureFileUrl: Signed URL generated successfully");
     return data.signedUrl;
-
   } catch (error) {
     console.error("getSecureFileUrl: Unexpected error:", error);
     return null;
@@ -228,8 +232,10 @@ export const getSecureFileUrl = async (
  * @param filePath - File path stored in database
  * @returns Signed URL valid for 1 hour
  */
-export const getSecureInvoiceUrl = async (filePath: string): Promise<string | null> => {
-  return getSecureFileUrl(filePath, 'device-documents', 3600); // 1 hour
+export const getSecureInvoiceUrl = async (
+  filePath: string
+): Promise<string | null> => {
+  return getSecureFileUrl(filePath, "device-documents", 3600); // 1 hour
 };
 
 /**
@@ -240,10 +246,10 @@ export const getSecureInvoiceUrl = async (filePath: string): Promise<string | nu
  */
 export const getFileInfo = async (filePath: string, bucket: string) => {
   try {
-    const pathParts = filePath.split('/');
+    const pathParts = filePath.split("/");
     const fileName = pathParts.pop();
-    const folderPath = pathParts.join('/');
-    
+    const folderPath = pathParts.join("/");
+
     const { data, error } = await supabase.storage
       .from(bucket)
       .list(folderPath);
@@ -253,9 +259,8 @@ export const getFileInfo = async (filePath: string, bucket: string) => {
       return null;
     }
 
-    const fileInfo = data.find(file => file.name === fileName);
+    const fileInfo = data.find((file) => file.name === fileName);
     return fileInfo || null;
-
   } catch (error) {
     console.error("getFileInfo: Unexpected error:", error);
     return null;
