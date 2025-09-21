@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Device, DeviceStatus } from '../types';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext.tsx';
 import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, CreditCard, Package, ChevronRight } from 'lucide-react';
 
 interface DeviceCardProps {

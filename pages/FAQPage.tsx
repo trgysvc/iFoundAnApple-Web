@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext.tsx';
 import Container from '../components/ui/Container';
 import { ChevronDown } from 'lucide-react';
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext.tsx';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
 import { Lock, Shuffle, Award, CheckCircle } from 'lucide-react';

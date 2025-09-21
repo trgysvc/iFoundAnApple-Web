@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
-import { UserRole } from "../types";
+import { useAppContext } from "../contexts/AppContext.tsx";
+import { UserRole } from "../types.ts";
 import {
   Globe,
   LogOut,
