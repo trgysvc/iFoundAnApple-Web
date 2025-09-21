@@ -1,25 +1,25 @@
 import React from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AppProvider, useAppContext } from "./contexts/AppContext";
-import { UserRole } from "./types";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
-import AddDevicePage from "./pages/AddDevicePage";
-import PaymentFlowPage from "./pages/PaymentFlowPage";
-import MatchPaymentPage from "./pages/MatchPaymentPage";
-import PaymentSummaryPage from "./components/payment/PaymentSummaryPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import DeviceDetailPage from "./pages/DeviceDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import FAQPage from "./pages/FAQPage";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import ContactPage from "./pages/ContactPage";
+import { AppProvider, useAppContext } from "./contexts/AppContext.tsx";
+import { UserRole } from "./types.ts";
+import Header from "./components/Header.tsx";
+import Footer from "./components/Footer.tsx";
+import HomePage from "./pages/HomePage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
+import DashboardPage from "./pages/DashboardPage.tsx";
+import AddDevicePage from "./pages/AddDevicePage.tsx";
+import PaymentFlowPage from "./pages/PaymentFlowPage.tsx";
+import MatchPaymentPage from "./pages/MatchPaymentPage.tsx";
+import PaymentSummaryPage from "./components/payment/PaymentSummaryPage.tsx";
+import NotFoundPage from "./pages/NotFoundPage.tsx";
+import DeviceDetailPage from "./pages/DeviceDetailPage.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
+import AdminDashboardPage from "./pages/AdminDashboardPage.tsx";
+import FAQPage from "./pages/FAQPage.tsx";
+import TermsPage from "./pages/TermsPage.tsx";
+import PrivacyPage from "./pages/PrivacyPage.tsx";
+import ContactPage from "./pages/ContactPage.tsx";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
