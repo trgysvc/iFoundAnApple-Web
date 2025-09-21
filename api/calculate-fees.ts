@@ -40,8 +40,8 @@ const FIXED_FEES = {
 export async function calculateFeesAPI(request: FeeCalculationRequest): Promise<FeeBreakdown> {
   try {
     // Initialize Supabase client
-    const { supabaseUrl, supabaseServiceKey } = getSecureConfig();
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    const config = getSecureConfig();
+    const supabaseClient = createClient(config.supabaseUrl, config.supabaseServiceKey || config.supabaseAnonKey);
 
     const { deviceModelId, deviceModelName, customRewardAmount } = request;
 

@@ -32,8 +32,8 @@ interface EscrowReleaseResponse {
 export async function releaseEscrowAPI(request: EscrowReleaseRequest): Promise<EscrowReleaseResponse> {
   try {
     // Initialize Supabase client
-    const { supabaseUrl, supabaseServiceKey } = getSecureConfig();
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    const config = getSecureConfig();
+    const supabaseClient = createClient(config.supabaseUrl, config.supabaseServiceKey || config.supabaseAnonKey);
 
     const {
       escrowId,

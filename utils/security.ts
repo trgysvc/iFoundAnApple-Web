@@ -219,15 +219,22 @@ const basicHtmlSanitize = (input: string): string => {
 export const getSecureConfig = () => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
   const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing required environment variables. Check your .env file.');
+    console.error('Missing required environment variables:', {
+      supabaseUrl: !!supabaseUrl,
+      supabaseAnonKey: !!supabaseAnonKey,
+      supabaseServiceKey: !!supabaseServiceKey
+    });
+    throw new Error('Missing required environment variables. Please check your .env file and ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.');
   }
   
   return {
     supabaseUrl,
     supabaseAnonKey,
+    supabaseServiceKey,
     geminiApiKey,
     isDevelopment
   };

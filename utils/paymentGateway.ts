@@ -105,7 +105,7 @@ export const initiatePayment = async (
     // Use the local API function
     const paymentRequest = {
       ...request,
-      paymentProvider: provider
+      paymentProvider: provider,
     };
 
     return await processPaymentLocal(paymentRequest);
@@ -256,9 +256,9 @@ export const releaseEscrowFunds = async (
       paymentId: request.paymentId,
       deviceId: request.deviceId,
       releaseReason: request.releaseReason,
-      confirmationType: 'manual_release' as const,
+      confirmationType: "manual_release" as const,
       confirmedBy: request.confirmedBy[0], // Use first confirmed by user
-      additionalNotes: `Released via ${provider}`
+      additionalNotes: `Released via ${provider}`,
     };
 
     return await releaseEscrowLocal(escrowRequest);
