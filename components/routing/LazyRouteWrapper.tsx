@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
-import LoadingSpinner from '../ui/LoadingSpinner.tsx';
-import { useAppContext } from '../../contexts/AppContext.tsx';
-import { performanceMonitor } from '../../utils/performanceMonitor.ts';
+import LoadingSpinner from '../ui/LoadingSpinner';
+import { useAppContext } from '../../contexts/AppContext';
+import { performanceMonitor } from '../../utils/performanceMonitor';
 
 interface LazyRouteWrapperProps {
   children: React.ReactNode;

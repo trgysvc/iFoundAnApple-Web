@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AppProvider, useAppContext } from "./contexts/AppContext.tsx";
-import { UserRole } from "./types.ts";
-import Header from "./components/Header.tsx";
-import Footer from "./components/Footer.tsx";
-import LazyRouteWrapper from "./components/routing/LazyRouteWrapper.tsx";
+import { AppProvider, useAppContext } from "./contexts/AppContext";
+import { UserRole } from "./types";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import LazyRouteWrapper from "./components/routing/LazyRouteWrapper";
 import {
   HomePage,
   LoginPage,
@@ -24,7 +24,7 @@ import {
   ContactPage,
   preloadCriticalRoutes,
   preloadUserRoutes
-} from "./utils/lazyRoutes.ts";
+} from "./utils/lazyRoutes";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
