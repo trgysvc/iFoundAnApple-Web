@@ -1,0 +1,52 @@
+import { lazy } from 'react';
+
+// Public pages - High priority (preload)
+export const HomePage = lazy(() => import('../pages/HomePage'));
+export const LoginPage = lazy(() => import('../pages/LoginPage'));
+export const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+
+// Static/Info pages - Low priority
+export const FAQPage = lazy(() => import('../pages/FAQPage'));
+export const TermsPage = lazy(() => import('../pages/TermsPage'));
+export const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
+export const ContactPage = lazy(() => import('../pages/ContactPage'));
+
+// Dashboard/User pages - Medium priority
+export const DashboardPage = lazy(() => import('../pages/DashboardPage'));
+export const ProfilePage = lazy(() => import('../pages/ProfilePage'));
+export const AddDevicePage = lazy(() => import('../pages/AddDevicePage'));
+export const DeviceDetailPage = lazy(() => import('../pages/DeviceDetailPage'));
+
+// Payment pages - High priority (business critical)
+export const PaymentFlowPage = lazy(() => import('../pages/PaymentFlowPage'));
+export const MatchPaymentPage = lazy(() => import('../pages/MatchPaymentPage'));
+export const PaymentSummaryPage = lazy(() => import('../components/payment/PaymentSummaryPage'));
+
+// Admin pages - Low priority (restricted access)
+export const AdminDashboardPage = lazy(() => import('../pages/AdminDashboardPage'));
+
+// Error pages
+export const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+
+// Route preloading utility
+export const preloadRoute = (routeImport: () => Promise<any>) => {
+  // Preload the route component
+  routeImport();
+};
+
+// Preload critical routes
+export const preloadCriticalRoutes = () => {
+  // Preload login/register for quick access
+  preloadRoute(() => import('../pages/LoginPage'));
+  preloadRoute(() => import('../pages/RegisterPage'));
+  
+  // Preload dashboard for logged-in users
+  preloadRoute(() => import('../pages/DashboardPage'));
+};
+
+// Preload routes on user interaction
+export const preloadUserRoutes = () => {
+  preloadRoute(() => import('../pages/AddDevicePage'));
+  preloadRoute(() => import('../pages/ProfilePage'));
+  preloadRoute(() => import('../pages/PaymentFlowPage'));
+};

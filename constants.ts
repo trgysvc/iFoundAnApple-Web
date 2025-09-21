@@ -74,7 +74,7 @@ export const translations = {
     serialNumber: "Serial Number",
     noDevicesReported: "You have not reported any devices yet.",
     // Device Forms
-    deviceModel: "Device Model (e.g., iPhone 15 Pro)",
+    deviceModelForm: "Device Model (e.g., iPhone 15 Pro)",
     deviceSerialNumber: "Serial Number",
     deviceColor: "Color",
     deviceDescription: "Additional details (optional)",
@@ -98,7 +98,7 @@ export const translations = {
     Completed: "Completed",
     // Device Detail Page
     deviceDetails: "Device Details",
-    matchFound: "A match was found for your device!",
+    matchFoundDevice: "A match was found for your device!",
     reward: "Reward",
     makePaymentSecurely: "Make Payment Securely",
     waitingForOwnerPayment: "Waiting for the owner to make the payment.",
@@ -119,6 +119,7 @@ export const translations = {
     backToDashboard: "Back to Dashboard",
     goBack: "Go Back",
     loading: "Loading...",
+    loadingPageContent: "Please wait while the page loads...",
     viewInvoice: "View Invoice",
     failedToAddDevice: "Failed to add device. Please try again.",
     failedToLoadDeviceModels: "Failed to load device models.",
@@ -144,7 +145,6 @@ export const translations = {
     paymentError: "An error occurred during payment processing",
     calculatingFees: "Calculating fees...",
     errorOccurred: "An Error Occurred",
-    goBack: "Go Back",
     // Cargo related
     cargoTracking: "Cargo Tracking",
     refresh: "Refresh",
@@ -198,7 +198,6 @@ export const translations = {
     totalLabel: "TOTAL:",
     redirectingToDashboard: "Redirecting to dashboard...",
     // Fee Breakdown Card translations
-    feeDetailsCard: "Fee Details",
     category: "Category",
     matchedDevice: "Matched Device",
     matchedWithFinder: "Matched with finder",
@@ -371,7 +370,7 @@ export const translations = {
     serialNumber: "Seri Numarası",
     noDevicesReported: "Henüz herhangi bir cihaz bildiriminde bulunmadınız.",
     // Device Forms
-    deviceModel: "Cihaz Modeli (örn. iPhone 15 Pro)",
+    deviceModelForm: "Cihaz Modeli (örn. iPhone 15 Pro)",
     deviceSerialNumber: "Seri Numarası",
     deviceColor: "Renk",
     deviceDescription: "Ek detaylar (isteğe bağlı)",
@@ -461,7 +460,6 @@ export const translations = {
     totalLabel: "TOPLAM:",
     redirectingToDashboard: "Panele yönlendiriliyor...",
     // Fee Breakdown Card translations
-    feeDetailsCard: "Ücret Detayları",
     category: "Kategori",
     matchedDevice: "Eşleşen Cihaz",
     matchedWithFinder: "Bulan kişi ile eşleştiniz",
@@ -507,7 +505,7 @@ export const translations = {
     Completed: "Tamamlandı",
      // Device Detail Page
     deviceDetails: "Cihaz Detayları",
-    matchFound: "Cihazınızla bir eşleşme bulundu!",
+    matchFoundDevice: "Cihazınızla bir eşleşme bulundu!",
     reward: "Ödül",
     makePaymentSecurely: "Ödemeyi Güvenle Yap",
     waitingForOwnerPayment: "Kayıp sahibinin ödeme yapması bekleniyor.",
@@ -528,6 +526,7 @@ export const translations = {
     backToDashboard: "Panele Geri Dön",
     goBack: "Geri Dön",
     loading: "Yükleniyor...",
+    loadingPageContent: "Sayfa yüklenirken lütfen bekleyin...",
     viewInvoice: "Faturayı Görüntüle",
     // Admin Panel
     totalUsers: "Toplam Kullanıcı",
@@ -666,7 +665,7 @@ export const translations = {
     serialNumber: "Numéro de série",
     noDevicesReported: "Vous n'avez encore signalé aucun appareil.",
     // Device Forms
-    deviceModel: "Modèle de l'appareil (ex: iPhone 15 Pro)",
+    deviceModelForm: "Modèle de l'appareil (ex: iPhone 15 Pro)",
     deviceSerialNumber: "Numéro de série",
     deviceColor: "Couleur",
     deviceDescription: "Détails supplémentaires (facultatif)",
@@ -756,7 +755,6 @@ export const translations = {
     totalLabel: "TOTAL:",
     redirectingToDashboard: "Redirection vers le tableau de bord...",
     // Fee Breakdown Card translations
-    feeDetailsCard: "Détails des Frais",
     category: "Catégorie",
     matchedDevice: "Appareil Correspondant",
     matchedWithFinder: "Associé avec le trouveur",
@@ -802,7 +800,7 @@ export const translations = {
     Completed: "Terminé",
     // Device Detail Page
     deviceDetails: "Détails de l'appareil",
-    matchFound: "Une correspondance a été trouvée pour votre appareil !",
+    matchFoundDevice: "Une correspondance a été trouvée pour votre appareil !",
     reward: "Récompense",
     makePaymentSecurely: "Effectuer le paiement en toute sécurité",
     waitingForOwnerPayment: "En attente du paiement du propriétaire.",
@@ -823,6 +821,7 @@ export const translations = {
     backToDashboard: "Retour au tableau de bord",
     goBack: "Retour",
     loading: "Chargement...",
+    loadingPageContent: "Veuillez patienter pendant le chargement de la page...",
     viewInvoice: "Voir la facture",
     // Admin Panel
     totalUsers: "Utilisateurs totaux",
@@ -939,7 +938,7 @@ export const translations = {
     serialNumber: "シリアル番号",
     noDevicesReported: "まだデバイスを報告していません。",
     // Device Forms
-    deviceModel: "デバイスモデル（例：iPhone 15 Pro）",
+    deviceModelForm: "デバイスモデル（例：iPhone 15 Pro）",
     deviceSerialNumber: "シリアル番号",
     deviceColor: "色",
     deviceDescription: "追加情報（任意）",
@@ -1029,7 +1028,6 @@ export const translations = {
     totalLabel: "合計:",
     redirectingToDashboard: "ダッシュボードにリダイレクト中...",
     // Fee Breakdown Card translations
-    feeDetailsCard: "料金詳細",
     category: "カテゴリ",
     matchedDevice: "マッチしたデバイス",
     matchedWithFinder: "発見者とマッチしました",
@@ -1075,7 +1073,7 @@ export const translations = {
     Completed: "完了",
     // Device Detail Page
     deviceDetails: "デバイス詳細",
-    matchFound: "お使いのデバイスに一致するものが見つかりました！",
+    matchFoundDevice: "お使いのデバイスに一致するものが見つかりました！",
     reward: "報酬",
     makePaymentSecurely: "安全に支払いを行う",
     waitingForOwnerPayment: "所有者の支払いを待っています。",
@@ -1096,6 +1094,7 @@ export const translations = {
     backToDashboard: "ダッシュボードに戻る",
     goBack: "戻る",
     loading: "読み込み中...",
+    loadingPageContent: "ページを読み込み中です。お待ちください...",
     viewInvoice: "請求書を見る",
     // Admin Panel
     totalUsers: "総ユーザー数",
@@ -1212,7 +1211,7 @@ export const translations = {
     serialNumber: "Número de serie",
     noDevicesReported: "Aún no has reportado ningún dispositivo.",
     // Device Forms
-    deviceModel: "Modelo del dispositivo (ej: iPhone 15 Pro)",
+    deviceModelForm: "Modelo del dispositivo (ej: iPhone 15 Pro)",
     deviceSerialNumber: "Número de serie",
     deviceColor: "Color",
     deviceDescription: "Detalles adicionales (opcional)",
@@ -1302,7 +1301,6 @@ export const translations = {
     totalLabel: "TOTAL:",
     redirectingToDashboard: "Redirigiendo al panel...",
     // Fee Breakdown Card translations
-    feeDetailsCard: "Detalles de Tarifas",
     category: "Categoría",
     matchedDevice: "Dispositivo Coincidente",
     matchedWithFinder: "Emparejado con el buscador",
@@ -1348,7 +1346,7 @@ export const translations = {
     Completed: "Completado",
     // Device Detail Page
     deviceDetails: "Detalles del Dispositivo",
-    matchFound: "¡Se encontró una coincidencia para tu dispositivo!",
+    matchFoundDevice: "¡Se encontró una coincidencia para tu dispositivo!",
     reward: "Recompensa",
     makePaymentSecurely: "Realizar Pago de Forma Segura",
     waitingForOwnerPayment: "Esperando a que el propietario realice el pago.",
@@ -1369,6 +1367,7 @@ export const translations = {
     backToDashboard: "Volver al Panel",
     goBack: "Volver",
     loading: "Cargando...",
+    loadingPageContent: "Por favor espera mientras se carga la página...",
     viewInvoice: "Ver factura",
     // Admin Panel
     totalUsers: "Usuarios Totales",

@@ -39,7 +39,7 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-white font-semibold text-lg">{t('feeDetailsCard')}</h3>
+            <h3 className="text-white font-semibold text-lg">{t('feeDetails')}</h3>
             <p className="text-blue-100 text-sm">{fees.deviceModel}</p>
           </div>
           <div className="text-right">

@@ -1,25 +1,30 @@
-import React from "react";
+import React, { Suspense, useEffect } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useAppContext } from "./contexts/AppContext";
 import { UserRole } from "./types";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
-import AddDevicePage from "./pages/AddDevicePage";
-import PaymentFlowPage from "./pages/PaymentFlowPage";
-import MatchPaymentPage from "./pages/MatchPaymentPage";
-import PaymentSummaryPage from "./components/payment/PaymentSummaryPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import DeviceDetailPage from "./pages/DeviceDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import FAQPage from "./pages/FAQPage";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import ContactPage from "./pages/ContactPage";
+import LazyRouteWrapper from "./components/routing/LazyRouteWrapper";
+import {
+  HomePage,
+  LoginPage,
+  RegisterPage,
+  DashboardPage,
+  AddDevicePage,
+  PaymentFlowPage,
+  MatchPaymentPage,
+  PaymentSummaryPage,
+  NotFoundPage,
+  DeviceDetailPage,
+  ProfilePage,
+  AdminDashboardPage,
+  FAQPage,
+  TermsPage,
+  PrivacyPage,
+  ContactPage,
+  preloadCriticalRoutes,
+  preloadUserRoutes
+} from "./utils/lazyRoutes";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
@@ -42,92 +47,144 @@ const AdminRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
+const AppContent: React.FC = () => {
+  const { currentUser } = useAppContext();
+
+  // Preload routes based on user state
+  useEffect(() => {
+    // Always preload critical routes
+    preloadCriticalRoutes();
+
+    // Preload user-specific routes if logged in
+    if (currentUser) {
+      preloadUserRoutes();
+    }
+  }, [currentUser]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={
+            <LazyRouteWrapper>
+              <HomePage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/login" element={
+            <LazyRouteWrapper>
+              <LoginPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/register" element={
+            <LazyRouteWrapper>
+              <RegisterPage />
+            </LazyRouteWrapper>
+          } />
+          
+          {/* Info Pages */}
+          <Route path="/faq" element={
+            <LazyRouteWrapper>
+              <FAQPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/terms" element={
+            <LazyRouteWrapper>
+              <TermsPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/privacy" element={
+            <LazyRouteWrapper>
+              <PrivacyPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/contact" element={
+            <LazyRouteWrapper>
+              <ContactPage />
+            </LazyRouteWrapper>
+          } />
+
+          {/* Protected User Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper>
+                <DashboardPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/add-device" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper>
+                <AddDevicePage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/device/:deviceId" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper>
+                <DeviceDetailPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper>
+                <ProfilePage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          
+          {/* Payment Routes - High Priority */}
+          <Route path="/payment-flow" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper fallbackMessage="Loading payment flow...">
+                <PaymentFlowPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/match-payment" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper fallbackMessage="Loading payment page...">
+                <MatchPaymentPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/payment/summary" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper fallbackMessage="Loading payment summary...">
+                <PaymentSummaryPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={
+            <AdminRoute>
+              <LazyRouteWrapper fallbackMessage="Loading admin dashboard...">
+                <AdminDashboardPage />
+              </LazyRouteWrapper>
+            </AdminRoute>
+          } />
+
+          {/* 404 Route */}
+          <Route path="*" element={
+            <LazyRouteWrapper>
+              <NotFoundPage />
+            </LazyRouteWrapper>
+          } />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <AppProvider>
       <HashRouter>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/add-device"
-                element={
-                  <ProtectedRoute>
-                    <AddDevicePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/payment-flow"
-                element={
-                  <ProtectedRoute>
-                    <PaymentFlowPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/match-payment"
-                element={
-                  <ProtectedRoute>
-                    <MatchPaymentPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/payment/summary"
-                element={
-                  <ProtectedRoute>
-                    <PaymentSummaryPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/device/:deviceId"
-                element={
-                  <ProtectedRoute>
-                    <DeviceDetailPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminDashboardPage />
-                  </AdminRoute>
-                }
-              />
-
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </HashRouter>
     </AppProvider>
   );
