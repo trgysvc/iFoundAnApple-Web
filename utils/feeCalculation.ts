@@ -5,6 +5,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { getSecureConfig } from "./security.ts";
+import { calculateFeesLocal } from "../api/calculate-fees.ts";
 
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -380,26 +381,19 @@ export const calculateFeesByModelName = async (
 }> => {
   try {
     console.log("[FEE_CALC] Model ismi ile hesaplama:", modelName);
-    const { success, model, error } = await getDeviceModelByName(modelName);
-
-    if (!success || !model) {
-      console.warn(
-        "[FEE_CALC] Model bulunamadı, sabit hesaplama kullanılıyor:",
-        error
-      );
-
-      // Model bulunamazsa sabit hesaplama yap
-      return calculateFixedFees(modelName);
-    }
-
-    console.log("[FEE_CALC] Model bulundu:", model.name);
-    return await calculateFees(model.id, customRewardAmount);
+    
+    // Use the local API function
+    const fees = await calculateFeesLocal(modelName, customRewardAmount);
+    return {
+      success: true,
+      fees: fees
+    };
   } catch (error) {
-    console.error(
-      "[FEE_CALC] Hesaplama hatası, sabit hesaplamaya geçiliyor:",
-      error
-    );
-    return calculateFixedFees(modelName);
+    console.error(`[FEE_CALCULATION] Error calculating fees for ${modelName}:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 };
 

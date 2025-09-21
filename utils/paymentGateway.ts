@@ -4,6 +4,8 @@
  */
 
 import { FeeBreakdown } from "./feeCalculation.ts";
+import { processPaymentLocal } from "../api/process-payment.ts";
+import { releaseEscrowLocal } from "../api/release-escrow.ts";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -100,15 +102,13 @@ export const initiatePayment = async (
       throw new Error("Minimum ödeme tutarı 10 TL");
     }
 
-    if (provider === "iyzico") {
-      return await processIyzicoPayment(request);
-    } else if (provider === "stripe") {
-      return await processStripePayment(request);
-    } else if (provider === "test") {
-      return await createTestPayment(request.feeBreakdown.totalAmount);
-    } else {
-      throw new Error(`Desteklenmeyen ödeme sağlayıcısı: ${provider}`);
-    }
+    // Use the local API function
+    const paymentRequest = {
+      ...request,
+      paymentProvider: provider
+    };
+
+    return await processPaymentLocal(paymentRequest);
   } catch (error) {
     console.error("[PAYMENT] Ödeme başlatma hatası:", error);
     return {
@@ -251,17 +251,17 @@ export const releaseEscrowFunds = async (
       throw new Error("Escrow serbest bırakma için gerekli bilgiler eksik");
     }
 
-    // Bu fonksiyon Supabase Edge Function'da implement edilecek
-    // Şimdilik mock response döndürüyoruz
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    return {
-      success: true,
-      transactionId: `escrow_release_${Date.now()}`,
-      status: "released",
-      netPayoutAmount: 1275.0, // Örnek: 1500 TL ödül - 225 TL hizmet bedeli
+    // Use the local API function
+    const escrowRequest = {
+      paymentId: request.paymentId,
+      deviceId: request.deviceId,
+      releaseReason: request.releaseReason,
+      confirmationType: 'manual_release' as const,
+      confirmedBy: request.confirmedBy[0], // Use first confirmed by user
+      additionalNotes: `Released via ${provider}`
     };
+
+    return await releaseEscrowLocal(escrowRequest);
   } catch (error) {
     console.error("[ESCROW] Escrow serbest bırakma hatası:", error);
     return {
