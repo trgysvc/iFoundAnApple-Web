@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../contexts/AppContext';
-import Container from '../components/ui/Container';
-import Button from '../components/ui/Button';
+import { useAppContext } from '../contexts/AppContext.tsx';
+import Container from '../components/ui/Container.tsx';
+import Button from '../components/ui/Button.tsx';
 import { Lock, Shuffle, Award, CheckCircle } from 'lucide-react';
 
 const FeatureCard: React.FC<{ icon: React.ReactNode, title: string, children: React.ReactNode }> = ({ icon, title, children }) => (
