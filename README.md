@@ -1,223 +1,399 @@
 
-# iFoundAnApple - Lost & Found Platform
+# iFoundAnApple - Lost & Found Platform for Apple Devices
 
-## 1. Proje Özeti
+<div align="center">
 
-iFoundAnApple, kaybedilen Apple cihazlarının sahipleri ile onları bulan kişileri güvenli ve anonim bir şekilde bir araya getiren modern bir web platformudur. Sistem, cihazların seri numaraları üzerinden otomatik eşleştirme yapar ve ödül sürecini güvenli bir emanet (escrow) sistemi ile yönetir. Bu proje, React, TypeScript ve Tailwind CSS kullanılarak oluşturulmuş, sunucusuz (serverless) bir ön uç (frontend) uygulamasıdır. Veri kalıcılığı prototip amacıyla tarayıcının `localStorage`'ı kullanılarak sağlanmaktadır.
+![iFoundAnApple](https://via.placeholder.com/200x100/007AFF/FFFFFF?text=iFoundAnApple)
 
-### Temel Özellikler
-- **Kullanıcı Rolleri:** Cihaz Sahibi (Owner) ve Cihaz Bulan (Finder) olmak üzere iki ana rol.
-- **Anonim Eşleştirme:** Cihaz modeli ve seri numarasına göre kayıp ve bulunan cihazları otomatik eşleştirir.
-- **Güvenli Takas Süreci:** Ödemenin bir emanet sisteminde tutulması ve her iki tarafın onayıyla takasın tamamlanması.
-- **Yapay Zeka Desteği:** Google Gemini API kullanarak cihaz açıklaması ve ödül miktarı için akıllı öneriler sunar.
-- **Çoklu Dil Desteği:** İngilizce, Türkçe, Fransızca, Japonca ve İspanyolca dillerini destekler.
-- **Yönetici Paneli:** Sistem yöneticilerinin kullanıcıları ve cihazları izleyebileceği bir arayüz.
+**Kayıp Apple cihazlarının sahipleri ile bulan kişileri güvenli ve anonim bir şekilde buluşturan modern web platformu**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+
+</div>
+
+## 📱 Proje Özeti
+
+iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri güvenli ve anonim bir şekilde bir araya getiren modern bir web platformudur. Platform, cihazların seri numaraları üzerinden otomatik eşleştirme yapar ve ödül sürecini güvenli bir emanet (escrow) sistemi ile yönetir.
+
+### ✨ Temel Özellikler
+- 🔐 **Güvenli Kimlik Doğrulama**: Supabase Auth ile güvenli giriş/kayıt sistemi
+- 🎯 **Otomatik Eşleştirme**: Cihaz modeli ve seri numarasına göre akıllı eşleştirme
+- 💰 **Güvenli Emanet Sistemi**: Ödemenin güvenli bir şekilde tutulması
+- 🤖 **AI Destekli Öneriler**: Google Gemini ile akıllı ödül ve açıklama önerileri
+- 🌍 **Çoklu Dil Desteği**: 5 farklı dilde tam destek (EN, TR, FR, JA, ES)
+- 👤 **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN bilgileri
+- 📱 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
+- 🔔 **Gerçek Zamanlı Bildirimler**: Anlık güncellemeler ve bildirimler
+- 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi
+- 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
+- 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
 
 ---
 
-## 2. Teknoloji Yığını
+## 🛠 Teknoloji Yığını
 
-- **Frontend:** React 19, TypeScript
-- **Yönlendirme (Routing):** React Router
-- **Stil (Styling):** Tailwind CSS
-- **İkonlar (Icons):** Lucide React
-- **Yapay Zeka (AI):** Google Gemini API (`@google/genai`)
-- **Veri Kalıcılığı:** Tarayıcı `localStorage` (Prototip için)
-- **Paket Yönetimi:** Yok (ESM via import maps from esm.sh)
+### Frontend
+- **React 19.1.0** - Modern React hooks ve özellikleri
+- **TypeScript 5.7.2** - Tip güvenliği ve geliştirici deneyimi
+- **Tailwind CSS** - Utility-first CSS framework (CDN)
+- **React Router DOM 7.6.3** - Client-side routing
+- **Lucide React 0.525.0** - Modern ikonlar
+- **Vite 6.2.0** - Hızlı build tool ve dev server
+
+### Backend & Database
+- **Supabase 2.55.0** - Backend-as-a-Service
+  - PostgreSQL veritabanı (cloud-hosted)
+  - Real-time subscriptions
+  - Authentication & Authorization
+  - Row Level Security (RLS)
+  - Edge Functions (serverless)
+
+### AI & APIs
+- **Google Gemini API** - AI destekli öneriler (@google/genai latest)
+  - Gemini 2.5 Flash model
+  - Structured JSON responses
+  - Akıllı ödül hesaplama
+  - Cihaz açıklaması önerileri
+
+### Development & Build Tools
+- **Vite** - Module bundler ve dev server
+- **TypeScript** - Static type checking
+- **ES Modules** - Modern JavaScript modules
+- **Environment Variables** - Güvenli API key yönetimi
 
 ---
 
-## 3. Geliştirme Ortamı Kurulumu
-
-Bu proje, modern JavaScript özellikleri (ESM, Import Maps) sayesinde herhangi bir paket yöneticisi (`npm`, `yarn`) veya derleme adımı gerektirmeden doğrudan tarayıcıda çalışır.
+## 🚀 Hızlı Başlangıç
 
 ### Gereksinimler
-- Modern bir web tarayıcısı (Chrome, Firefox, Edge).
-- Kod düzenleyici (örn. VS Code).
-- Canlı sunucu (Live Server) eklentisi (VS Code için önerilir).
 
-### Kurulum Adımları
+- Node.js 18+ 
+- npm veya yarn
+- Modern web tarayıcısı
+- Supabase hesabı
+- Google Gemini API anahtarı (opsiyonel)
 
-1.  **Projeyi Klonlayın:**
+### Kurulum
+
+1. **Projeyi klonlayın:**
     ```bash
-    git clone <repository-url>
-    cd <repository-folder>
-    ```
+   git clone https://github.com/trgysvc/iFoundAnApple-Web.git
+   cd iFoundAnApple-Web
+   ```
 
-2.  **Environment Değişkenleri:**
-    Bu proje, yapay zeka özelliklerini kullanmak için bir Google Gemini API anahtarına ihtiyaç duyar.
-    - Proje, API anahtarını `process.env.API_KEY` ortam değişkeninden almaya çalışır.
-    - Gerçek bir dağıtım ortamında (Netlify, Vercel vb.), bu değişkeni platformun ayarlarından eklemeniz gerekir.
-    - **Yerel geliştirme için**, `index.html` dosyasını geçici olarak düzenleyerek API anahtarınızı ekleyebilirsiniz. `<body>` etiketinin başına aşağıdaki script'i ekleyin:
-      ```html
-      <script>
-        // YALNIZCA YEREL GELİŞTİRME İÇİN!
-        // BU KODU COMMITLEMEYİN!
-        var process = {
-          env: {
-            API_KEY: 'SIZIN_GEMINI_API_ANAHTARINIZ'
-          }
-        };
-      </script>
-      ```
-    **ÖNEMLİ:** API anahtarınızı asla Git repozitorisine commit'lemeyin.
+2. **Bağımlılıkları yükleyin:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment değişkenlerini ayarlayın:**
+   ```bash
+   # .env.local dosyası oluşturun (proje root dizininde)
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GEMINI_API_KEY=your_google_gemini_api_key
+   ```
+   
+   **Not**: 
+   - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
+   - Anon key, Supabase dashboard'tan alınır (public key)
+   - Gemini API key, Google AI Studio'dan alınır
+   - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
+
+4. **Geliştirme sunucusunu başlatın:**
+    ```bash
+   npm run dev
+   ```
+
+5. **Tarayıcınızda açın:**
+   ```
+   http://localhost:5173
+   ```
 
 ---
 
-## 4. Projeyi Çalıştırma
-
-1.  VS Code kullanıyorsanız, `Go Live` butonuna tıklayarak projenizi `Live Server` ile başlatın.
-2.  Alternatif olarak, proje klasöründeki `index.html` dosyasını doğrudan tarayıcınızda açın. (Bazı özellikler `file://` protokolü ile çalışmayabilir, bu yüzden canlı sunucu önerilir).
-
-Uygulama artık tarayıcınızda çalışıyor olmalıdır.
-
----
-
-## 5. Temel Kod Yapısı ve Klasör Organizasyonu
+## 📁 Proje Yapısı
 
 ```
-/
-├── components/         # Tekrar kullanılabilir UI bileşenleri (Button, Input vb.)
-│   ├── ui/             # Genel UI elemanları
-│   └── *.tsx           # Uygulamaya özel bileşenler (Header, Footer, DeviceCard)
-├── contexts/           # Global state yönetimi
-│   └── AppContext.tsx  # Ana uygulama state'i, fonksiyonları ve context'i
-├── pages/              # Her bir rota için sayfa bileşenleri
-│   ├── AdminDashboardPage.tsx
-│   ├── LoginPage.tsx
-│   └── ...
-├── App.tsx             # Ana uygulama bileşeni ve yönlendirme (routing) mantığı
-├── constants.ts        # Tüm metinler ve çeviriler
-├── index.html          # Uygulamanın giriş noktası (HTML iskeleti ve import map)
-├── index.tsx           # React uygulamasını DOM'a bağlayan dosya
-├── metadata.json       # Uygulama meta verileri
-├── README.md           # Bu dosya
-└── types.ts            # Tüm TypeScript arayüzleri ve enum'ları
+iFoundAnApple-Web/
+├── 📁 components/           # Yeniden kullanılabilir UI bileşenleri
+│   ├── 📁 ui/              # Temel UI elemanları
+│   │   ├── Button.tsx      # Özelleştirilebilir buton bileşeni
+│   │   ├── Container.tsx   # Layout container
+│   │   ├── Input.tsx       # Form input bileşeni
+│   │   └── Select.tsx      # Dropdown seçici
+│   ├── DeviceCard.tsx      # Cihaz kartı bileşeni
+│   ├── Footer.tsx          # Site altbilgisi
+│   └── Header.tsx          # Site başlığı ve navigasyon
+├── 📁 contexts/            # Global state yönetimi
+│   └── AppContext.tsx      # Ana uygulama context'i
+├── 📁 pages/               # Sayfa bileşenleri
+│   ├── HomePage.tsx        # Ana sayfa
+│   ├── LoginPage.tsx       # Giriş sayfası
+│   ├── RegisterPage.tsx    # Kayıt sayfası
+│   ├── DashboardPage.tsx   # Kullanıcı paneli
+│   ├── ProfilePage.tsx     # Profil yönetimi
+│   ├── AddDevicePage.tsx   # Cihaz ekleme
+│   ├── DeviceDetailPage.tsx # Cihaz detayları
+│   ├── AdminDashboardPage.tsx # Yönetici paneli
+│   ├── FAQPage.tsx         # Sıkça sorulan sorular
+│   ├── TermsPage.tsx       # Kullanım şartları
+│   ├── PrivacyPage.tsx     # Gizlilik politikası
+│   ├── ContactPage.tsx     # İletişim sayfası
+│   └── NotFoundPage.tsx    # 404 sayfası
+├── 📁 public/              # Statik dosyalar
+│   └── 📁 icons/           # SVG ikonları
+├── App.tsx                 # Ana uygulama bileşeni
+├── constants.ts            # Çeviriler ve sabitler
+├── index.tsx               # Uygulama giriş noktası
+├── types.ts                # TypeScript tip tanımları
+├── vite.config.ts          # Vite konfigürasyonu
+├── README.md               # Bu dosya
+├── USER_GUIDE.md           # Kullanıcı rehberi
+├── TESTING.md              # Test dokümantasyonu
+└── CHANGELOG.md            # Sürüm geçmişi
+```
+
+## 🌍 Çoklu Dil Desteği
+
+### Desteklenen Diller
+- 🇺🇸 **English** (en) - Varsayılan dil, tam destek
+- 🇹🇷 **Türkçe** (tr) - Ana dil, tam destek
+- 🇫🇷 **Français** (fr) - Tam destek, güncel çeviriler
+- 🇯🇵 **日本語** (ja) - Tam destek, doğal çeviriler
+- 🇪🇸 **Español** (es) - Tam destek, tutarlı terminoloji
+
+### Çeviri Özellikleri
+- **200+ Çeviri Anahtarı**: Tüm UI elementleri için eksiksiz çeviriler
+- **Dinamik Dil Değiştirme**: Sayfa yenilemeden anlık dil değişimi
+- **Tutarlı Terminoloji**: Her dilde tutarlı teknik terimler
+- **Kültürel Uyum**: Her dile özel ifade tarzları
+- **Form Validasyonları**: Dil-spesifik hata mesajları
+
+### Çeviri Kalite Kontrolleri
+- ✅ Eksik çeviri anahtarları tespit edildi ve tamamlandı
+- ✅ Karışık dil içerikleri düzeltildi (FR, JA, ES)
+- ✅ Tüm form alanları ve hata mesajları çevrildi
+- ✅ Admin paneli ve bildirim sistemi çevirileri
+- ✅ AI öneriler ve durum mesajları çevirileri
+
+### Yeni Dil Ekleme
+1. `constants.ts` dosyasına yeni dil çevirilerini ekleyin
+2. `AppContext.tsx` içinde `Language` tipini güncelleyin
+3. Header bileşenindeki dil seçicisine yeni seçeneği ekleyin
+4. Tüm çeviri anahtarlarının eksiksiz olduğundan emin olun
+
+---
+
+## 👤 Gelişmiş Profil Yönetimi
+
+### Kullanıcı Profil Alanları
+- **Temel Bilgiler**: Ad, soyad, e-posta
+- **Kimlik Bilgileri**: TC Kimlik Numarası (Türkiye için)
+- **İletişim**: Telefon numarası ve adres bilgileri
+- **Banka Bilgileri**: IBAN numarası (ödül ödemeleri için)
+
+### Profil Güvenliği
+- **Veri Şifreleme**: Hassas bilgiler şifreli saklanır
+- **Erişim Kontrolü**: Sadece kullanıcı kendi profilini görebilir
+- **Opsiyonel Alanlar**: Zorunlu olmayan bilgiler için kullanıcı kontrolü
+- **Veri Doğrulama**: Client-side ve server-side validasyon
+
+### Profil Özellikleri
+- **Gerçek Zamanlı Güncelleme**: Anında profil değişiklikleri
+- **Form Validasyonu**: Akıllı form kontrolleri
+  - TC Kimlik: 11 haneli sayı kontrolü
+  - IBAN: Format ve uzunluk kontrolü
+  - Telefon: Geçerli format kontrolü
+- **Otomatik Kaydetme**: Değişikliklerin güvenli saklanması
+- **Hata Yönetimi**: Kullanıcı dostu hata mesajları
+
+### Veritabanı Entegrasyonu
+```sql
+-- Profil güncellemeleri için kullanılan tablo yapısı
+ALTER TABLE userProfile 
+ADD COLUMN tc_kimlik_no VARCHAR(11),
+ADD COLUMN phone_number VARCHAR(20),
+ADD COLUMN address TEXT,
+ADD COLUMN iban VARCHAR(34);
+
+-- İndeksler ve performans optimizasyonu
+CREATE INDEX idx_userprofile_user_id ON userProfile(user_id);
+CREATE INDEX idx_userprofile_iban ON userProfile(iban);
 ```
 
 ---
 
-## 6. API Referansı (Kavramsal)
+## 🚀 Deployment & DevOps
 
-Bu proje bir backend API'sine sahip olmasa da, `AppContext.tsx` içindeki fonksiyonlar bir API gibi davranır. Aşağıda bu fonksiyonların kavramsal API endpoint karşılıkları bulunmaktadır. Tüm veriler `localStorage` üzerinde işlenir.
+### Desteklenen Platformlar
+- **Vercel** (Önerilen)
+- **Netlify**
+- **GitHub Pages**
+- **AWS S3 + CloudFront**
 
-**Veri Modelleri:** `User`, `Device`, `AppNotification` (Detaylar için `types.ts` dosyasına bakın).
+### Build ve Deployment
+```bash
+# Production build
+npm run build
 
-- **`POST /register`** -> `register(user, pass)`
-  - Yeni bir kullanıcı oluşturur ve giriş yapar.
-- **`POST /login`** -> `login(email, pass)`
-  - Kullanıcıyı doğrular ve oturum başlatır.
-- **`POST /devices`** -> `addDevice(device)`
-  - Yeni bir kayıp/bulunan cihaz ekler ve eşleşme kontrolü yapar.
-- **`GET /devices`** -> `getUserDevices(userId)`
-  - Belirli bir kullanıcının tüm cihazlarını listeler.
-- **`GET /devices/:id`** -> `getDeviceById(deviceId)`
-  - Tek bir cihazın detaylarını getirir.
-- **`POST /devices/:id/pay`** -> `makePayment(deviceId)`
-  - Cihaz sahibi ödeme yaptığında cihaz durumunu günceller.
-- **`POST /devices/:id/confirm-exchange`** -> `confirmExchange(deviceId, userId)`
-  - İki taraflı takas onayı mekanizmasını yönetir.
+# Preview production build locally
+npm run preview
+```
 
----
+### Environment Variables
+```bash
+# Production (.env.production)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_production_anon_key
+GEMINI_API_KEY=your_google_gemini_api_key
 
-## 7. Mimari Detayları
+# Development (.env.local)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_development_anon_key
+GEMINI_API_KEY=your_google_gemini_api_key
+```
 
-### Mevcut Mimari (Prototip)
-- **Client-Side Rendering (CSR):** Uygulama tamamen tarayıcıda çalışır.
-- **State Yönetimi:** React Context API (`AppContext.tsx`) kullanılır. Tüm uygulama durumu, kullanıcı bilgileri, cihazlar ve bildirimler burada merkezi olarak yönetilir.
-- **Veri Kalıcılığı:** Tüm veriler (`users`, `devices`, `notifications`) tarayıcının `localStorage`'ında JSON string olarak saklanır. Bu, sayfa yenilemelerinde durumun korunmasını sağlar ancak güvensizdir ve ölçeklenebilir değildir.
-
-### Önerilen Üretim Mimarisi
-- **Backend:** Node.js (Express/NestJS) veya başka bir backend teknolojisi ile bir RESTful veya GraphQL API'si oluşturulmalıdır.
-- **Veritabanı:** PostgreSQL veya MongoDB gibi güvenli ve ölçeklenebilir bir veritabanı kullanılmalıdır.
-- **Kimlik Doğrulama:** JWT (JSON Web Tokens) gibi standart bir kimlik doğrulama mekanizması uygulanmalıdır. Şifreler asla düz metin olarak saklanmamalı, `bcrypt` gibi algoritmalarla hash'lenmelidir.
-- **Güvenlik:** Tüm kullanıcı verileri (özellikle banka bilgileri) veritabanında şifrelenerek saklanmalıdır.
-
----
-
-## 8. Veritabanı Şeması (Kavramsal)
-
-`localStorage`'da kullanılan veri yapıları, `types.ts` dosyasında tanımlanan arayüzlere dayanmaktadır.
-
-- **`User` Tablosu:**
-  - `id: string` (Primary Key)
-  - `fullName: string`
-  - `email: string` (Unique)
-  - `password_hash: string`
-  - `role: UserRole` ('owner', 'finder', 'admin')
-  - `bankInfo?: string` (Finder için)
-
-- **`Device` Tablosu:**
-  - `id: string` (Primary Key)
-  - `userId: string` (Foreign Key -> User)
-  - `model: string`
-  - `serialNumber: string`
-  - `color: string`
-  - `invoiceDataUrl?: string` (Base64 data)
-  - `description?: string`
-  - `status: DeviceStatus` ('Lost', 'Matched', 'Completed' vb.)
-  - `rewardAmount?: number`
-  - `exchangeConfirmedBy?: string[]` (Onaylayan kullanıcı ID'leri)
+### Vite Konfigürasyonu
+Proje, Vite build tool kullanır ve environment değişkenlerini şu şekilde yönetir:
+```typescript
+// vite.config.ts
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '');
+  return {
+    define: {
+      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+    }
+  };
+});
+```
 
 ---
 
-## 9. Kod Standartları ve Yönergeler
+## 🤝 Katkıda Bulunma
 
-- **TypeScript:** Tüm projede statik tipleme kullanılır. `any` tipinden kaçınılmalıdır.
-- **React:** Fonksiyonel bileşenler ve hook'lar kullanılır.
-- **İsimlendirme:** Bileşenler `PascalCase`, değişkenler ve fonksiyonlar `camelCase` olarak isimlendirilir.
-- **Stil:** Tüm stiller Tailwind CSS utility sınıfları ile yazılır. Özel CSS'ten kaçınılır.
-- **Yorumlar:** Karmaşık veya anlaşılması zor olan mantık blokları için açıklayıcı yorumlar eklenir.
+### Development Workflow
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
----
+### Code Standards
+- **ESLint**: Kod kalitesi kontrolleri
+- **Prettier**: Kod formatlama
+- **TypeScript**: Strict mode aktif
+- **Conventional Commits**: Commit message standardı
 
-## 10. Dağıtım (Deployment) Süreci
-
-### Web Sayfası (Frontend)
-Bu statik bir site olduğu için dağıtımı çok basittir.
-1.  Proje klasörünün içeriğini Netlify, Vercel, veya GitHub Pages gibi bir statik site hosting sağlayıcısına sürükleyip bırakın veya Git reponuzu bağlayın.
-2.  **Önemli:** Dağıtım platformunun ayarlarında `API_KEY` environment değişkenini (Google Gemini API anahtarınız) ayarladığınızdan emin olun.
-
-### CI/CD Süreci (Öneri)
-- GitHub Actions gibi bir CI/CD aracı kurularak, `main` branch'ine yapılan her push'ta projenin otomatik olarak test edilip dağıtılması sağlanabilir.
-
----
-
-## 11. Çeviri (Localization/Internationalization) Süreci
-
-Uygulama, `constants.ts` dosyasında yönetilen merkezi bir çeviri sistemi kullanır. Yeni bir dil eklemek için aşağıdaki adımları izleyin:
-
-1.  **Dil Tipini Güncelleyin:**
-    `contexts/AppContext.tsx` dosyasında, `Language` türüne yeni dilin iki harfli kodunu ekleyin.
-    ```typescript
-    type Language = 'en' | 'tr' | 'fr' | 'ja' | 'es' | 'de'; // Örnek: Almanca (de) eklendi
-    ```
-
-2.  **Dil Seçeneğini Ekleyin:**
-    `components/Header.tsx` dosyasındaki dil seçim menüsüne yeni dil seçeneğini ekleyin.
-    ```html
-    <option value="de">Deutsch</option>
-    ```
-
-3.  **Çeviri Metinlerini Ekleyin:**
-    `constants.ts` dosyasındaki `translations` nesnesine yeni dil için bir anahtar ekleyin. `en` nesnesini kopyalayıp tüm metinleri yeni dile çevirin.
-    ```javascript
-    export const translations = {
-      en: { ... },
-      tr: { ... },
-      // ... diğer diller
-      de: {
-        appName: "iFoundAnApple",
-        home: "Startseite",
-        // ... tüm diğer anahtarları çevirin
-      }
-    };
-    ```
-
-Uygulama artık yeni dili otomatik olarak destekleyecektir.
+### Pull Request Checklist
+- [ ] Tests pass
+- [ ] Code is properly typed
+- [ ] Documentation updated
+- [ ] No console.log statements
+- [ ] Responsive design tested
+- [ ] Accessibility checked
 
 ---
 
-## 12. Lisans Bilgisi
+## 📚 Dokümantasyon
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+- [**Kullanıcı Rehberi**](USER_GUIDE.md) - Platform kullanım kılavuzu
+- [**Test Dokümantasyonu**](TESTING.md) - Test stratejisi ve senaryoları
+- [**Sürüm Geçmişi**](CHANGELOG.md) - Detaylı değişiklik kayıtları
+
+---
+
+## 🆘 Destek
+
+### Community Support
+- **GitHub Issues**: Bug reports ve feature requests
+- **GitHub Discussions**: Community questions
+
+### Professional Support
+- **Email**: support@ifoundanapple.app
+- **Response Time**: 24 hours
+- **Languages**: Turkish, English
+
+---
+
+## 📄 Lisans
+
+Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
+
+---
+
+## 🏗️ Sistem Mimarisi
+
+### Frontend Mimarisi
+```
+React App (SPA)
+├── 🎨 UI Layer (Tailwind CSS)
+├── 🔄 State Management (React Context)
+├── 🛣️ Routing (React Router DOM)
+├── 🌐 API Calls (Supabase Client)
+└── 🤖 AI Integration (Google Gemini)
+```
+
+### Backend Mimarisi
+```
+Supabase Backend-as-a-Service
+├── 🗄️ PostgreSQL Database (Cloud)
+├── 🔐 Authentication (JWT + OAuth)
+├── 📡 Real-time Subscriptions
+├── 🛡️ Row Level Security (RLS)
+├── ⚡ Edge Functions (Serverless)
+└── 📁 Storage (Dosya yükleme)
+```
+
+### Veri Akışı
+1. **Kullanıcı Girişi** → Supabase Auth → JWT Token
+2. **Cihaz Ekleme** → PostgreSQL → Real-time Notifications
+3. **AI Önerileri** → Google Gemini → Structured Response
+4. **Eşleştirme** → Database Query → Bildirim Sistemi
+5. **Profil Güncelleme** → RLS Kontrolü → Database Update
+
+---
+
+## 🔄 Son Güncellemeler (2025)
+
+### v2.1.0 - Çeviri ve Profil Güncellemeleri
+- ✅ **Çeviri Sistemi Yenilendi**: 200+ çeviri anahtarı güncellendi
+- ✅ **5 Dil Tam Desteği**: EN, TR, FR, JA, ES dillerinde eksiksiz çeviriler
+- ✅ **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN alanları
+- ✅ **Karışık Çeviri Düzeltmeleri**: Tüm dillerde tutarlı terminoloji
+- ✅ **Form Validasyonları**: Akıllı form kontrolleri ve hata mesajları
+- ✅ **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
+- ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
+- ✅ **Gerçek Sistem Dokümantasyonu**: README güncel sistemi yansıtacak şekilde güncellendi
+
+### Yaklaşan Özellikler
+- 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
+- 🔄 **Push Notifications**: Mobil bildirimler
+- 🔄 **Gelişmiş AI**: Daha akıllı cihaz eşleştirme
+- 🔄 **Blockchain Entegrasyonu**: Güvenli ödeme sistemi
+
+---
+
+## 🙏 Teşekkürler
+
+- **Supabase** - Backend altyapısı için
+- **Tailwind CSS** - Harika CSS framework için
+- **React Team** - Muhteşem framework için
+- **Lucide** - Güzel ikonlar için
+- **Vercel** - Hosting ve deployment için
+- **Google Gemini** - AI destekli öneriler için
+
+---
+
+<div align="center">
+
+**Made with ❤️ in Turkey**
+
+[Website](https://ifoundanapple.app) • [GitHub](https://github.com/trgysvc/iFoundAnApple-Web) • [Support](mailto:support@ifoundanapple.app)
+
+</div>
