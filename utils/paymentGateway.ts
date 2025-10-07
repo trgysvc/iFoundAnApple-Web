@@ -4,7 +4,7 @@
  */
 
 import { FeeBreakdown } from "./feeCalculation.ts";
-import { processPaymentLocal } from "../api/process-payment.ts";
+import { processPaymentAPI } from "../api/process-payment.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
 
 export interface PaymentRequest {
@@ -102,13 +102,29 @@ export const initiatePayment = async (
       throw new Error("Minimum ödeme tutarı 10 TL");
     }
 
-    // Use the local API function
-    const paymentRequest = {
-      ...request,
-      paymentProvider: provider,
-    };
+    // Provider'a göre farklı işlem yap
+    let paymentResult: PaymentResponse;
+    
+    switch (provider) {
+      case "test":
+        paymentResult = await processTestPayment(request);
+        break;
+      case "iyzico":
+        paymentResult = await processIyzicoPayment(request);
+        break;
+      case "stripe":
+        paymentResult = await processStripePayment(request);
+        break;
+      default:
+        throw new Error(`Desteklenmeyen ödeme sağlayıcısı: ${provider}`);
+    }
 
-    return await processPaymentLocal(paymentRequest);
+    // Database'e kayıt yap
+    if (paymentResult.success) {
+      await savePaymentToDatabase(request, paymentResult);
+    }
+
+    return paymentResult;
   } catch (error) {
     console.error("[PAYMENT] Ödeme başlatma hatası:", error);
     return {
@@ -120,39 +136,143 @@ export const initiatePayment = async (
 };
 
 /**
- * Iyzico ile ödeme işleme
+ * Database'e ödeme kaydını kaydet
  */
-const processIyzicoPayment = async (
+const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: PaymentResponse): Promise<void> => {
+  try {
+    console.log("[DATABASE] Ödeme kaydı database'e kaydediliyor...", {
+      paymentId: paymentResult.paymentId,
+      status: paymentResult.status
+    });
+
+    // processPaymentAPI'yi çağır ama sadece database işlemleri için
+    const dbRequest = {
+      ...request,
+      paymentProvider: request.paymentProvider || 'test'
+    };
+
+    // Database'e kayıt yap (mevcut payment ID'yi kullan)
+    await processPaymentAPI(dbRequest, paymentResult.paymentId);
+
+    console.log("[DATABASE] Ödeme kaydı başarıyla kaydedildi");
+  } catch (error) {
+    console.error("[DATABASE] Database kayıt hatası:", error);
+    // Database hatası ödeme işlemini başarısız yapmamalı
+    // Sadece log'la
+  }
+};
+
+/**
+ * Test Modu ile ödeme işleme (Gerçek API çağrısı yapmaz)
+ */
+const processTestPayment = async (
   request: PaymentRequest
 ): Promise<PaymentResponse> => {
-  // Bu fonksiyon Supabase Edge Function'da implement edilecek
-  // Şimdilik mock response döndürüyoruz
-
-  console.log("[IYZICO] Ödeme işlemi başlatılıyor...", {
+  console.log("[TEST] Test modu ödeme işlemi başlatılıyor...", {
     deviceId: request.deviceId,
     amount: request.feeBreakdown.totalAmount,
     payer: request.payerInfo.email,
   });
 
-  // Simulate API call delay
+  // Test modu için sadece simülasyon
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Mock success response
   return {
     success: true,
-    paymentId: `payment_${Date.now()}`,
-    providerPaymentId: `iyzico_${Math.random().toString(36).substring(7)}`,
-    providerTransactionId: `tx_${Math.random().toString(36).substring(7)}`,
-    status: "processing",
-    redirectUrl: `${IYZICO_CONFIG.BASE_URL}/3dsecure?token=mock_token`,
+    paymentId: crypto.randomUUID(), // UUID formatında
+    providerPaymentId: `test_${Math.random().toString(36).substring(7)}`,
+    providerTransactionId: `test_tx_${Math.random().toString(36).substring(7)}`,
+    status: "completed",
     providerResponse: {
       status: "success",
-      paymentId: `iyzico_${Math.random().toString(36).substring(7)}`,
-      conversationId: request.deviceId,
-      currency: "TRY",
-      paidPrice: request.feeBreakdown.totalAmount,
+      testMode: true,
+      amount: request.feeBreakdown.totalAmount,
+      message: "Test modu - gerçek ödeme yapılmadı",
     },
   };
+};
+
+/**
+ * Iyzico ile ödeme işleme
+ */
+const processIyzicoPayment = async (
+  request: PaymentRequest
+): Promise<PaymentResponse> => {
+  console.log("[IYZICO] Gerçek İyzico ödeme işlemi başlatılıyor...", {
+    deviceId: request.deviceId,
+    amount: request.feeBreakdown.totalAmount,
+    payer: request.payerInfo.email,
+  });
+
+  try {
+    // İyzico API'ye gerçek ödeme isteği gönder
+    const { processIyzicoPayment: iyzicoProcess } = await import('./iyzicoConfig');
+    
+    const iyzicoRequest = {
+      amount: request.feeBreakdown.totalAmount,
+      currency: 'TRY',
+      conversationId: `conv_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      buyerInfo: {
+        id: request.payerId,
+        name: request.payerInfo.name.split(' ')[0] || 'Test',
+        surname: request.payerInfo.name.split(' ')[1] || 'User',
+        email: request.payerInfo.email,
+        phone: request.payerInfo.phone,
+        identityNumber: '11111111111', // Test için
+        city: request.payerInfo.address.city,
+        country: 'Turkey',
+        address: request.payerInfo.address.street,
+        zipCode: request.payerInfo.address.postalCode
+      },
+      shippingAddress: {
+        contactName: request.payerInfo.name,
+        city: request.payerInfo.address.city,
+        country: 'Turkey',
+        address: request.payerInfo.address.street,
+        zipCode: request.payerInfo.address.postalCode
+      },
+      billingAddress: {
+        contactName: request.payerInfo.name,
+        city: request.payerInfo.address.city,
+        country: 'Turkey',
+        address: request.payerInfo.address.street,
+        zipCode: request.payerInfo.address.postalCode
+      },
+      basketItems: [{
+        id: request.deviceId,
+        name: request.deviceInfo.model,
+        category1: 'Electronics',
+        category2: 'Mobile Phone',
+        itemType: 'PHYSICAL',
+        price: request.feeBreakdown.totalAmount
+      }]
+    };
+
+    const result = await iyzicoProcess(iyzicoRequest);
+    
+    if (result.success) {
+      return {
+        success: true,
+        paymentId: result.paymentId || crypto.randomUUID(), // UUID formatında
+        providerPaymentId: result.paymentId,
+        providerTransactionId: result.paymentId,
+        status: result.status === 'completed' ? 'completed' : 'processing',
+        redirectUrl: result.redirectUrl,
+        providerResponse: result.providerResponse,
+      };
+    } else {
+      throw new Error(result.errorMessage || 'İyzico ödeme hatası');
+    }
+    
+  } catch (error) {
+    console.error("[IYZICO] Ödeme hatası:", error);
+    return {
+      success: false,
+      status: "failed",
+      errorMessage: error instanceof Error ? error.message : "İyzico API hatası",
+      providerResponse: error,
+    };
+  }
 };
 
 /**
@@ -176,7 +296,7 @@ const processStripePayment = async (
   // Mock success response
   return {
     success: true,
-    paymentId: `payment_${Date.now()}`,
+    paymentId: crypto.randomUUID(), // UUID formatında
     providerPaymentId: `pi_${Math.random().toString(36).substring(7)}`,
     providerTransactionId: `ch_${Math.random().toString(36).substring(7)}`,
     status: "processing",

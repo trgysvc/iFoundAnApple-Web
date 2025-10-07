@@ -3,7 +3,7 @@
  */
 
 // Environment check
-const isDevelopment = import.meta.env.DEV;
+const isDevelopment = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
 
 /**
  * Secure logger that prevents sensitive data exposure
@@ -222,6 +222,17 @@ export const getSecureConfig = () => {
   const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
   const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
+  // Iyzico Configuration
+  const iyzicoApiKey = import.meta.env.VITE_IYZICO_API_KEY;
+  const iyzicoSecretKey = import.meta.env.VITE_IYZICO_SECRET_KEY;
+  const iyzicoBaseUrl = import.meta.env.VITE_IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com';
+  const iyzicoCallbackUrl = import.meta.env.VITE_IYZICO_CALLBACK_URL;
+  
+  // Stripe Configuration
+  const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  const stripeSecretKey = import.meta.env.VITE_STRIPE_SECRET_KEY;
+  const stripeWebhookSecret = import.meta.env.VITE_STRIPE_WEBHOOK_SECRET;
+  
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing required environment variables:', {
       supabaseUrl: !!supabaseUrl,
@@ -236,6 +247,20 @@ export const getSecureConfig = () => {
     supabaseAnonKey,
     supabaseServiceKey,
     geminiApiKey,
-    isDevelopment
+    isDevelopment,
+    // Payment Gateway Configurations
+    iyzico: {
+      apiKey: iyzicoApiKey,
+      secretKey: iyzicoSecretKey,
+      baseUrl: iyzicoBaseUrl,
+      callbackUrl: iyzicoCallbackUrl,
+      isConfigured: !!(iyzicoApiKey && iyzicoSecretKey)
+    },
+    stripe: {
+      publishableKey: stripePublishableKey,
+      secretKey: stripeSecretKey,
+      webhookSecret: stripeWebhookSecret,
+      isConfigured: !!(stripePublishableKey && stripeSecretKey)
+    }
   };
 };

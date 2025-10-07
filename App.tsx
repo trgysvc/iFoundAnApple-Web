@@ -15,6 +15,7 @@ import {
   PaymentFlowPage,
   MatchPaymentPage,
   PaymentSummaryPage,
+  PaymentSuccessPage,
   NotFoundPage,
   DeviceDetailPage,
   ProfilePage,
@@ -169,6 +170,13 @@ const AppContent: React.FC = () => {
             <ProtectedRoute>
               <LazyRouteWrapper fallbackMessage="Loading payment summary...">
                 <PaymentSummaryPage />
+              </LazyRouteWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/payment/success" element={
+            <ProtectedRoute>
+              <LazyRouteWrapper fallbackMessage="Loading payment success...">
+                <PaymentSuccessPage />
               </LazyRouteWrapper>
             </ProtectedRoute>
           } />

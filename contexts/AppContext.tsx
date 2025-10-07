@@ -46,6 +46,7 @@ interface AppContextType {
   refreshNotifications: () => Promise<void>;
   checkForExistingMatches: () => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<any>;
+  showNotification: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
   updateUserProfile: (profileData: {
     fullName: string;
     tcKimlikNo?: string;
@@ -53,6 +54,7 @@ interface AppContextType {
     address?: string;
     iban?: string;
   }) => Promise<boolean>;
+  supabaseClient: any;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -1339,7 +1341,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("fetchUserProfile: Fetching profile for user:", userId);
 
       const { data, error } = await supabase
-        .from("userProfile")
+        .from("userprofile")
         .select("*")
         .eq("user_id", userId)
         .single();
@@ -1359,6 +1361,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // Update user profile information
+  // Show notification
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    // TODO: Implement proper notification system (toast, alert, etc.)
+  };
+
   const updateUserProfile = async (profileData: {
     fullName: string;
     tcKimlikNo?: string;
@@ -1465,7 +1473,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshNotifications,
     checkForExistingMatches,
     fetchUserProfile,
+    showNotification,
     updateUserProfile,
+    supabaseClient: supabase,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

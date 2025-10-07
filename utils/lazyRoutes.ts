@@ -21,6 +21,7 @@ export const DeviceDetailPage = lazy(() => import('../pages/DeviceDetailPage'));
 export const PaymentFlowPage = lazy(() => import('../pages/PaymentFlowPage'));
 export const MatchPaymentPage = lazy(() => import('../pages/MatchPaymentPage'));
 export const PaymentSummaryPage = lazy(() => import('../components/payment/PaymentSummaryPage'));
+export const PaymentSuccessPage = lazy(() => import('../pages/PaymentSuccessPage'));
 
 // Admin pages - Low priority (restricted access)
 export const AdminDashboardPage = lazy(() => import('../pages/AdminDashboardPage'));
@@ -48,6 +49,7 @@ export const preloadCriticalRoutes = () => {
   // Preload payment pages (business critical)
   preloadRoute(() => import('../pages/PaymentFlowPage'));
   preloadRoute(() => import('../pages/MatchPaymentPage'));
+  preloadRoute(() => import('../pages/PaymentSuccessPage'));
 };
 
 // Preload routes on user interaction
