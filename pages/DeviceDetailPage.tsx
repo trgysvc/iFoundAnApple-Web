@@ -133,16 +133,13 @@ const DeviceDetailPage: React.FC = () => {
   }
 
   // Determine if the perspective is of the original owner (who lost the device)
-  // or the finder. This is based on the device's original type.
-  // If the device was originally LOST by this user, they are the original owner.
-  // If the device was REPORTED by this user, they are the finder.
-  // For now, let's use a simpler approach: if the user owns the device AND the status indicates
-  // they need to make payment, they are the original owner.
-  const isOriginalOwnerPerspective =
-    !!device.rewardAmount ||
-    device.status === DeviceStatus.LOST ||
-    (device.status === DeviceStatus.PAYMENT_PENDING &&
-      device.userId === currentUser.id);
+  // or the finder. This is based on the device's current status after matching:
+  // - If device status is PAYMENT_PENDING, this user is the original owner who needs to pay
+  // - If device status is MATCHED, this user is the finder who should receive payment
+  // - If device status is LOST, this user is the original owner waiting for a match
+  const isOriginalOwnerPerspective = 
+    device.status === DeviceStatus.PAYMENT_PENDING ||
+    device.status === DeviceStatus.LOST;
   const hasCurrentUserConfirmed = device.exchangeConfirmedBy?.includes(
     currentUser.id
   );
@@ -174,47 +171,6 @@ const DeviceDetailPage: React.FC = () => {
       REPORTED: DeviceStatus.REPORTED,
     });
 
-    // Force display the payment form for testing
-    console.log("DeviceDetailPage: FORCING PAYMENT FORM DISPLAY FOR TESTING");
-    const statusString = String(device.status).toLowerCase();
-    console.log("DeviceDetailPage: Status as string:", statusString);
-
-    if (statusString === "matched") {
-      console.log(
-        "DeviceDetailPage: Status matches MATCHED - showing payment form"
-      );
-      return (
-        <StatusView
-          icon={<Wallet className="w-10 h-10" />}
-          title="MATCH FOUND (TEST)"
-          description="Payment form is now displaying for testing"
-        >
-          <div className="mt-6 bg-brand-gray-100 p-6 rounded-lg">
-            <p className="text-lg font-medium text-brand-gray-500">
-              Reward Amount
-            </p>
-            <p className="text-4xl font-bold text-brand-blue">
-              {device.rewardAmount
-                ? `${device.rewardAmount.toLocaleString("tr-TR")} TL`
-                : `1,500 TL`}
-            </p>
-          </div>
-          <div className="mt-8">
-            <Button
-              onClick={() => handlePayment(device.id)}
-              size="lg"
-              className="w-full max-w-md"
-              disabled={isProcessingPayment}
-            >
-              <ShieldCheck className="w-5 h-5 mr-2" />{" "}
-              {isProcessingPayment
-                ? "Yönlendiriliyor..."
-                : "Make Payment Securely"}
-            </Button>
-          </div>
-        </StatusView>
-      );
-    }
 
     switch (device.status) {
       case DeviceStatus.PAYMENT_PENDING:
@@ -467,6 +423,10 @@ const DeviceDetailPage: React.FC = () => {
         </p>
         <p>
           <strong>Reward Amount:</strong> {device?.rewardAmount || "None"}
+        </p>
+        <p>
+          <strong>Is Original Owner Perspective:</strong>{" "}
+          {isOriginalOwnerPerspective ? "YES" : "NO"}
         </p>
         <p>
           <strong>Model:</strong> {device?.model}

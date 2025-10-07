@@ -2,6 +2,24 @@
 
 Bu proje, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatını takip eder ve bu projedeki önemli değişiklikleri belgeler.
 
+## [2.2.0] - Ödeme Logic Düzeltmeleri ve Sistem İyileştirmeleri
+
+### Düzeltildi
+- **Ödeme Ekranı Logic Sorunu**: Cihazı bulan kişilerin ödeme ekranını görmemesi sorunu çözüldü
+- **isOriginalOwnerPerspective Logic**: Yanlış kullanıcı perspektifi tespiti düzeltildi
+- **MATCHED Status Handling**: Bulan kişiler için uygun bekleme mesajları gösterilmesi sağlandı
+- **Test Kodu Temizliği**: Geliştirme sırasında kalan test kodları kaldırıldı
+
+### Değiştirildi
+- **DeviceDetailPage.tsx**: Ödeme logic'i yeniden düzenlendi ve test kodları temizlendi
+- **Debug Panel**: Kullanıcı perspektifi bilgisi eklendi
+- **README.md**: Yeni versiyon bilgileri eklendi
+
+### İyileştirildi
+- **Kod Kalitesi**: Linting hataları düzeltildi
+- **Kullanıcı Deneyimi**: Doğru kullanıcı perspektifine göre uygun ekranlar gösterilmesi
+- **Sistem Kararlılığı**: Test kodlarının kaldırılması ile production-ready kod
+
 ## [2.0.0] - Geliştirici Dokümantasyonu
 
 ### Eklendi

@@ -361,6 +361,14 @@ Supabase Backend-as-a-Service
 
 ## 🔄 Son Güncellemeler (2025)
 
+### v2.2.0 - Ödeme Logic Düzeltmeleri ve Sistem İyileştirmeleri
+- ✅ **Ödeme Ekranı Logic Düzeltmesi**: Cihazı bulan kişilerin ödeme ekranını görmemesi sorunu çözüldü
+- ✅ **isOriginalOwnerPerspective Logic Güncellemesi**: Doğru kullanıcı perspektifi tespiti
+- ✅ **MATCHED Status Handling**: Bulan kişiler için uygun bekleme mesajları
+- ✅ **Test Kodu Temizliği**: Geliştirme sırasında kalan test kodları kaldırıldı
+- ✅ **Debug Panel İyileştirmeleri**: Kullanıcı perspektifi bilgisi eklendi
+- ✅ **Kod Kalitesi**: Linting hataları düzeltildi ve kod temizlendi
+
 ### v2.1.0 - Çeviri ve Profil Güncellemeleri
 - ✅ **Çeviri Sistemi Yenilendi**: 200+ çeviri anahtarı güncellendi
 - ✅ **5 Dil Tam Desteği**: EN, TR, FR, JA, ES dillerinde eksiksiz çeviriler
