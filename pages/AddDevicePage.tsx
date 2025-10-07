@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext.tsx";
 import Container from "../components/ui/Container.tsx";
@@ -43,7 +43,6 @@ const AddDevicePage: React.FC = () => {
   const [model, setModel] = useState(""); // Initialize with empty string, will be set after fetching
   const [serialNumber, setSerialNumber] = useState("");
   const [color, setColor] = useState("");
-  const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [rewardAmount, setRewardAmount] = useState<number | undefined>();
   const [marketValue, setMarketValue] = useState<number | undefined>();
@@ -53,16 +52,17 @@ const AddDevicePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // For AI suggestions and form submission
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchDeviceModels = async () => {
-      setLoadingModels(true);
+  const fetchDeviceModels = useCallback(async () => {
+    setLoadingModels(true);
+    try {
       const { data, error } = await supabase
         .from("device_models")
         .select("name")
         .order("name", { ascending: true });
+      
       if (error) {
         console.error("Error fetching device models:", error.message);
-        setError(t("failedToLoadDeviceModels")); // Add this translation key
+        setError(t("failedToLoadDeviceModels"));
       } else if (data) {
         const models = data.map((item) => item.name);
         setDeviceModels(models);
@@ -70,22 +70,35 @@ const AddDevicePage: React.FC = () => {
           setModel(models[0]); // Set initial model to the first fetched model
         }
       }
+    } catch (err) {
+      console.error("Error in fetchDeviceModels:", err);
+      setError(t("failedToLoadDeviceModels"));
+    } finally {
       setLoadingModels(false);
-    };
-    fetchDeviceModels();
+    }
   }, [t]);
 
-  // Update available colors when model changes
   useEffect(() => {
+    fetchDeviceModels();
+  }, [fetchDeviceModels]);
+
+  // Memoized available colors based on selected model
+  const availableColors = useMemo(() => {
     if (model) {
-      const colors = getColorsForDevice(model);
-      setAvailableColors(colors);
+      return getColorsForDevice(model);
+    }
+    return [];
+  }, [model]);
+
+  // Update color when model changes
+  useEffect(() => {
+    if (model && availableColors.length > 0) {
       // Reset color selection when model changes
-      if (!colors.includes(color)) {
-        setColor(colors.length > 0 ? colors[0] : "");
+      if (!availableColors.includes(color)) {
+        setColor(availableColors[0]);
       }
     }
-  }, [model]);
+  }, [model, availableColors, color]);
 
   const title = isLostReport ? t("addLostDevice") : t("reportFoundDevice");
 

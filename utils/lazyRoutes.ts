@@ -28,10 +28,12 @@ export const AdminDashboardPage = lazy(() => import('../pages/AdminDashboardPage
 // Error pages
 export const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
-// Route preloading utility
+// Route preloading utility with better error handling
 export const preloadRoute = (routeImport: () => Promise<any>) => {
-  // Preload the route component
-  routeImport();
+  // Preload the route component with error handling
+  routeImport().catch((error) => {
+    console.warn('Failed to preload route:', error);
+  });
 };
 
 // Preload critical routes
@@ -42,11 +44,29 @@ export const preloadCriticalRoutes = () => {
   
   // Preload dashboard for logged-in users
   preloadRoute(() => import('../pages/DashboardPage'));
+  
+  // Preload payment pages (business critical)
+  preloadRoute(() => import('../pages/PaymentFlowPage'));
+  preloadRoute(() => import('../pages/MatchPaymentPage'));
 };
 
 // Preload routes on user interaction
 export const preloadUserRoutes = () => {
   preloadRoute(() => import('../pages/AddDevicePage'));
   preloadRoute(() => import('../pages/ProfilePage'));
-  preloadRoute(() => import('../pages/PaymentFlowPage'));
+  preloadRoute(() => import('../pages/DeviceDetailPage'));
+  preloadRoute(() => import('../components/payment/PaymentSummaryPage'));
+};
+
+// Preload admin routes (for admin users)
+export const preloadAdminRoutes = () => {
+  preloadRoute(() => import('../pages/AdminDashboardPage'));
+};
+
+// Preload static pages (low priority)
+export const preloadStaticRoutes = () => {
+  preloadRoute(() => import('../pages/FAQPage'));
+  preloadRoute(() => import('../pages/TermsPage'));
+  preloadRoute(() => import('../pages/PrivacyPage'));
+  preloadRoute(() => import('../pages/ContactPage'));
 };

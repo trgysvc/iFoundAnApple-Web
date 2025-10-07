@@ -119,7 +119,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [language, setLanguage] = useLocalStorage<Language>("app-lang", "en");
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Supabase will manage current user
   // const [users, setUsers] = useLocalStorage<User[]>('users', [defaultAdminUser]); // Removed as users are now managed by Supabase
-  const [devices, setDevices] = useLocalStorage<Device[]>("devices", []);
+  const [devices, setDevices] = useState<Device[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   // const navigate = useNavigate(); // Removed as useNavigate cannot be used in AppContext
 
@@ -198,6 +198,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch user devices when user logs in
+  useEffect(() => {
+    if (!currentUser) {
+      setDevices([]);
+      return;
+    }
+
+    const fetchUserDevices = async () => {
+      try {
+        const userDevices = await getUserDevices(currentUser.id);
+        setDevices(userDevices);
+      } catch (error) {
+        console.error("Error fetching user devices:", error);
+        setDevices([]);
+      }
+    };
+
+    fetchUserDevices();
+  }, [currentUser]);
 
   // Fetch initial notifications and subscribe to real-time updates
   useEffect(() => {
@@ -299,6 +319,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       supabase.removeChannel(channel);
     };
   }, [currentUser]); // Re-run when currentUser changes
+
+  // Real-time subscription for devices
+  useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+
+    console.log("Setting up real-time subscription for devices for user:", currentUser.id);
+
+    const devicesChannel = supabase
+      .channel(`devices_${currentUser.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "devices",
+        },
+        async (payload) => {
+          console.log("Real-time device change received:", payload);
+
+          // Only process devices for the current user
+          if (payload.new && (payload.new as any).userId === currentUser.id) {
+            console.log("Device change for current user, refreshing devices...");
+            
+            // Refresh devices from Supabase
+            try {
+              const refreshedDevices = await getUserDevices(currentUser.id);
+              setDevices(refreshedDevices);
+              console.log("Devices refreshed successfully");
+            } catch (error) {
+              console.error("Error refreshing devices:", error);
+            }
+          } else if (payload.old && (payload.old as any).userId === currentUser.id) {
+            console.log("Device deletion for current user, refreshing devices...");
+            
+            // Refresh devices from Supabase
+            try {
+              const refreshedDevices = await getUserDevices(currentUser.id);
+              setDevices(refreshedDevices);
+              console.log("Devices refreshed successfully after deletion");
+            } catch (error) {
+              console.error("Error refreshing devices after deletion:", error);
+            }
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log("Devices real-time subscription status:", status);
+        if (status === "SUBSCRIBED") {
+          console.log("✅ Real-time subscription active for devices");
+        } else if (status === "CHANNEL_ERROR") {
+          console.error("❌ Devices real-time subscription error");
+        } else if (status === "TIMED_OUT") {
+          console.warn("⚠️ Devices real-time subscription timed out");
+        } else if (status === "CLOSED") {
+          console.log("🔒 Devices real-time subscription closed");
+        }
+      });
+
+    return () => {
+      console.log("Cleaning up devices real-time subscription");
+      supabase.removeChannel(devicesChannel);
+    };
+  }, [currentUser]);
 
   // Fallback: Refresh notifications every 10 seconds if real-time fails
   useEffect(() => {
@@ -965,6 +1050,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       });
 
+      // Refresh devices from Supabase to ensure consistency
+      if (currentUser) {
+        const refreshedDevices = await getUserDevices(currentUser.id);
+        setDevices(refreshedDevices);
+      }
+
       // Send notification to the finder that payment has been received
       addNotification(
         mappedFinderDevice.userId,
@@ -981,24 +1072,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // --- Core Logic: Exchange Confirmation ---
   // A two-party confirmation system for the physical exchange.
-  const confirmExchange = (deviceId: string, userId: string) => {
-    setDevices((prev) => {
-      let device = prev.find((d) => d.id === deviceId);
-      if (!device) return prev;
+  const confirmExchange = async (deviceId: string, userId: string) => {
+    try {
+      // First, get the current device from Supabase
+      const { data: deviceData, error: deviceError } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("id", deviceId)
+        .single();
 
+      if (deviceError || !deviceData) {
+        console.error("Error fetching device for confirmation:", deviceError);
+        return;
+      }
+
+      const device = deviceData as Device;
       const alreadyConfirmed = device.exchangeConfirmedBy?.includes(userId);
-      if (alreadyConfirmed) return prev; // Prevent double confirmation.
+      if (alreadyConfirmed) return; // Prevent double confirmation.
 
-      // Find the matching device to update both records simultaneously.
-      let matchingDevice = prev.find(
-        (d) =>
-          d.serialNumber.toLowerCase() === device!.serialNumber.toLowerCase() &&
-          d.model.toLowerCase() === device!.model.toLowerCase() &&
-          d.id !== device!.id
-      );
-      if (!matchingDevice) return prev; // Should not happen in a normal flow.
+      // Find the matching device in Supabase
+      const { data: matchingDeviceData, error: matchingError } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("serialNumber", device.serialNumber)
+        .eq("model", device.model)
+        .neq("id", device.id)
+        .single();
 
-      // Add the current user's ID to the list of confirmations.
+      if (matchingError || !matchingDeviceData) {
+        console.error("Error finding matching device:", matchingError);
+        return;
+      }
+
+      const matchingDevice = matchingDeviceData as Device;
+
+      // Add the current user's ID to the list of confirmations
       const updatedConfirmedBy = [
         ...(device.exchangeConfirmedBy || []),
         userId,
@@ -1006,10 +1114,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       let finalStatus = device.status;
 
-      // If both parties have confirmed, the transaction is complete.
+      // If both parties have confirmed, the transaction is complete
       if (updatedConfirmedBy.length === 2) {
         finalStatus = DeviceStatus.COMPLETED;
-        // Send final notifications to both parties.
+        
+        // Update both devices in Supabase
+        await supabase
+          .from("devices")
+          .update({ 
+            status: finalStatus,
+            exchangeConfirmedBy: updatedConfirmedBy
+          })
+          .eq("id", device.id);
+        
+        await supabase
+          .from("devices")
+          .update({ 
+            status: finalStatus,
+            exchangeConfirmedBy: updatedConfirmedBy
+          })
+          .eq("id", matchingDevice.id);
+
+        // Send final notifications to both parties
         addNotification(
           device.userId,
           "transactionCompletedOwner",
@@ -1023,12 +1149,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           { model: matchingDevice.model }
         );
       }
-      // If only one party has confirmed, notify the other party.
+      // If only one party has confirmed, notify the other party
       else if (updatedConfirmedBy.length === 1) {
-        const otherUserId =
-          device.userId === userId ? matchingDevice.userId : device.userId;
-        const otherUserDevice =
-          device.userId === userId ? matchingDevice : device;
+        // Update both devices in Supabase
+        await supabase
+          .from("devices")
+          .update({ 
+            exchangeConfirmedBy: updatedConfirmedBy
+          })
+          .eq("id", device.id);
+        
+        await supabase
+          .from("devices")
+          .update({ 
+            exchangeConfirmedBy: updatedConfirmedBy
+          })
+          .eq("id", matchingDevice.id);
+
+        const otherUserId = device.userId === userId ? matchingDevice.userId : device.userId;
+        const otherUserDevice = device.userId === userId ? matchingDevice : device;
         addNotification(
           otherUserId,
           "exchangeConfirmationNeeded",
@@ -1037,18 +1176,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         );
       }
 
-      // Update both devices with the new status and confirmation list.
-      return prev.map((d) => {
-        if (d.id === device!.id || d.id === matchingDevice!.id) {
-          return {
-            ...d,
-            status: finalStatus,
-            exchangeConfirmedBy: updatedConfirmedBy,
-          };
-        }
-        return d;
-      });
-    });
+      // Refresh devices from Supabase to ensure consistency
+      if (currentUser) {
+        const refreshedDevices = await getUserDevices(currentUser.id);
+        setDevices(refreshedDevices);
+      }
+    } catch (error) {
+      console.error("Error in confirmExchange:", error);
+    }
   };
 
   const markNotificationAsRead = useCallback(async (notificationId: string) => {

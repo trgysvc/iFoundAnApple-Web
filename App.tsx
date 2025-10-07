@@ -5,6 +5,7 @@ import { UserRole } from "./types";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import LazyRouteWrapper from "./components/routing/LazyRouteWrapper";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 import {
   HomePage,
   LoginPage,
@@ -23,7 +24,9 @@ import {
   PrivacyPage,
   ContactPage,
   preloadCriticalRoutes,
-  preloadUserRoutes
+  preloadUserRoutes,
+  preloadAdminRoutes,
+  preloadStaticRoutes
 } from "./utils/lazyRoutes";
 import "./utils/testHelpers"; // Test helpers for browser console
 
@@ -58,7 +61,19 @@ const AppContent: React.FC = () => {
     // Preload user-specific routes if logged in
     if (currentUser) {
       preloadUserRoutes();
+      
+      // Preload admin routes if user is admin
+      if (currentUser.role === UserRole.ADMIN) {
+        preloadAdminRoutes();
+      }
     }
+
+    // Preload static pages with delay (low priority)
+    const staticTimeout = setTimeout(() => {
+      preloadStaticRoutes();
+    }, 2000); // 2 second delay
+
+    return () => clearTimeout(staticTimeout);
   }, [currentUser]);
 
   return (
@@ -182,11 +197,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AppProvider>
-      <HashRouter>
-        <AppContent />
-      </HashRouter>
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <HashRouter>
+          <AppContent />
+        </HashRouter>
+      </AppProvider>
+    </ErrorBoundary>
   );
 };
 

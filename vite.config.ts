@@ -16,42 +16,53 @@ export default defineConfig(({ mode }) => {
       build: {
         rollupOptions: {
           output: {
-            manualChunks: {
+            manualChunks: (id) => {
               // Vendor chunks
-              'react-vendor': ['react', 'react-dom'],
-              'router': ['react-router-dom'],
+              if (id.includes('node_modules')) {
+                if (id.includes('react') || id.includes('react-dom')) {
+                  return 'react-vendor';
+                }
+                if (id.includes('react-router')) {
+                  return 'router';
+                }
+                if (id.includes('supabase')) {
+                  return 'supabase';
+                }
+                if (id.includes('@google/genai')) {
+                  return 'ai-vendor';
+                }
+                return 'vendor';
+              }
               
               // UI components chunk
-              'ui-components': [
-                './components/ui/Button.tsx',
-                './components/ui/Input.tsx', 
-                './components/ui/Select.tsx',
-                './components/ui/Container.tsx',
-                './components/ui/LoadingSpinner.tsx'
-              ],
+              if (id.includes('components/ui/')) {
+                return 'ui-components';
+              }
               
               // Payment-related components (business critical)
-              'payment': [
-                './pages/PaymentFlowPage.tsx',
-                './pages/MatchPaymentPage.tsx',
-                './components/payment/PaymentSummaryPage.tsx',
-                './components/payment/FeeBreakdownCard.tsx',
-                './components/payment/PaymentMethodSelector.tsx'
-              ],
+              if (id.includes('payment/') || id.includes('PaymentFlow') || id.includes('MatchPayment')) {
+                return 'payment';
+              }
               
               // Admin components (low priority)
-              'admin': [
-                './pages/AdminDashboardPage.tsx',
-                './components/admin/SecurityDashboard.tsx'
-              ],
+              if (id.includes('admin/') || id.includes('AdminDashboard')) {
+                return 'admin';
+              }
               
               // Static/Info pages
-              'static-pages': [
-                './pages/FAQPage.tsx',
-                './pages/TermsPage.tsx',
-                './pages/PrivacyPage.tsx',
-                './pages/ContactPage.tsx'
-              ]
+              if (id.includes('FAQPage') || id.includes('TermsPage') || id.includes('PrivacyPage') || id.includes('ContactPage')) {
+                return 'static-pages';
+              }
+              
+              // Device-related pages
+              if (id.includes('Device') || id.includes('AddDevice')) {
+                return 'device-pages';
+              }
+              
+              // Dashboard and profile
+              if (id.includes('Dashboard') || id.includes('Profile')) {
+                return 'user-pages';
+              }
             }
           }
         },
@@ -59,13 +70,19 @@ export default defineConfig(({ mode }) => {
         sourcemap: mode === 'development',
         
         // Optimize chunk size
-        chunkSizeWarningLimit: 1000,
+        chunkSizeWarningLimit: 500,
         
         // Enable minification
         minify: mode === 'production' ? 'esbuild' : false,
         
         // Target modern browsers for better optimization
-        target: 'es2020'
+        target: 'es2020',
+        
+        // Enable CSS code splitting
+        cssCodeSplit: true,
+        
+        // Optimize assets
+        assetsInlineLimit: 4096
       },
       
       // Optimize dependencies

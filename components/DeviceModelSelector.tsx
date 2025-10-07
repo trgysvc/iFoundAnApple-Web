@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getAllDeviceModels, getDeviceCategories, DeviceModelData } from '../utils/feeCalculation';
 
 interface DeviceModelSelectorProps {
@@ -8,6 +8,12 @@ interface DeviceModelSelectorProps {
   showPricing?: boolean;
 }
 
+// Cache for device models to avoid repeated API calls
+let deviceModelsCache: DeviceModelData[] | null = null;
+let deviceCategoriesCache: string[] | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
   selectedModel,
   onModelChange,
@@ -16,7 +22,6 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
 }) => {
   const [categories, setCategories] = useState<string[]>([]);
   const [models, setModels] = useState<DeviceModelData[]>([]);
-  const [filteredModels, setFilteredModels] = useState<DeviceModelData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -27,16 +32,24 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
     loadData();
   }, []);
 
-  // Filter models when category or search term changes
-  useEffect(() => {
-    filterModels();
-  }, [models, selectedCategory, searchTerm]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
+      const now = Date.now();
+      
+      // Check if cache is still valid
+      if (deviceModelsCache && deviceCategoriesCache && (now - cacheTimestamp) < CACHE_DURATION) {
+        console.log('Using cached device models data');
+        setCategories(deviceCategoriesCache);
+        setModels(deviceModelsCache);
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching fresh device models data');
+      
       // Load categories and models in parallel
       const [categoriesResult, modelsResult] = await Promise.all([
         getDeviceCategories(),
@@ -44,13 +57,16 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
       ]);
 
       if (categoriesResult.success && categoriesResult.categories) {
+        deviceCategoriesCache = categoriesResult.categories;
         setCategories(categoriesResult.categories);
       } else {
         throw new Error(categoriesResult.error || 'Kategoriler yüklenemedi');
       }
 
       if (modelsResult.success && modelsResult.models) {
+        deviceModelsCache = modelsResult.models;
         setModels(modelsResult.models);
+        cacheTimestamp = now;
       } else {
         throw new Error(modelsResult.error || 'Modeller yüklenemedi');
       }
@@ -60,9 +76,10 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filterModels = () => {
+  // Memoized filtered models to avoid unnecessary recalculations
+  const filteredModels = useMemo(() => {
     let filtered = models;
 
     // Filter by category
@@ -87,23 +104,23 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
       return a.name.localeCompare(b.name, 'tr-TR');
     });
 
-    setFilteredModels(filtered);
-  };
+    return filtered;
+  }, [models, selectedCategory, searchTerm]);
 
-  const formatPrice = (price: number): string => {
+  const formatPrice = useCallback((price: number): string => {
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
       currency: 'TRY',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(price);
-  };
+  }, []);
 
-  const handleModelSelect = (model: DeviceModelData) => {
+  const handleModelSelect = useCallback((model: DeviceModelData) => {
     onModelChange(model.name, model);
-  };
+  }, [onModelChange]);
 
-  const getCategoryIcon = (category: string): string => {
+  const getCategoryIcon = useCallback((category: string): string => {
     switch (category) {
       case 'iPhone': return '📱';
       case 'iPad': return '📱';
@@ -111,7 +128,7 @@ const DeviceModelSelector: React.FC<DeviceModelSelectorProps> = ({
       case 'AirPods': return '🎧';
       default: return '📱';
     }
-  };
+  }, []);
 
   if (loading) {
     return (
