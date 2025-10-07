@@ -125,7 +125,7 @@ export const sanitizers = {
  */
 export const fileValidation = {
   allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
-  maxSize: 10 * 1024 * 1024, // 10MB
+  maxSize: 5 * 1024 * 1024, // 5MB
   
   validateFile: (file: File): { valid: boolean; error?: string } => {
     if (!fileValidation.allowedTypes.includes(file.type)) {
@@ -133,7 +133,7 @@ export const fileValidation = {
     }
     
     if (file.size > fileValidation.maxSize) {
-      return { valid: false, error: 'File too large (max 10MB)' };
+      return { valid: false, error: 'File too large (max 5MB)' };
     }
     
     return { valid: true };

@@ -10,6 +10,8 @@ import { getColorsForDevice } from '../constants';
 import { createClient } from "@supabase/supabase-js";
 import { uploadInvoiceDocument } from '../utils/fileUpload';
 import { getSecureConfig, secureLogger, validators, sanitizers } from '../utils/security';
+import { performCompleteFileValidation } from '../utils/fileSecurity';
+import { logInvoiceUpload } from '../utils/invoiceManager';
 
 // Get secure configuration from environment variables
 const { supabaseUrl, supabaseAnonKey, geminiApiKey } = getSecureConfig();
@@ -115,35 +117,61 @@ const AddDevicePage: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
-      // Basic validation
-      if (file.size > 10 * 1024 * 1024) {
-        setError("File is too large. Maximum size is 10MB.");
-        return;
-      }
-
-      setInvoiceFile(file);
+      // Enhanced security validation
+      setIsUploadingFile(true);
       setError("");
+      
+      try {
+        const securityValidation = await performCompleteFileValidation(file);
+        
+        if (!securityValidation.valid) {
+          setError(securityValidation.error || "File validation failed");
+          setIsUploadingFile(false);
+          return;
+        }
 
-      // Upload file immediately when selected
-      if (currentUser) {
-        setIsUploadingFile(true);
-        try {
+        // Log security warnings if any
+        if (securityValidation.warnings && securityValidation.warnings.length > 0) {
+          console.warn("File upload security warnings:", securityValidation.warnings);
+        }
+
+        setInvoiceFile(file);
+
+        // Upload file immediately when selected
+        if (currentUser) {
           const result = await uploadInvoiceDocument(file, currentUser.id, model);
           
           if (result.success && result.url) {
             setUploadedFileUrl(result.url);
-            console.log("File uploaded successfully:", result.url);
+            
+            // Log invoice upload for audit trail
+            await logInvoiceUpload({
+              userId: currentUser.id,
+              deviceId: "", // Will be set when device is created
+              fileName: result.url,
+              originalFileName: file.name,
+              filePath: result.url,
+              fileSize: file.size,
+              mimeType: file.type,
+              deviceModel: model,
+            }, file);
+            
+            secureLogger.info("File uploaded successfully", {
+              userId: currentUser.id,
+              fileSize: file.size,
+              hasWarnings: securityValidation.warnings && securityValidation.warnings.length > 0
+            });
           } else {
             setError(result.error || "Failed to upload file. Please try again.");
             setInvoiceFile(null);
           }
-        } catch (error) {
-          console.error("File upload error:", error);
-          setError("Failed to upload file. Please try again.");
-          setInvoiceFile(null);
-        } finally {
-          setIsUploadingFile(false);
         }
+      } catch (error) {
+        secureLogger.error("File upload error", error);
+        setError("Failed to upload file. Please try again.");
+        setInvoiceFile(null);
+      } finally {
+        setIsUploadingFile(false);
       }
     }
   };

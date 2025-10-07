@@ -5,6 +5,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { getSecureConfig, secureLogger } from "./security.ts";
+import { performCompleteFileValidation } from "./fileSecurity.ts";
 
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -26,26 +27,44 @@ export interface InvoiceMetadata {
 }
 
 /**
- * Log invoice upload for audit trail
+ * Log invoice upload for audit trail with enhanced security tracking
  */
 export const logInvoiceUpload = async (
-  metadata: Omit<InvoiceMetadata, "id" | "uploadedAt" | "status">
+  metadata: Omit<InvoiceMetadata, "id" | "uploadedAt" | "status">,
+  file?: File
 ) => {
   try {
-    const { data, error } = await supabase.from("invoice_logs").insert([
-      {
-        ...metadata,
-        status: "pending",
-        uploaded_at: new Date().toISOString(),
-      },
-    ]);
+    // Perform additional security validation if file is provided
+    let securityWarnings: string[] = [];
+    if (file) {
+      const securityValidation = await performCompleteFileValidation(file);
+      if (securityValidation.warnings) {
+        securityWarnings = securityValidation.warnings;
+      }
+    }
+
+    const logData = {
+      ...metadata,
+      status: "pending" as const,
+      uploaded_at: new Date().toISOString(),
+      verificationNotes: securityWarnings.length > 0 
+        ? `Security warnings: ${securityWarnings.join(', ')}` 
+        : undefined,
+    };
+
+    const { data, error } = await supabase.from("invoice_logs").insert([logData]);
 
     if (error) {
       secureLogger.error("Error logging invoice upload", error);
       return null;
     }
 
-    secureLogger.info("Invoice upload logged successfully");
+    secureLogger.info("Invoice upload logged successfully", {
+      userId: metadata.userId,
+      fileSize: metadata.fileSize,
+      hasWarnings: securityWarnings.length > 0
+    });
+    
     return data;
   } catch (error) {
     secureLogger.error("Unexpected error logging invoice", error);
@@ -149,12 +168,12 @@ export const validateInvoiceFile = (
     };
   }
 
-  // File size validation (max 10MB)
-  const maxSize = 10 * 1024 * 1024;
+  // File size validation (max 5MB)
+  const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: "File size exceeds 10MB limit.",
+      error: "File size exceeds 5MB limit.",
     };
   }
 

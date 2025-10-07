@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { getSecureConfig } from "./security.ts";
+import { performCompleteFileValidation } from "./fileSecurity.ts";
+import { uploadRateLimiter } from "./uploadRateLimiter.ts";
 
 // Get secure configuration from environment variables
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
@@ -43,30 +45,27 @@ export const uploadFileToStorage = async (
   deviceModel?: string
 ): Promise<FileUploadResult> => {
   try {
-    // Validate file size (10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
+    // Check upload rate limit
+    const rateLimitCheck = uploadRateLimiter.canUpload(userId);
+    if (!rateLimitCheck.allowed) {
       return {
         success: false,
-        error: "File size exceeds 10MB limit",
+        error: `${rateLimitCheck.reason}. Please try again in ${rateLimitCheck.retryAfter} seconds.`,
       };
     }
 
-    // Validate file type
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "application/pdf",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
+    // Perform comprehensive security validation
+    const securityValidation = await performCompleteFileValidation(file);
+    if (!securityValidation.valid) {
       return {
         success: false,
-        error:
-          "Invalid file type. Only JPEG, PNG, WebP and PDF files are allowed.",
+        error: securityValidation.error || "File validation failed",
       };
+    }
+
+    // Log security warnings if any
+    if (securityValidation.warnings && securityValidation.warnings.length > 0) {
+      console.warn("File upload warnings:", securityValidation.warnings);
     }
 
     // Generate secure and identifiable file name
@@ -108,6 +107,9 @@ export const uploadFileToStorage = async (
     if (import.meta.env.DEV) {
       console.log("uploadFileToStorage: File uploaded successfully");
     }
+
+    // Record successful upload for rate limiting
+    uploadRateLimiter.recordUpload(userId);
 
     // For private buckets, we'll store the file path instead of public URL
     // The actual signed URL will be generated when needed
