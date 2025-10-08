@@ -4,15 +4,19 @@ import { useAppContext } from "../contexts/AppContext.tsx";
 import Container from "../components/ui/Container.tsx";
 import Input from "../components/ui/Input.tsx";
 import Button from "../components/ui/Button.tsx";
-import { ArrowLeft, Save, User, CreditCard, Shield, Phone, MapPin, Hash } from "lucide-react";
+import { ArrowLeft, Save, User, CreditCard, Shield, Phone, MapPin, Hash, Calendar } from "lucide-react";
 import { validators, sanitizers, secureLogger } from "../utils/security";
 
 const ProfilePage: React.FC = () => {
   const { currentUser, t, updateUserProfile } = useAppContext();
   const navigate = useNavigate();
 
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [tcKimlikNo, setTcKimlikNo] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -25,14 +29,43 @@ const ProfilePage: React.FC = () => {
     text: string;
   } | null>(null);
 
+  // Generate day, month, year options
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const months = [
+    { value: '01', label: 'Ocak' },
+    { value: '02', label: 'Şubat' },
+    { value: '03', label: 'Mart' },
+    { value: '04', label: 'Nisan' },
+    { value: '05', label: 'Mayıs' },
+    { value: '06', label: 'Haziran' },
+    { value: '07', label: 'Temmuz' },
+    { value: '08', label: 'Ağustos' },
+    { value: '09', label: 'Eylül' },
+    { value: '10', label: 'Ekim' },
+    { value: '11', label: 'Kasım' },
+    { value: '12', label: 'Aralık' }
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => (currentYear - i).toString());
+
   useEffect(() => {
     secureLogger.info("ProfilePage: useEffect triggered");
 
     if (currentUser) {
       secureLogger.userAction("Profile page loaded", currentUser.id);
 
-      setFullName(currentUser.fullName || "");
+      setFirstName(currentUser.firstName || "");
+      setLastName(currentUser.lastName || "");
       setEmail(currentUser.email || "");
+      
+      // Parse date of birth if exists (format: YYYY-MM-DD)
+      if (currentUser.dateOfBirth) {
+        const [year, month, day] = currentUser.dateOfBirth.split('-');
+        setBirthYear(year || "");
+        setBirthMonth(month || "");
+        setBirthDay(day || "");
+      }
+      
       setTcKimlikNo(currentUser.tcKimlikNo || "");
       setPhoneNumber(currentUser.phoneNumber || "");
       setAddress(currentUser.address || "");
@@ -66,17 +99,86 @@ const ProfilePage: React.FC = () => {
 
     try {
       // Input validation and sanitization
-      const sanitizedFullName = sanitizers.text(fullName);
+      const sanitizedFirstName = sanitizers.text(firstName);
+      const sanitizedLastName = sanitizers.text(lastName);
       const sanitizedTcKimlik = tcKimlikNo ? sanitizers.tcKimlik(tcKimlikNo) : "";
       const sanitizedPhone = phoneNumber ? sanitizers.phoneNumber(phoneNumber) : "";
       const sanitizedAddress = address ? sanitizers.text(address) : "";
       const sanitizedIban = iban ? sanitizers.iban(iban) : "";
 
       // Validate required fields
-      if (!sanitizedFullName.trim()) {
+      if (!sanitizedFirstName.trim()) {
         setMessage({
           type: "error",
-          text: "Full name is required.",
+          text: "First name is required.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      if (!sanitizedLastName.trim()) {
+        setMessage({
+          type: "error",
+          text: "Last name is required.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate and format date of birth
+      let dateOfBirth: string | undefined = undefined;
+      if (birthDay && birthMonth && birthYear) {
+        // Validate date
+        const date = new Date(`${birthYear}-${birthMonth}-${birthDay}`);
+        if (isNaN(date.getTime())) {
+          setMessage({
+            type: "error",
+            text: "Please enter a valid date of birth.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Check if date is not in the future
+        if (date > new Date()) {
+          setMessage({
+            type: "error",
+            text: "Date of birth cannot be in the future.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Check minimum age (13 years old - COPPA compliance)
+        const minAgeDate = new Date();
+        minAgeDate.setFullYear(minAgeDate.getFullYear() - 13);
+        if (date > minAgeDate) {
+          setMessage({
+            type: "error",
+            text: "You must be at least 13 years old to use this service.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Check maximum age (reasonable limit - 120 years)
+        const maxAgeDate = new Date();
+        maxAgeDate.setFullYear(maxAgeDate.getFullYear() - 120);
+        if (date < maxAgeDate) {
+          setMessage({
+            type: "error",
+            text: "Please enter a valid date of birth.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        dateOfBirth = `${birthYear}-${birthMonth}-${birthDay}`;
+      } else if (birthDay || birthMonth || birthYear) {
+        // If any field is filled, all must be filled
+        setMessage({
+          type: "error",
+          text: "Please complete all date of birth fields (day, month, year).",
         });
         setIsLoading(false);
         return;
@@ -115,7 +217,9 @@ const ProfilePage: React.FC = () => {
       if (updateUserProfile) {
         secureLogger.userAction("Profile update attempt", currentUser?.id);
         const success = await updateUserProfile({
-          fullName: sanitizedFullName,
+          firstName: sanitizedFirstName,
+          lastName: sanitizedLastName,
+          dateOfBirth: dateOfBirth,
           tcKimlikNo: sanitizedTcKimlik || undefined,
           phoneNumber: sanitizedPhone || undefined,
           address: sanitizedAddress || undefined,
@@ -226,14 +330,27 @@ const ProfilePage: React.FC = () => {
                   </h3>
                 </div>
 
-                <Input
-                  label={t("fullName")}
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="First Name / Ad"
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    placeholder="Ahmet"
+                  />
+
+                  <Input
+                    label="Last Name / Soyad"
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    placeholder="Yılmaz"
+                  />
+                </div>
 
                 <Input
                   label={t("email")}
@@ -242,10 +359,66 @@ const ProfilePage: React.FC = () => {
                   value={email}
                   disabled
                 />
-                <p className="text-sm text-brand-gray-500 mt-1">
+                <p className="text-sm text-brand-gray-500 -mt-2">
                   Email cannot be changed. Contact support if you need to update
                   your email address.
                 </p>
+
+                {/* Date of Birth */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-sm font-medium text-brand-gray-700">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Date of Birth / Doğum Tarihi
+                    <span className="text-brand-gray-400 ml-2 text-xs">(Optional)</span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <select
+                        value={birthDay}
+                        onChange={(e) => setBirthDay(e.target.value)}
+                        className="w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                      >
+                        <option value="">Day / Gün</option>
+                        {days.map((day) => (
+                          <option key={day} value={day}>
+                            {day}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <select
+                        value={birthMonth}
+                        onChange={(e) => setBirthMonth(e.target.value)}
+                        className="w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                      >
+                        <option value="">Month / Ay</option>
+                        {months.map((month) => (
+                          <option key={month.value} value={month.value}>
+                            {month.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <select
+                        value={birthYear}
+                        onChange={(e) => setBirthYear(e.target.value)}
+                        className="w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
+                      >
+                        <option value="">Year / Yıl</option>
+                        {years.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <p className="text-xs text-brand-gray-500 mt-1">
+                    🔒 This information is kept private and secure. Minimum age: 13 years.
+                  </p>
+                </div>
 
                 <Input
                   label={t("tcKimlikNo")}

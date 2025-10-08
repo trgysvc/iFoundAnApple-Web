@@ -48,7 +48,9 @@ interface AppContextType {
   fetchUserProfile: (userId: string) => Promise<any>;
   showNotification: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
   updateUserProfile: (profileData: {
-    fullName: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
     tcKimlikNo?: string;
     phoneNumber?: string;
     address?: string;
@@ -115,10 +117,106 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+// Parse user name from OAuth provider metadata
+const parseOAuthUserName = (userMetadata: any): { firstName?: string; lastName?: string } => {
+  // Try direct fields first (from our own registration)
+  if (userMetadata.first_name && userMetadata.last_name) {
+    return {
+      firstName: userMetadata.first_name,
+      lastName: userMetadata.last_name,
+    };
+  }
+
+  // Google OAuth provides given_name and family_name
+  if (userMetadata.given_name || userMetadata.family_name) {
+    return {
+      firstName: userMetadata.given_name,
+      lastName: userMetadata.family_name,
+    };
+  }
+
+  // Apple OAuth provides name object
+  if (userMetadata.name) {
+    if (typeof userMetadata.name === 'object') {
+      return {
+        firstName: userMetadata.name.firstName || userMetadata.name.first,
+        lastName: userMetadata.name.lastName || userMetadata.name.last,
+      };
+    }
+  }
+
+  // Fallback: Try to parse full_name
+  if (userMetadata.full_name) {
+    const nameParts = userMetadata.full_name.trim().split(/\s+/);
+    if (nameParts.length >= 2) {
+      return {
+        firstName: nameParts[0],
+        lastName: nameParts.slice(1).join(' '),
+      };
+    } else if (nameParts.length === 1) {
+      return {
+        firstName: nameParts[0],
+        lastName: '',
+      };
+    }
+  }
+
+  // Last resort: parse from email
+  if (userMetadata.email) {
+    const emailName = userMetadata.email.split('@')[0];
+    return {
+      firstName: emailName,
+      lastName: '',
+    };
+  }
+
+  return { firstName: undefined, lastName: undefined };
+};
+
+// Detect browser language and return appropriate default language
+const getDefaultLanguage = (): Language => {
+  // Check if there's already a saved language preference
+  const savedLang = window.localStorage.getItem("app-lang");
+  if (savedLang) {
+    return JSON.parse(savedLang) as Language;
+  }
+
+  // Get browser language
+  const browserLang = navigator.language.toLowerCase();
+  
+  // Supported languages that should auto-switch
+  const supportedAutoLanguages: Record<string, Language> = {
+    'tr': 'tr',      // Turkish
+    'tr-tr': 'tr',
+    'ja': 'ja',      // Japanese
+    'ja-jp': 'ja',
+    'es': 'es',      // Spanish
+    'es-es': 'es',
+    'es-mx': 'es',
+    'fr': 'fr',      // French
+    'fr-fr': 'fr',
+    'fr-ca': 'fr',
+  };
+
+  // Check if browser language is in supported auto languages
+  if (supportedAutoLanguages[browserLang]) {
+    return supportedAutoLanguages[browserLang];
+  }
+
+  // Check if browser language starts with any of our supported language codes
+  const langPrefix = browserLang.split('-')[0];
+  if (supportedAutoLanguages[langPrefix]) {
+    return supportedAutoLanguages[langPrefix];
+  }
+
+  // Default to English
+  return 'en';
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [language, setLanguage] = useLocalStorage<Language>("app-lang", "en");
+  const [language, setLanguage] = useLocalStorage<Language>("app-lang", getDefaultLanguage());
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Supabase will manage current user
   // const [users, setUsers] = useLocalStorage<User[]>('users', [defaultAdminUser]); // Removed as users are now managed by Supabase
   const [devices, setDevices] = useState<Device[]>([]);
@@ -128,13 +226,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        // Here you might fetch user metadata from your 'profiles' table if needed
-        // For now, we'll just set a basic user object
+        // Parse user name from OAuth metadata
+        const parsedNames = parseOAuthUserName(session.user.user_metadata);
+        const fullName = session.user.user_metadata.full_name || 
+                        `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
+                        session.user.email!;
+        
         setCurrentUser({
           id: session.user.id,
           email: session.user.email!,
-          fullName: session.user.user_metadata.full_name || session.user.email!, // Assuming full_name in metadata
-          role: UserRole.USER, // Default role for now, can fetch from profiles table
+          fullName: fullName,
+          firstName: parsedNames.firstName,
+          lastName: parsedNames.lastName,
+          role: UserRole.USER,
         });
       }
     });
@@ -153,13 +257,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           session.user.id
         );
 
-        // Set initial user data from session
+        // Parse user name from OAuth metadata or regular sign-in
+        const parsedNames = parseOAuthUserName(session.user.user_metadata);
+        const fullName = session.user.user_metadata.full_name || 
+                        `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
+                        session.user.email!;
+        
         const initialUser = {
           id: session.user.id,
           email: session.user.email!,
-          fullName: session.user.user_metadata.full_name || session.user.email!,
+          fullName: fullName,
+          firstName: parsedNames.firstName,
+          lastName: parsedNames.lastName,
           role: UserRole.USER,
         };
+
+        secureLogger.info("Parsed user metadata", {
+          provider: session.user.app_metadata?.provider,
+          hasFirstName: !!parsedNames.firstName,
+          hasLastName: !!parsedNames.lastName,
+          source: session.user.user_metadata.given_name ? 'OAuth' : 'Regular',
+        });
 
         setCurrentUser(initialUser);
 
@@ -175,6 +293,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                 prev
                   ? {
                       ...prev,
+                      firstName: profileData.first_name || prev.firstName,
+                      lastName: profileData.last_name || prev.lastName,
+                      fullName: profileData.first_name && profileData.last_name 
+                        ? `${profileData.first_name} ${profileData.last_name}` 
+                        : prev.fullName,
+                      dateOfBirth: profileData.date_of_birth || undefined,
                       tcKimlikNo: profileData.tc_kimlik_no || undefined,
                       phoneNumber: profileData.phone_number || undefined,
                       address: profileData.address || undefined,
@@ -184,7 +308,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                   : null
               );
             } else {
-              secureLogger.info("No profile data found - user may be new");
+              secureLogger.info("No profile data found - creating profile for new user from OAuth/Auth");
+              // Create profile for new user with parsed OAuth data
+              createUserProfile(session.user.id, {
+                firstName: parsedNames.firstName,
+                lastName: parsedNames.lastName,
+              }).then(() => {
+                secureLogger.info("Profile created successfully with OAuth data");
+              }).catch((error) => {
+                secureLogger.error("Error creating user profile", error);
+              });
             }
           })
           .catch((error) => {
@@ -514,12 +647,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return false;
     }
     if (data.user) {
+      const parsedNames = parseOAuthUserName(data.user.user_metadata);
+      const fullName = data.user.user_metadata.full_name || 
+                      `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
+                      data.user.email!;
+      
       setCurrentUser({
         id: data.user.id,
         email: data.user.email!,
-        fullName: data.user.user_metadata.full_name || data.user.email!,
+        fullName: fullName,
+        firstName: parsedNames.firstName,
+        lastName: parsedNames.lastName,
         role: UserRole.USER,
       });
+      
+      // Ensure user has a profile record
+      const profile = await fetchUserProfile(data.user.id);
+      if (!profile) {
+        secureLogger.info("Creating profile for user without profile record");
+        await createUserProfile(data.user.id, {
+          firstName: parsedNames.firstName,
+          lastName: parsedNames.lastName,
+        });
+      }
+      
       return true;
     }
     return false;
@@ -572,7 +723,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       password: pass,
       options: {
         data: {
-          full_name: userData.fullName,
+          first_name: userData.firstName,
+          last_name: userData.lastName,
+          full_name: userData.fullName || `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
         },
       },
     });
@@ -581,15 +734,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return false;
     }
     if (signUpData.user) {
+      const fullName = signUpData.user.user_metadata.full_name || signUpData.user.email!;
       setCurrentUser({
         id: signUpData.user.id,
         email: signUpData.user.email!,
-        fullName:
-          signUpData.user.user_metadata.full_name || signUpData.user.email!,
+        fullName: fullName,
+        firstName: signUpData.user.user_metadata.first_name || userData.firstName,
+        lastName: signUpData.user.user_metadata.last_name || userData.lastName,
         role: UserRole.USER,
       });
-      // Optionally, insert user data into a 'profiles' table here if you need to store more information
-      // await supabase.from('profiles').insert([{ id: data.user.id, full_name: userData.fullName, email: userData.email, role: UserRole.USER }]);
+      
+      // Create user profile record
+      try {
+        await createUserProfile(signUpData.user.id, {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+        });
+        secureLogger.info("User profile created successfully for new user");
+      } catch (profileError) {
+        secureLogger.error("Error creating user profile:", profileError);
+        // Don't fail registration if profile creation fails
+      }
+      
       return true;
     }
     return false;
@@ -1335,6 +1501,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [currentUser, addNotification]);
 
+  // Create user profile in userProfile table
+  const createUserProfile = async (
+    userId: string, 
+    profileData: {
+      firstName?: string;
+      lastName?: string;
+    }
+  ) => {
+    try {
+      console.log("createUserProfile: Creating profile for user:", userId);
+
+      const { data, error } = await supabase
+        .from("userprofile")
+        .insert([{
+          user_id: userId,
+          first_name: profileData.firstName || null,
+          last_name: profileData.lastName || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("createUserProfile: Error creating profile:", error);
+        throw error;
+      }
+
+      console.log("createUserProfile: Profile created successfully:", data);
+      return data;
+    } catch (error) {
+      console.error("createUserProfile: Error:", error);
+      throw error;
+    }
+  };
+
   // Fetch user profile data from userProfile table
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -1368,7 +1570,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const updateUserProfile = async (profileData: {
-    fullName: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
     tcKimlikNo?: string;
     phoneNumber?: string;
     address?: string;
@@ -1386,10 +1590,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       console.log("updateUserProfile: Profile data:", profileData);
 
-      // Step 1: Update fullName in Supabase Auth user metadata
+      // Generate fullName from firstName and lastName
+      const fullName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
+
+      // Step 1: Update user metadata in Supabase Auth
       const { error: authError } = await supabase.auth.updateUser({
         data: {
-          full_name: profileData.fullName,
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          full_name: fullName || undefined,
         },
       });
 
@@ -1404,9 +1613,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("updateUserProfile: Auth user updated successfully");
 
       // Step 2: Update or insert profile data in userProfile table
-      const { error: profileError } = await supabase.from("userProfile").upsert(
+      const { error: profileError } = await supabase.from("userprofile").upsert(
         {
           user_id: currentUser.id,
+          first_name: profileData.firstName || null,
+          last_name: profileData.lastName || null,
+          date_of_birth: profileData.dateOfBirth || null,
           tc_kimlik_no: profileData.tcKimlikNo || null,
           phone_number: profileData.phoneNumber || null,
           address: profileData.address || null,
@@ -1434,7 +1646,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         prev
           ? {
               ...prev,
-              fullName: profileData.fullName,
+              firstName: profileData.firstName,
+              lastName: profileData.lastName,
+              fullName: fullName || prev.fullName,
+              dateOfBirth: profileData.dateOfBirth,
               tcKimlikNo: profileData.tcKimlikNo,
               phoneNumber: profileData.phoneNumber,
               address: profileData.address,

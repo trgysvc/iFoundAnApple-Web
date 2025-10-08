@@ -7,11 +7,14 @@ export enum UserRole {
 
 export interface User {
   id: string;
-  fullName: string;
+  firstName?: string; // Ad
+  lastName?: string; // Soyad
+  fullName?: string; // Tam ad (geriye uyumluluk için)
   email: string;
   password_hash?: string; // In a real app, never store plain text passwords
   role: UserRole;
   // Extended profile information
+  dateOfBirth?: string; // Doğum tarihi (YYYY-MM-DD)
   tcKimlikNo?: string; // TC Kimlik Numarası
   phoneNumber?: string; // Telefon Numarası
   address?: string; // Adres
@@ -23,6 +26,9 @@ export interface User {
 export interface UserProfile {
   id: string;
   user_id: string;
+  first_name?: string; // Ad
+  last_name?: string; // Soyad
+  date_of_birth?: string; // Doğum tarihi (YYYY-MM-DD)
   tc_kimlik_no?: string;
   phone_number?: string;
   address?: string;

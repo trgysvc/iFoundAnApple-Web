@@ -12,7 +12,8 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState("");
 
@@ -50,7 +51,9 @@ const RegisterPage: React.FC = () => {
     const success = await register(
       {
         email,
-        fullName,
+        firstName,
+        lastName,
+        fullName: `${firstName} ${lastName}`.trim(),
       },
       password
     );
@@ -89,14 +92,26 @@ const RegisterPage: React.FC = () => {
           </p>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label={t("fullName")}
-            id="fullName"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="First Name / Ad"
+              id="firstName"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              placeholder="Ahmet"
+            />
+            <Input
+              label="Last Name / Soyad"
+              id="lastName"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              placeholder="Yılmaz"
+            />
+          </div>
           <Input
             label={t("email")}
             id="email"
