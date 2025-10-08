@@ -18,10 +18,19 @@ Bu proje **hybrid** bir yapıya sahip:
 4. Branch: `master` veya `main`
 
 ### 2. Build Settings
+
+**ÖNEMLİ:** Coolify'da mutlaka **Dockerfile** seçeneğini kullanın!
+
 ```
-Build Command: npm install && npm run build
-Start Command: npm start
-Port: 3001
+Build Pack: Dockerfile
+Port: 3000
+```
+
+Eğer Nixpacks kullanıyorsanız:
+```
+Build Command: npm ci && npm run build
+Start Command: node server.cjs
+Port: 3000
 ```
 
 ### 3. Environment Variables
@@ -32,7 +41,7 @@ Coolify'de şu environment variable'ları ekleyin:
 NODE_ENV=production
 
 # Port (Coolify otomatik ayarlar, opsiyonel)
-PORT=3001
+PORT=3000
 
 # Supabase
 VITE_SUPABASE_URL=https://zokkxkyhabihxjskdcfg.supabase.co
@@ -149,6 +158,9 @@ Response: {
 
 ## 🐛 TROUBLESHOOTING
 
+### Sorun: "405 Method Not Allowed"
+**Çözüm:** Coolify static site olarak deploy etmiş. **Build Pack'i "Dockerfile" olarak değiştirin** ve redeploy edin.
+
 ### Sorun: "Cannot GET /api/iyzico-payment"
 **Çözüm:** Server başlamadı. Coolify logs'u kontrol edin.
 
@@ -160,6 +172,12 @@ Response: {
 
 ### Sorun: Frontend yüklenmiyor
 **Çözüm:** `npm run build` çalıştırıldı mı kontrol edin.
+
+### Sorun: Health check başarısız
+**Çözüm:** 
+1. `https://yourdomain.com/api/health` adresini tarayıcıda test edin
+2. Coolify logs'da server.cjs'in başladığını kontrol edin
+3. PORT env variable'ın doğru olduğunu kontrol edin
 
 ---
 
@@ -174,7 +192,7 @@ Node.js
 ### Health Check
 ```
 Path: /api/health
-Port: 3001
+Port: 3000
 Interval: 30s
 Timeout: 10s
 ```
