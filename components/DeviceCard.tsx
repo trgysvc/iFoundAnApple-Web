@@ -14,6 +14,7 @@ const statusConfigMap = {
   [DeviceStatus.MATCHED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Clock className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: <CreditCard className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_COMPLETE]: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
+  ['payment_completed']: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
   [DeviceStatus.EXCHANGE_PENDING]: { color: 'bg-purple-100 text-purple-800', icon: <Package className="w-4 h-4" /> },
   [DeviceStatus.COMPLETED]: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
 };
@@ -23,13 +24,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   // Convert device.status to lowercase to match statusConfigMap keys
   const config = statusConfigMap[device.status.toLowerCase() as DeviceStatus];
 
-  const getStatusText = (status: DeviceStatus): string => {
+  const getStatusText = (status: DeviceStatus | string): string => {
       switch (status) {
           case DeviceStatus.LOST: return t('Lost');
           case DeviceStatus.REPORTED: return t('Reported');
           case DeviceStatus.MATCHED: return t('Matched');
           case DeviceStatus.PAYMENT_PENDING: return t('PaymentPending');
           case DeviceStatus.PAYMENT_COMPLETE: return t('PaymentComplete');
+          case 'payment_completed': return 'Ödeme Alındı, Kargo Bekleniyor';
           case DeviceStatus.EXCHANGE_PENDING: return t('ExchangePending');
           case DeviceStatus.COMPLETED: return t('Completed');
           default: return status;

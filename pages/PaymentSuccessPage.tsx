@@ -99,8 +99,12 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
     navigate('/dashboard');
   };
 
-  const handleTrackPayment = () => {
-    navigate(`/payment/track/${paymentId}`);
+  const handleCancelPayment = () => {
+    // Ödeme iptal işlemi (şimdilik sadece dashboard'a yönlendir)
+    // TODO: İleride gerçek iptal işlemi eklenecek
+    if (confirm('Ödemeyi iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+      navigate('/dashboard');
+    }
   };
 
   if (loading) {
@@ -212,20 +216,20 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
             </div>
           )}
 
-          {/* Next Steps */}
+          {/* Durum Bilgisi */}
           <div className="bg-yellow-50 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Sonraki Adımlar
+              Durum Bilgisi
             </h2>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                   1
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
-                  <p className="text-gray-600 text-sm">Bulucu kişi cihazınızı kargo ile gönderecek.</p>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900 mb-1">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
+                  <p className="text-gray-600 text-sm">Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></p>
                 </div>
               </div>
               
@@ -233,9 +237,18 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
                 <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                   2
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900">Cihaz Teslim Alındığında</p>
-                  <p className="text-gray-600 text-sm">Cihazınızı teslim aldığınızda ödeme bulucuya aktarılacak.</p>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-600 text-sm">Teslim aldığınızı onaylayın</p>
+                    <Button 
+                      variant="primary" 
+                      className="ml-4"
+                      disabled
+                    >
+                      Onay
+                    </Button>
+                  </div>
                 </div>
               </div>
               
@@ -244,8 +257,8 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
                   3
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">İşlem Tamamlanır</p>
-                  <p className="text-gray-600 text-sm">Tüm süreç tamamlandığında bildirim alacaksınız.</p>
+                  <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                  <p className="text-gray-600 text-sm">Cihazınıza kavuştuğunuz için mutluyuz</p>
                 </div>
               </div>
             </div>
@@ -254,11 +267,11 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
           {/* Action Buttons */}
           <div className="flex space-x-4">
             <Button 
-              onClick={handleTrackPayment} 
+              onClick={handleCancelPayment} 
               variant="secondary"
               className="flex-1"
             >
-              Ödeme Durumunu Takip Et
+              Ödemeyi İptal Et
             </Button>
             
             <Button 
@@ -266,7 +279,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
               variant="primary"
               className="flex-1"
             >
-              Ana Sayfaya Dön
+              Cihazlarım Listesine Dön
             </Button>
           </div>
 

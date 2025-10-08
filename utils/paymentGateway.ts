@@ -235,6 +235,22 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
       console.log("[DATABASE] Escrow kaydı oluşturuldu:", escrowData);
     }
 
+    // 3. Cihaz durumunu güncelle (ödeme tamamlandı)
+    if (paymentResult.status === 'completed') {
+      const { error: deviceError } = await supabase
+        .from('devices')
+        .update({
+          status: 'payment_completed'
+        })
+        .eq('id', request.deviceId);
+
+      if (deviceError) {
+        console.error("[DATABASE] Device status güncelleme hatası:", deviceError);
+      } else {
+        console.log("[DATABASE] ✅ Device status güncellendi: payment_completed");
+      }
+    }
+
     console.log("[DATABASE] Ödeme kaydı başarıyla tamamlandı");
   } catch (error) {
     console.error("[DATABASE] Database kayıt hatası:", error);

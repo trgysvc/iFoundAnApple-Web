@@ -6,6 +6,8 @@ import Container from "../components/ui/Container.tsx";
 import Button from "../components/ui/Button.tsx";
 import NotFoundPage from "./NotFoundPage.tsx";
 import { getSecureInvoiceUrl } from "../utils/fileUpload.ts";
+import { getSecureConfig } from "../utils/security.ts";
+import { createClient } from "@supabase/supabase-js";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -17,6 +19,10 @@ import {
   Paperclip,
   Check,
 } from "lucide-react";
+
+// Supabase client
+const config = getSecureConfig();
+const supabaseClient = createClient(config.supabaseUrl, config.supabaseAnonKey);
 
 // A generic view for displaying status information and actions.
 const StatusView: React.FC<{
@@ -83,6 +89,26 @@ const DeviceDetailPage: React.FC = () => {
         console.log("DeviceDetailPage: Device found:", foundDevice);
         setDevice(foundDevice);
 
+        // Eğer cihazın ödemesi tamamlandıysa, PaymentSuccessPage'e yönlendir
+        if (foundDevice && foundDevice.status === 'payment_completed') {
+          console.log("DeviceDetailPage: Ödeme tamamlanmış, PaymentSuccessPage'e yönlendiriliyor");
+          
+          // Payment ID'yi bul
+          const { data: paymentData } = await supabaseClient
+            .from('payments')
+            .select('id')
+            .eq('device_id', deviceId)
+            .eq('status', 'completed')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          
+          if (paymentData) {
+            navigate(`/payment/success?paymentId=${paymentData.id}`);
+            return;
+          }
+        }
+
         // Generate secure URL for invoice if it exists
         if (foundDevice?.invoice_url) {
           setIsLoadingInvoice(true);
@@ -101,7 +127,7 @@ const DeviceDetailPage: React.FC = () => {
     };
 
     fetchDevice();
-  }, [deviceId, getDeviceById, notifications]); // Rerun if notifications change to update status
+  }, [deviceId, getDeviceById, notifications, navigate]); // Rerun if notifications change to update status
 
   useEffect(() => {
     // Mark notifications for this page as read when the component mounts
