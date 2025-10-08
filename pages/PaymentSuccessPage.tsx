@@ -67,6 +67,11 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         throw new Error(`Payment fetch error: ${paymentError.message}`);
       }
 
+      // Güvenlik kontrolü: Ödeme gerçekten başarılı mı?
+      if (!paymentData || paymentData.status !== 'completed') {
+        throw new Error('Ödeme henüz tamamlanmamış veya başarısız. Lütfen ödeme sayfasına dönün.');
+      }
+
       setPayment(paymentData);
 
       // Fetch escrow data

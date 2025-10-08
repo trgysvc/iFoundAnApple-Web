@@ -155,6 +155,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
             postalCode: "34000",
           },
         },
+        paymentProvider: selectedPaymentMethod,
       };
 
       const result = await initiatePayment(
@@ -162,17 +163,29 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
         selectedPaymentMethod
       );
 
+      // Ödeme durumuna göre yönlendirme
       if (result.success) {
-        showNotification(t("paymentInitiated"), "success");
-
-        if (result.redirectUrl) {
+        if (result.status === 'completed') {
+          // Ödeme başarıyla tamamlandı
+          showNotification(t("paymentInitiated"), "success");
+          navigate(`/payment/success?paymentId=${result.paymentId}`);
+        } else if (result.status === 'processing' && result.redirectUrl) {
+          // 3D Secure veya ödeme sayfasına yönlendir
+          console.log('[PAYMENT] 3D Secure/Ödeme sayfasına yönlendiriliyor:', result.redirectUrl);
+          showNotification('Ödeme sayfasına yönlendiriliyorsunuz...', "info");
           window.location.href = result.redirectUrl;
         } else {
-          navigate(`/payment/success?paymentId=${result.paymentId}`);
+          // Beklenmeyen durum
+          setError('⏳ Ödeme işlemi devam ediyor. Lütfen bekleyin...');
+          showNotification('Ödeme işlemi devam ediyor...', "info");
         }
       } else {
-        setError(result.errorMessage || t("paymentFailed"));
-        showNotification(t("paymentFailed"), "error");
+        // Ödeme başarısız
+        const errorMsg = result.errorMessage || '❌ Ödeme işlemi başarısız oldu. Lütfen tekrar deneyin.';
+        
+        setError(errorMsg);
+        showNotification(errorMsg, "error");
+        console.log('[PAYMENT] Ödeme başarısız:', { status: result.status, error: errorMsg });
       }
     } catch (err) {
       console.error("Payment error:", err);
@@ -503,20 +516,34 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                   </div>
 
                   {error && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <div className="flex items-center">
+                    <div className="mb-6 p-5 bg-red-50 border-2 border-red-300 rounded-xl shadow-sm animate-shake">
+                      <div className="flex items-start">
                         <svg
-                          className="w-5 h-5 text-red-500 mr-2"
+                          className="w-6 h-6 text-red-600 mr-3 flex-shrink-0 mt-0.5"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
                           <path
                             fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        <p className="text-sm text-red-700">{error}</p>
+                        <div className="flex-1">
+                          <h4 className="text-base font-semibold text-red-800 mb-1">
+                            ⚠️ Ödeme Başarısız
+                          </h4>
+                          <p className="text-sm text-red-700 leading-relaxed">{error}</p>
+                        </div>
+                        <button
+                          onClick={() => setError(null)}
+                          className="ml-2 text-red-400 hover:text-red-600 transition-colors"
+                          aria-label="Kapat"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   )}

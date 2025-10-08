@@ -102,12 +102,15 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
           serviceFee: fees.serviceFee,
           gatewayFee: fees.gatewayFee,
           totalAmount: fees.totalAmount,
-          netPayout: fees.netPayout
+          netPayout: fees.netPayout,
+          originalRepairPrice: fees.originalRepairPrice,
+          deviceModel: fees.deviceModel,
+          category: fees.category
         },
         deviceInfo: {
           model: fees.deviceModel,
-          serialNumber: 'MOCK_SERIAL', // Should come from device data
-          description: 'Device payment'
+          serialNumber: 'PENDING', // Will be updated when device is found
+          description: `Payment for ${fees.deviceModel} device recovery`
         },
         payerInfo: {
           name: currentUser.email, // Should come from user profile
@@ -119,7 +122,8 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
             district: 'Kadıköy',
             postalCode: '34000'
           }
-        }
+        },
+        paymentProvider: selectedPaymentMethod
       };
 
       const result = await initiatePayment(paymentRequest, selectedPaymentMethod);

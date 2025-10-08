@@ -355,12 +355,31 @@ export const refundIyzicoPayment = async (paymentId: string, amount: number, rea
 // İyzico webhook doğrulama
 export const verifyIyzicoWebhook = (signature: string, body: string): boolean => {
   try {
-    // İyzico webhook signature doğrulaması
-    // Bu implementasyon İyzico'nun webhook signature algoritmasına göre yapılmalı
-    console.log('[IYZICO] Webhook doğrulaması:', { signature, bodyLength: body.length });
+    const config = getSecureConfig();
+    const secretKey = config.iyzico.secretKey;
     
-    // TODO: Gerçek signature doğrulama algoritması implementasyonu
-    return true;
+    // İyzico signature algoritması: HMAC-SHA256
+    // Node.js ortamında crypto kullan
+    if (typeof window === 'undefined') {
+      const crypto = require('crypto');
+      const hmac = crypto.createHmac('sha256', secretKey);
+      hmac.update(body);
+      const expectedSignature = hmac.digest('base64');
+      
+      const isValid = signature === expectedSignature;
+      
+      console.log('[IYZICO] Webhook signature doğrulaması:', { 
+        isValid,
+        signatureLength: signature?.length,
+        bodyLength: body?.length 
+      });
+      
+      return isValid;
+    }
+    
+    // Browser ortamında SubtleCrypto kullan
+    console.warn('[IYZICO] Webhook doğrulaması browser ortamında çalışmaz');
+    return false;
   } catch (error) {
     console.error('[IYZICO] Webhook doğrulama hatası:', error);
     return false;

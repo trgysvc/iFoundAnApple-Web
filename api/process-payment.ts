@@ -174,41 +174,19 @@ export async function processPaymentAPI(request: PaymentRequest, existingPayment
 
     // Payment result should come from the calling function
     // This function only handles database operations
+    // NOT: Bu fonksiyon artık sadece database kaydı oluşturuyor
+    // Gerçek payment status'u payment gateway'den gelecek
     const paymentResult: PaymentResponse = {
       success: true,
       paymentId: paymentId,
       providerPaymentId: `${paymentProvider}_${paymentId}`,
-      status: 'pending',
+      status: 'pending', // İlk kayıt pending olarak oluşturulur
       providerResponse: { provider: paymentProvider, status: 'processing' }
     };
 
-    // Update payment status
-    const { error: updateError } = await supabaseClient
-      .from('payments')
-      .update({
-        payment_status: paymentResult.status,
-        provider_payment_id: paymentResult.providerPaymentId,
-        provider_response: paymentResult.providerResponse,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', paymentId);
-
-    if (updateError) {
-      console.error('[PROCESS_PAYMENT] Failed to update payment status:', updateError);
-    }
-
-    // Update escrow status
-    const { error: escrowUpdateError } = await supabaseClient
-      .from('escrow_accounts')
-      .update({
-        status: paymentResult.status === 'completed' ? 'held' : 'pending',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', escrowId);
-
-    if (escrowUpdateError) {
-      console.error('[PROCESS_PAYMENT] Failed to update escrow status:', escrowUpdateError);
-    }
+    // NOT: Payment status'u güncellemiyoruz çünkü bu fonksiyon
+    // sadece ilk kayıt oluşturma için kullanılıyor
+    // Gerçek status güncellemesi payment gateway tarafından yapılacak
 
     const response: PaymentResponse = {
       success: paymentResult.success,

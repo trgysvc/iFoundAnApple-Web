@@ -157,6 +157,7 @@ export async function handleIyzicoWebhook(request: Request): Promise<Response> {
       .from('payments')
       .update({
         status: newStatus,
+        payment_status: newStatus, // Her iki kolonu da güncelle
         provider_payment_id: webhookData.paymentId,
         provider_response: webhookData,
         completed_at: newStatus === 'completed' ? new Date().toISOString() : null,

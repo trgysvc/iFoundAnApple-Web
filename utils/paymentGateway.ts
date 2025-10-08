@@ -4,8 +4,9 @@
  */
 
 import { FeeBreakdown } from "./feeCalculation.ts";
-import { processPaymentAPI } from "../api/process-payment.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
+import { getSecureConfig } from "./security.ts";
+import { createClient } from "@supabase/supabase-js";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -107,7 +108,9 @@ export const initiatePayment = async (
     
     switch (provider) {
       case "test":
-        paymentResult = await processTestPayment(request);
+        // Test modu artık Iyzico Sandbox API'sini kullanıyor
+        console.log("[TEST] Test modu → İyzico Sandbox API kullanılacak");
+        paymentResult = await processIyzicoPayment(request);
         break;
       case "iyzico":
         paymentResult = await processIyzicoPayment(request);
@@ -121,7 +124,22 @@ export const initiatePayment = async (
 
     // Database'e kayıt yap
     if (paymentResult.success) {
-      await savePaymentToDatabase(request, paymentResult);
+      try {
+        await savePaymentToDatabase(request, paymentResult);
+        console.log("[PAYMENT] ✅ Ödeme işlemi tamamlandı, sonuç döndürülüyor:", {
+          success: paymentResult.success,
+          status: paymentResult.status,
+          paymentId: paymentResult.paymentId
+        });
+      } catch (dbError) {
+        console.error("[PAYMENT] Database kayıt hatası, ödeme başarısız sayılıyor:", dbError);
+        return {
+          success: false,
+          status: "failed",
+          errorMessage: "Ödeme kaydedilemedi. Lütfen tekrar deneyin.",
+          providerResponse: dbError
+        };
+      }
     }
 
     return paymentResult;
@@ -136,29 +154,92 @@ export const initiatePayment = async (
 };
 
 /**
- * Database'e ödeme kaydını kaydet
+ * Database'e ödeme kaydını kaydet ve status'u güncelle
  */
 const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: PaymentResponse): Promise<void> => {
   try {
     console.log("[DATABASE] Ödeme kaydı database'e kaydediliyor...", {
       paymentId: paymentResult.paymentId,
-      status: paymentResult.status
+      status: paymentResult.status,
+      success: paymentResult.success
     });
 
-    // processPaymentAPI'yi çağır ama sadece database işlemleri için
-    const dbRequest = {
-      ...request,
-      paymentProvider: request.paymentProvider || 'test'
-    };
+    // Güvenlik kontrolü: Sadece başarılı ödemeleri kaydet
+    if (!paymentResult.success) {
+      console.warn("[DATABASE] Başarısız ödeme kaydedilmiyor:", paymentResult.errorMessage);
+      return;
+    }
 
-    // Database'e kayıt yap (mevcut payment ID'yi kullan)
-    await processPaymentAPI(dbRequest, paymentResult.paymentId);
+    // Supabase client oluştur
+    const config = getSecureConfig();
+    const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
 
-    console.log("[DATABASE] Ödeme kaydı başarıyla kaydedildi");
+    // 1. İlk olarak payment kaydını oluştur
+    const { data: paymentData, error: paymentError } = await supabase
+      .from('payments')
+      .insert({
+        id: paymentResult.paymentId,
+        device_id: request.deviceId,
+        payer_id: request.payerId,
+        receiver_id: request.receiverId,
+        total_amount: request.feeBreakdown.totalAmount,
+        reward_amount: request.feeBreakdown.rewardAmount || request.feeBreakdown.originalRepairPrice || 0,
+        cargo_fee: request.feeBreakdown.cargoFee,
+        payment_gateway_fee: request.feeBreakdown.gatewayFee,
+        service_fee: request.feeBreakdown.serviceFee,
+        net_payout: request.feeBreakdown.netPayout,
+        payment_provider: request.paymentProvider || 'test',
+        provider_payment_id: paymentResult.providerPaymentId,
+        status: paymentResult.status,
+        payment_status: paymentResult.status,
+        provider_response: paymentResult.providerResponse,
+        payment_method: request.paymentProvider || 'test',
+        currency: 'TRY',
+        payer_info: request.payerInfo,
+        device_info: request.deviceInfo,
+      })
+      .select()
+      .single();
+
+    if (paymentError) {
+      console.error("[DATABASE] Payment kayıt hatası:", paymentError);
+      throw new Error(`Payment kayıt hatası: ${paymentError.message}`);
+    }
+
+    console.log("[DATABASE] Payment kaydı oluşturuldu:", paymentData);
+
+    // 2. Escrow kaydını oluştur
+    const { data: escrowData, error: escrowError } = await supabase
+      .from('escrow_accounts')
+      .insert({
+        payment_id: paymentResult.paymentId,
+        device_id: request.deviceId,
+        holder_user_id: request.payerId, // Ödeme yapan (device owner)
+        beneficiary_user_id: request.receiverId || request.payerId, // Ödül alacak (finder) - yoksa payer
+        total_amount: request.feeBreakdown.totalAmount,
+        reward_amount: request.feeBreakdown.rewardAmount || request.feeBreakdown.originalRepairPrice || 0,
+        service_fee: request.feeBreakdown.serviceFee,
+        gateway_fee: request.feeBreakdown.gatewayFee,
+        cargo_fee: request.feeBreakdown.cargoFee,
+        net_payout: request.feeBreakdown.netPayout,
+        status: paymentResult.status === 'completed' ? 'held' : 'pending',
+        currency: 'TRY',
+      })
+      .select()
+      .single();
+
+    if (escrowError) {
+      console.error("[DATABASE] Escrow kayıt hatası:", escrowError);
+      // Escrow hatası kritik değil, devam et
+    } else {
+      console.log("[DATABASE] Escrow kaydı oluşturuldu:", escrowData);
+    }
+
+    console.log("[DATABASE] Ödeme kaydı başarıyla tamamlandı");
   } catch (error) {
     console.error("[DATABASE] Database kayıt hatası:", error);
-    // Database hatası ödeme işlemini başarısız yapmamalı
-    // Sadece log'la
+    // Hatayı yukarı fırlat ki ödeme başarısız sayılsın
+    throw error;
   }
 };
 
@@ -174,14 +255,16 @@ const processTestPayment = async (
     payer: request.payerInfo.email,
   });
 
-  // Test modu için sadece simülasyon
+  // Test modu için sadece simülasyon (her zaman başarılı)
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  return {
+  console.log("[TEST] ✅ Test modu - Her zaman başarılı");
+  
+  const result = {
     success: true,
-    paymentId: crypto.randomUUID(), // UUID formatında
-    providerPaymentId: `test_${Math.random().toString(36).substring(7)}`,
-    providerTransactionId: `test_tx_${Math.random().toString(36).substring(7)}`,
+    paymentId: crypto.randomUUID(),
+    providerPaymentId: `test_${crypto.randomUUID()}`,
+    providerTransactionId: `test_tx_${crypto.randomUUID()}`,
     status: "completed",
     providerResponse: {
       status: "success",
@@ -190,10 +273,13 @@ const processTestPayment = async (
       message: "Test modu - gerçek ödeme yapılmadı",
     },
   };
+  
+  console.log("[TEST] Ödeme sonucu döndürülüyor:", result);
+  return result;
 };
 
 /**
- * Iyzico ile ödeme işleme
+ * Iyzico ile ödeme işleme (Backend API üzerinden)
  */
 const processIyzicoPayment = async (
   request: PaymentRequest
@@ -205,13 +291,13 @@ const processIyzicoPayment = async (
   });
 
   try {
-    // İyzico API'ye gerçek ödeme isteği gönder
-    const { processIyzicoPayment: iyzicoProcess } = await import('./iyzicoConfig');
+    const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     
+    // Backend API'ye istek gönder
     const iyzicoRequest = {
       amount: request.feeBreakdown.totalAmount,
       currency: 'TRY',
-      conversationId: `conv_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      conversationId: conversationId,
       buyerInfo: {
         id: request.payerId,
         name: request.payerInfo.name.split(' ')[0] || 'Test',
@@ -248,14 +334,35 @@ const processIyzicoPayment = async (
       }]
     };
 
-    const result = await iyzicoProcess(iyzicoRequest);
+    console.log("[IYZICO] Backend API'ye istek gönderiliyor...");
+
+    // Backend API endpoint'ine istek gönder
+    // Development: localhost:3001, Production: same origin
+    const apiUrl = import.meta.env.DEV 
+      ? 'http://localhost:3001/api/iyzico-payment'
+      : '/api/iyzico-payment';
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(iyzicoRequest)
+    });
+
+    const result = await response.json();
+    
+    console.log("[IYZICO] Backend API yanıtı:", result);
     
     if (result.success) {
+      // Yeni UUID oluştur (database için)
+      const paymentId = crypto.randomUUID();
+      
       return {
         success: true,
-        paymentId: result.paymentId || crypto.randomUUID(), // UUID formatında
-        providerPaymentId: result.paymentId,
-        providerTransactionId: result.paymentId,
+        paymentId: paymentId, // Database için UUID
+        providerPaymentId: result.paymentId, // İyzico'nun payment ID'si
+        providerTransactionId: result.conversationId,
         status: result.status === 'completed' ? 'completed' : 'processing',
         redirectUrl: result.redirectUrl,
         providerResponse: result.providerResponse,

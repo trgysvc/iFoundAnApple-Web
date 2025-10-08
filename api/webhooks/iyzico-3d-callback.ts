@@ -73,6 +73,7 @@ export async function handleIyzicoCallback(request: Request): Promise<Response> 
           .from('payments')
           .update({
             status: 'completed',
+            payment_status: 'completed', // Her iki kolonu da güncelle
             provider_payment_id: params.paymentId,
             completed_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -117,6 +118,7 @@ export async function handleIyzicoCallback(request: Request): Promise<Response> 
           .from('payments')
           .update({
             status: 'failed',
+            payment_status: 'failed', // Her iki kolonu da güncelle
             provider_payment_id: params.paymentId,
             updated_at: new Date().toISOString(),
           })
@@ -131,9 +133,10 @@ export async function handleIyzicoCallback(request: Request): Promise<Response> 
     }
 
     // Kullanıcıyı uygun sayfaya yönlendir
+    const baseUrl = config.iyzico.callbackUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com');
     const redirectUrl = params.status === 'success' 
-      ? `${config.iyzico.callbackUrl}/payment/success?paymentId=${params.conversationId}`
-      : `${config.iyzico.callbackUrl}/payment/failure?paymentId=${params.conversationId}&error=${encodeURIComponent(params.errorMessage || 'Payment failed')}`;
+      ? `${baseUrl}/payment/success?paymentId=${params.conversationId}`
+      : `${baseUrl}/payment/failure?paymentId=${params.conversationId}&error=${encodeURIComponent(params.errorMessage || 'Payment failed')}`;
 
     console.log('[IYZICO_CALLBACK] Redirecting to:', redirectUrl);
 

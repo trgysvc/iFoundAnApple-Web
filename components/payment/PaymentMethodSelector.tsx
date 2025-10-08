@@ -29,13 +29,13 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   const paymentMethods: PaymentMethod[] = [
     {
       id: 'iyzico',
-      name: 'Iyzico',
+      name: 'Iyzico (Production)',
       description: t('turkeyTrustedPayment'),
       icon: '🇹🇷',
       fees: '%2.9 ' + t('commission'),
       processingTime: t('instant'),
-      isRecommended: true,
-      isEnabled: true
+      isRecommended: false, // Production henüz aktif değil
+      isEnabled: false // Production için devre dışı (test tamamlanınca açılacak)
     },
     {
       id: 'stripe',
@@ -49,13 +49,13 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
     },
     {
       id: 'test',
-      name: 'Test Modu',
-      description: t('developmentTestPayment'),
+      name: 'Test Modu (Iyzico Sandbox)',
+      description: 'İyzico test API\'si ile gerçek ödeme testi',
       icon: '🧪',
-      fees: t('free'),
+      fees: '%2.9 ' + t('commission') + ' (Test)',
       processingTime: t('instant'),
-      isRecommended: false,
-      isEnabled: process.env.NODE_ENV === 'development'
+      isRecommended: true, // Test modu şimdi önerilen
+      isEnabled: true
     }
   ];
 

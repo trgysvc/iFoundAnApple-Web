@@ -56,79 +56,76 @@ export const create3DSecurePaymentRequest = (paymentData: {
 }) => {
   const iyzico = getIyzicoConfig();
   
-  const request = new Iyzipay.CreateThreedsPaymentRequest();
-  
-  // Temel ödeme bilgileri
-  request.locale = Iyzipay.Locale.TR;
-  request.conversationId = paymentData.conversationId;
-  request.price = paymentData.amount.toFixed(2);
-  request.paidPrice = paymentData.amount.toFixed(2);
-  request.currency = paymentData.currency;
-  request.installment = 1;
-  request.basketId = paymentData.conversationId;
-  request.paymentChannel = Iyzipay.PaymentChannel.WEB;
-  request.paymentGroup = Iyzipay.PaymentGroup.PRODUCT;
-
-  // Callback URL'leri
-  request.callbackUrl = `${process.env.VITE_IYZICO_CALLBACK_URL || 'http://localhost:5173'}/api/webhooks/iyzico-3d-callback?conversationId=${paymentData.conversationId}`;
-  
-  // Kart bilgileri
-  const paymentCard = new Iyzipay.PaymentCard();
-  paymentCard.cardHolderName = paymentData.cardInfo.cardHolderName;
-  paymentCard.cardNumber = paymentData.cardInfo.cardNumber;
-  paymentCard.expireMonth = paymentData.cardInfo.expiryMonth;
-  paymentCard.expireYear = paymentData.cardInfo.expiryYear;
-  paymentCard.cvc = paymentData.cardInfo.cvc;
-  paymentCard.registerCard = 0;
-  request.paymentCard = paymentCard;
-
-  // Alıcı bilgileri
-  const buyer = new Iyzipay.Buyer();
-  buyer.id = paymentData.buyerInfo.id;
-  buyer.name = paymentData.buyerInfo.name;
-  buyer.surname = paymentData.buyerInfo.surname;
-  buyer.email = paymentData.buyerInfo.email;
-  buyer.gsmNumber = paymentData.buyerInfo.phone;
-  buyer.identityNumber = paymentData.buyerInfo.identityNumber;
-  buyer.lastLoginDate = new Date().toISOString().split('T')[0] + ' 12:00:00';
-  buyer.registrationDate = new Date().toISOString().split('T')[0] + ' 12:00:00';
-  buyer.registrationAddress = paymentData.buyerInfo.address;
-  buyer.ip = '127.0.0.1';
-  buyer.city = paymentData.buyerInfo.city;
-  buyer.country = paymentData.buyerInfo.country;
-  buyer.zipCode = paymentData.buyerInfo.zipCode;
-  request.buyer = buyer;
-
-  // Fatura adresi
-  const billingAddress = new Iyzipay.Address();
-  billingAddress.contactName = paymentData.billingAddress.contactName;
-  billingAddress.city = paymentData.billingAddress.city;
-  billingAddress.country = paymentData.billingAddress.country;
-  billingAddress.address = paymentData.billingAddress.address;
-  billingAddress.zipCode = paymentData.billingAddress.zipCode;
-  request.billingAddress = billingAddress;
-
-  // Kargo adresi
-  const shippingAddress = new Iyzipay.Address();
-  shippingAddress.contactName = paymentData.shippingAddress.contactName;
-  shippingAddress.city = paymentData.shippingAddress.city;
-  shippingAddress.country = paymentData.shippingAddress.country;
-  shippingAddress.address = paymentData.shippingAddress.address;
-  shippingAddress.zipCode = paymentData.shippingAddress.zipCode;
-  request.shippingAddress = shippingAddress;
-
-  // Sepet ürünleri
-  const basketItems = paymentData.basketItems.map(item => {
-    const basketItem = new Iyzipay.BasketItem();
-    basketItem.id = item.id;
-    basketItem.name = item.name;
-    basketItem.category1 = item.category1;
-    basketItem.category2 = item.category2;
-    basketItem.itemType = item.itemType;
-    basketItem.price = item.price.toFixed(2);
-    return basketItem;
-  });
-  request.basketItems = basketItems;
+  // v2.0.64 API - Düz obje kullanımı
+  const request = {
+    locale: Iyzipay.LOCALE.TR,
+    conversationId: paymentData.conversationId,
+    price: paymentData.amount.toFixed(2),
+    paidPrice: paymentData.amount.toFixed(2),
+    currency: paymentData.currency,
+    installment: 1,
+    basketId: paymentData.conversationId,
+    paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
+    paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
+    
+    // Callback URL
+    callbackUrl: `${process.env.VITE_IYZICO_CALLBACK_URL || 'http://localhost:5173'}/api/webhooks/iyzico-3d-callback?conversationId=${paymentData.conversationId}`,
+    
+    // Kart bilgileri
+    paymentCard: {
+      cardHolderName: paymentData.cardInfo.cardHolderName,
+      cardNumber: paymentData.cardInfo.cardNumber,
+      expireMonth: paymentData.cardInfo.expiryMonth,
+      expireYear: paymentData.cardInfo.expiryYear,
+      cvc: paymentData.cardInfo.cvc,
+      registerCard: 0
+    },
+    
+    // Alıcı bilgileri
+    buyer: {
+      id: paymentData.buyerInfo.id,
+      name: paymentData.buyerInfo.name,
+      surname: paymentData.buyerInfo.surname,
+      email: paymentData.buyerInfo.email,
+      gsmNumber: paymentData.buyerInfo.phone,
+      identityNumber: paymentData.buyerInfo.identityNumber,
+      lastLoginDate: new Date().toISOString().split('T')[0] + ' 12:00:00',
+      registrationDate: new Date().toISOString().split('T')[0] + ' 12:00:00',
+      registrationAddress: paymentData.buyerInfo.address,
+      ip: '127.0.0.1',
+      city: paymentData.buyerInfo.city,
+      country: paymentData.buyerInfo.country,
+      zipCode: paymentData.buyerInfo.zipCode
+    },
+    
+    // Fatura adresi
+    billingAddress: {
+      contactName: paymentData.billingAddress.contactName,
+      city: paymentData.billingAddress.city,
+      country: paymentData.billingAddress.country,
+      address: paymentData.billingAddress.address,
+      zipCode: paymentData.billingAddress.zipCode
+    },
+    
+    // Kargo adresi
+    shippingAddress: {
+      contactName: paymentData.shippingAddress.contactName,
+      city: paymentData.shippingAddress.city,
+      country: paymentData.shippingAddress.country,
+      address: paymentData.shippingAddress.address,
+      zipCode: paymentData.shippingAddress.zipCode
+    },
+    
+    // Sepet ürünleri
+    basketItems: paymentData.basketItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      category1: item.category1,
+      category2: item.category2,
+      itemType: item.itemType,
+      price: item.price.toFixed(2)
+    }))
+  };
 
   return { iyzico, request };
 };
@@ -252,12 +249,14 @@ export const handle3DSecureCallback = async (callbackData: {
     console.log('[3D_SECURE_CALLBACK] Callback işleniyor:', callbackData);
 
     const iyzico = getIyzicoConfig();
-    const request = new Iyzipay.CreateThreedsPaymentRequest();
     
-    request.locale = Iyzipay.Locale.TR;
-    request.conversationId = callbackData.conversationId;
-    request.paymentId = callbackData.paymentId;
-    request.conversationData = callbackData.token;
+    // v2.0.64 API - Düz obje kullanımı
+    const request = {
+      locale: Iyzipay.LOCALE.TR,
+      conversationId: callbackData.conversationId,
+      paymentId: callbackData.paymentId,
+      conversationData: callbackData.token
+    };
 
     return new Promise((resolve) => {
       iyzico.threedsPayment.create(request, (err: any, result: any) => {

@@ -51,6 +51,21 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
   - Authentication & Authorization
   - Row Level Security (RLS)
   - Edge Functions (serverless)
+- **Express.js** - Backend API Server
+  - İyzico payment gateway entegrasyonu
+  - RESTful API endpoints
+  - CORS desteği
+
+### Payment & Financial
+- **İyzico 2.0.64** - Türkiye'nin güvenilir ödeme altyapısı
+  - Sandbox/Production ortam desteği
+  - 3D Secure entegrasyonu
+  - Webhook ve callback sistemi
+  - PCI DSS uyumlu
+- **Escrow System** - Güvenli ödeme tutma sistemi
+  - Çift taraflı onay mekanizması
+  - Otomatik ödeme serbest bırakma
+  - İade ve geri ödeme desteği
 
 ### AI & APIs
 - **Google Gemini API** - AI destekli öneriler (@google/genai latest)
@@ -92,26 +107,49 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 
 3. **Environment değişkenlerini ayarlayın:**
    ```bash
-   # .env.local dosyası oluşturun (proje root dizininde)
+   # .env dosyası oluşturun (proje root dizininde)
+   
+   # Supabase
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   
+   # Google Gemini AI
    GEMINI_API_KEY=your_google_gemini_api_key
+   
+   # İyzico Payment Gateway (Sandbox/Test)
+   VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
+   VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
+   VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
+   VITE_IYZICO_CALLBACK_URL=http://localhost:5173
    ```
    
    **Not**: 
    - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
    - Anon key, Supabase dashboard'tan alınır (public key)
    - Gemini API key, Google AI Studio'dan alınır
+   - İyzico credentials yukarıdaki sandbox değerleridir (test için)
+   - Production için gerçek İyzico credentials kullanın
    - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
 
-4. **Geliştirme sunucusunu başlatın:**
+4. **Backend server'ı başlatın (İyzico için gerekli):**
     ```bash
-   npm run dev
+   # Terminal 1 - Backend Server
+   node server.cjs
    ```
 
-5. **Tarayıcınızda açın:**
+5. **Geliştirme sunucusunu başlatın:**
+    ```bash
+   # Terminal 2 - Frontend
+   npm run dev
+   
+   # Veya tek komutla ikisini birden
+   npm run dev:full
    ```
-   http://localhost:5173
+
+6. **Tarayıcınızda açın:**
+   ```
+   Frontend: http://localhost:5173
+   Backend API: http://localhost:3001
    ```
 
 ---
@@ -120,42 +158,73 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 
 ```
 iFoundAnApple-Web/
-├── 📁 components/           # Yeniden kullanılabilir UI bileşenleri
-│   ├── 📁 ui/              # Temel UI elemanları
-│   │   ├── Button.tsx      # Özelleştirilebilir buton bileşeni
-│   │   ├── Container.tsx   # Layout container
-│   │   ├── Input.tsx       # Form input bileşeni
-│   │   └── Select.tsx      # Dropdown seçici
-│   ├── DeviceCard.tsx      # Cihaz kartı bileşeni
-│   ├── Footer.tsx          # Site altbilgisi
-│   └── Header.tsx          # Site başlığı ve navigasyon
-├── 📁 contexts/            # Global state yönetimi
-│   └── AppContext.tsx      # Ana uygulama context'i
-├── 📁 pages/               # Sayfa bileşenleri
-│   ├── HomePage.tsx        # Ana sayfa
-│   ├── LoginPage.tsx       # Giriş sayfası
-│   ├── RegisterPage.tsx    # Kayıt sayfası
-│   ├── DashboardPage.tsx   # Kullanıcı paneli
-│   ├── ProfilePage.tsx     # Profil yönetimi
-│   ├── AddDevicePage.tsx   # Cihaz ekleme
+├── 📁 api/                 # Backend API endpoints
+│   ├── calculate-fees.ts   # Ücret hesaplama API
+│   ├── process-payment.ts  # Ödeme işleme API
+│   ├── release-escrow.ts   # Escrow serbest bırakma
+│   ├── iyzico-payment.ts   # İyzico ödeme endpoint
+│   └── 📁 webhooks/        # Webhook handlers
+│       ├── iyzico-callback.ts      # İyzico webhook
+│       └── iyzico-3d-callback.ts   # 3D Secure callback
+├── 📁 components/          # Yeniden kullanılabilir UI bileşenleri
+│   ├── 📁 ui/             # Temel UI elemanları
+│   │   ├── Button.tsx     # Özelleştirilebilir buton bileşeni
+│   │   ├── Container.tsx  # Layout container
+│   │   ├── Input.tsx      # Form input bileşeni
+│   │   └── Select.tsx     # Dropdown seçici
+│   ├── 📁 payment/        # Ödeme bileşenleri
+│   │   ├── PaymentMethodSelector.tsx  # Ödeme yöntemi seçici
+│   │   ├── FeeBreakdownCard.tsx       # Ücret detayları
+│   │   └── EscrowStatusCard.tsx       # Escrow durumu
+│   ├── DeviceCard.tsx     # Cihaz kartı bileşeni
+│   ├── Footer.tsx         # Site altbilgisi
+│   └── Header.tsx         # Site başlığı ve navigasyon
+├── 📁 contexts/           # Global state yönetimi
+│   └── AppContext.tsx     # Ana uygulama context'i
+├── 📁 pages/              # Sayfa bileşenleri
+│   ├── HomePage.tsx       # Ana sayfa
+│   ├── LoginPage.tsx      # Giriş sayfası
+│   ├── RegisterPage.tsx   # Kayıt sayfası
+│   ├── DashboardPage.tsx  # Kullanıcı paneli
+│   ├── ProfilePage.tsx    # Profil yönetimi
+│   ├── AddDevicePage.tsx  # Cihaz ekleme
 │   ├── DeviceDetailPage.tsx # Cihaz detayları
+│   ├── MatchPaymentPage.tsx # Eşleşme ödemesi
+│   ├── PaymentFlowPage.tsx  # Ödeme akışı
+│   ├── PaymentSuccessPage.tsx # Ödeme başarı sayfası
 │   ├── AdminDashboardPage.tsx # Yönetici paneli
-│   ├── FAQPage.tsx         # Sıkça sorulan sorular
-│   ├── TermsPage.tsx       # Kullanım şartları
-│   ├── PrivacyPage.tsx     # Gizlilik politikası
-│   ├── ContactPage.tsx     # İletişim sayfası
-│   └── NotFoundPage.tsx    # 404 sayfası
-├── 📁 public/              # Statik dosyalar
-│   └── 📁 icons/           # SVG ikonları
-├── App.tsx                 # Ana uygulama bileşeni
-├── constants.ts            # Çeviriler ve sabitler
-├── index.tsx               # Uygulama giriş noktası
-├── types.ts                # TypeScript tip tanımları
-├── vite.config.ts          # Vite konfigürasyonu
-├── README.md               # Bu dosya
-├── USER_GUIDE.md           # Kullanıcı rehberi
-├── TESTING.md              # Test dokümantasyonu
-└── CHANGELOG.md            # Sürüm geçmişi
+│   ├── FAQPage.tsx        # Sıkça sorulan sorular
+│   ├── TermsPage.tsx      # Kullanım şartları
+│   ├── PrivacyPage.tsx    # Gizlilik politikası
+│   ├── ContactPage.tsx    # İletişim sayfası
+│   └── NotFoundPage.tsx   # 404 sayfası
+├── 📁 utils/              # Yardımcı fonksiyonlar
+│   ├── paymentGateway.ts  # Ödeme gateway entegrasyonu
+│   ├── iyzicoConfig.ts    # İyzico konfigürasyonu
+│   ├── feeCalculation.ts  # Ücret hesaplama
+│   ├── escrowManager.ts   # Escrow yönetimi
+│   ├── security.ts        # Güvenlik fonksiyonları
+│   └── auditLogger.ts     # Audit log sistemi
+├── 📁 database/           # Database migration scripts
+│   ├── 01_create_device_models_table.sql
+│   ├── 02_create_payments_table.sql
+│   ├── 03_create_cargo_shipments_table.sql
+│   ├── 04_create_financial_transactions_table.sql
+│   ├── 05_create_escrow_accounts_table.sql
+│   └── 06_create_audit_logs_table.sql
+├── 📁 public/             # Statik dosyalar
+│   └── 📁 icons/          # SVG ikonları
+├── server.cjs             # Express backend server (İyzico için)
+├── App.tsx                # Ana uygulama bileşeni
+├── constants.ts           # Çeviriler ve sabitler
+├── index.tsx              # Uygulama giriş noktası
+├── types.ts               # TypeScript tip tanımları
+├── vite.config.ts         # Vite konfigürasyonu
+├── README.md              # Bu dosya
+├── USER_GUIDE.md          # Kullanıcı rehberi
+├── TESTING.md             # Test dokümantasyonu
+├── COOLIFY_SETUP.md       # Coolify deployment rehberi
+└── CHANGELOG.md           # Sürüm geçmişi
 ```
 
 ## 🌍 Çoklu Dil Desteği
@@ -231,15 +300,18 @@ CREATE INDEX idx_userprofile_iban ON userProfile(iban);
 ## 🚀 Deployment & DevOps
 
 ### Desteklenen Platformlar
-- **Vercel** (Önerilen)
-- **Netlify**
-- **GitHub Pages**
-- **AWS S3 + CloudFront**
+- **Coolify** (Önerilen - Backend + Frontend)
+- **Vercel** (Frontend + Serverless Functions)
+- **Railway** (Full-stack)
+- **Render** (Full-stack)
 
 ### Build ve Deployment
 ```bash
 # Production build
 npm run build
+
+# Start production server (Backend + Frontend)
+npm start
 
 # Preview production build locally
 npm run preview
@@ -247,15 +319,45 @@ npm run preview
 
 ### Environment Variables
 ```bash
-# Production (.env.production)
+# Production (.env)
+NODE_ENV=production
+PORT=3001
+
+# Supabase
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_production_anon_key
+
+# Google Gemini AI
 GEMINI_API_KEY=your_google_gemini_api_key
+
+# İyzico Payment Gateway (Production)
+VITE_IYZICO_API_KEY=your_production_api_key
+VITE_IYZICO_SECRET_KEY=your_production_secret_key
+VITE_IYZICO_BASE_URL=https://api.iyzipay.com
+VITE_IYZICO_CALLBACK_URL=https://yourdomain.com
 
 # Development (.env.local)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_development_anon_key
 GEMINI_API_KEY=your_google_gemini_api_key
+VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
+VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
+VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
+```
+
+### Coolify Deployment
+Detaylı Coolify deployment rehberi için [COOLIFY_SETUP.md](COOLIFY_SETUP.md) dosyasına bakın.
+
+**Hızlı Başlangıç:**
+```bash
+# Build command
+npm install && npm run build
+
+# Start command
+npm start
+
+# Port
+3001
 ```
 
 ### Vite Konfigürasyonu
@@ -361,6 +463,18 @@ Supabase Backend-as-a-Service
 
 ## 🔄 Son Güncellemeler (2025)
 
+### v2.3.0 - İyzico Payment Gateway Entegrasyonu ✅
+- ✅ **İyzico Sandbox API Entegrasyonu**: Gerçek ödeme gateway entegrasyonu tamamlandı
+- ✅ **Backend API Server**: Express.js ile İyzico SDK entegrasyonu
+- ✅ **Test Modu**: İyzico Sandbox API ile tam test ortamı
+- ✅ **Payment Flow**: Baştan sona ödeme akışı çalışıyor
+- ✅ **Database Sync**: Payment ve Escrow kayıtları senkronize
+- ✅ **Error Handling**: Güvenli hata yönetimi ve kullanıcı bildirimleri
+- ✅ **UUID Compatibility**: İyzico payment ID'leri ile database UUID uyumu
+- ✅ **CSP Security**: Content Security Policy güncellemeleri
+- ✅ **Coolify Ready**: Production deployment hazır
+- ✅ **Full Documentation**: Deployment ve setup rehberleri
+
 ### v2.2.0 - Ödeme Logic Düzeltmeleri ve Sistem İyileştirmeleri
 - ✅ **Ödeme Ekranı Logic Düzeltmesi**: Cihazı bulan kişilerin ödeme ekranını görmemesi sorunu çözüldü
 - ✅ **isOriginalOwnerPerspective Logic Güncellemesi**: Doğru kullanıcı perspektifi tespiti
@@ -377,23 +491,24 @@ Supabase Backend-as-a-Service
 - ✅ **Form Validasyonları**: Akıllı form kontrolleri ve hata mesajları
 - ✅ **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
 - ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
-- ✅ **Gerçek Sistem Dokümantasyonu**: README güncel sistemi yansıtacak şekilde güncellendi
 
 ### Yaklaşan Özellikler
+- 🔄 **İyzico Production**: Gerçek ödeme sistemine geçiş
+- 🔄 **3D Secure Flow**: Gelişmiş güvenlik akışı
+- 🔄 **Webhook Integration**: Otomatik ödeme güncellemeleri
 - 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
 - 🔄 **Push Notifications**: Mobil bildirimler
-- 🔄 **Gelişmiş AI**: Daha akıllı cihaz eşleştirme
-- 🔄 **Blockchain Entegrasyonu**: Güvenli ödeme sistemi
 
 ---
 
 ## 🙏 Teşekkürler
 
 - **Supabase** - Backend altyapısı için
+- **İyzico** - Güvenli ödeme altyapısı için
 - **Tailwind CSS** - Harika CSS framework için
 - **React Team** - Muhteşem framework için
 - **Lucide** - Güzel ikonlar için
-- **Vercel** - Hosting ve deployment için
+- **Coolify** - Self-hosted deployment platformu için
 - **Google Gemini** - AI destekli öneriler için
 
 ---
