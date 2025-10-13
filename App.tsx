@@ -29,6 +29,7 @@ import {
   preloadAdminRoutes,
   preloadStaticRoutes
 } from "./utils/lazyRoutes";
+import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
@@ -172,6 +173,9 @@ const AppContent: React.FC = () => {
                 <PaymentSummaryPage />
               </LazyRouteWrapper>
             </ProtectedRoute>
+          } />
+          <Route path="/payment/callback" element={
+            <PaymentCallbackPage />
           } />
           <Route path="/payment/success" element={
             <ProtectedRoute>

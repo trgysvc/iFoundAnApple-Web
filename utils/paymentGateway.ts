@@ -295,104 +295,96 @@ const processTestPayment = async (
 };
 
 /**
- * Iyzico ile ödeme işleme (Backend API üzerinden)
+ * Iyzico ile ödeme işleme (Checkout Form - Güvenli)
  */
 const processIyzicoPayment = async (
   request: PaymentRequest
 ): Promise<PaymentResponse> => {
-  console.log("[IYZICO] Gerçek İyzico ödeme işlemi başlatılıyor...", {
+  console.log("[IYZICO] Checkout Form oluşturuluyor...", {
     deviceId: request.deviceId,
     amount: request.feeBreakdown.totalAmount,
     payer: request.payerInfo.email,
   });
 
   try {
-    const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    // Tutar hesaplama (İyzico için string formatında)
+    const totalAmount = parseFloat(request.feeBreakdown.totalAmount.toFixed(2));
+    const priceStr = totalAmount.toFixed(2);
     
-    // Backend API'ye istek gönder
-    const iyzicoRequest = {
-      amount: request.feeBreakdown.totalAmount,
-      currency: 'TRY',
-      conversationId: conversationId,
-      buyerInfo: {
-        id: request.payerId,
-        name: request.payerInfo.name.split(' ')[0] || 'Test',
-        surname: request.payerInfo.name.split(' ')[1] || 'User',
+    // Checkout form için istek hazırla
+    const checkoutRequest = {
+      deviceId: request.deviceId,
+      payerId: request.payerId,
+      amount: totalAmount,
+      payerInfo: {
+        name: request.payerInfo.name,
         email: request.payerInfo.email,
         phone: request.payerInfo.phone,
-        identityNumber: '11111111111', // Test için
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
+        address: request.payerInfo.address
       },
-      shippingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
-      },
-      billingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
-      },
+      deviceInfo: request.deviceInfo,
       basketItems: [{
         id: request.deviceId,
         name: request.deviceInfo.model,
         category1: 'Electronics',
         category2: 'Mobile Phone',
         itemType: 'PHYSICAL',
-        price: request.feeBreakdown.totalAmount
+        price: totalAmount  // Tutarlı tutar
       }]
     };
 
-    console.log("[IYZICO] Backend API'ye istek gönderiliyor...");
+    console.log("[IYZICO] Backend'e checkout form isteği gönderiliyor...");
 
-    // Backend API endpoint'ine istek gönder
-    // Development: localhost:3001, Production: same origin
+    // Backend API endpoint - Checkout form initialize
     const apiUrl = import.meta.env.DEV 
-      ? 'http://localhost:3001/api/iyzico-payment'
-      : '/api/iyzico-payment';
+      ? 'http://localhost:3001/api/iyzico-checkout'
+      : '/api/iyzico-checkout';
     
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(iyzicoRequest)
+      body: JSON.stringify(checkoutRequest)
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const result = await response.json();
     
-    console.log("[IYZICO] Backend API yanıtı:", result);
+    console.log("[IYZICO] Checkout form yanıtı:", {
+      success: result.success,
+      hasToken: !!result.token
+    });
     
     if (result.success) {
-      // Yeni UUID oluştur (database için)
+      // UUID oluştur (database için)
       const paymentId = crypto.randomUUID();
       
       return {
         success: true,
-        paymentId: paymentId, // Database için UUID
-        providerPaymentId: result.paymentId, // İyzico'nun payment ID'si
-        providerTransactionId: result.conversationId,
-        status: result.status === 'completed' ? 'completed' : 'processing',
-        redirectUrl: result.redirectUrl,
-        providerResponse: result.providerResponse,
+        paymentId: paymentId,
+        providerPaymentId: result.token, // İyzico checkout token (sonra paymentId ile değiştirilecek)
+        status: "processing", // Kullanıcı checkout form'u dolduracak
+        redirectUrl: result.redirectUrl || result.paymentPageUrl,
+        providerResponse: {
+          checkoutFormContent: result.checkoutFormContent,
+          token: result.token,
+          conversationId: result.conversationId
+        },
       };
     } else {
-      throw new Error(result.errorMessage || 'İyzico ödeme hatası');
+      throw new Error(result.errorMessage || 'Checkout form oluşturulamadı');
     }
     
   } catch (error) {
-    console.error("[IYZICO] Ödeme hatası:", error);
+    console.error("[IYZICO] Checkout form hatası:", error);
     return {
       success: false,
       status: "failed",
-      errorMessage: error instanceof Error ? error.message : "İyzico API hatası",
+      errorMessage: error instanceof Error ? error.message : "İyzico Checkout hatası",
       providerResponse: error,
     };
   }

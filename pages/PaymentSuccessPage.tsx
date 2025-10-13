@@ -68,7 +68,12 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
       }
 
       // Güvenlik kontrolü: Ödeme gerçekten başarılı mı?
-      if (!paymentData || paymentData.status !== 'completed') {
+      if (!paymentData) {
+        throw new Error('Ödeme bilgileri bulunamadı. Lütfen ödeme sayfasına dönün.');
+      }
+
+      // Ödeme durumu kontrolü - completed veya processing olabilir
+      if (paymentData.payment_status !== 'completed' && paymentData.payment_status !== 'processing') {
         throw new Error('Ödeme henüz tamamlanmamış veya başarısız. Lütfen ödeme sayfasına dönün.');
       }
 
@@ -85,6 +90,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         throw new Error(`Escrow fetch error: ${escrowError.message}`);
       }
 
+      // Escrow verisi mevcut, status ne olursa olsun işleyelim
       setEscrow(escrowData);
 
     } catch (err) {
@@ -170,7 +176,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Ödeme Durumu:</span>
                 <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                  {payment.payment_status === 'completed' ? 'Tamamlandı' : payment.payment_status}
+                  {(payment.payment_status === 'completed' || payment.payment_status === 'processing') ? 'Tamamlandı' : payment.payment_status}
                 </span>
               </div>
               
