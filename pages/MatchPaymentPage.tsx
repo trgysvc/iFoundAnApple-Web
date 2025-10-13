@@ -9,6 +9,12 @@ import PaymentMethodSelector, {
 } from "../components/payment/PaymentMethodSelector.tsx";
 import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
+import { createClient } from "@supabase/supabase-js";
+import { getSecureConfig } from "../utils/security.ts";
+import { Device } from "../types.ts";
+
+const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface MatchPaymentPageProps {
   deviceId?: string;
@@ -37,9 +43,41 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [device, setDevice] = useState<Device | null>(null);
+  const [loadingDevice, setLoadingDevice] = useState(true);
 
   const finalDeviceId = deviceId || urlDeviceId;
   const finalDeviceModel = deviceModel || urlDeviceModel;
+
+  // Fetch device details
+  useEffect(() => {
+    const fetchDevice = async () => {
+      if (!finalDeviceId) {
+        setLoadingDevice(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("devices")
+          .select("*")
+          .eq("id", finalDeviceId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching device:", error);
+        } else {
+          setDevice(data);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      } finally {
+        setLoadingDevice(false);
+      }
+    };
+
+    fetchDevice();
+  }, [finalDeviceId]);
 
   // Auto-calculate fees when component mounts
   useEffect(() => {
@@ -291,33 +329,56 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
 
               {/* Actions */}
               <div className="space-y-6">
-                {/* Match Info */}
+                {/* Kayıp Cihaz Detayları */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    {t("matchInfo")}
+                    Kayıp Cihaz Detayları
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">
-                        {t("deviceModelLabel")}
-                      </span>
-                      <span className="font-medium">{finalDeviceModel}</span>
+                  {loadingDevice ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">
-                        {t("finderReward")}
-                      </span>
-                      <span className="font-medium text-green-600">500 TL</span>
+                  ) : device ? (
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Kaybedilen Zaman:</span>
+                        <span className="font-medium text-sm">
+                          {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          }) : 'Belirtilmemiş'}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Kayıp Yeri:</span>
+                        <span className="font-medium text-sm">{device.lost_location || 'Belirtilmemiş'}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Cihaz Modeli:</span>
+                        <span className="font-medium text-sm">{device.model}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Cihaz Seri Numarası:</span>
+                        <span className="font-mono text-xs">{device.serialNumber}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Cihaz Rengi:</span>
+                        <span className="font-medium text-sm">{device.color}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Ek Detaylar:</span>
+                        <span className="font-medium text-sm">{device.description || 'Belirtilmemiş'}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">
-                        {t("statusLabel")}
-                      </span>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {t("matchFound")}
-                      </span>
-                    </div>
-                  </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">Cihaz bilgisi yüklenemedi</p>
+                  )}
                 </div>
 
                 {/* Actions */}

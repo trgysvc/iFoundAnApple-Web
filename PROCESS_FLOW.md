@@ -99,23 +99,23 @@ devices {
 ```
 
 **Bildirimler:**
-- Email gidiyor mu? E POSTA GÖNDERECEĞİZ. HAZIRLIĞI YAPILSIN. SONRA AKTİF EDİLECEK. 
+- Email gidiyor mu? E POSTA GÖNDERECEĞİZ. HAZIRLIĞI YAPILSIN. SONRA AKTİF EDİLECEK. SUPABASE İN BU HİZMETİ VAR MI? 
 - In-app notification var mı? VAR
 - SMS gidiyor mu? HAYIR
 
 **Dashboard'da Görünen:**
-- Cihaz kartı mesajı: ?
+- Cihaz kartı mesajı: Eşleşti! Cihaz sahibi ödemesi bekleniyor.
 - Durum rengi: ?
-- Buton: "Ödeme Yap" mı?
-- Bulan kişi bilgisi görünüyor mu? (Anonim mi?)
-- Ödül miktarı görünüyor mu?
+- Buton: YOK
+- Bulan kişi bilgisi görünüyor mu? (Anonim mi?) BU BİLGİ ANONİM OLARAK KALACAK. 
+- Ödül miktarı görünüyor mu? ÖDÜL MİKTARI TOPLAM ÖDEMENİN %10 U GİBİ DÜŞÜNÜLEBİLİR. BU % DİLİMLERİ BELİRLEYECEĞİMİZ KOLAY BİR SİSTEM TASARLANMALI. 
 
 **DeviceDetailPage (Cihaz Detay Sayfası):**
 ```
 Dashboard → Cihaz Kartına Tıkla → DeviceDetailPage açılır
 ```
 - Status: MATCHED için ne görünüyor?
-  - Başlık: "Eşleşme Bulundu!" mı?
+  - Başlık: "Eşleşme Bulundu!" 
   - Mesaj: "Ödeme yaparak cihazınızı geri alabilirsiniz" gibi mi?
   - Ödül miktarı görünüyor mu?
   - Toplam tutar görünüyor mu?

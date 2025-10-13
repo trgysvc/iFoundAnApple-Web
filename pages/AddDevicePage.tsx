@@ -4,8 +4,7 @@ import { useAppContext } from "../contexts/AppContext.tsx";
 import Container from "../components/ui/Container.tsx";
 import Input from "../components/ui/Input.tsx";
 import Button from "../components/ui/Button.tsx";
-import { GoogleGenAI, Type } from "@google/genai";
-import { Sparkles, Upload, PlusCircle, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, CheckCircle } from "lucide-react";
 import { getColorsForDevice } from '../constants';
 import { createClient } from "@supabase/supabase-js";
 import { uploadInvoiceDocument } from '../utils/fileUpload';
@@ -14,7 +13,7 @@ import { performCompleteFileValidation } from '../utils/fileSecurity';
 import { logInvoiceUpload } from '../utils/invoiceManager';
 
 // Get secure configuration from environment variables
-const { supabaseUrl, supabaseAnonKey, geminiApiKey } = getSecureConfig();
+const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -51,7 +50,9 @@ const AddDevicePage: React.FC = () => {
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // For AI suggestions and form submission
+  const [lostDate, setLostDate] = useState(""); // YYYY-MM-DD format
+  const [lostLocation, setLostLocation] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
 
   const fetchDeviceModels = useCallback(async () => {
@@ -176,91 +177,6 @@ const AddDevicePage: React.FC = () => {
     }
   };
 
-  const handleAiSuggestion = async () => {
-    if (!model) {
-      setError("Please enter a device model first.");
-      return;
-    }
-    setIsLoading(true);
-    setError("");
-    setRewardAmount(undefined);
-    setMarketValue(undefined);
-
-    try {
-      if (!geminiApiKey) {
-        setError("AI service is not available. Please contact support.");
-        return;
-      }
-      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-      const prompt = `As an expert on Apple products, analyze the following device: Model: "${model}", Color: "${color}".`;
-      let schema;
-      let finalPrompt = prompt;
-
-      if (isLostReport) {
-        schema = {
-          type: Type.OBJECT,
-          properties: {
-            description: {
-              type: Type.STRING,
-              description:
-                "A brief, helpful description for a lost and found report.",
-            },
-            rewardAmount: {
-              type: Type.INTEGER,
-              description:
-                "A suggested fair reward in Turkish Lira (TL), about 10-20% of the used market value.",
-            },
-            marketValue: {
-              type: Type.INTEGER,
-              description:
-                "The estimated used market value in Turkish Lira (TL).",
-            },
-          },
-          required: ["description", "rewardAmount", "marketValue"],
-        };
-        finalPrompt +=
-          " Provide a suggested description, reward amount, and estimated market value in TL.";
-      } else {
-        // isFinder
-        schema = {
-          type: Type.OBJECT,
-          properties: {
-            description: {
-              type: Type.STRING,
-              description:
-                "A brief, helpful description for a found device report, focusing on identifying details.",
-            },
-          },
-          required: ["description"],
-        };
-        finalPrompt +=
-          " Provide a suggested description for a found device report.";
-      }
-
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: finalPrompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: schema,
-        },
-      });
-
-      const jsonStr = response.text.trim();
-      const result = JSON.parse(jsonStr);
-
-      if (result.description) setDescription(result.description);
-      if (isLostReport && result.rewardAmount)
-        setRewardAmount(result.rewardAmount);
-      if (isLostReport && result.marketValue)
-        setMarketValue(result.marketValue);
-    } catch (e) {
-      console.error("Error calling Gemini API", e);
-      setError(t("aiError"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,10 +186,23 @@ const AddDevicePage: React.FC = () => {
     const sanitizedSerialNumber = sanitizers.text(serialNumber);
     const sanitizedColor = sanitizers.text(color);
     const sanitizedDescription = sanitizers.text(description);
+    const sanitizedLostLocation = sanitizers.text(lostLocation);
 
     if (!sanitizedModel || !sanitizedSerialNumber || !sanitizedColor) {
       setError("Please fill in all required fields.");
       return;
+    }
+
+    // For lost devices, validate lost date and location
+    if (isLostReport) {
+      if (!lostDate) {
+        setError("Please select the date when the device was lost.");
+        return;
+      }
+      if (!sanitizedLostLocation) {
+        setError("Please enter where the device was lost.");
+        return;
+      }
     }
 
     if (!validators.serialNumber(sanitizedSerialNumber)) {
@@ -290,6 +219,8 @@ const AddDevicePage: React.FC = () => {
       rewardAmount,
       marketValue,
       invoice_url: uploadedFileUrl || undefined, // Use Supabase Storage URL
+      lost_date: isLostReport ? lostDate : undefined,
+      lost_location: isLostReport ? sanitizedLostLocation : undefined,
     };
 
     console.log(
@@ -466,49 +397,53 @@ const AddDevicePage: React.FC = () => {
             </div>
           )}
 
-          <div className="pt-2">
-            <Button
-              type="button"
-              onClick={handleAiSuggestion}
-              disabled={isLoading || !model}
-              variant="secondary"
-              className="w-full mb-4"
-            >
-              {isLoading ? (
-                t("gettingSuggestions")
-              ) : (
-                <span className="flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  {isLostReport
-                    ? t("suggestRewardDescription")
-                    : t("suggestDescription")}
-                </span>
-              )}
-            </Button>
-          </div>
-
-          {rewardAmount && isLostReport && (
-            <div className="bg-brand-blue-light p-4 rounded-md text-center my-4">
-              <p className="font-semibold text-brand-gray-600">
-                {t("aiSuggestion")}
-              </p>
-              <p className="text-brand-gray-500">
-                {t("suggestedReward")}:{" "}
-                <span className="font-bold text-brand-blue">
-                  {rewardAmount.toLocaleString("tr-TR")} TL
-                </span>
-              </p>
-              {marketValue && (
-                <p className="text-sm text-brand-gray-400">
-                  (
-                  {t("basedOnValue", {
-                    value: marketValue.toLocaleString("tr-TR"),
-                  })}{" "}
-                  TL)
+          {/* Lost Date and Location - Only for lost devices */}
+          {isLostReport && (
+            <>
+              <div>
+                <label
+                  htmlFor="lostDate"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Kayıp Tarihi
+                </label>
+                <input
+                  id="lostDate"
+                  type="date"
+                  value={lostDate}
+                  onChange={(e) => setLostDate(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]} // Cannot be in the future
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazın kaybolduğu tarihi seçin
                 </p>
-              )}
-            </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="lostLocation"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Kayıp Yeri
+                </label>
+                <input
+                  id="lostLocation"
+                  type="text"
+                  value={lostLocation}
+                  onChange={(e) => setLostLocation(e.target.value)}
+                  placeholder="Örn: Kadıköy, İstanbul - Bağdat Caddesi"
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazın kaybolduğu yeri detaylı olarak belirtin
+                </p>
+              </div>
+            </>
           )}
+
 
           <div>
             <label
@@ -532,9 +467,20 @@ const AddDevicePage: React.FC = () => {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="w-full" size="lg">
-              {t("submit")}
-            </Button>
+            <div className="flex space-x-4">
+              <Button 
+                type="button" 
+                variant="secondary" 
+                className="flex-1"
+                onClick={() => navigate('/dashboard')}
+              >
+                Cihazlarım Listesine Geri Dön
+              </Button>
+              
+              <Button type="submit" className="flex-1" size="lg">
+                {t("submit")}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

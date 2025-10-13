@@ -40,9 +40,9 @@ export interface DeviceModelData {
 // Ücret yapısı - Database'den ifoundanapple_fee çekilerek hesaplanır
 export const FEE_STRUCTURE = {
   CARGO_FEE: 150.0, // Kargo ücreti (sabit TL)
-  REWARD_PERCENTAGE: 20, // Bulan kişiye ödül (%20 of ifoundanapple_fee)
+  REWARD_PERCENTAGE: 10, // Bulan kişiye ödül (%10 of ifoundanapple_fee)
   SERVICE_FEE_PERCENTAGE: 20, // Platform hizmet bedeli (%20 of ifoundanapple_fee)
-  GATEWAY_FEE_PERCENTAGE: 5.5, // Ödeme sağlayıcı komisyonu (%5.5 of total)
+  GATEWAY_FEE_PERCENTAGE: 3.49, // Ödeme sağlayıcı komisyonu (%3.49 of total)
 };
 
 /**

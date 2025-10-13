@@ -61,6 +61,8 @@ export interface Device {
   rewardAmount?: number; // Maps to rewardamount in DB
   marketValue?: number; // AI estimated market value (maps to marketvalue in DB)
   exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed (maps to exchangeconfirmedby in DB)
+  lost_date?: string; // Date when the device was lost (YYYY-MM-DD format)
+  lost_location?: string; // Location where the device was lost (free text description)
 }
 
 export interface AppNotification {

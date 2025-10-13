@@ -2,8 +2,8 @@
 
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
-**Son Güncelleme:** 13 Ekim 2025  
-**Versiyon:** 1.0
+**Son Güncelleme:** 19 Aralık 2024  
+**Versiyon:** 1.1
 
 ---
 
@@ -131,6 +131,8 @@ Kayıp/bulunan cihazları tutan ana tablo.
 | created_at | timestamp with time zone | NO | now() | Created timestamp |
 | invoice_url | text | YES | null | Invoice URL |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+| lost_date | date | YES | null | Date when device was lost (YYYY-MM-DD) |
+| lost_location | text | YES | null | Location where device was lost |
 
 ### 6. **escrow_accounts**
 Escrow hesaplarını tutan tablo.
