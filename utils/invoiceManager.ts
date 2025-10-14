@@ -3,12 +3,9 @@
  * Enhanced security and tracking for invoice documents
  */
 
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig, secureLogger } from "./security.ts";
+import { supabase } from "./supabaseClient.ts";
+import { secureLogger } from "./security.ts";
 import { performCompleteFileValidation } from "./fileSecurity.ts";
-
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface InvoiceMetadata {
   id: string;

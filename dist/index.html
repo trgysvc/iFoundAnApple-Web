@@ -9,14 +9,17 @@
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://esm.sh https://sandbox-static.iyzipay.com https://static.iyzipay.com; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://esm.sh https://sandbox-static.iyzipay.com https://static.iyzipay.com https://static.cloudflareinsights.com; 
                    style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://sandbox-static.iyzipay.com https://static.iyzipay.com; 
-                   connect-src 'self' http://localhost:3001 https://*.supabase.co https://generativelanguage.googleapis.com https://sandbox-api.iyzipay.com https://api.iyzipay.com; 
+                   connect-src 'self' http://localhost:3001 https://*.supabase.co https://generativelanguage.googleapis.com https://sandbox-api.iyzipay.com https://api.iyzipay.com https://cloudflareinsights.com; 
                    frame-src 'self' https://sandbox-api.iyzipay.com https://api.iyzipay.com;
                    img-src 'self' data: https:; 
                    font-src 'self' https:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <!-- NOTE: Tailwind CDN is used for rapid development. 
+         For production, consider installing Tailwind CSS as a PostCSS plugin.
+         See: https://tailwindcss.com/docs/installation -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -52,14 +55,14 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="/assets/index-jrE6DaKJ.js"></script>
+  <script type="module" crossorigin src="/assets/index-C8GDWSLu.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-BmuKHae7.js">
   <link rel="modulepreload" crossorigin href="/assets/react-vendor-D53OFC38.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bn7hz90r.js">
-  <link rel="modulepreload" crossorigin href="/assets/ui-components-CIH4UXYK.js">
-  <link rel="modulepreload" crossorigin href="/assets/admin-BX7ZIb8L.js">
-  <link rel="modulepreload" crossorigin href="/assets/device-pages-Dr5_VUqU.js">
-  <link rel="modulepreload" crossorigin href="/assets/payment-CsEMubQH.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-components-cEN35jJz.js">
+  <link rel="modulepreload" crossorigin href="/assets/admin-CilrIwLA.js">
+  <link rel="modulepreload" crossorigin href="/assets/device-pages-3jn7Ex0A.js">
+  <link rel="modulepreload" crossorigin href="/assets/payment-BvD9ZpIh.js">
 </head>
   <body class="bg-brand-gray-100 antialiased">
     <div id="root"></div>

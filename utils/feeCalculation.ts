@@ -3,12 +3,8 @@
  * Apple cihaz onarım ücretleri ve komisyon hesaplamaları
  */
 
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from "./security.ts";
+import { supabase } from "./supabaseClient.ts";
 import { calculateFeesLocal } from "../api/calculate-fees.ts";
-
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface FeeBreakdown {
   rewardAmount: number; // Bulan kişiye ödenecek ödül (iFoundAnApple ücreti)

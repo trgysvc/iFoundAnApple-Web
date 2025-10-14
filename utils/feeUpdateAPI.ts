@@ -3,11 +3,7 @@
  * Database'deki ifoundanapple_fee değerlerini dinamik olarak günceller
  */
 
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from "./security.ts";
-
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "./supabaseClient.ts";
 
 export interface FeeUpdateRequest {
   deviceModelId?: string;

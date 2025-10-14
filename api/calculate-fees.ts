@@ -3,8 +3,8 @@
  * Dinamik ücret hesaplama servisi
  */
 
-import { createClient } from "@supabase/supabase-js";
 import { getSecureConfig } from "../utils/security.ts";
+import { supabase as defaultSupabase } from "../utils/supabaseClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,12 +42,8 @@ export async function calculateFeesAPI(
   request: FeeCalculationRequest
 ): Promise<FeeBreakdown> {
   try {
-    // Initialize Supabase client
-    const config = getSecureConfig();
-    const supabaseClient = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey || config.supabaseAnonKey
-    );
+    // Use the centralized Supabase client
+    const supabaseClient = defaultSupabase;
 
     const { deviceModelId, deviceModelName, customRewardAmount } = request;
 

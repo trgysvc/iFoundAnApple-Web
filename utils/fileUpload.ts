@@ -1,18 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from "./security.ts";
+import { supabase } from "./supabaseClient.ts";
 import { performCompleteFileValidation } from "./fileSecurity.ts";
 import { uploadRateLimiter } from "./uploadRateLimiter.ts";
-
-// Get secure configuration from environment variables
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
 
 export interface FileUploadResult {
   success: boolean;

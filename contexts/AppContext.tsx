@@ -13,8 +13,8 @@ import {
   AppNotification,
 } from "../types.ts";
 import { translations } from "../constants.ts";
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig, secureLogger } from "../utils/security.ts";
+import { secureLogger } from "../utils/security.ts";
+import { supabase } from "../utils/supabaseClient.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
 type Language = "en" | "tr" | "fr" | "ja" | "es";
@@ -96,26 +96,6 @@ const useLocalStorage = <T,>(
 };
 
 // Removed defaultAdminUser as user management is now handled by Supabase
-
-// Get secure configuration from environment variables
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-  db: {
-    schema: "public",
-  },
-  global: {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  },
-});
 
 // Parse user name from OAuth provider metadata
 const parseOAuthUserName = (userMetadata: any): { firstName?: string; lastName?: string } => {

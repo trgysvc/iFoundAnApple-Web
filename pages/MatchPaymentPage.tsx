@@ -9,12 +9,8 @@ import PaymentMethodSelector, {
 } from "../components/payment/PaymentMethodSelector.tsx";
 import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from "../utils/security.ts";
+import { supabase } from "../utils/supabaseClient.ts";
 import { Device } from "../types.ts";
-
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface MatchPaymentPageProps {
   deviceId?: string;

@@ -3,14 +3,8 @@
  * Güvenli ödeme blokajı ve serbest bırakma işlemleri
  */
 
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./supabaseClient.ts";
 import { FeeBreakdown } from "./feeCalculation.ts";
-
-// Supabase client (environment'dan gelecek)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-);
 
 export interface EscrowAccount {
   id: string;

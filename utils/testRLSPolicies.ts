@@ -1,11 +1,7 @@
 // Test RLS Policies for Matching System
 // This script tests if users can access all devices for matching
 
-import { createClient } from "@supabase/supabase-js";
-import { getSecureConfig } from "./security.ts";
-
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "./supabaseClient.ts";
 
 export async function testRLSPolicies() {
   console.log("🔍 Testing RLS Policies for Matching System...");

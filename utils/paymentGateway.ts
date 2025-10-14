@@ -6,7 +6,6 @@
 import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
 import { getSecureConfig } from "./security.ts";
-import { createClient } from "@supabase/supabase-js";
 
 export interface PaymentRequest {
   deviceId: string;

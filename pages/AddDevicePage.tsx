@@ -6,30 +6,11 @@ import Input from "../components/ui/Input.tsx";
 import Button from "../components/ui/Button.tsx";
 import { Upload, CheckCircle } from "lucide-react";
 import { getColorsForDevice } from '../constants';
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from '../utils/supabaseClient';
 import { uploadInvoiceDocument } from '../utils/fileUpload';
-import { getSecureConfig, secureLogger, validators, sanitizers } from '../utils/security';
+import { secureLogger, validators, sanitizers } from '../utils/security';
 import { performCompleteFileValidation } from '../utils/fileSecurity';
 import { logInvoiceUpload } from '../utils/invoiceManager';
-
-// Get secure configuration from environment variables
-const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-  db: {
-    schema: "public",
-  },
-  global: {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  },
-});
 
 const AddDevicePage: React.FC = () => {
   const { addDevice, t, currentUser } = useAppContext();

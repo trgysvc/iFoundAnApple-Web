@@ -6,8 +6,7 @@ import Container from "../components/ui/Container.tsx";
 import Button from "../components/ui/Button.tsx";
 import NotFoundPage from "./NotFoundPage.tsx";
 import { getSecureInvoiceUrl } from "../utils/fileUpload.ts";
-import { getSecureConfig } from "../utils/security.ts";
-import { createClient } from "@supabase/supabase-js";
+import { supabase as supabaseClient } from "../utils/supabaseClient.ts";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -19,10 +18,6 @@ import {
   Paperclip,
   Check,
 } from "lucide-react";
-
-// Supabase client
-const config = getSecureConfig();
-const supabaseClient = createClient(config.supabaseUrl, config.supabaseAnonKey);
 
 // A generic view for displaying status information and actions.
 const StatusView: React.FC<{
