@@ -206,9 +206,172 @@ const DeviceDetailPage: React.FC = () => {
           isOriginalOwnerPerspective
         );
 
+        // Finder perspective - show waiting for payment
         if (!isOriginalOwnerPerspective) {
-          console.log("DeviceDetailPage: User is not owner, showing error");
-          return null; // Should not happen for finders
+          console.log("DeviceDetailPage: Finder perspective - payment pending");
+          return (
+            <div className="min-h-screen bg-gray-50">
+              <div className="max-w-2xl mx-auto py-12">
+                {/* Success Header */}
+                <div className="text-center mb-8">
+                  <div className="text-green-500 text-6xl mb-4">🎉</div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    Harika Haber! Eşleşme Bulundu!
+                  </h1>
+                  <p className="text-gray-600">
+                    Bulduğun cihazın sahibi ile eşleşme sağlandı. Cihaz sahibinin ödeme yapması bekleniyor.
+                  </p>
+                </div>
+
+                {/* Bulunan Cihaz Detayları Card */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Bulunan Cihaz Detayları
+                  </h2>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Modeli:</span>
+                      <span className="font-medium">{device.model}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                      <span className="font-mono text-sm">{device.serialNumber}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Rengi:</span>
+                      <span className="font-medium">{device.color}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ek Detaylar:</span>
+                      <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* İşlem Durumu Card */}
+                <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    İşlem Durumu
+                  </h2>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Durum:</span>
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center">
+                        <Hourglass className="w-4 h-4 mr-2 animate-pulse" />
+                        Cihaz sahibinin ödeme yapması bekleniyor
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Süreç Bilgisi */}
+                <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Süreç Bilgisi
+                  </h2>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        ✓
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Eşleşme Bulundu</p>
+                        <p className="text-gray-600 text-sm">Cihazın sahibi ile eşleşme sağlandı</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        2
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Cihaz Sahibinin Ödeme Yapması Bekleniyor</p>
+                        <p className="text-gray-600 text-sm">Cihaz sahibi bilgilendirildi ve ödeme yapması bekleniyor</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        3
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Cihazın Kargo ile Gönderilmesi</p>
+                        <p className="text-gray-600 text-sm">Ödeme tamamlandığında kargo detayları paylaşılacak</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        4
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Ödülünü Al</p>
+                        <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ödül Bilgisi */}
+                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200 p-6 mb-6">
+                  <div className="text-center mb-3">
+                    <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center">
+                      <span className="text-2xl mr-2">🎁</span>
+                      Ödül Bilgisi
+                    </h3>
+                  </div>
+
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <p className="leading-relaxed">
+                      <strong>Harika bir haber!</strong> Eşleşme bulundu ve süreç başladı. Cihaz sahibi ödeme yaptıktan 
+                      ve takas tamamlandıktan sonra, ödülün hesabına aktarılacaktır.
+                    </p>
+                    
+                    {device.rewardAmount && (
+                      <div className="bg-white rounded-lg p-4 text-center border-2 border-green-300">
+                        <p className="text-gray-600 text-xs mb-1">Tahmini Ödül Tutarı</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {device.rewardAmount.toFixed(2)} TL
+                        </p>
+                      </div>
+                    )}
+                    
+                    <p className="leading-relaxed text-gray-600 italic">
+                      💡 IBAN bilgilerini profil sayfandan ekleyebilir veya güncelleyebilirsin.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-4">
+                  <Button 
+                    onClick={() => navigate('/dashboard')} 
+                    variant="primary"
+                    className="flex-1"
+                  >
+                    CİHAZLARIM LİSTESİNE GERİ DÖN
+                  </Button>
+                </div>
+
+                {/* Contact Info */}
+                <div className="mt-8 text-center">
+                  <p className="text-gray-600 text-sm">
+                    Sorularınız için{' '}
+                    <a href="/contact" className="text-blue-600 hover:text-blue-800">
+                      iletişim sayfamızı
+                    </a>{' '}
+                    ziyaret edebilirsiniz.
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
         }
 
         console.log(
@@ -630,13 +793,169 @@ const DeviceDetailPage: React.FC = () => {
           );
         } else {
           console.log("DeviceDetailPage: Showing waiting message for finder");
-          // Finder (who reported the device) - show waiting message
+          // Finder (who reported the device) - show detailed waiting page
           return (
-            <StatusView
-              icon={<Hourglass className="w-10 h-10" />}
-              title={t("matchFoundTitle")}
-              description={t("waitingForOwnerPayment")}
-            />
+            <div className="min-h-screen bg-gray-50">
+              <div className="max-w-2xl mx-auto py-12">
+                {/* Success Header */}
+                <div className="text-center mb-8">
+                  <div className="text-green-500 text-6xl mb-4">🎉</div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    Harika Haber! Eşleşme Bulundu!
+                  </h1>
+                  <p className="text-gray-600">
+                    Bulduğun cihazın sahibi ile eşleşme sağlandı. Cihaz sahibinin ödeme yapması bekleniyor.
+                  </p>
+                </div>
+
+                {/* Bulunan Cihaz Detayları Card */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Bulunan Cihaz Detayları
+                  </h2>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Modeli:</span>
+                      <span className="font-medium">{device.model}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                      <span className="font-mono text-sm">{device.serialNumber}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Rengi:</span>
+                      <span className="font-medium">{device.color}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ek Detaylar:</span>
+                      <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* İşlem Durumu Card */}
+                <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    İşlem Durumu
+                  </h2>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Durum:</span>
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center">
+                        <Hourglass className="w-4 h-4 mr-2 animate-pulse" />
+                        Cihaz sahibinin ödeme yapması bekleniyor
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Süreç Bilgisi */}
+                <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Süreç Bilgisi
+                  </h2>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        ✓
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Eşleşme Bulundu</p>
+                        <p className="text-gray-600 text-sm">Cihazın sahibi ile eşleşme sağlandı</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        2
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Cihaz Sahibinin Ödeme Yapması Bekleniyor</p>
+                        <p className="text-gray-600 text-sm">Cihaz sahibi bilgilendirildi ve ödeme yapması bekleniyor</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        3
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">Cihazın Kargo ile Gönderilmesi</p>
+                        <p className="text-gray-600 text-sm">Ödeme tamamlandığında kargo detayları paylaşılacak</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        4
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Ödülünü Al</p>
+                        <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ödül Bilgisi */}
+                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200 p-6 mb-6">
+                  <div className="text-center mb-3">
+                    <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center">
+                      <span className="text-2xl mr-2">🎁</span>
+                      Ödül Bilgisi
+                    </h3>
+                  </div>
+
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <p className="leading-relaxed">
+                      <strong>Harika bir haber!</strong> Eşleşme bulundu ve süreç başladı. Cihaz sahibi ödeme yaptıktan 
+                      ve takas tamamlandıktan sonra, ödülün hesabına aktarılacaktır.
+                    </p>
+                    
+                    {device.rewardAmount && (
+                      <div className="bg-white rounded-lg p-4 text-center border-2 border-green-300">
+                        <p className="text-gray-600 text-xs mb-1">Tahmini Ödül Tutarı</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {device.rewardAmount.toFixed(2)} TL
+                        </p>
+                      </div>
+                    )}
+                    
+                    <p className="leading-relaxed text-gray-600 italic">
+                      💡 IBAN bilgilerini profil sayfandan ekleyebilir veya güncelleyebilirsin.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-4">
+                  <Button 
+                    onClick={() => navigate('/dashboard')} 
+                    variant="primary"
+                    className="flex-1"
+                  >
+                    CİHAZLARIM LİSTESİNE GERİ DÖN
+                  </Button>
+                </div>
+
+                {/* Contact Info */}
+                <div className="mt-8 text-center">
+                  <p className="text-gray-600 text-sm">
+                    Sorularınız için{' '}
+                    <a href="/contact" className="text-blue-600 hover:text-blue-800">
+                      iletişim sayfamızı
+                    </a>{' '}
+                    ziyaret edebilirsiniz.
+                  </p>
+                </div>
+              </div>
+            </div>
           );
         }
 
@@ -904,7 +1223,182 @@ const DeviceDetailPage: React.FC = () => {
           </div>
         );
 
-      default: // REPORTED and others
+      case DeviceStatus.REPORTED:
+        console.log("DeviceDetailPage: REPORTED case executed");
+        // Bulunan cihaz detay sayfası
+        return (
+          <div className="min-h-screen bg-gray-50">
+            <div className="max-w-2xl mx-auto py-12">
+              {/* Success Header */}
+              <div className="text-center mb-8">
+                <div className="text-green-500 text-6xl mb-4">✅</div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  Cihazın Kaydı Başarıyla Tamamlandı!
+                </h1>
+                <p className="text-gray-600">
+                  Bulduğun cihaz sisteme kaydedildi. Eşleşme bulunduğunda size bildirim gönderilecektir.
+                </p>
+              </div>
+
+              {/* Bulunan Cihaz Detayları Card */}
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Bulunan Cihaz Detayları
+                </h2>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Modeli:</span>
+                    <span className="font-medium">{device.model}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                    <span className="font-mono text-sm">{device.serialNumber}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Rengi:</span>
+                    <span className="font-medium">{device.color}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Ek Detaylar:</span>
+                    <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* İşlem Durumu Card */}
+              <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  İşlem Durumu
+                </h2>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Durum:</span>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                      Kayıtlı {device.model} {device.serialNumber} için eşleşme bekleniyor
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Durum Bilgisi */}
+              <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Süreç Bilgisi
+                </h2>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      1
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 mb-1">Kayıp cihaz sahibi ile eşleşme bekleniyor</p>
+                      <p className="text-gray-600 text-sm">Sistemde kayıtlı kayıp cihazlarla eşleşme aranıyor</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      2
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 mb-1">Eşleşme bulunduğunda bildirim alacaksın</p>
+                      <p className="text-gray-600 text-sm">Kayıp cihaz sahibinin ödeme yapması beklenecek</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      3
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 mb-1">Cihazın Kargo ile Teslim Edilmesi</p>
+                      <p className="text-gray-600 text-sm">Kargo bilgileri sistemde paylaşılacak</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      4
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Ödülünü Al</p>
+                      <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ödül Bilgisi */}
+              <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200 p-6 mb-6">
+                <div className="text-center mb-3">
+                  <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center">
+                    <span className="text-2xl mr-2">🎁</span>
+                    Ödül Hakkında Bilgi
+                  </h3>
+                </div>
+
+                <div className="space-y-3 text-sm text-gray-700">
+                  <p className="leading-relaxed">
+                    <strong>Bu nazik davranışın için teşekkür ederiz!</strong> Bulduğun cihaz sahibine teslim edildiğinde, 
+                    cihazın piyasa değerine göre belirlenen bir ödül tarafına ödenecektir.
+                  </p>
+                  
+                  <p className="leading-relaxed">
+                    <strong>Ödül Tutarı:</strong> Cihazın modelinden otomatik olarak hesaplanacak ve takas tamamlandığında 
+                    belirttiğin IBAN numarasına aktarılacaktır.
+                  </p>
+                  
+                  <p className="leading-relaxed text-gray-600 italic">
+                    💡 IBAN bilgilerini profil sayfandan ekleyebilir veya güncelleyebilirsin.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4">
+                <Button 
+                  variant="secondary" 
+                  className="flex-1"
+                  onClick={() => {
+                    if (confirm('Bu cihazın kaydını silmek istediğinizden emin misiniz?')) {
+                      // TODO: Implement delete device functionality
+                      console.log('Delete device:', device.id);
+                    }
+                  }}
+                >
+                  KAYDI SİL
+                </Button>
+                
+                <Button 
+                  onClick={() => navigate('/dashboard')} 
+                  variant="primary"
+                  className="flex-1"
+                >
+                  CİHAZLARIM LİSTESİNE GERİ DÖN
+                </Button>
+              </div>
+
+              {/* Contact Info */}
+              <div className="mt-8 text-center">
+                <p className="text-gray-600 text-sm">
+                  Sorularınız için{' '}
+                  <a href="/contact" className="text-blue-600 hover:text-blue-800">
+                    iletişim sayfamızı
+                  </a>{' '}
+                  ziyaret edebilirsiniz.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
+      default: // Other statuses
         console.log(
           "DeviceDetailPage: Default case executed - status not matched:",
           device.status
