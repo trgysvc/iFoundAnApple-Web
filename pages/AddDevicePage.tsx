@@ -54,6 +54,7 @@ const AddDevicePage: React.FC = () => {
   const [lostLocation, setLostLocation] = useState("");
   const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const fetchDeviceModels = useCallback(async () => {
     setLoadingModels(true);
@@ -466,6 +467,136 @@ const AddDevicePage: React.FC = () => {
             />
           </div>
 
+          {/* Kullanıcı Bilgilendirme Bölümü */}
+          <div className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            {isLostReport ? (
+              // Kayıp Cihaz İçin Bilgilendirme
+              <>
+                <h3 className="text-lg font-semibold text-brand-gray-700 mb-4">
+                  ifoundanapple'a Hoş Geldin! Cihaz Kayıt ve Takas Süreci Hakkında Önemli Bilgiler:
+                </h3>
+                
+                <div className="space-y-4 text-sm text-brand-gray-600">
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Cihaz Kaydı Ücretsizdir:</h4>
+                    <p className="leading-relaxed">
+                      Kayıp veya bulunan cihaz kayıtlarınız için sizden hiçbir ücret talep edilmeyecektir. 
+                      Amacımız, cihazların sahipleriyle güvenli ve kolay bir şekilde yeniden buluşmasına aracılık etmektir.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Ödeme Sadece Takas Başladığında:</h4>
+                    <p className="leading-relaxed">
+                      Ödeme, yalnızca kayıp cihazınızın bulunmasının ardından, sizin tarafınızdan takas sürecinin 
+                      başlatılması durumunda talep edilecektir. Bu, cihazınız size ulaşmadan herhangi bir ödeme 
+                      yapmayacağınız anlamına gelir.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Ücretlendirme Detayları:</h4>
+                    <p className="leading-relaxed mb-2">
+                      Talep edilecek ücret, sizleri zor durumda bırakmamak adına, cihazınızın piyasa değeri üzerinden 
+                      belirli ve adil bir oran dahilinde belirlenmektedir. Bu ücret aşağıdaki kalemleri kapsamaktadır:
+                    </p>
+                    <ul className="list-disc list-inside ml-4 space-y-1">
+                      <li>ifoundanapple Hizmet Bedeli</li>
+                      <li>Ödeme Sağlayıcı Bedeli (Güvenli ödeme altyapımızın maliyeti)</li>
+                      <li>Kargo Bedeli (Cihazınızın size güvenle ulaştırılması)</li>
+                      <li>Cihazınızı Bulan Kişinin Ödülü (Nazik çabaları için)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">İptal ve İade Koşulları:</h4>
+                    <p className="leading-relaxed">
+                      Takas sürecinde işlem iptali talep etmeniz halinde, ödeme sağlayıcı firmanın uyguladığı 
+                      %3,43'lük kesinti hariç, ödediğiniz tüm ücret tarafınıza iade edilecektir.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 pb-1">
+                    <p className="leading-relaxed italic text-brand-gray-700">
+                      ifoundanapple olarak, değerli eşyalarınıza kavuşmanız için şeffaf ve güvenilir bir hizmet 
+                      sunmaya özen gösteriyoriz.
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              // Bulunan Cihaz İçin Bilgilendirme
+              <>
+                <h3 className="text-lg font-semibold text-brand-gray-700 mb-4">
+                  ifoundanapple'a Hoş Geldin! Bulunan Cihaz Kayıt ve Ödül Süreci Hakkında Önemli Bilgiler:
+                </h3>
+                
+                <div className="space-y-4 text-sm text-brand-gray-600">
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Cihaz Kaydı Ücretsizdir:</h4>
+                    <p className="leading-relaxed">
+                      Bulduğun cihazı ifoundanapple platformuna kaydetmek için senden hiçbir ücret talep edilmeyecektir. 
+                      Senin bu medeni ve onurlu davranışın, bizim için paha biçilemez bir değer taşıyor. Amacımız, 
+                      bulduğun değerli eşyanın sahibine güvenli ve kolay bir şekilde ulaşmasına aracılık etmektir.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Ödül ve Hizmet Bedelleri:</h4>
+                    <p className="leading-relaxed">
+                      Kayıp cihaz ile eşleşme sağlandığında ve takas süreci başlatıldığında, ifoundanapple olarak 
+                      sunduğumuz hizmetler için cihazın sahibinden bir bedel tahsil edilecektir. Bu bedelin bir kısmı, 
+                      senin bu nazik davranışını takdir etmek amacıyla belirlenmiş bir ödül olarak tarafına iletilecektir. 
+                      Diğer kısmı ise hizmet bedeli, ödeme sağlayıcı bedeli ve kargo bedeli gibi kalemleri karşılayacaktır.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Ödülün Belirlenmesi:</h4>
+                    <p className="leading-relaxed">
+                      Senin için ayrılan ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde 
+                      belirlenmektedir. Bu sayede, gösterdiğin çabanın ve örnek davranışın karşılığında küçük bir hediye 
+                      almanı sağlıyoruz.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-brand-gray-700 mb-1">Sürecin Güvenliği:</h4>
+                    <p className="leading-relaxed">
+                      ifoundanapple, cihazın güvenli bir şekilde sahibine ulaşmasını ve senin ödülünü eksiksiz almanı 
+                      sağlayacak güvenli bir takas süreci sunar. Tüm süreç boyunca bilgilendirilecek ve destekleneceksin.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 pb-1">
+                    <p className="leading-relaxed italic text-brand-gray-700">
+                      ifoundanapple olarak, dürüstlüğünü ve yardımseverliğini yürekten takdir ediyor, değerli eşyaların 
+                      sahiplerine ulaşması için şeffaf ve güvenilir bir platform sunmaya özen gösteriyoruz. Senin gibi 
+                      insanların varlığı, dünyayı daha iyi bir yer yapıyor.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="mt-6 pt-4 border-t border-gray-300">
+              <p className="text-sm font-medium text-brand-gray-700 mb-3">
+                {isLostReport ? 'Cihaz kaydına devam etmek için lütfen aşağıdaki kutucuğu işaretleyin:' : 'Bulduğun cihazı kaydetmek için lütfen aşağıdaki kutucuğu işaretle:'}
+              </p>
+              <label className="flex items-start cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-brand-blue border-gray-300 rounded focus:ring-brand-blue cursor-pointer"
+                />
+                <span className="ml-3 text-sm text-brand-gray-700 group-hover:text-brand-blue transition-colors">
+                  Yukarıdaki şartları okudum ve kabul ediyorum.
+                </span>
+              </label>
+            </div>
+          </div>
+
           <div className="pt-2">
             <div className="flex space-x-4">
               <Button 
@@ -477,7 +608,12 @@ const AddDevicePage: React.FC = () => {
                 Cihazlarım Listesine Geri Dön
               </Button>
               
-              <Button type="submit" className="flex-1" size="lg">
+              <Button 
+                type="submit" 
+                className="flex-1" 
+                size="lg"
+                disabled={!termsAccepted}
+              >
                 {t("submit")}
               </Button>
             </div>
