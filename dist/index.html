@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iFoundAnApple - Lost & Found for Apple Devices</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://esm.sh https://sandbox-static.iyzipay.com https://static.iyzipay.com; 
+                   style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://sandbox-static.iyzipay.com https://static.iyzipay.com; 
+                   connect-src 'self' http://localhost:3001 https://*.supabase.co https://generativelanguage.googleapis.com https://sandbox-api.iyzipay.com https://api.iyzipay.com; 
+                   frame-src 'self' https://sandbox-api.iyzipay.com https://api.iyzipay.com;
+                   img-src 'self' data: https:; 
+                   font-src 'self' https:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-blue': '#007AFF',
+              'brand-blue-light': '#EBF5FF',
+              'brand-gray': {
+                '100': '#F5F5F7',
+                '200': '#E8E8ED',
+                '300': '#D2D2D7',
+                '400': '#86868B',
+                '500': '#6E6E73',
+                '600': '#424245'
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+<link rel="stylesheet" href="/index.css">
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.525.0",
+    "@google/genai": "https://esm.sh/@google/genai"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-jrE6DaKJ.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-BmuKHae7.js">
+  <link rel="modulepreload" crossorigin href="/assets/react-vendor-D53OFC38.js">
+  <link rel="modulepreload" crossorigin href="/assets/supabase-Bn7hz90r.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-components-CIH4UXYK.js">
+  <link rel="modulepreload" crossorigin href="/assets/admin-BX7ZIb8L.js">
+  <link rel="modulepreload" crossorigin href="/assets/device-pages-Dr5_VUqU.js">
+  <link rel="modulepreload" crossorigin href="/assets/payment-CsEMubQH.js">
+</head>
+  <body class="bg-brand-gray-100 antialiased">
+    <div id="root"></div>
+</body>
+</html>
