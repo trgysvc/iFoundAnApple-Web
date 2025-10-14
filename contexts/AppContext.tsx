@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import {
   User,
@@ -203,6 +204,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   // const navigate = useNavigate(); // Removed as useNavigate cannot be used in AppContext
 
+  // Optimization: Memoize userId to prevent unnecessary re-renders
+  // This ensures useEffect hooks only re-run when the actual ID changes, not when the currentUser object reference changes
+  const userId = useMemo(() => currentUser?.id, [currentUser?.id]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -315,15 +320,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   // Fetch user devices when user logs in
+  // Optimized: Use userId instead of currentUser to prevent unnecessary re-fetches
   useEffect(() => {
-    if (!currentUser) {
+    if (!userId) {
       setDevices([]);
       return;
     }
 
     const fetchUserDevices = async () => {
       try {
-        const userDevices = await getUserDevices(currentUser.id);
+        const userDevices = await getUserDevices(userId);
         setDevices(userDevices);
       } catch (error) {
         console.error("Error fetching user devices:", error);
@@ -332,21 +338,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     fetchUserDevices();
-  }, [currentUser]);
+  }, [userId]);
 
   // Fetch initial notifications and subscribe to real-time updates
+  // Optimized: Use userId instead of currentUser to prevent unnecessary re-subscriptions
   useEffect(() => {
-    if (!currentUser) {
+    if (!userId) {
       setNotifications([]);
       return;
     }
 
     const fetchNotifications = async () => {
-      console.log("Fetching notifications for user:", currentUser.id);
+      console.log("Fetching notifications for user:", userId);
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", currentUser.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -360,10 +367,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchNotifications();
 
     // Real-time subscription for notifications
-    console.log("Setting up real-time subscription for user:", currentUser.id);
+    console.log("Setting up real-time subscription for user:", userId);
 
     // Create a unique channel name for this user
-    const channelName = `notifications_${currentUser.id}`;
+    const channelName = `notifications_${userId}`;
 
     // Try a simpler real-time subscription first
     const channel = supabase
@@ -379,7 +386,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("Real-time notification change received:", payload);
 
           // Only process notifications for the current user
-          if (payload.new && (payload.new as any).user_id === currentUser.id) {
+          if (payload.new && (payload.new as any).user_id === userId) {
             if (payload.eventType === "INSERT") {
               console.log(
                 "New notification inserted for current user:",
@@ -433,18 +440,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("Cleaning up real-time subscription");
       supabase.removeChannel(channel);
     };
-  }, [currentUser]); // Re-run when currentUser changes
+  }, [userId]); // Optimized: Only re-run when userId changes
 
   // Real-time subscription for devices
+  // Optimized: Use userId instead of currentUser to prevent unnecessary re-subscriptions
   useEffect(() => {
-    if (!currentUser) {
+    if (!userId) {
       return;
     }
 
-    console.log("Setting up real-time subscription for devices for user:", currentUser.id);
+    console.log("Setting up real-time subscription for devices for user:", userId);
 
     const devicesChannel = supabase
-      .channel(`devices_${currentUser.id}`)
+      .channel(`devices_${userId}`)
       .on(
         "postgres_changes",
         {
@@ -456,23 +464,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("Real-time device change received:", payload);
 
           // Only process devices for the current user
-          if (payload.new && (payload.new as any).userId === currentUser.id) {
+          if (payload.new && (payload.new as any).userId === userId) {
             console.log("Device change for current user, refreshing devices...");
             
             // Refresh devices from Supabase
             try {
-              const refreshedDevices = await getUserDevices(currentUser.id);
+              const refreshedDevices = await getUserDevices(userId);
               setDevices(refreshedDevices);
               console.log("Devices refreshed successfully");
             } catch (error) {
               console.error("Error refreshing devices:", error);
             }
-          } else if (payload.old && (payload.old as any).userId === currentUser.id) {
+          } else if (payload.old && (payload.old as any).userId === userId) {
             console.log("Device deletion for current user, refreshing devices...");
             
             // Refresh devices from Supabase
             try {
-              const refreshedDevices = await getUserDevices(currentUser.id);
+              const refreshedDevices = await getUserDevices(userId);
               setDevices(refreshedDevices);
               console.log("Devices refreshed successfully after deletion");
             } catch (error) {
@@ -498,18 +506,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("Cleaning up devices real-time subscription");
       supabase.removeChannel(devicesChannel);
     };
-  }, [currentUser]);
+  }, [userId]); // Optimized: Only re-run when userId changes
 
   // Fallback: Refresh notifications every 10 seconds if real-time fails
+  // Optimized: Use userId instead of currentUser
   useEffect(() => {
-    if (!currentUser) return;
+    if (!userId) return;
 
     const interval = setInterval(async () => {
       console.log("Fallback: Refreshing notifications...");
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", currentUser.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -524,7 +533,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 10000); // 10 seconds - more aggressive polling
 
     return () => clearInterval(interval);
-  }, [currentUser]);
+  }, [userId]); // Optimized: Only re-run when userId changes
 
   const t = useCallback(
     (key: string, replacements?: Record<string, string | number>) => {
@@ -1344,25 +1353,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  // Optimized: Use userId in dependency array
   const markAllAsReadForCurrentUser = useCallback(async () => {
-    if (!currentUser) return;
+    if (!userId) return;
     const { error } = await supabase
       .from("notifications")
       .update({ is_read: true })
-      .eq("user_id", currentUser.id);
+      .eq("user_id", userId);
     if (error) {
       console.error("Error marking all notifications as read:", error.message);
     }
-  }, [currentUser]);
+  }, [userId]);
 
   // Manual refresh function for testing
+  // Optimized: Use userId in dependency array
   const refreshNotifications = useCallback(async () => {
-    if (!currentUser) return;
+    if (!userId) return;
     console.log("Manual refresh of notifications triggered");
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
-      .eq("user_id", currentUser.id)
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -1374,11 +1385,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       setNotifications(data as AppNotification[]);
     }
-  }, [currentUser]);
+  }, [userId]);
 
   // Check for existing matches between devices
+  // Optimized: Use userId in dependency array
   const checkForExistingMatches = useCallback(async () => {
-    if (!currentUser) return;
+    if (!userId) return;
     console.log("Checking for existing device matches...");
 
     try {
@@ -1386,7 +1398,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: userDevices, error: userError } = await supabase
         .from("devices")
         .select("*")
-        .eq("userId", currentUser.id);
+        .eq("userId", userId);
 
       if (userError) {
         console.error("Error fetching user devices:", userError);

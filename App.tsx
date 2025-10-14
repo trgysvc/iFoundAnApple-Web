@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider, useAppContext } from "./contexts/AppContext";
 import { UserRole } from "./types";
 import Header from "./components/Header";
@@ -207,14 +208,28 @@ const AppContent: React.FC = () => {
   );
 };
 
+// React Query client configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5000, // Data is considered fresh for 5 seconds
+      gcTime: 10 * 60 * 1000, // Cache for 10 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+      retry: 1, // Retry failed requests once
+    },
+  },
+});
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <AppProvider>
-        <HashRouter>
-          <AppContent />
-        </HashRouter>
-      </AppProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppProvider>
+          <HashRouter>
+            <AppContent />
+          </HashRouter>
+        </AppProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 };
