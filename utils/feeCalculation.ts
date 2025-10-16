@@ -35,10 +35,10 @@ export interface DeviceModelData {
 
 // Ücret yapısı - Database'den ifoundanapple_fee çekilerek hesaplanır
 export const FEE_STRUCTURE = {
-  CARGO_FEE: 150.0, // Kargo ücreti (sabit TL)
-  REWARD_PERCENTAGE: 10, // Bulan kişiye ödül (%10 of ifoundanapple_fee)
-  SERVICE_FEE_PERCENTAGE: 20, // Platform hizmet bedeli (%20 of ifoundanapple_fee)
-  GATEWAY_FEE_PERCENTAGE: 3.49, // Ödeme sağlayıcı komisyonu (%3.49 of total)
+  CARGO_FEE: 250.0, // Kargo ücreti (sabit TL)
+  REWARD_PERCENTAGE: 20, // Bulan kişiye ödül (%20 of ifoundanapple_fee)
+  GATEWAY_FEE_PERCENTAGE: 3.43, // Ödeme sağlayıcı komisyonu (%3.43 of total)
+  // Hizmet bedeli = ifoundanapple_fee - gateway_fee - cargo_fee - reward_amount (geriye kalan)
 };
 
 /**
@@ -246,27 +246,24 @@ export const calculateFees = async (
     }
 
     // Yeni ücret yapısına göre hesaplama
-    const rewardAmount =
-      Math.round(
-        ifoundappleFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100
-      ) / 100;
-    const serviceFee =
-      Math.round(
-        ifoundappleFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-      ) / 100;
-    const cargoFee = FEE_STRUCTURE.CARGO_FEE;
-
-    // Subtotal (ifoundanapple_fee + kargo)
-    const subtotal = ifoundappleFee + cargoFee;
-
-    // Gateway komisyonu (toplam üzerinden %5.5)
+    const totalAmount = ifoundappleFee; // Müşteriden alınacak toplam tutar
+    
+    // Gateway komisyonu (toplam üzerinden %3.43)
     const gatewayFee =
       Math.round(
-        subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100
+        totalAmount * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100
       ) / 100;
-
-    // Final toplam (ifoundanapple_fee + kargo + gateway)
-    const totalAmount = subtotal + gatewayFee;
+    
+    const cargoFee = FEE_STRUCTURE.CARGO_FEE; // Sabit kargo ücreti
+    
+    // Bulan kişiye ödül (%20)
+    const rewardAmount =
+      Math.round(
+        totalAmount * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100
+      ) / 100;
+    
+    // Hizmet bedeli (geriye kalan)
+    const serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount;
 
     // Bulan kişiye net ödeme (ödül)
     const netPayout = rewardAmount;
@@ -332,20 +329,23 @@ const calculateFallbackFees = (
       defaultFee = 1000;
   }
 
-  const rewardAmount =
-    Math.round(defaultFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
-    100;
-  const serviceFee =
-    Math.round(
-      defaultFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-    ) / 100;
-  const cargoFee = FEE_STRUCTURE.CARGO_FEE;
-
-  const subtotal = defaultFee + cargoFee;
+  const totalAmount = defaultFee; // Müşteriden alınacak toplam tutar
+  
+  // Gateway komisyonu (toplam üzerinden %3.43)
   const gatewayFee =
-    Math.round(subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
+    Math.round(totalAmount * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
     100;
-  const totalAmount = subtotal + gatewayFee;
+  
+  const cargoFee = FEE_STRUCTURE.CARGO_FEE; // Sabit kargo ücreti
+  
+  // Bulan kişiye ödül (%20)
+  const rewardAmount =
+    Math.round(totalAmount * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
+    100;
+  
+  // Hizmet bedeli (geriye kalan)
+  const serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount;
+  
   const netPayout = rewardAmount;
 
   const feeBreakdown: FeeBreakdown = {
@@ -426,20 +426,23 @@ const calculateFixedFees = (
     defaultFee = 3000;
   }
 
-  const rewardAmount =
-    Math.round(defaultFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
-    100;
-  const serviceFee =
-    Math.round(
-      defaultFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-    ) / 100;
-  const cargoFee = FEE_STRUCTURE.CARGO_FEE;
-
-  const subtotal = defaultFee + cargoFee;
+  const totalAmount = defaultFee; // Müşteriden alınacak toplam tutar
+  
+  // Gateway komisyonu (toplam üzerinden %3.43)
   const gatewayFee =
-    Math.round(subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
+    Math.round(totalAmount * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
     100;
-  const totalAmount = subtotal + gatewayFee;
+  
+  const cargoFee = FEE_STRUCTURE.CARGO_FEE; // Sabit kargo ücreti
+  
+  // Bulan kişiye ödül (%20)
+  const rewardAmount =
+    Math.round(totalAmount * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
+    100;
+  
+  // Hizmet bedeli (geriye kalan)
+  const serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount;
+  
   const netPayout = rewardAmount;
 
   const feeBreakdown: FeeBreakdown = {

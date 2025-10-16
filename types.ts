@@ -43,7 +43,7 @@ export enum DeviceStatus {
   REPORTED = "reported", // Finder adds device
   MATCHED = "matched", // System finds a match
   PAYMENT_PENDING = "payment_pending", // Owner needs to pay
-  PAYMENT_COMPLETE = "payment_complete", // Owner has paid
+  PAYMENT_COMPLETE = "payment_completed", // Owner has paid
   EXCHANGE_PENDING = "exchange_pending", // Physical exchange in progress
   COMPLETED = "completed", // Exchange confirmed by both
 }

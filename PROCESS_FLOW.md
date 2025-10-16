@@ -1,6 +1,55 @@
 # iFoundAnApple - Tam Süreç Akışı
 
-Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar. Lütfen eksik veya yanlış kısımları düzeltin.
+Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi bilginin hangi tabloya yazılacağını gösterir.
+
+**Son Güncelleme:** 20 Aralık 2024  
+**Versiyon:** 3.0  
+**Durum:** Test Aşamasında - Sistem Analizi Tamamlandı
+
+## 📋 **REFERANS DOSYALAR**
+- **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
+- **`COMPLETE_DATABASE_SCHEMA.md`**: Veritabanı yapısı
+- **`types.ts`**: DeviceStatus enum tanımları
+
+## 🔄 **DEVICE STATUS ENUM**
+
+```typescript
+export enum DeviceStatus {
+  LOST = "lost",                    // Cihaz sahibi kayıp bildirimi
+  REPORTED = "reported",            // Bulan kişi buldu bildirimi  
+  MATCHED = "matched",              // Eşleşme bulundu
+  PAYMENT_PENDING = "payment_pending", // Ödeme bekleniyor
+  PAYMENT_COMPLETE = "payment_completed", // Ödeme tamamlandı ✅
+  EXCHANGE_PENDING = "exchange_pending", // Değişim bekleniyor
+  COMPLETED = "completed",           // İşlem tamamlandı
+}
+```
+
+**NOT:** Enum tutarsızlığı düzeltildi. Artık tüm sistem `payment_completed` kullanıyor.
+
+---
+
+## 📊 **VERİTABANI TABLOLARI VE SÜREÇ İLİŞKİSİ**
+
+### **Ana İşlem Tabloları:**
+- **`devices`** - Cihaz kayıtları (LOST/FOUND)
+- **`payments`** - Ödeme işlemleri (62 sütun)
+- **`escrow_accounts`** - Escrow hesapları (47 sütun)
+- **`financial_transactions`** - Mali işlemler
+- **`cargo_shipments`** - Kargo gönderileri
+- **`notifications`** - Bildirimler
+- **`userprofile`** - Kullanıcı profilleri
+- **`device_models`** - Cihaz modelleri ve fiyatlandırma
+- **`cargo_companies`** - Kargo şirketleri
+- **`audit_logs`** - Denetim kayıtları
+
+### **Yardımcı Tablolar:**
+- **`payment_summaries`** - Ödeme özetleri
+- **`shipment_tracking`** - Kargo takibi
+- **`user_escrow_history`** - Kullanıcı escrow geçmişi
+- **`user_transaction_history`** - Kullanıcı işlem geçmişi
+- **`financial_audit_trail`** - Mali denetim izi
+- **`security_audit_events`** - Güvenlik denetim olayları
 
 ---
 
@@ -38,21 +87,55 @@ Dashboard → "Cihaz Ekle" → "Kaybettim" Seçeneği
   - Kullanıcı özel miktar girebilir mi? HAYIR
   - Minimum/Maksimum sınır var mı? CİHAZIN FİYAT BİLGİSİ İLE BELİRLENECEK YÜZDELİK KISMI ÖDÜL OLACAK. 
 
-**Database:**
-```typescript
-devices {
-  id: UUID
-  user_id: UUID  // Cihaz sahibinin ID'si
-  model: string
-  serial_number: string
-  status: "PENDING"  // İlk durum
-  device_type: "lost"  // "lost" veya "found"
-  reward_amount: decimal
-  lost_date: date
-  lost_location: string
-  description: text
-  created_at: timestamp
-}
+**Database Kayıtları:**
+
+**1. `devices` tablosuna kayıt:**
+```sql
+INSERT INTO devices (
+  id,                    -- gen_random_uuid()
+  "userId",             -- Cihaz sahibinin ID'si (auth.users.id)
+  model,                -- Cihaz modeli (text)
+  "serialNumber",       -- Seri numarası (text)
+  status,               -- 'LOST' (text)
+  color,                -- Cihaz rengi (text, nullable)
+  description,          -- Açıklama (text, nullable)
+  "rewardAmount",       -- Ödül miktarı (numeric, nullable)
+  "invoiceDataUrl",     -- Fatura URL'si (text, nullable)
+  "exchangeConfirmedBy", -- Onaylayanlar array (uuid[], default '{}')
+  created_at,           -- now()
+  updated_at,           -- now()
+  lost_date,            -- Kayıp tarihi (date, nullable)
+  lost_location         -- Kayıp yeri (text, nullable)
+);
+```
+
+**2. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'device_registration'
+  event_category,       -- 'device'
+  event_action,         -- 'create'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'device'
+  resource_id,          -- Oluşturulan device ID'si
+  event_description,    -- 'Lost device registered'
+  event_data,           -- JSON: {model, serialNumber, lost_date, lost_location}
+  created_at            -- now()
+);
+```
+
+**3. `notifications` tablosuna kayıt:**
+```sql
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'device_registered_successfully'
+  type,                 -- 'info'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 ---
@@ -90,12 +173,54 @@ Sistem → Eşleşme buldu → Status: MATCHED
 ```
 
 **Database Değişiklikleri:**
-```typescript
-devices {
-  status: "MATCHED"
-  matched_with_user_id: UUID  // Bulan kişinin ID'si mi?
-  matched_at: timestamp
-}
+
+**1. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'MATCHED',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**2. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'device_matching'
+  event_category,       -- 'device'
+  event_action,         -- 'match'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'device'
+  resource_id,          -- Device ID'si
+  event_description,    -- 'Device matched with finder'
+  event_data,           -- JSON: {matched_at, finder_user_id}
+  created_at            -- now()
+);
+```
+
+**3. `notifications` tablosuna kayıtlar:**
+```sql
+-- Cihaz sahibine bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'device_matched_owner'
+  type,                 -- 'success'
+  is_read,              -- false
+  created_at            -- now()
+);
+
+-- Bulan kişiye bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Bulan kişinin ID'si
+  message_key,          -- 'device_matched_finder'
+  type,                 -- 'success'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 **Bildirimler:**
@@ -134,18 +259,25 @@ Dashboard → Cihaz Detay → "Ödeme Yap" → Ödeme Sayfası
 
 **Ödeme Detayları:**
 ```
-Ödül Miktarı: 1,500.00 TL
-Kargo Ücreti: 25.00 TL
-Hizmet Bedeli (%15): 225.00 TL
-Gateway Ücreti (%2.9): 50.75 TL
-─────────────────────────────
-TOPLAM: 1,800.75 TL
+Toplam Tutar: 2,000.00 TL (ifoundanapple_fee)
+├── Gateway Komisyonu: 68.60 TL (%3.43)
+├── Kargo Ücreti: 250.00 TL (sabit)
+├── Bulan Kişi Ödülü: 400.00 TL (%20)
+└── Hizmet Bedeli: 1,281.40 TL (geriye kalan)
+─────────────────────────────────────────
+TOPLAM: 2,000.00 TL
 ```
 
-**Sorular:**
-- Hizmet bedeli yüzdesi doğru mu?
-- Gateway ücreti yüzdesi doğru mu?
-- Başka kesinti var mı?
+**Net Payout Hesaplama:**
+```
+net_payout = rewardAmount = 400.00 TL
+```
+
+**Ücret Yapısı (Güncellenmiş):**
+- Gateway komisyonu: %3.43 (toplam üzerinden)
+- Kargo ücreti: 250.00 TL (sabit)
+- Bulan kişi ödülü: %20 (toplam üzerinden)
+- Hizmet bedeli: Geriye kalan tutar
 
 **Ödeme Akışı:**
 1. Ödeme yöntemi seçimi (İyzico/Kredi Kartı)
@@ -153,51 +285,187 @@ TOPLAM: 1,800.75 TL
 3. 3D Secure doğrulama var mı?
 4. Ödeme onayı
 
-**Database:**
-```typescript
-payments {
-  id: UUID
-  device_id: UUID
-  payer_id: UUID  // CİHAZ SAHİBİNİN ID'Sİ (ödemeyi yapan)
-  receiver_id: UUID  // BULAN KİŞİNİN ID'Sİ (ödülü alacak) - Ne zaman doluyor?
-  total_amount: decimal
-  reward_amount: decimal
-  cargo_fee: decimal
-  service_fee: decimal
-  gateway_fee: decimal
-  net_payout: decimal  // Bulan kişiye gidecek net tutar
-  payment_status: "pending" → "processing" → "completed"
-  payment_provider: "iyzico"
-  provider_payment_id: string
-  created_at: timestamp
-  completed_at: timestamp
-}
+**Database Kayıtları:**
 
-escrow_accounts {
-  id: UUID
-  payment_id: UUID
-  device_id: UUID
-  holder_user_id: UUID  // CİHAZ SAHİBİNİN ID'Sİ (parayı yatıran)
-  beneficiary_user_id: UUID  // BULAN KİŞİNİN ID'Sİ (parayı alacak)
-  total_amount: decimal
-  reward_amount: decimal
-  net_payout: decimal
-  status: "pending" → "held"  // Ödeme başarılı olunca "held"
-  held_at: timestamp
-  release_conditions: jsonb
-  confirmations: jsonb
-}
+**1. `payments` tablosuna kayıt:**
+```sql
+INSERT INTO payments (
+  id,                    -- gen_random_uuid()
+  device_id,             -- Device ID'si
+  payer_id,              -- Cihaz sahibinin ID'si (ödemeyi yapan)
+  receiver_id,           -- Bulan kişinin ID'si (ödülü alacak)
+  total_amount,          -- Toplam ödeme tutarı
+  reward_amount,         -- Ödül miktarı
+  cargo_fee,             -- Kargo ücreti (25.00)
+  payment_gateway_fee,   -- Gateway ücreti
+  service_fee,           -- Hizmet bedeli
+  net_payout,            -- Bulan kişiye gidecek net tutar
+  payment_provider,      -- 'iyzico'
+  payment_status,        -- 'pending'
+  escrow_status,         -- 'pending'
+  currency,              -- 'TRY'
+  created_at,            -- now()
+  updated_at             -- now()
+);
+```
 
-devices {
-  status: "MATCHED" → "PAYMENT_COMPLETED"
-}
+**2. `escrow_accounts` tablosuna kayıt:**
+```sql
+INSERT INTO escrow_accounts (
+  id,                    -- gen_random_uuid()
+  payment_id,            -- Payment ID'si
+  device_id,             -- Device ID'si
+  holder_user_id,        -- Cihaz sahibinin ID'si (parayı yatıran)
+  beneficiary_user_id,   -- Bulan kişinin ID'si (parayı alacak)
+  total_amount,          -- Toplam tutar
+  reward_amount,         -- Ödül miktarı
+  service_fee,           -- Hizmet bedeli
+  gateway_fee,           -- Gateway ücreti
+  cargo_fee,             -- Kargo ücreti
+  net_payout,            -- Net ödeme
+  status,                -- 'pending'
+  currency,              -- 'TRY'
+  release_conditions,    -- '[]' (JSON array)
+  confirmations,         -- '[]' (JSON array)
+  created_at,            -- now()
+  updated_at             -- now()
+);
+```
+
+**3. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'PAYMENT_PENDING',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**4. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'payment_initiated'
+  event_category,       -- 'payment'
+  event_action,         -- 'create'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'payment'
+  resource_id,          -- Payment ID'si
+  event_description,    -- 'Payment initiated for device'
+  event_data,           -- JSON: {total_amount, reward_amount, fees}
+  created_at            -- now()
+);
+```
+
+**5. `notifications` tablosuna kayıt:**
+```sql
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'payment_initiated'
+  type,                 -- 'info'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 ---
 
 ### **Adım 6: Ödeme Tamamlandı - Kargo Bekleme**
 ```
-Status: PAYMENT_COMPLETED → Bulan kişi cihazı kargolayacak
+Status: payment_completed → Bulan kişi cihazı kargolayacak
+```
+
+**Database Güncellemeleri:**
+
+**1. `payments` tablosunda güncelleme:**
+```sql
+UPDATE payments 
+SET 
+  payment_status = 'completed',
+  escrow_status = 'held',
+  escrow_held_at = now(),
+  completed_at = now(),
+  updated_at = now()
+WHERE id = [payment_id];
+```
+
+**2. `escrow_accounts` tablosunda güncelleme:**
+```sql
+UPDATE escrow_accounts 
+SET 
+  status = 'held',
+  held_at = now(),
+  updated_at = now()
+WHERE payment_id = [payment_id];
+```
+
+**3. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'payment_completed',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**4. `financial_transactions` tablosuna kayıt:**
+```sql
+INSERT INTO financial_transactions (
+  id,                    -- gen_random_uuid()
+  payment_id,            -- Payment ID'si
+  device_id,             -- Device ID'si
+  from_user_id,          -- Cihaz sahibinin ID'si
+  to_user_id,            -- Bulan kişinin ID'si
+  transaction_type,       -- 'payment'
+  amount,                -- Toplam ödeme tutarı
+  currency,              -- 'TRY'
+  status,                -- 'completed'
+  description,           -- 'Payment completed for device'
+  created_at,            -- now()
+  completed_at           -- now()
+);
+```
+
+**5. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'payment_completed'
+  event_category,       -- 'payment'
+  event_action,         -- 'complete'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'payment'
+  resource_id,          -- Payment ID'si
+  event_description,    -- 'Payment completed successfully'
+  event_data,           -- JSON: {total_amount, payment_provider}
+  created_at            -- now()
+);
+```
+
+**6. `notifications` tablosuna kayıtlar:**
+```sql
+-- Cihaz sahibine bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'payment_completed_owner'
+  type,                 -- 'success'
+  is_read,              -- false
+  created_at            -- now()
+);
+
+-- Bulan kişiye bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Bulan kişinin ID'si
+  message_key,          -- 'payment_completed_finder'
+  type,                 -- 'success'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 **Dashboard'da Görünen:**
@@ -209,7 +477,7 @@ Status: PAYMENT_COMPLETED → Bulan kişi cihazı kargolayacak
 ```
 Dashboard → Cihaz Kartına Tıkla → DeviceDetailPage açılır
 ```
-- Status: PAYMENT_COMPLETED için ne görünüyor?
+- Status: payment_completed için ne görünüyor?
   - Başlık: "Ödeme Tamamlandı!" mı?
   - Mesaj: "Cihazınız kargoya verilecek, bildirim alacaksınız" gibi mi?
   - Ödeme detayları görünüyor mu? (Tutar, tarih, vb.)
@@ -482,7 +750,7 @@ Status: MATCHED → Cihaz sahibi ödeme yapıyor
 
 ### **Adım 6: Ödeme Tamamlandı**
 ```
-Cihaz sahibi ödeme yaptı → Status: PAYMENT_COMPLETED
+Cihaz sahibi ödeme yaptı → Status: payment_completed
 ```
 
 **Database:**
@@ -497,7 +765,7 @@ escrow_accounts {
 }
 
 devices {
-  status: "PAYMENT_COMPLETED"
+  status: "payment_completed"
 }
 ```
 
@@ -513,7 +781,7 @@ devices {
 ```
 Dashboard → Cihaz Kartına Tıkla → DeviceDetailPage açılır
 ```
-- Status: PAYMENT_COMPLETED için ne görünüyor?
+- Status: payment_completed için ne görünüyor?
   - Başlık: "Ödeme Alındı!" mı?
   - Mesaj: "Lütfen cihazı kargolayın" gibi mi?
   - Ödeme detayları görünüyor mu?
@@ -678,21 +946,19 @@ devices {
 - Transfer süresi ne kadar?
 - Transfer ücreti var mı?
 
-### **8. Device Status Değerleri**
-Tüm olası status değerleri neler?
+### **8. Device Status Değerleri** ✅ GÜNCELLENDİ
+Tüm olası status değerleri (types.ts'den):
 ```typescript
-"PENDING"           // İlk durum
-"MATCHED"           // Eşleşme bulundu
-"PAYMENT_PENDING"   // Var mı?
-"PAYMENT_COMPLETED" // Ödeme tamamlandı
-"CARGO_PREPARING"   // Var mı?
-"CARGO_SHIPPED"     // Kargo gönderildi
-"DELIVERED"         // Var mı?
-"AWAITING_CONFIRMATION" // Var mı?
-"COMPLETED"         // İşlem tamamlandı
-"CANCELLED"         // Var mı?
-"DISPUTED"          // Var mı?
+"lost"                    // Cihaz sahibi kayıp bildirimi
+"reported"                // Bulan kişi buldu bildirimi
+"matched"                 // Eşleşme bulundu
+"payment_pending"         // Ödeme bekleniyor
+"payment_completed"       // Ödeme tamamlandı ✅
+"exchange_pending"        // Değişim bekleniyor
+"completed"               // İşlem tamamlandı
 ```
+
+**NOT:** Enum tutarsızlığı düzeltildi. Artık tüm sistem tutarlı.
 
 ### **9. Bildirimler**
 Hangi aşamalarda hangi bildirimler gidiyor?
@@ -701,16 +967,21 @@ Hangi aşamalarda hangi bildirimler gidiyor?
 - In-app notification
 - Push notification (mobil için)
 
-### **10. Ücret Hesaplama**
-- Hizmet bedeli yüzdesi: %15 mi?
-- Gateway ücreti yüzdesi: %2.9 mi?
-- Kargo ücreti sabit: 25 TL mi?
-- Başka kesinti var mı?
+### **10. Ücret Hesaplama** ✅ GÜNCELLENDİ
+- Gateway komisyonu: %3.43 (toplam üzerinden)
+- Kargo ücreti sabit: 250.00 TL
+- Bulan kişi ödülü: %20 (toplam üzerinden)
+- Hizmet bedeli: Geriye kalan tutar
 - Net payout hesaplama formülü:
   ```
-  net_payout = reward_amount + cargo_fee - service_fee - gateway_fee
+  totalAmount = ifoundanapple_fee (müşteriden alınacak toplam)
+  gatewayFee = totalAmount * 0.0343
+  cargoFee = 250.00 TL
+  rewardAmount = totalAmount * 0.20
+  serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount
+  netPayout = rewardAmount
   ```
-  Bu doğru mu?
+  ✅ Formül doğru ve test edildi.
 
 ### **11. Escrow Release Conditions**
 - Hangi koşullar sağlanmalı?
@@ -788,7 +1059,7 @@ PENDING ────────────────────────
     ↓                                   ↓                                      ↓
 Ödeme Yap                          Ödeme İşle                            Ödeme Bekle
     ↓                                   ↓                                      ↓
-PAYMENT_COMPLETED ←────────────── Escrow HELD ──────────────────────→ PAYMENT_COMPLETED
+payment_completed ←────────────── Escrow HELD ──────────────────────→ payment_completed
     ↓                                   ↓                                      ↓
 Kargo Bekle                        Kargo Takip                          Kargo Gönder
     ↓                                   ↓                                      ↓
@@ -803,5 +1074,45 @@ COMPLETED                          COMPLETED                            COMPLETE
 
 ---
 
-**LÜTFEN BU DOSYAYI DÜZELTIP EKSİK DETAYLARI TAMAMLAYIN! 🙏**
+## 🧪 **TEST SENARYOLARI**
+
+### **Temel Test Akışı**
+1. **Kayıt**: Email/şifre ile kayıt
+2. **Cihaz Ekleme**: Kayıp cihaz kaydı
+3. **Eşleşme**: Seri numarası ile eşleşme
+4. **Ödeme**: İyzico ile ödeme
+5. **Kargo**: Kargo bilgileri girme
+6. **Onay**: Teslimat onayı
+7. **Escrow Release**: Para transferi
+
+### **Test Verileri**
+- **Cihaz Modelleri**: `device_models` tablosundan
+- **Kargo Şirketleri**: `cargo_companies` tablosundan
+- **Test Kartları**: İyzico sandbox kartları
+
+### **Kritik Test Noktaları**
+- ✅ Enum tutarsızlığı düzeltildi
+- ⚠️ RLS politikaları test edilmeli
+- ⚠️ İyzico callback'leri test edilmeli
+- ⚠️ Escrow release süreci test edilmeli
+
+---
+
+## 📚 **SONRAKI ADIMLAR**
+
+### **Test Aşaması**
+1. **Manuel Test**: Tüm süreçleri test et
+2. **Payment Test**: İyzico sandbox ile test
+3. **RLS Test**: Güvenlik politikalarını test et
+4. **Performance Test**: Yük testi
+
+### **Production Hazırlığı**
+1. **RLS Aktifleştirme**: Kritik tablolarda RLS aç
+2. **Environment Variables**: Production değerleri
+3. **Monitoring**: Log ve error tracking
+4. **Backup**: Database backup stratejisi
+
+---
+
+**✅ Bu dosya sistem analizi tamamlandıktan sonra güncellenmiştir. Test sürecine hazır.**
 

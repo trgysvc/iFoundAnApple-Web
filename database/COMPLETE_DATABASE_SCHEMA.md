@@ -2,8 +2,51 @@
 
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
-**Son Güncelleme:** 19 Aralık 2024  
-**Versiyon:** 1.1
+**Son Güncelleme:** 20 Aralık 2024  
+**Versiyon:** 3.0  
+**Durum:** Test Aşamasında - Sistem Analizi Tamamlandı
+
+## 📋 **REFERANS DOSYALAR**
+- **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
+- **`PROCESS_FLOW.md`**: Detaylı süreç akışı
+- **`types.ts`**: DeviceStatus enum tanımları
+
+## ⚠️ **RLS DURUMU - TEST AŞAMASINDA**
+
+**RLS KAPALI TABLOLAR (Test tamamlanınca aktif edilecek):**
+- `devices` - RLS: DISABLED (8 politika tanımlı)
+- `escrow_accounts` - RLS: DISABLED (2 politika tanımlı)
+- `financial_transactions` - RLS: DISABLED (2 politika tanımlı)
+- `payments` - RLS: DISABLED (4 politika tanımlı)
+
+**PRODUCTION'A GEÇMEDEN ÖNCE AKTİF EDİLECEK:**
+```sql
+-- Test ve ödeme süreci kesinleşince çalıştırılacak
+ALTER TABLE devices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE escrow_accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE financial_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+```
+
+**NOT:** Şu anda test ortamında RLS kapalı tutuluyor. Production'a geçmeden önce mutlaka aktif edilecek.
+
+---
+
+## 🔄 **DEVICE STATUS ENUM**
+
+```typescript
+export enum DeviceStatus {
+  LOST = "lost",                    // Cihaz sahibi kayıp bildirimi
+  REPORTED = "reported",            // Bulan kişi buldu bildirimi  
+  MATCHED = "matched",              // Eşleşme bulundu
+  PAYMENT_PENDING = "payment_pending", // Ödeme bekleniyor
+  PAYMENT_COMPLETE = "payment_completed", // Ödeme tamamlandı ✅
+  EXCHANGE_PENDING = "exchange_pending", // Değişim bekleniyor
+  COMPLETED = "completed",           // İşlem tamamlandı
+}
+```
+
+**NOT:** Enum tutarsızlığı düzeltildi. Artık tüm sistem `payment_completed` kullanıyor.
 
 ---
 
@@ -295,13 +338,191 @@ Kullanıcı profil bilgilerini tutan tablo.
 |--------|------|----------|---------|-------------|
 | id | uuid | NO | gen_random_uuid() | Primary key |
 | user_id | uuid | NO | null | User ID (FK) |
-| first_name | character varying(100) | YES | null | First name |
-| last_name | character varying(100) | YES | null | Last name |
-| phone | character varying(20) | YES | null | Phone |
-| address | jsonb | YES | null | Address |
+| bank_info | text | YES | null | Bank information |
+| phone_number | character varying(20) | YES | null | Phone number |
+| address | text | YES | null | Address |
+| city | character varying(100) | YES | null | City |
+| country | character varying(100) | YES | null | Country |
+| postal_code | character varying(20) | YES | null | Postal code |
+| date_of_birth | date | YES | null | Date of birth |
+| emergency_contact | text | YES | null | Emergency contact |
+| preferences | jsonb | YES | '{}' | User preferences |
 | created_at | timestamp with time zone | YES | now() | Created timestamp |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
-| date_of_birth | date | YES | null | Date of birth |
+| tc_kimlik_no | character varying(11) | YES | null | Turkish ID number |
+| iban | character varying(34) | YES | null | IBAN |
+| first_name | character varying(100) | YES | null | First name |
+| last_name | character varying(100) | YES | null | Last name |
+
+### 11. **payment_summaries** (View/Summary Table)
+Ödeme özetlerini tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| device_id | uuid | YES | null | Device ID (FK) |
+| payer_id | uuid | YES | null | Payer ID (FK) |
+| receiver_id | uuid | YES | null | Receiver ID (FK) |
+| total_amount | numeric | YES | null | Total amount |
+| reward_amount | numeric | YES | null | Reward amount |
+| cargo_fee | numeric | YES | null | Cargo fee |
+| payment_gateway_fee | numeric | YES | null | Payment gateway fee |
+| service_fee | numeric | YES | null | Service fee |
+| net_payout | numeric | YES | null | Net payout |
+| payment_provider | character varying(50) | YES | null | Payment provider |
+| provider_payment_id | character varying(200) | YES | null | Provider payment ID |
+| provider_transaction_id | character varying(200) | YES | null | Provider transaction ID |
+| provider_status | character varying(50) | YES | null | Provider status |
+| provider_response | text | YES | null | Provider response |
+| escrow_status | character varying(20) | YES | null | Escrow status |
+| escrow_held_at | timestamp with time zone | YES | null | Escrow held timestamp |
+| escrow_released_at | timestamp with time zone | YES | null | Escrow released timestamp |
+| escrow_refunded_at | timestamp with time zone | YES | null | Escrow refunded timestamp |
+| payment_status | character varying(20) | YES | null | Payment status |
+| payment_method | character varying(50) | YES | null | Payment method |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| updated_at | timestamp with time zone | YES | null | Updated timestamp |
+| completed_at | timestamp with time zone | YES | null | Completed timestamp |
+| currency | character varying(3) | YES | null | Currency |
+| notes | text | YES | null | Notes |
+| failure_reason | text | YES | null | Failure reason |
+| refund_reason | text | YES | null | Refund reason |
+| device_model | text | YES | null | Device model |
+| device_serial | text | YES | null | Device serial |
+| device_status | text | YES | null | Device status |
+| payer_email | character varying(255) | YES | null | Payer email |
+| receiver_email | character varying(255) | YES | null | Receiver email |
+
+### 12. **shipment_tracking** (View/Summary Table)
+Kargo takip bilgilerini tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| device_id | uuid | YES | null | Device ID (FK) |
+| tracking_number | character varying(100) | YES | null | Tracking number |
+| cargo_company | character varying(50) | YES | null | Cargo company |
+| status | character varying(30) | YES | null | Shipment status |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| picked_up_at | timestamp with time zone | YES | null | Picked up timestamp |
+| delivered_at | timestamp with time zone | YES | null | Delivered timestamp |
+| estimated_delivery_days | integer | YES | null | Estimated delivery days |
+| delivery_confirmed_by_receiver | boolean | YES | null | Delivery confirmed |
+| device_model | text | YES | null | Device model |
+| user_anonymous_id | character varying | YES | null | User anonymous ID |
+| user_role | text | YES | null | User role |
+
+### 13. **user_escrow_history** (View/Summary Table)
+Kullanıcı escrow geçmişini tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| payment_id | uuid | YES | null | Payment ID (FK) |
+| device_id | uuid | YES | null | Device ID (FK) |
+| total_amount | numeric | YES | null | Total amount |
+| reward_amount | numeric | YES | null | Reward amount |
+| net_payout | numeric | YES | null | Net payout |
+| status | character varying(20) | YES | null | Escrow status |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| held_at | timestamp with time zone | YES | null | Held timestamp |
+| released_at | timestamp with time zone | YES | null | Released timestamp |
+| refunded_at | timestamp with time zone | YES | null | Refunded timestamp |
+| confirmations | jsonb | YES | null | Confirmations |
+| device_model | text | YES | null | Device model |
+| device_serial | text | YES | null | Device serial |
+| user_role | text | YES | null | User role |
+| user_role_description | text | YES | null | User role description |
+
+### 14. **user_transaction_history** (View/Summary Table)
+Kullanıcı işlem geçmişini tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| payment_id | uuid | YES | null | Payment ID (FK) |
+| device_id | uuid | YES | null | Device ID (FK) |
+| transaction_type | character varying(30) | YES | null | Transaction type |
+| amount | numeric | YES | null | Amount |
+| currency | character varying(3) | YES | null | Currency |
+| status | character varying(20) | YES | null | Status |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| completed_at | timestamp with time zone | YES | null | Completed timestamp |
+| description | text | YES | null | Description |
+| device_model | text | YES | null | Device model |
+| device_serial | text | YES | null | Device serial |
+| transaction_direction | text | YES | null | Transaction direction |
+
+### 15. **financial_audit_trail** (Audit Table)
+Mali denetim izini tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| event_type | character varying(50) | YES | null | Event type |
+| event_category | character varying(30) | YES | null | Event category |
+| event_action | character varying(30) | YES | null | Event action |
+| event_severity | character varying(20) | YES | null | Event severity |
+| user_id | uuid | YES | null | User ID |
+| session_id | character varying(255) | YES | null | Session ID |
+| ip_address | inet | YES | null | IP address |
+| user_agent | text | YES | null | User agent |
+| resource_type | character varying(50) | YES | null | Resource type |
+| resource_id | uuid | YES | null | Resource ID |
+| parent_resource_type | character varying(50) | YES | null | Parent resource type |
+| parent_resource_id | uuid | YES | null | Parent resource ID |
+| old_values | jsonb | YES | null | Old values |
+| new_values | jsonb | YES | null | New values |
+| changes | jsonb | YES | null | Changes |
+| event_description | text | YES | null | Event description |
+| event_data | jsonb | YES | null | Event data |
+| error_details | jsonb | YES | null | Error details |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| request_id | character varying(255) | YES | null | Request ID |
+| correlation_id | character varying(255) | YES | null | Correlation ID |
+| is_sensitive | boolean | YES | null | Is sensitive |
+| retention_period_days | integer | YES | null | Retention period |
+| archived_at | timestamp with time zone | YES | null | Archived timestamp |
+| application_version | character varying(50) | YES | null | Application version |
+| environment | character varying(20) | YES | null | Environment |
+| tags | ARRAY | YES | null | Tags |
+| user_email | character varying(255) | YES | null | User email |
+| amount | numeric | YES | null | Amount |
+
+### 16. **security_audit_events** (Audit Table)
+Güvenlik denetim olaylarını tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | YES | null | Primary key |
+| event_type | character varying(50) | YES | null | Event type |
+| event_category | character varying(30) | YES | null | Event category |
+| event_action | character varying(30) | YES | null | Event action |
+| event_severity | character varying(20) | YES | null | Event severity |
+| user_id | uuid | YES | null | User ID |
+| session_id | character varying(255) | YES | null | Session ID |
+| ip_address | inet | YES | null | IP address |
+| user_agent | text | YES | null | User agent |
+| resource_type | character varying(50) | YES | null | Resource type |
+| resource_id | uuid | YES | null | Resource ID |
+| parent_resource_type | character varying(50) | YES | null | Parent resource type |
+| parent_resource_id | uuid | YES | null | Parent resource ID |
+| old_values | jsonb | YES | null | Old values |
+| new_values | jsonb | YES | null | New values |
+| changes | jsonb | YES | null | Changes |
+| event_description | text | YES | null | Event description |
+| event_data | jsonb | YES | null | Event data |
+| error_details | jsonb | YES | null | Error details |
+| created_at | timestamp with time zone | YES | null | Created timestamp |
+| request_id | character varying(255) | YES | null | Request ID |
+| correlation_id | character varying(255) | YES | null | Correlation ID |
+| is_sensitive | boolean | YES | null | Is sensitive |
+| retention_period_days | integer | YES | null | Retention period |
+| archived_at | timestamp with time zone | YES | null | Archived timestamp |
+| application_version | character varying(50) | YES | null | Application version |
+| environment | character varying(20) | YES | null | Environment |
+| tags | ARRAY | YES | null | Tags |
+| user_email | character varying(255) | YES | null | User email |
 
 ---
 
@@ -324,7 +545,7 @@ Kullanıcı profil bilgilerini tutan tablo.
 - **Allow public read access to device_models**: Public read access
 - **Allow read access for authenticated users**: Authenticated users can read device models
 
-### **devices**
+### **devices** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
 - **Users can delete own devices**: Users can delete their own devices
 - **Users can insert own devices**: Users can insert their own devices
 - **Users can update own devices**: Users can update their own devices
@@ -335,11 +556,11 @@ Kullanıcı profil bilgilerini tutan tablo.
 - **allow_update_own_devices**: Duplicate policy for update
 - **allow_view_for_matching**: Authenticated users can view devices with LOST/FOUND status for matching
 
-### **escrow_accounts**
+### **escrow_accounts** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
 - **System can manage escrow accounts**: Authenticated users can manage escrow accounts
 - **Users can view own escrow accounts**: Users can view their own escrow accounts (holder or beneficiary)
 
-### **financial_transactions**
+### **financial_transactions** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
 - **System can manage transactions**: Authenticated users can manage transactions
 - **Users can view own transactions**: Users can view their own transactions (from_user, to_user, or device owner)
 
@@ -426,5 +647,52 @@ Bu dosyayı güncellerken:
 5. **Son güncelleme tarihini** güncelleyin
 
 ---
+
+## 🧪 **TEST VE PRODUCTION HAZIRLIĞI**
+
+### **Test Aşamasında Yapılacaklar**
+1. **RLS Test**: Kritik tablolarda RLS politikalarını test et
+2. **Payment Test**: İyzico sandbox ile ödeme sürecini test et
+3. **Escrow Test**: Escrow release sürecini test et
+4. **Performance Test**: Database performansını test et
+
+### **Production'a Geçmeden Önce**
+1. **RLS Aktifleştirme**: Kritik tablolarda RLS aç
+   ```sql
+   ALTER TABLE devices ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE escrow_accounts ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE financial_transactions ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+   ```
+
+2. **Environment Variables**: Production değerleri
+3. **Monitoring**: Log ve error tracking
+4. **Backup**: Database backup stratejisi
+
+### **Kritik Güvenlik Notları**
+- **RLS Kapalı Tablolar**: `devices`, `escrow_accounts`, `financial_transactions`, `payments`
+- **Test Sonrası**: Mutlaka RLS aktif edilmeli
+- **Audit Trail**: Tüm işlemler loglanıyor
+- **Encryption**: Kargo adresleri encrypted
+
+---
+
+## 📚 **REFERANS BİLGİLER**
+
+### **Enum Tutarsızlığı** ✅ ÇÖZÜLDÜ
+- **Sorun**: `PAYMENT_COMPLETE = "payment_complete"` vs kodda `'payment_completed'`
+- **Çözüm**: Enum değeri `"payment_completed"` olarak düzeltildi
+- **Etkilenen Dosyalar**: `types.ts`, `DeviceCard.tsx`, `PROCESS_FLOW.md`
+
+### **Ücret Hesaplama** ✅ GÜNCELLENDİ
+- **Gateway Komisyonu**: %3.43 (toplam üzerinden)
+- **Kargo Ücreti**: 250.00 TL (sabit)
+- **Bulan Kişi Ödülü**: %20 (toplam üzerinden)
+- **Hizmet Bedeli**: Geriye kalan tutar
+- **Net Payout**: `rewardAmount` (bulan kişiye ödül)
+
+---
+
+**✅ Bu dosya sistem analizi tamamlandıktan sonra güncellenmiştir. Test sürecine hazır.**
 
 **Bu dosya sürekli güncel tutulmalı ve database değişikliklerinde referans olarak kullanılmalıdır.**
