@@ -25,6 +25,17 @@ interface EscrowData {
   created_at: string;
 }
 
+interface DeviceData {
+  id: string;
+  model: string;
+  serialNumber: string;
+  color: string;
+  description?: string;
+  lost_date?: string;
+  lost_location?: string;
+  invoiceDataUrl?: string;
+}
+
 const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,6 +47,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
   
   const [payment, setPayment] = useState<PaymentData | null>(null);
   const [escrow, setEscrow] = useState<EscrowData | null>(null);
+  const [device, setDevice] = useState<DeviceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +91,21 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
 
       setPayment(paymentData);
 
-      // Fetch escrow data
+      // Fetch device data using device_id from payment
+      const { data: deviceData, error: deviceError } = await supabaseClient
+        .from('devices')
+        .select('*')
+        .eq('id', paymentData.device_id)
+        .single();
+
+      if (deviceError) {
+        console.warn('Device data not found for payment:', paymentData.device_id, deviceError.message);
+        setDevice(null);
+      } else {
+        setDevice(deviceData);
+      }
+
+      // Fetch escrow data - optional, might not exist for older payments
       const { data: escrowData, error: escrowError } = await supabaseClient
         .from('escrow_accounts')
         .select('*')
@@ -87,11 +113,13 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         .single();
 
       if (escrowError) {
-        throw new Error(`Escrow fetch error: ${escrowError.message}`);
+        // Escrow kaydı bulunamadı - bu eski ödemeler için normal olabilir
+        console.warn('Escrow data not found for payment:', paymentId, escrowError.message);
+        setEscrow(null);
+      } else {
+        // Escrow verisi mevcut, status ne olursa olsun işleyelim
+        setEscrow(escrowData);
       }
-
-      // Escrow verisi mevcut, status ne olursa olsun işleyelim
-      setEscrow(escrowData);
 
     } catch (err) {
       console.error('Error fetching payment data:', err);
@@ -154,6 +182,69 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
             </p>
           </div>
 
+          {/* Kayıp Cihaz Detayları Card */}
+          {device && (
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Kayıp Cihaz Detayları
+              </h2>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Kayıp Tarihi:</span>
+                  <span className="font-medium">
+                    {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
+                      day: '2-digit',
+                      month: '2-digit', 
+                      year: 'numeric'
+                    }) : 'Belirtilmemiş'}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Kayıp Yeri:</span>
+                  <span className="font-medium">{device.lost_location || 'Belirtilmemiş'}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Cihaz Modeli:</span>
+                  <span className="font-medium">{device.model}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                  <span className="font-mono text-sm">{device.serialNumber}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Cihaz Rengi:</span>
+                  <span className="font-medium">{device.color}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Ek Detaylar:</span>
+                  <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Satın Alma Kanıtı (Fatura) Dosyası:</span>
+                  {device.invoiceDataUrl ? (
+                    <a
+                      href={device.invoiceDataUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-medium underline"
+                    >
+                      EKLENEN DOSYA LİNKİ
+                    </a>
+                  ) : (
+                    <span className="text-gray-500">Dosya eklenmemiş</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Payment Details Card */}
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -193,7 +284,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
           </div>
 
           {/* Escrow Status Card */}
-          {escrow && (
+          {escrow ? (
             <div className="bg-blue-50 rounded-lg p-6 mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Escrow Durumu
@@ -220,6 +311,28 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
                 </div>
               </div>
             </div>
+          ) : (
+            <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Ödeme Durumu
+              </h2>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Durum:</span>
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                    Ödeme Tamamlandı
+                  </span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Not:</span>
+                  <span className="text-sm text-gray-600">
+                    Bu ödeme eski sistem ile yapıldı
+                  </span>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Durum Bilgisi */}
@@ -239,34 +352,48 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                  2
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-gray-600 text-sm">Teslim aldığınızı onaylayın</p>
-                    <Button 
-                      variant="primary" 
-                      className="ml-4"
-                      disabled
-                    >
-                      Onay
-                    </Button>
+              {escrow ? (
+                <>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      2
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-gray-600 text-sm">Teslim aldığınızı onaylayın</p>
+                        <Button 
+                          variant="primary" 
+                          className="ml-4"
+                          disabled
+                        >
+                          Onay
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      3
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                      <p className="text-gray-600 text-sm">Cihazınıza kavuştuğunuz için mutluyuz</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    2
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900 mb-1">Ödeme Tamamlandı</p>
+                    <p className="text-gray-600 text-sm">Ödemeniz başarıyla alınmıştır. Cihazınız için gerekli işlemler yapılacaktır.</p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                  3
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
-                  <p className="text-gray-600 text-sm">Cihazınıza kavuştuğunuz için mutluyuz</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 

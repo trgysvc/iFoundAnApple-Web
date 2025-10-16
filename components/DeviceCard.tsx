@@ -22,7 +22,8 @@ const statusConfigMap = {
 const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   const { t } = useAppContext();
   // Convert device.status to lowercase to match statusConfigMap keys
-  const config = statusConfigMap[device.status.toLowerCase() as DeviceStatus];
+  const config = statusConfigMap[device.status.toLowerCase() as DeviceStatus] || 
+                 { color: 'bg-gray-100 text-gray-800', icon: <Package className="w-4 h-4" /> }; // Fallback for unknown statuses
 
   const getStatusText = (status: DeviceStatus | string): string => {
       switch (status) {
@@ -30,7 +31,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
           case DeviceStatus.REPORTED: return t('Reported');
           case DeviceStatus.MATCHED: return t('Matched');
           case DeviceStatus.PAYMENT_PENDING: return t('PaymentPending');
-          case DeviceStatus.PAYMENT_COMPLETE: return t('PaymentComplete');
+          case DeviceStatus.PAYMENT_COMPLETE: return 'Ödeme Alındı, Kargo Bekleniyor';
           case 'payment_completed': return 'Ödeme Alındı, Kargo Bekleniyor';
           case DeviceStatus.EXCHANGE_PENDING: return t('ExchangePending');
           case DeviceStatus.COMPLETED: return t('Completed');

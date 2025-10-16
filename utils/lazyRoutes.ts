@@ -22,6 +22,7 @@ export const PaymentFlowPage = lazy(() => import('../pages/PaymentFlowPage'));
 export const MatchPaymentPage = lazy(() => import('../pages/MatchPaymentPage'));
 export const PaymentSummaryPage = lazy(() => import('../components/payment/PaymentSummaryPage'));
 export const PaymentSuccessPage = lazy(() => import('../pages/PaymentSuccessPage'));
+export const PaymentCallbackPage = lazy(() => import('../pages/PaymentCallbackPage'));
 
 // Admin pages - Low priority (restricted access)
 export const AdminDashboardPage = lazy(() => import('../pages/AdminDashboardPage'));

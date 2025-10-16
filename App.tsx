@@ -17,6 +17,7 @@ import {
   MatchPaymentPage,
   PaymentSummaryPage,
   PaymentSuccessPage,
+  PaymentCallbackPage,
   NotFoundPage,
   DeviceDetailPage,
   ProfilePage,
@@ -30,7 +31,6 @@ import {
   preloadAdminRoutes,
   preloadStaticRoutes
 } from "./utils/lazyRoutes";
-import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
@@ -168,15 +168,24 @@ const AppContent: React.FC = () => {
               </LazyRouteWrapper>
             </ProtectedRoute>
           } />
+          {/* Payment Callback - Public route (no auth required) */}
+          <Route path="/payment/callback" element={
+            <LazyRouteWrapper fallbackMessage="Loading payment callback...">
+              <PaymentCallbackPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/payment/callback/*" element={
+            <LazyRouteWrapper fallbackMessage="Loading payment callback...">
+              <PaymentCallbackPage />
+            </LazyRouteWrapper>
+          } />
+          
           <Route path="/payment/summary" element={
             <ProtectedRoute>
               <LazyRouteWrapper fallbackMessage="Loading payment summary...">
                 <PaymentSummaryPage />
               </LazyRouteWrapper>
             </ProtectedRoute>
-          } />
-          <Route path="/payment/callback" element={
-            <PaymentCallbackPage />
           } />
           <Route path="/payment/success" element={
             <ProtectedRoute>

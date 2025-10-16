@@ -6,6 +6,7 @@
 import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
 import { getSecureConfig } from "./security.ts";
+import { createClient } from '@supabase/supabase-js';
 
 export interface PaymentRequest {
   deviceId: string;
@@ -310,6 +311,12 @@ const processIyzicoPayment = async (
     const totalAmount = parseFloat(request.feeBreakdown.totalAmount.toFixed(2));
     const priceStr = totalAmount.toFixed(2);
     
+    console.log('[PAYMENT] Ödeme işlemi başlatılıyor:', {
+      deviceId: request.deviceId,
+      payerId: request.payerId,
+      amount: totalAmount
+    });
+    
     // Checkout form için istek hazırla
     const checkoutRequest = {
       deviceId: request.deviceId,
@@ -332,50 +339,62 @@ const processIyzicoPayment = async (
       }]
     };
 
-    console.log("[IYZICO] Backend'e checkout form isteği gönderiliyor...");
+    console.log("[IYZICO] Frontend'den direkt İyzico API'ye istek gönderiliyor...");
+    console.log("[IYZICO] Checkout request data:", checkoutRequest);
 
-    // Backend API endpoint - Checkout form initialize
-    const apiUrl = import.meta.env.DEV 
-      ? 'http://localhost:3001/api/iyzico-checkout'
-      : '/api/iyzico-checkout';
+    // Frontend-only: Direkt İyzico API'ye istek
+    const { createIyzicoCheckoutForm, handle3DSRedirect } = await import('./frontendPaymentGateway');
     
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(checkoutRequest)
+    const result = await createIyzicoCheckoutForm({
+      deviceId: checkoutRequest.deviceId,
+      amount: checkoutRequest.amount,
+      payerInfo: checkoutRequest.payerInfo,
+      payerId: checkoutRequest.payerId,
+      deviceInfo: checkoutRequest.deviceInfo
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    
     console.log("[IYZICO] Checkout form yanıtı:", {
       success: result.success,
       hasToken: !!result.token
     });
     
     if (result.success) {
-      // UUID oluştur (database için)
-      const paymentId = crypto.randomUUID();
-      
-      return {
-        success: true,
-        paymentId: paymentId,
-        providerPaymentId: result.token, // İyzico checkout token (sonra paymentId ile değiştirilecek)
-        status: "processing", // Kullanıcı checkout form'u dolduracak
-        redirectUrl: result.redirectUrl || result.paymentPageUrl,
-        providerResponse: {
-          checkoutFormContent: result.checkoutFormContent,
-          token: result.token,
-          conversationId: result.conversationId
-        },
-      };
+      // 3DS HTML content'i handle et
+      if (result.threeDSHtmlContent) {
+        console.log('[IYZICO] 3DS HTML content alındı, redirect ediliyor...');
+        handle3DSRedirect(result.threeDSHtmlContent);
+        
+        return {
+          success: true,
+          paymentId: result.paymentId || crypto.randomUUID(),
+          providerPaymentId: result.paymentId,
+          status: "3ds_redirect", // 3DS redirect durumu
+          redirectUrl: result.redirectUrl,
+          providerResponse: {
+            threeDSHtmlContent: result.threeDSHtmlContent,
+            paymentId: result.paymentId,
+            conversationId: result.conversationId
+          },
+        };
+      } else {
+        // Normal checkout form
+        const paymentId = crypto.randomUUID();
+        
+        return {
+          success: true,
+          paymentId: paymentId,
+          providerPaymentId: result.token,
+          status: "processing",
+          redirectUrl: result.redirectUrl || result.paymentPageUrl,
+          providerResponse: {
+            checkoutFormContent: result.checkoutFormContent,
+            token: result.token,
+            conversationId: result.conversationId
+          },
+        };
+      }
     } else {
-      throw new Error(result.errorMessage || 'Checkout form oluşturulamadı');
+      throw new Error(result.errorMessage || '3DS initialization failed');
     }
     
   } catch (error) {

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import {
   User,
@@ -15,6 +16,7 @@ import {
 } from "../types.ts";
 import { translations } from "../constants.ts";
 import { secureLogger } from "../utils/security.ts";
+import { SecurityLayer } from "../utils/securityLayer.ts";
 import { supabase } from "../utils/supabaseClient.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
@@ -198,15 +200,55 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [language, setLanguage] = useLocalStorage<Language>("app-lang", getDefaultLanguage());
-  const [currentUser, setCurrentUser] = useState<User | null>(null); // Supabase will manage current user
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   // const [users, setUsers] = useLocalStorage<User[]>('users', [defaultAdminUser]); // Removed as users are now managed by Supabase
   const [devices, setDevices] = useState<Device[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [isProfileFetching, setIsProfileFetching] = useState(false);
+  const authStateRef = useRef<string | null>(null);
+  const profileFetchRef = useRef<Set<string>>(new Set());
+  const profileCacheRef = useRef<Map<string, any>>(new Map());
+  const [subscription, setSubscription] = useState<any>(null);
   // const navigate = useNavigate(); // Removed as useNavigate cannot be used in AppContext
 
+  // Cleanup function for real-time subscriptions
+  const cleanupSubscriptions = useCallback(() => {
+    if (subscription) {
+      subscription.unsubscribe();
+    }
+  }, [subscription]);
+
   // Optimization: Memoize userId to prevent unnecessary re-renders
-  // This ensures useEffect hooks only re-run when the actual ID changes, not when the currentUser object reference changes
   const userId = useMemo(() => currentUser?.id, [currentUser?.id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupSubscriptions();
+    };
+  }, [cleanupSubscriptions]);
+
+  // Fetch user devices when user logs in
+  // Optimized: Use userId instead of currentUser to prevent unnecessary re-fetches
+  useEffect(() => {
+    const currentUserId = currentUser?.id;
+    if (!currentUserId) {
+      setDevices([]);
+      return;
+    }
+
+    const fetchUserDevices = async () => {
+      try {
+        const userDevices = await getUserDevices(currentUserId);
+        setDevices(userDevices);
+      } catch (error) {
+        console.error("Error fetching user devices:", error);
+        setDevices([]);
+      }
+    };
+
+    fetchUserDevices();
+  }, [currentUser?.id]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -229,8 +271,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     const {
-      data: { subscription },
+      data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      // Prevent duplicate processing of the same auth state
+      const currentAuthState = `${event}-${session?.user?.id || 'null'}`;
+      if (authStateRef.current === currentAuthState) {
+        return; // Silently skip duplicate
+      }
+      authStateRef.current = currentAuthState;
+
+      // Only process SIGNED_IN events, completely ignore INITIAL_SESSION
+      if (event === 'INITIAL_SESSION') {
+        console.log(`Auth state change: INITIAL_SESSION - Ignoring INITIAL_SESSION event`);
+        return;
+      }
+
       secureLogger.info(
         `Auth state change: ${event}`,
         session ? { hasSession: true } : { hasSession: false }
@@ -316,20 +371,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Set the subscription for cleanup
+    setSubscription(authSubscription);
+
+    return () => authSubscription.unsubscribe();
   }, []);
 
   // Fetch user devices when user logs in
   // Optimized: Use userId instead of currentUser to prevent unnecessary re-fetches
   useEffect(() => {
-    if (!userId) {
+    const currentUserId = currentUser?.id;
+    if (!currentUserId) {
       setDevices([]);
       return;
     }
 
     const fetchUserDevices = async () => {
       try {
-        const userDevices = await getUserDevices(userId);
+        const userDevices = await getUserDevices(currentUserId);
         setDevices(userDevices);
       } catch (error) {
         console.error("Error fetching user devices:", error);
@@ -338,22 +397,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     fetchUserDevices();
-  }, [userId]);
+  }, [currentUser?.id]);
 
   // Fetch initial notifications and subscribe to real-time updates
   // Optimized: Use userId instead of currentUser to prevent unnecessary re-subscriptions
   useEffect(() => {
-    if (!userId) {
+    if (!currentUser?.id) {
       setNotifications([]);
       return;
     }
 
     const fetchNotifications = async () => {
-      console.log("Fetching notifications for user:", userId);
+      console.log("Fetching notifications for user:", currentUser?.id);
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", currentUser?.id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -367,10 +426,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchNotifications();
 
     // Real-time subscription for notifications
-    console.log("Setting up real-time subscription for user:", userId);
+    console.log("Setting up real-time subscription for user:", currentUser?.id);
 
     // Create a unique channel name for this user
-    const channelName = `notifications_${userId}`;
+    const channelName = `notifications_${currentUser?.id}`;
 
     // Try a simpler real-time subscription first
     const channel = supabase
@@ -386,7 +445,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("Real-time notification change received:", payload);
 
           // Only process notifications for the current user
-          if (payload.new && (payload.new as any).user_id === userId) {
+          if (payload.new && (payload.new as any).user_id === currentUser?.id) {
             if (payload.eventType === "INSERT") {
               console.log(
                 "New notification inserted for current user:",
@@ -440,19 +499,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("Cleaning up real-time subscription");
       supabase.removeChannel(channel);
     };
-  }, [userId]); // Optimized: Only re-run when userId changes
+  }, [currentUser?.id]); // Optimized: Only re-run when userId changes
 
   // Real-time subscription for devices
   // Optimized: Use userId instead of currentUser to prevent unnecessary re-subscriptions
   useEffect(() => {
-    if (!userId) {
+    if (!currentUser?.id) {
       return;
     }
 
-    console.log("Setting up real-time subscription for devices for user:", userId);
+    console.log("Setting up real-time subscription for devices for user:", currentUser?.id);
 
     const devicesChannel = supabase
-      .channel(`devices_${userId}`)
+      .channel(`devices_${currentUser?.id}`)
       .on(
         "postgres_changes",
         {
@@ -464,23 +523,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("Real-time device change received:", payload);
 
           // Only process devices for the current user
-          if (payload.new && (payload.new as any).userId === userId) {
+          if (payload.new && (payload.new as any).userId === currentUser?.id) {
             console.log("Device change for current user, refreshing devices...");
             
             // Refresh devices from Supabase
             try {
-              const refreshedDevices = await getUserDevices(userId);
+              const refreshedDevices = await getUserDevices(currentUser?.id);
               setDevices(refreshedDevices);
               console.log("Devices refreshed successfully");
             } catch (error) {
               console.error("Error refreshing devices:", error);
             }
-          } else if (payload.old && (payload.old as any).userId === userId) {
+          } else if (payload.old && (payload.old as any).userId === currentUser?.id) {
             console.log("Device deletion for current user, refreshing devices...");
             
             // Refresh devices from Supabase
             try {
-              const refreshedDevices = await getUserDevices(userId);
+              const refreshedDevices = await getUserDevices(currentUser?.id);
               setDevices(refreshedDevices);
               console.log("Devices refreshed successfully after deletion");
             } catch (error) {
@@ -506,19 +565,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("Cleaning up devices real-time subscription");
       supabase.removeChannel(devicesChannel);
     };
-  }, [userId]); // Optimized: Only re-run when userId changes
+  }, [currentUser?.id]); // Optimized: Only re-run when userId changes
 
   // Fallback: Refresh notifications every 10 seconds if real-time fails
   // Optimized: Use userId instead of currentUser
   useEffect(() => {
-    if (!userId) return;
+    if (!currentUser?.id) return;
 
     const interval = setInterval(async () => {
       console.log("Fallback: Refreshing notifications...");
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", currentUser?.id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -533,7 +592,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 10000); // 10 seconds - more aggressive polling
 
     return () => clearInterval(interval);
-  }, [userId]); // Optimized: Only re-run when userId changes
+  }, [currentUser?.id]); // Optimized: Only re-run when userId changes
 
   const t = useCallback(
     (key: string, replacements?: Record<string, string | number>) => {
@@ -673,6 +732,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentUser(null);
       setDevices([]);
       setNotifications([]);
+      
+      // Clear profile fetch cache
+      profileFetchRef.current.clear();
+      profileCacheRef.current.clear();
+      authStateRef.current = null;
 
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
@@ -797,7 +861,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       rewardAmount: deviceData.rewardAmount,
       // marketValue field doesn't exist in database schema, removing
       invoice_url: deviceData.invoice_url,
-      userId: currentUser.id,
+      userId: currentUser?.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
       exchangeConfirmedBy: null, // UUID array - start with null, will be populated later
     };
@@ -1006,7 +1070,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
         console.log("Adding notification with messageKey:", messageKey);
         console.log("Notification payload:", {
-          userId: currentUser.id,
+          userId: currentUser?.id,
           messageKey,
           link: `/device/${newDevice.id}`,
           replacements: { model: newDevice.model },
@@ -1015,7 +1079,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         // Add notification immediately to local state for instant UI update
         const immediateNotification: AppNotification = {
           id: `temp-${Date.now()}`, // Temporary ID
-          user_id: currentUser.id,
+          user_id: currentUser?.id,
           message_key: messageKey,
           link: `/device/${newDevice.id}`,
           is_read: false,
@@ -1029,7 +1093,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         );
 
         // Also send to Supabase (this will trigger real-time update)
-        addNotification(currentUser.id, messageKey, `/device/${newDevice.id}`, {
+        addNotification(currentUser?.id, messageKey, `/device/${newDevice.id}`, {
           model: newDevice.model,
         });
         return true;
@@ -1042,59 +1106,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getUserDevices = async (userId: string): Promise<Device[]> => {
-    console.log("getUserDevices: Called with userId:", userId);
-
-    if (!userId) {
-      console.warn("getUserDevices: No userId provided.");
+    // Security validation
+    if (!SecurityLayer.validateUserId(userId)) {
+      SecurityLayer.logSecurityEvent('Invalid user ID format', userId);
       return [];
     }
 
-    // First, let's test if we can access the devices table at all
-    console.log("getUserDevices: Testing Supabase connection...");
-    const { data: testData, error: testError } = await supabase
-      .from("devices")
-      .select("id")
-      .limit(1);
-
-    console.log(
-      "getUserDevices: Connection test - data:",
-      testData,
-      "error:",
-      testError
-    );
-
-    if (testError) {
-      console.error(
-        "getUserDevices: Cannot access devices table:",
-        testError.message
-      );
+    // Rate limiting
+    if (!SecurityLayer.checkRateLimit(userId)) {
+      SecurityLayer.logSecurityEvent('Rate limit exceeded', userId);
       return [];
     }
 
-    console.log("getUserDevices: Querying Supabase for devices...");
-    const { data, error } = await supabase
-      .from("devices")
-      .select("*")
-      .eq("userId", userId) // Use snake_case field name
-      .order("created_at", { ascending: false }); // Order by created_at
+    console.log("📱 getUserDevices: Loading devices for user:", userId);
 
-    console.log(
-      "getUserDevices: Supabase response - data:",
-      data,
-      "error:",
-      error
-    );
+    try {
+      // Optimized single query - no test query needed
+      const { data, error } = await supabase
+        .from("devices")
+        .select("*")
+        .eq("userId", userId)
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Error fetching devices from Supabase:", error.message);
+      if (error) {
+        console.error("Error fetching devices from Supabase:", error.message);
+        return [];
+      }
+
+      console.log("✅ getUserDevices: Successfully loaded", data?.length || 0, "devices");
+      return (data || []) as Device[];
+    } catch (error) {
+      console.error("getUserDevices: Unexpected error:", error);
       return [];
     }
-
-    // Database uses camelCase - direct assignment
-    const devices: Device[] = (data || []) as Device[];
-
-    console.log("getUserDevices: Returning mapped devices:", devices);
-    return devices;
   };
 
   const getDeviceById = async (
@@ -1209,7 +1253,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Refresh devices from Supabase to ensure consistency
       if (currentUser) {
-        const refreshedDevices = await getUserDevices(currentUser.id);
+        const refreshedDevices = await getUserDevices(currentUser?.id);
         setDevices(refreshedDevices);
       }
 
@@ -1335,7 +1379,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Refresh devices from Supabase to ensure consistency
       if (currentUser) {
-        const refreshedDevices = await getUserDevices(currentUser.id);
+        const refreshedDevices = await getUserDevices(currentUser?.id);
         setDevices(refreshedDevices);
       }
     } catch (error) {
@@ -1355,25 +1399,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Optimized: Use userId in dependency array
   const markAllAsReadForCurrentUser = useCallback(async () => {
-    if (!userId) return;
+    if (!currentUser?.id) return;
     const { error } = await supabase
       .from("notifications")
       .update({ is_read: true })
-      .eq("user_id", userId);
+      .eq("user_id", currentUser.id);
     if (error) {
       console.error("Error marking all notifications as read:", error.message);
     }
-  }, [userId]);
+  }, [currentUser?.id]);
 
   // Manual refresh function for testing
   // Optimized: Use userId in dependency array
   const refreshNotifications = useCallback(async () => {
-    if (!userId) return;
+    if (!currentUser?.id) return;
     console.log("Manual refresh of notifications triggered");
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
-      .eq("user_id", userId)
+      .eq("user_id", currentUser.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -1385,12 +1429,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       setNotifications(data as AppNotification[]);
     }
-  }, [userId]);
+  }, [currentUser?.id]);
 
   // Check for existing matches between devices
   // Optimized: Use userId in dependency array
   const checkForExistingMatches = useCallback(async () => {
-    if (!userId) return;
+    if (!currentUser?.id) return;
     console.log("Checking for existing device matches...");
 
     try {
@@ -1398,7 +1442,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: userDevices, error: userError } = await supabase
         .from("devices")
         .select("*")
-        .eq("userId", userId);
+        .eq("userId", currentUser?.id);
 
       if (userError) {
         console.error("Error fetching user devices:", userError);
@@ -1504,6 +1548,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       console.log("createUserProfile: Creating profile for user:", userId);
 
+      // First check if profile already exists
+      const { data: existingProfile, error: checkError } = await supabase
+        .from("userprofile")
+        .select("user_id")
+        .eq("user_id", userId)
+        .single();
+
+      if (existingProfile) {
+        console.log("createUserProfile: Profile already exists for user:", userId);
+        return existingProfile;
+      }
+
+      if (checkError && checkError.code !== "PGRST116") {
+        console.error("createUserProfile: Error checking existing profile:", checkError);
+        throw checkError;
+      }
+
       const { data, error } = await supabase
         .from("userprofile")
         .insert([{
@@ -1529,10 +1590,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Fetch user profile data from userProfile table
+  // Fetch user profile data from userProfile table with aggressive duplicate prevention
   const fetchUserProfile = async (userId: string) => {
+    // Check if already cached
+    if (profileCacheRef.current.has(userId)) {
+      console.log(`fetchUserProfile: Using cached profile for user ${userId}`);
+      return profileCacheRef.current.get(userId);
+    }
+
+    // Check if currently fetching
+    if (profileFetchRef.current.has(userId)) {
+      console.log(`fetchUserProfile: Already fetching profile for user ${userId}, skipping`);
+      return null;
+    }
+
     try {
-      console.log("fetchUserProfile: Fetching profile for user:", userId);
+      profileFetchRef.current.add(userId);
+      console.log("📋 fetchUserProfile: Fetching profile for user:", userId);
 
       const { data, error } = await supabase
         .from("userprofile")
@@ -1546,11 +1620,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return null;
       }
 
-      console.log("fetchUserProfile: Profile data fetched:", data);
+      console.log("✅ fetchUserProfile: Profile data fetched successfully");
+      
+      // Cache the result
+      profileCacheRef.current.set(userId, data);
+      
       return data;
     } catch (error) {
       console.error("fetchUserProfile: Error:", error);
       return null;
+    } finally {
+      // Remove from fetching set
+      profileFetchRef.current.delete(userId);
     }
   };
 
@@ -1578,7 +1659,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       console.log(
         "updateUserProfile: Updating profile for user:",
-        currentUser.id
+        currentUser?.id
       );
       console.log("updateUserProfile: Profile data:", profileData);
 
@@ -1607,7 +1688,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       // Step 2: Update or insert profile data in userProfile table
       const { error: profileError } = await supabase.from("userprofile").upsert(
         {
-          user_id: currentUser.id,
+          user_id: currentUser?.id,
           first_name: profileData.firstName || null,
           last_name: profileData.lastName || null,
           date_of_birth: profileData.dateOfBirth || null,

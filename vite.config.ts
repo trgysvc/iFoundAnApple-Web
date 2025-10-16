@@ -104,6 +104,33 @@ export default defineConfig(({ mode }) => {
         // Optimize HMR
         hmr: {
           overlay: true
+        },
+        // Proxy for İyzico API (CORS bypass)
+        proxy: {
+          '/api/iyzico': {
+            target: 'https://sandbox-api.iyzipay.com',
+            changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/iyzico/, '/payment/3dsecure/initialize'),
+            configure: (proxy, options) => {
+              proxy.on('proxyReq', (proxyReq, req, res) => {
+                // Add İyzico headers
+                proxyReq.setHeader('Content-Type', 'application/json');
+                        // Test modu - Authorization header kaldırıldı
+              });
+            }
+          },
+          '/api/iyzico-verify': {
+            target: 'https://sandbox-api.iyzipay.com',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api\/iyzico-verify/, '/payment/iyzipos/checkoutform/auth/ecom/detail'),
+            configure: (proxy, options) => {
+              proxy.on('proxyReq', (proxyReq, req, res) => {
+                // Add İyzico headers
+                proxyReq.setHeader('Content-Type', 'application/json');
+                        // Test modu - Authorization header kaldırıldı
+              });
+            }
+          }
         }
       }
     };
