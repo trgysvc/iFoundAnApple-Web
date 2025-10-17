@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProvider, useAppContext } from "./contexts/AppContext";
 import { UserRole } from "./types";
 import Header from "./components/Header";
@@ -29,8 +29,9 @@ import {
   preloadCriticalRoutes,
   preloadUserRoutes,
   preloadAdminRoutes,
-  preloadStaticRoutes
+  preloadStaticRoutes,
 } from "./utils/lazyRoutes";
+import Payment3DSecureTestPage from "./pages/Payment3DSecureTestPage";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
@@ -64,7 +65,7 @@ const AppContent: React.FC = () => {
     // Preload user-specific routes if logged in
     if (currentUser) {
       preloadUserRoutes();
-      
+
       // Preload admin routes if user is admin
       if (currentUser.role === UserRole.ADMIN) {
         preloadAdminRoutes();
@@ -85,131 +86,194 @@ const AppContent: React.FC = () => {
       <main className="flex-grow">
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={
-            <LazyRouteWrapper>
-              <HomePage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/login" element={
-            <LazyRouteWrapper>
-              <LoginPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/register" element={
-            <LazyRouteWrapper>
-              <RegisterPage />
-            </LazyRouteWrapper>
-          } />
-          
+          <Route
+            path="/"
+            element={
+              <LazyRouteWrapper>
+                <HomePage />
+              </LazyRouteWrapper>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <LazyRouteWrapper>
+                <LoginPage />
+              </LazyRouteWrapper>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <LazyRouteWrapper>
+                <RegisterPage />
+              </LazyRouteWrapper>
+            }
+          />
+
           {/* Info Pages */}
-          <Route path="/faq" element={
-            <LazyRouteWrapper>
-              <FAQPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/terms" element={
-            <LazyRouteWrapper>
-              <TermsPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/privacy" element={
-            <LazyRouteWrapper>
-              <PrivacyPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/contact" element={
-            <LazyRouteWrapper>
-              <ContactPage />
-            </LazyRouteWrapper>
-          } />
+          <Route
+            path="/faq"
+            element={
+              <LazyRouteWrapper>
+                <FAQPage />
+              </LazyRouteWrapper>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <LazyRouteWrapper>
+                <TermsPage />
+              </LazyRouteWrapper>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <LazyRouteWrapper>
+                <PrivacyPage />
+              </LazyRouteWrapper>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <LazyRouteWrapper>
+                <ContactPage />
+              </LazyRouteWrapper>
+            }
+          />
 
           {/* Protected User Routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper>
-                <DashboardPage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          <Route path="/add-device" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper>
-                <AddDevicePage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          <Route path="/device/:deviceId" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper>
-                <DeviceDetailPage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper>
-                <ProfilePage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper>
+                  <DashboardPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-device"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper>
+                  <AddDevicePage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/device/:deviceId"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper>
+                  <DeviceDetailPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper>
+                  <ProfilePage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+
           {/* Payment Routes - High Priority */}
-          <Route path="/payment-flow" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper fallbackMessage="Loading payment flow...">
-                <PaymentFlowPage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          <Route path="/match-payment" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper fallbackMessage="Loading payment page...">
-                <MatchPaymentPage />
-              </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
+          <Route
+            path="/payment-flow"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper fallbackMessage="Loading payment flow...">
+                  <PaymentFlowPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/match-payment"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper fallbackMessage="Loading payment page...">
+                  <MatchPaymentPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
           {/* Payment Callback - Public route (no auth required) */}
-          <Route path="/payment/callback" element={
-            <LazyRouteWrapper fallbackMessage="Loading payment callback...">
-              <PaymentCallbackPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/payment/callback/*" element={
-            <LazyRouteWrapper fallbackMessage="Loading payment callback...">
-              <PaymentCallbackPage />
-            </LazyRouteWrapper>
-          } />
-          
-          <Route path="/payment/summary" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper fallbackMessage="Loading payment summary...">
-                <PaymentSummaryPage />
+          <Route
+            path="/payment/callback"
+            element={
+              <LazyRouteWrapper fallbackMessage="Loading payment callback...">
+                <PaymentCallbackPage />
               </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          <Route path="/payment/success" element={
-            <ProtectedRoute>
-              <LazyRouteWrapper fallbackMessage="Loading payment success...">
-                <PaymentSuccessPage />
+            }
+          />
+          <Route
+            path="/payment/callback/*"
+            element={
+              <LazyRouteWrapper fallbackMessage="Loading payment callback...">
+                <PaymentCallbackPage />
               </LazyRouteWrapper>
-            </ProtectedRoute>
-          } />
-          
+            }
+          />
+
+          <Route
+            path="/payment/summary"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper fallbackMessage="Loading payment summary...">
+                  <PaymentSummaryPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/success"
+            element={
+              <ProtectedRoute>
+                <LazyRouteWrapper fallbackMessage="Loading payment success...">
+                  <PaymentSuccessPage />
+                </LazyRouteWrapper>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Payment Test Route - Development Only */}
+          <Route
+            path="/payment/test-3ds"
+            element={<Payment3DSecureTestPage />}
+          />
+
           {/* Admin Routes */}
-          <Route path="/admin" element={
-            <AdminRoute>
-              <LazyRouteWrapper fallbackMessage="Loading admin dashboard...">
-                <AdminDashboardPage />
-              </LazyRouteWrapper>
-            </AdminRoute>
-          } />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <LazyRouteWrapper fallbackMessage="Loading admin dashboard...">
+                  <AdminDashboardPage />
+                </LazyRouteWrapper>
+              </AdminRoute>
+            }
+          />
 
           {/* 404 Route */}
-          <Route path="*" element={
-            <LazyRouteWrapper>
-              <NotFoundPage />
-            </LazyRouteWrapper>
-          } />
+          <Route
+            path="*"
+            element={
+              <LazyRouteWrapper>
+                <NotFoundPage />
+              </LazyRouteWrapper>
+            }
+          />
         </Routes>
       </main>
       <Footer />
