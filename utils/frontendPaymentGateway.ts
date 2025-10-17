@@ -1,6 +1,6 @@
 /**
- * Frontend-Only İyzico Payment Gateway
- * Backend olmadan direkt İyzico API ile çalışır
+ * Frontend-Only Payment Gateway
+ * Backend olmadan direkt payment API ile çalışır
  */
 
 import { createClient } from './supabaseClient';
@@ -25,7 +25,7 @@ interface PaymentData {
   };
 }
 
-interface IyzicoResponse {
+interface PaymentResponse {
   status: string;
   errorMessage?: string;
   errorCode?: string;
@@ -34,14 +34,14 @@ interface IyzicoResponse {
   checkoutFormContent?: string;
 }
 
-// İyzico Sandbox Credentials (Frontend'de güvenli değil ama test için)
-const IYZICO_CONFIG = {
-  apiKey: 'sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL',
-  secretKey: 'sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR',
-  baseUrl: 'https://sandbox-api.iyzipay.com'
+// Test Payment Config (Frontend'de güvenli değil ama test için)
+const TEST_CONFIG = {
+  apiKey: 'test-api-key',
+  secretKey: 'test-secret-key',
+  baseUrl: 'https://test-api.example.com'
 };
 
-// İyzico signature hesaplama fonksiyonları (frontend uyumlu)
+// Payment signature hesaplama fonksiyonları (frontend uyumlu)
 const createRandomString = () => {
   return Date.now().toString() + Math.random().toString().substring(2, 8);
 };

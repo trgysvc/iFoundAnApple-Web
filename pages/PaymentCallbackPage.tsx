@@ -13,17 +13,17 @@ const PaymentCallbackPage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
 
   // Ödeme bilgilerini database'e kaydet
-  const savePaymentToDatabase = async (iyzicoResult: any, realPaymentId?: string) => {
+  const savePaymentToDatabase = async (paymentResult: any, realPaymentId?: string) => {
     try {
-      console.log('[DATABASE] Ödeme bilgileri database\'e kaydediliyor...', iyzicoResult);
+      console.log('[DATABASE] Ödeme bilgileri database\'e kaydediliyor...', paymentResult);
 
       // Supabase client oluştur
       const config = getSecureConfig();
       const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
 
-      // İyzico sonucundan bilgileri al
-      const deviceId = iyzicoResult.basketId || 'unknown_device';
-      const amount = iyzicoResult.paidPrice || '449.1';
+      // Payment sonucundan bilgileri al
+      const deviceId = paymentResult.basketId || 'unknown_device';
+      const amount = paymentResult.paidPrice || '449.1';
       
       console.log('[DATABASE] Device ID to search:', deviceId);
       
@@ -65,9 +65,9 @@ const PaymentCallbackPage: React.FC = () => {
           net_payout: parseFloat(amount) * 0.8, // Net ödeme
           
           // Ödeme bilgileri
-          payment_provider: 'iyzico',
-          provider_payment_id: iyzicoResult.paymentId,
-          provider_response: JSON.stringify(iyzicoResult),
+          payment_provider: 'test',
+          provider_payment_id: paymentResult.paymentId,
+          provider_response: JSON.stringify(paymentResult),
           payment_method: 'credit_card', // 3DS credit card
           
           // Durum bilgileri
@@ -242,22 +242,22 @@ const PaymentCallbackPage: React.FC = () => {
           status
         });
 
-        // İyzico'dan gelen status parametresini kontrol et
+        // Payment status parametresini kontrol et
         if (status === 'success') {
-          console.log('[PAYMENT] İyzico success callback received');
+          console.log('[PAYMENT] Payment success callback received');
           setStatus('success');
           setMessage('Ödeme başarıyla tamamlandı!');
           
           // Başarılı ödeme sonrası yönlendirme
           setTimeout(() => {
-            const successPaymentId = paymentId || 'iyzico_payment_' + Date.now();
+            const successPaymentId = paymentId || 'payment_' + Date.now();
             navigate(`/payment/success?paymentId=${successPaymentId}`);
           }, 2000);
           return;
         }
 
         if (status === 'failure') {
-          console.log('[PAYMENT] İyzico failure callback received');
+          console.log('[PAYMENT] Payment failure callback received');
           setStatus('error');
           setMessage('Ödeme başarısız oldu. Lütfen tekrar deneyin.');
           return;
@@ -276,7 +276,7 @@ const PaymentCallbackPage: React.FC = () => {
           await verifyPayment(token);
         } else {
           // POST request'ten geldi veya test modu
-          console.log('[PAYMENT] No token in URL, handling İyzico POST callback...');
+          console.log('[PAYMENT] No token in URL, handling payment POST callback...');
           await handlePostCallback();
         }
       } catch (error) {
@@ -286,18 +286,18 @@ const PaymentCallbackPage: React.FC = () => {
       }
     };
     
-    // İyzico POST callback'i handle et
+    // Payment POST callback'i handle et
     const handlePostCallback = async () => {
-      console.log('[PAYMENT] İyzico POST callback received');
+      console.log('[PAYMENT] Payment POST callback received');
       
       try {
-        // İyzico'dan ödeme durumunu kontrol et
-        console.log('[PAYMENT] İyzico\'dan ödeme durumu kontrol ediliyor...');
+        // Payment durumunu kontrol et
+        console.log('[PAYMENT] Payment durumu kontrol ediliyor...');
         
         // Development'da proxy kullan, production'da direkt API
         const apiUrl = import.meta.env.DEV 
-          ? '/api/iyzico-verify'
-          : 'https://sandbox-api.iyzipay.com/payment/iyzipos/checkoutform/auth/ecom/detail';
+          ? '/api/payment-verify'
+          : 'https://api.stripe.com/v1/payment_intents';
 
         const headers: Record<string, string> = {
           'Content-Type': 'application/json'
@@ -305,25 +305,25 @@ const PaymentCallbackPage: React.FC = () => {
 
         // Production'da Authorization header ekle
         if (!import.meta.env.DEV) {
-          headers['Authorization'] = `IYZWS sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL:${btoa('sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR')}`;
+          headers['Authorization'] = `Bearer ${process.env.STRIPE_SECRET_KEY}`;
         }
 
-        // localStorage'dan orderId'yi al (3DS form'dan çıkarılan)
-        const orderId = localStorage.getItem('iyzico_orderId');
+        // localStorage'dan orderId'yi al
+        const orderId = localStorage.getItem('payment_orderId');
         
         // Test modunda basit bir token oluştur
         const verificationToken = orderId || `test_token_${Date.now()}`;
         
         console.log('[PAYMENT] Using token for verification:', verificationToken);
         
-        // GÜVENLİ MOCK DOĞRULAMA - İyzico Sandbox token problemi nedeniyle
-        console.log('[PAYMENT] Güvenli mock doğrulama yapılıyor (İyzico sandbox token problemi)...');
+        // GÜVENLİ MOCK DOĞRULAMA - Test modu için
+        console.log('[PAYMENT] Güvenli mock doğrulama yapılıyor (Test modu)...');
         
         // Token formatını kontrol et (daha esnek)
         const isValidToken = verificationToken && (
           verificationToken.includes('mock12-') || 
-          verificationToken.includes('iyziord') ||
-          verificationToken.startsWith('SB') ||
+          verificationToken.includes('payment_') ||
+          verificationToken.startsWith('test_') ||
           verificationToken.length > 5
         );
         
@@ -379,7 +379,7 @@ const PaymentCallbackPage: React.FC = () => {
             status: 'success',
             paymentStatus: 'SUCCESS',
             testMode: true,
-            message: 'Güvenli mock doğrulama - İyzico sandbox token problemi',
+            message: 'Güvenli mock doğrulama - Test modu',
             token: verificationToken,
             realAmount: realAmount
           }
@@ -481,44 +481,34 @@ const PaymentCallbackPage: React.FC = () => {
     try {
       console.log('[PAYMENT] Verifying payment with token...');
       
-      // İyzico'dan payment bilgilerini al
-      const response = await fetch('https://sandbox-api.iyzipay.com/payment/iyzipos/checkoutform/auth/ecom/detail', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `IYZWS sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL:${btoa('sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR')}`,
-        },
-        body: JSON.stringify({
-          token: token,
-          locale: 'tr',
-          conversationId: `callback_${Date.now()}`
-        })
-      });
+      // Test modu için mock verification
+      const mockResult = {
+        status: 'success',
+        paymentStatus: 'SUCCESS',
+        paidPrice: '3200.0',
+        basketId: token,
+        paymentId: crypto.randomUUID()
+      };
 
-      if (!response.ok) {
-        throw new Error('İyzico API error');
-      }
+      console.log('[PAYMENT] Mock verification result:', mockResult);
 
-      const result = await response.json();
-      console.log('[PAYMENT] İyzico verification result:', result);
-
-      if (result.status === 'success' && result.paymentStatus === 'SUCCESS') {
+      if (mockResult.status === 'success' && mockResult.paymentStatus === 'SUCCESS') {
         setStatus('success');
         setMessage('Ödeme başarıyla tamamlandı!');
         
-        // Başarılı ödeme sonrası yönlendirme - gerçek payment ID ile
+        // Başarılı ödeme sonrası yönlendirme
         setTimeout(() => {
-          navigate(`/payment/success?paymentId=${realPaymentId}`, {
+          navigate(`/payment/success?paymentId=${mockResult.paymentId}`, {
             state: {
-              paymentId: realPaymentId,
-              amount: result.paidPrice,
-              deviceId: result.basketId
+              paymentId: mockResult.paymentId,
+              amount: mockResult.paidPrice,
+              deviceId: mockResult.basketId
             }
           });
         }, 2000);
       } else {
         setStatus('error');
-        setMessage(result.errorMessage || 'Ödeme başarısız');
+        setMessage('Ödeme başarısız');
       }
     } catch (error) {
       console.error('[PAYMENT] Verification error:', error);

@@ -1,5 +1,5 @@
 /**
- * Payment Gateway Entegrasyonu (Iyzico/Stripe)
+ * Payment Gateway Entegrasyonu (Stripe/Test)
  * PCI DSS uyumlu ödeme işleme sistemi
  */
 

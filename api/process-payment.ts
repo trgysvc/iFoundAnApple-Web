@@ -40,7 +40,7 @@ interface PaymentRequest {
       postalCode: string;
     };
   };
-  paymentProvider?: "iyzico" | "stripe" | "test";
+  paymentProvider?: "stripe" | "test";
 }
 
 interface PaymentResponse {
@@ -221,84 +221,6 @@ export async function processPaymentAPI(
   }
 }
 
-async function processIyzicoPayment(
-  request: PaymentRequest,
-  paymentId: string
-): Promise<PaymentResponse> {
-  try {
-    console.log("[PROCESS_PAYMENT] Iyzico payment processing started");
-
-    // İyzico API entegrasyonu için gerekli veri formatını hazırla
-    const iyzicoPaymentData = {
-      amount: request.feeBreakdown.totalAmount,
-      currency: "TRY",
-      conversationId: paymentId,
-      buyerInfo: {
-        id: request.payerId,
-        name: request.payerInfo.name.split(" ")[0] || "Unknown",
-        surname: request.payerInfo.name.split(" ").slice(1).join(" ") || "User",
-        email: request.payerInfo.email,
-        phone: request.payerInfo.phone,
-        identityNumber: "11111111111", // Mock TC Kimlik - gerçek uygulamada user profile'dan gelecek
-        city: request.payerInfo.address.city,
-        country: "Turkey",
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode,
-      },
-      shippingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: "Turkey",
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode,
-      },
-      billingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: "Turkey",
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode,
-      },
-      basketItems: [
-        {
-          id: request.deviceId,
-          name: `${request.deviceInfo.model} Device Recovery`,
-          category1: "Electronics",
-          category2: "Mobile Device",
-          itemType: "PHYSICAL",
-          price: request.feeBreakdown.totalAmount,
-        },
-      ],
-    };
-
-    // İyzico API çağrısı yap
-    const { processIyzicoPayment: iyzicoProcess } = await import(
-      "../utils/iyzicoConfig"
-    );
-    const result = await iyzicoProcess(iyzicoPaymentData);
-
-    console.log("[PROCESS_PAYMENT] Iyzico payment result:", result);
-
-    return {
-      success: result.success,
-      providerPaymentId: result.paymentId,
-      status: result.status as any,
-      errorMessage: result.errorMessage,
-      redirectUrl: result.redirectUrl,
-      providerResponse: result.providerResponse,
-    };
-  } catch (error) {
-    console.error("[PROCESS_PAYMENT] Iyzico payment error:", error);
-    return {
-      success: false,
-      providerPaymentId: `iyzico_error_${paymentId}`,
-      status: "failed",
-      errorMessage:
-        error instanceof Error ? error.message : "İyzico ödeme hatası",
-      providerResponse: { error: error },
-    };
-  }
-}
 
 async function processStripePayment(
   request: PaymentRequest,
@@ -352,8 +274,6 @@ async function processPaymentWithProvider(
   const paymentId = crypto.randomUUID();
 
   switch (paymentProvider) {
-    case "iyzico":
-      return await processIyzicoPayment(request, paymentId);
     case "stripe":
       return await processStripePayment(request, paymentId);
     case "test":

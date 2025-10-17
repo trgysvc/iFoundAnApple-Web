@@ -211,7 +211,7 @@ export const translations = {
     finderNetPayment: "Finder Net Payment",
     afterServiceFeeDeduction: "After service fee deduction",
     securePaymentSystem: "Secure Escrow System",
-    escrowSystemDesc: "Your payment is held in our secure escrow account and will not be transferred until the device is delivered and confirmed. With Iyzico guarantee, you have cancellation and refund rights excluding 3.43% fee.",
+    escrowSystemDesc: "Your payment is held in our secure escrow account and will not be transferred until the device is delivered and confirmed. With secure payment guarantee, you have cancellation and refund rights excluding processing fees.",
     // Payment Method Selector translations
     paymentMethod: "Payment Method",
     securePaymentOptions: "Secure payment options",
@@ -224,7 +224,7 @@ export const translations = {
     turkeyMostTrustedPayment: "Turkey's Most Trusted Payment System",
     worldStandardSecurity: "World Standard Security",
     developmentTestMode: "Development Test Mode",
-    iyzico3DSecure: "3D Secure protected, PCI DSS certified secure payment. All Turkish banks are supported.",
+    securePayment: "3D Secure protected, PCI DSS certified secure payment. All major banks are supported.",
     stripeInternational: "International standard security, protected with 256-bit SSL encryption.",
     testModeDesc: "No real money transfer. Only for development and testing purposes.",
     securityFeatures: "🔒 Security Features",
@@ -473,7 +473,7 @@ export const translations = {
     finderNetPayment: "Bulan Kişiye Net Ödeme",
     afterServiceFeeDeduction: "Hizmet bedeli düşüldükten sonra",
     securePaymentSystem: "Güvenli Emanet (Escrow) Sistemi",
-    escrowSystemDesc: "Ödemeniz güvenli escrow hesabımızda tutulur ve cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. Iyzico güvencesiyle %3,43 kesinti hariç iptal ve iade hakkınız saklıdır.",
+    escrowSystemDesc: "Ödemeniz güvenli escrow hesabımızda tutulur ve cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. Güvenli ödeme güvencesiyle işlem ücreti hariç iptal ve iade hakkınız saklıdır.",
     // Payment Method Selector translations
     paymentMethod: "Ödeme Yöntemi",
     securePaymentOptions: "Güvenli ödeme seçenekleri",
@@ -486,7 +486,7 @@ export const translations = {
     turkeyMostTrustedPayment: "Türkiye'nin En Güvenilir Ödeme Sistemi",
     worldStandardSecurity: "Dünya Standartında Güvenlik",
     developmentTestMode: "Geliştirme Test Modu",
-    iyzico3DSecure: "3D Secure ile korumalı, PCI DSS sertifikalı güvenli ödeme. Tüm Türk bankaları desteklenir.",
+    securePayment: "3D Secure ile korumalı, PCI DSS sertifikalı güvenli ödeme. Tüm büyük bankalar desteklenir.",
     stripeInternational: "Uluslararası standartlarda güvenlik, 256-bit SSL şifreleme ile korunur.",
     testModeDesc: "Gerçek para transferi olmaz. Sadece geliştirme ve test amaçlıdır.",
     securityFeatures: "🔒 Güvenlik Özellikleri",
@@ -603,7 +603,7 @@ export const translations = {
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Bulunan Cihaz Bildirimi:</strong> Bulduğunuz cihazları bildirme</p>
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Otomatik Eşleştirme:</strong> Seri numarası bazlı eşleştirme</p>
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Anonim Sistem:</strong> Kimlik bilgileriniz gizli tutulur</p>
-      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Güvenli Ödeme:</strong> Iyzico altyapısıyla PCI-DSS uyumlu ödeme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Güvenli Ödeme:</strong> PCI-DSS uyumlu güvenli ödeme</p>
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Escrow Sistemi:</strong> Para güvende tutulur</p>
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Kargo Organizasyonu:</strong> Kargo şirketi seçimi ve takip</p>
       <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Bildirim Sistemi:</strong> Gerçek zamanlı güncellemeler</p>
@@ -894,7 +894,7 @@ NET ALACAK:               386.28 TL</code></pre>
 
       <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme Güvenliği:</strong></p>
       <ul class="list-disc list-inside mb-4 space-y-1">
-        <li class="mb-1">PCI-DSS Level 1 sertifikalı <strong class="font-semibold">Iyzico</strong> altyapısı</li>
+        <li class="mb-1">PCI-DSS Level 1 sertifikalı güvenli ödeme altyapısı</li>
         <li class="mb-1">SSL/TLS şifreleme</li>
         <li class="mb-1">3D Secure doğrulama</li>
         <li class="mb-1">Tokenization (kart bilgileri bizde saklanmaz)</li>
@@ -1094,7 +1094,7 @@ NET ALACAK:               386.28 TL</code></pre>
 
       <p class="mb-4 leading-relaxed"><strong class="font-semibold">Üçüncü Taraf Hizmetler:</strong></p>
       <ul class="list-disc list-inside mb-4 space-y-1">
-        <li class="mb-1">Iyzico, Supabase, Google kesintileri</li>
+        <li class="mb-1">Ödeme sistemi kesintileri</li>
         <li class="mb-1">OAuth sağlayıcılarının sorunları</li>
         <li class="mb-1">İnternet servis sağlayıcılarının kesintileri</li>
       </ul>
@@ -1252,7 +1252,7 @@ NET ALACAK:               386.28 TL</code></pre>
         <li class="mb-1">İnternet altyapı kesintileri (ISP sorunları)</li>
         <li class="mb-1">Elektrik kesintisi</li>
         <li class="mb-1">Sunucu sağlayıcı (Supabase) kesintileri</li>
-        <li class="mb-1">Ödeme sistemleri (Iyzico) kesintileri</li>
+        <li class="mb-1">Ödeme sistemleri kesintileri</li>
         <li class="mb-1">DDoS saldırıları, siber saldırılar</li>
       </ul>
 
@@ -1475,9 +1475,9 @@ NET ALACAK:               386.28 TL</code></pre>
 
       <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.3 Ödeme ve Finansal Bilgiler</h3>
 
-      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme İşlemleri (Iyzico):</strong></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme İşlemleri:</strong></p>
       <ul class="list-disc list-inside mb-4 space-y-1">
-        <li class="mb-1">Kredi/banka kartı bilgileri <strong class="font-semibold">Iyzico</strong> tarafından işlenir (PCI-DSS uyumlu)</li>
+        <li class="mb-1">Kredi/banka kartı bilgileri güvenli ödeme sağlayıcısı tarafından işlenir (PCI-DSS uyumlu)</li>
         <li class="mb-1">Kart bilgileriniz bizim sunucularımızda <strong class="font-semibold">saklanmaz</strong></li>
         <li class="mb-1">İşlem geçmişi ve tutarlar kaydedilir</li>
       </ul>
@@ -1521,7 +1521,7 @@ NET ALACAK:               386.28 TL</code></pre>
       <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.2 Ödeme ve Escrow İşlemleri</h3>
 
       <ul class="list-disc list-inside mb-4 space-y-1">
-        <li class="mb-1">Güvenli ödeme işleme (Iyzico)</li>
+        <li class="mb-1">Güvenli ödeme işleme</li>
         <li class="mb-1">Escrow (emanet) sistemini işletme</li>
         <li class="mb-1">Ödül ödemelerini IBAN'a transfer etme</li>
         <li class="mb-1">Mali kayıtların tutulması</li>
@@ -1561,7 +1561,7 @@ NET ALACAK:               386.28 TL</code></pre>
         <li class="mb-1">Veri konumu: ABD/AB</li>
       </ul>
 
-      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Iyzico (Ödeme Sağlayıcısı):</strong></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme Sağlayıcısı:</strong></p>
       <ul class="list-disc list-inside mb-4 space-y-1">
         <li class="mb-1">Ödeme işleme, 3D Secure, escrow</li>
         <li class="mb-1">PCI-DSS Level 1 sertifikalı</li>
@@ -1694,7 +1694,7 @@ NET ALACAK:               386.28 TL</code></pre>
       <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. ULUSLARARASI VERİ TRANSFERİ</h2>
 
       <p class="mb-4 leading-relaxed"><strong class="font-semibold">Supabase:</strong> ABD/AB veri merkezleri (GDPR uyumlu, SCC)</p>
-      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Iyzico:</strong> Türkiye</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme Sağlayıcısı:</strong> Uluslararası</p>
       <p class="mb-4 leading-relaxed"><strong class="font-semibold">Google:</strong> Küresel (OAuth ve AI için)</p>
 
       <p class="mb-4 leading-relaxed">Tüm transferler KVKK ve GDPR hükümlerine uygun yapılır.</p>
@@ -1903,7 +1903,7 @@ NET ALACAK:               386.28 TL</code></pre>
     finderNetPayment: "Paiement Net au Trouveur",
     afterServiceFeeDeduction: "Après déduction des frais de service",
     securePaymentSystem: "Système d'Entiercement Sécurisé",
-    escrowSystemDesc: "Votre paiement est conservé dans notre compte d'entiercement sécurisé et ne sera pas transféré tant que l'appareil n'est pas livré et confirmé. Avec la garantie Iyzico, vous disposez de droits d'annulation et de remboursement hors frais de 3,43%.",
+    escrowSystemDesc: "Votre paiement est conservé dans notre compte d'entiercement sécurisé et ne sera pas transféré tant que l'appareil n'est pas livré et confirmé. Avec la garantie de paiement sécurisé, vous disposez de droits d'annulation et de remboursement hors frais de traitement.",
     // Payment Method Selector translations
     paymentMethod: "Méthode de Paiement",
     securePaymentOptions: "Options de paiement sécurisées",
@@ -1916,7 +1916,7 @@ NET ALACAK:               386.28 TL</code></pre>
     turkeyMostTrustedPayment: "Système de Paiement le Plus Fiable de Turquie",
     worldStandardSecurity: "Sécurité aux Standards Mondiaux",
     developmentTestMode: "Mode Test de Développement",
-    iyzico3DSecure: "Protégé par 3D Secure, paiement sécurisé certifié PCI DSS. Toutes les banques turques sont supportées.",
+    securePayment: "Protégé par 3D Secure, paiement sécurisé certifié PCI DSS. Toutes les grandes banques sont supportées.",
     stripeInternational: "Sécurité aux standards internationaux, protégé par chiffrement SSL 256-bit.",
     testModeDesc: "Aucun transfert d'argent réel. Uniquement à des fins de développement et de test.",
     securityFeatures: "🔒 Fonctionnalités de Sécurité",
@@ -1995,8 +1995,28 @@ NET ALACAK:               386.28 TL</code></pre>
       q6: "Quels sont les frais ?",
       a6: "Nous déduisons des frais de service de 5% du montant de la récompense payée au trouveur. Cela nous aide à couvrir les coûts opérationnels, maintenir la plateforme et assurer un environnement sécurisé pour tous."
     },
-    termsContent: `...`, // Content should be translated
-    privacyContent: `...`, // Content should be translated
+    termsContent: `
+      <h3 class="text-xl font-semibold mb-2">1. Introduction</h3>
+      <p class="mb-4">Bienvenue sur iFoundAnApple. Ces Conditions d'Utilisation ("Conditions") régissent votre utilisation de notre site web et de nos services. En créant un compte ou en utilisant notre plateforme, vous acceptez d'être lié par ces Conditions.</p>
+      <h3 class="text-xl font-semibold mb-2">2. Le Service</h3>
+      <p class="mb-4">iFoundAnApple fournit une plateforme pour connecter les propriétaires d'appareils Apple perdus avec les personnes qui les trouvent ("Trouveurs"). Nous facilitons cette connexion grâce à un système de correspondance anonyme et gérons un paiement de récompense via un processus d'escrow sécurisé. Nous ne sommes pas partie à l'échange physique d'aucun appareil.</p>
+      <h3 class="text-xl font-semibold mb-2">3. Obligations de l'Utilisateur</h3>
+      <p class="mb-4">Vous acceptez de fournir des informations exactes et véridiques lors de l'enregistrement d'un appareil. Vous devez être le propriétaire légal de tout appareil que vous signalez comme perdu. Vous devez avoir trouvé légalement tout appareil que vous signalez comme trouvé. Vous acceptez de ne pas utiliser le service à des fins illégales ou non autorisées.</p>
+      <h3 class="text-xl font-semibold mb-2">4. Paiements et Frais</h3>
+      <p class="mb-4">Les Propriétaires d'Appareils acceptent de payer le montant de récompense indiqué dans notre système d'escrow lors d'une correspondance réussie. Ce paiement n'est pas remboursable une fois l'échange terminé. Nous facturons des frais de service de 5%, qui sont déduits de la récompense payée au Trouveur.</p>
+      <h3 class="text-xl font-semibold mb-2">5. Limitation de Responsabilité</h3>
+      <p class="mb-4">iFoundAnApple est un fournisseur de plateforme. Nous ne sommes pas responsables de l'état de tout appareil retourné, ni ne sommes-nous responsables de tout problème découlant de l'échange physique entre utilisateurs. Nous fournissons des directives pour un échange sûr, mais la responsabilité incombe aux utilisateurs.</p>
+    `,
+    privacyContent: `
+      <h3 class="text-xl font-semibold mb-2">1. Collecte d'Informations</h3>
+      <p class="mb-4">Nous collectons les informations que vous nous fournissez directement, telles que votre nom, adresse e-mail, numéro de téléphone et informations sur les appareils. Nous collectons également automatiquement certaines informations lorsque vous utilisez notre service.</p>
+      <h3 class="text-xl font-semibold mb-2">2. Utilisation des Informations</h3>
+      <p class="mb-4">Nous utilisons vos informations pour fournir, maintenir et améliorer notre service, traiter les transactions, communiquer avec vous et assurer la sécurité de notre plateforme.</p>
+      <h3 class="text-xl font-semibold mb-2">3. Partage d'Informations</h3>
+      <p class="mb-4">Nous ne vendons pas vos informations personnelles. Nous pouvons partager vos informations avec des fournisseurs de services tiers qui nous aident à exploiter notre plateforme, mais uniquement dans la mesure nécessaire pour fournir nos services.</p>
+      <h3 class="text-xl font-semibold mb-2">4. Vos Droits</h3>
+      <p class="mb-4">Vous avez le droit d'accéder, de rectifier ou d'effacer vos données personnelles. Vous avez également le droit de restreindre ou de vous opposer à certains traitements. Pour exercer ces droits, veuillez nous contacter à <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+    `,
   },
   ja: {
     // Header & Nav
@@ -2176,7 +2196,7 @@ NET ALACAK:               386.28 TL</code></pre>
     finderNetPayment: "発見者への純支払い",
     afterServiceFeeDeduction: "サービス料控除後",
     securePaymentSystem: "安全なエスクローシステム",
-    escrowSystemDesc: "お支払いは安全なエスクロー口座で保管され、デバイスが配送・確認されるまで相手に送金されません。Iyzicoの保証により、3.43%の手数料を除き、キャンセルと返金の権利が保護されています。",
+    escrowSystemDesc: "お支払いは安全なエスクロー口座で保管され、デバイスが配送・確認されるまで相手に送金されません。安全な支払い保証により、処理手数料を除き、キャンセルと返金の権利が保護されています。",
     // Payment Method Selector translations
     paymentMethod: "支払い方法",
     securePaymentOptions: "安全な支払いオプション",
@@ -2189,7 +2209,7 @@ NET ALACAK:               386.28 TL</code></pre>
     turkeyMostTrustedPayment: "トルコで最も信頼できる支払いシステム",
     worldStandardSecurity: "世界標準のセキュリティ",
     developmentTestMode: "開発テストモード",
-    iyzico3DSecure: "3D Secureで保護、PCI DSS認証の安全な支払い。すべてのトルコの銀行がサポートされています。",
+    securePayment: "3D Secureで保護、PCI DSS認証の安全な支払い。すべての主要銀行がサポートされています。",
     stripeInternational: "国際標準のセキュリティ、256ビットSSL暗号化で保護。",
     testModeDesc: "実際の送金は行われません。開発・テスト目的のみです。",
     securityFeatures: "🔒 セキュリティ機能",
@@ -2268,8 +2288,28 @@ NET ALACAK:               386.28 TL</code></pre>
         q6: "手数料はかかりますか？",
         a6: "発見者に支払われる報酬額から5%の少額のサービス手数料を差し引きます。これは、運営費をカバーし、プラットフォームを維持し、すべての人のための安全な環境を確保するのに役立ちます。"
     },
-    termsContent: `...`, // Content should be translated
-    privacyContent: `...`, // Content should be translated
+    termsContent: `
+      <h3 class="text-xl font-semibold mb-2">1. はじめに</h3>
+      <p class="mb-4">iFoundAnAppleへようこそ。これらの利用規約（「規約」）は、当社のウェブサイトとサービスの使用を規定します。アカウントを作成するか、プラットフォームを使用することで、これらの規約に拘束されることに同意したものとみなされます。</p>
+      <h3 class="text-xl font-semibold mb-2">2. サービス</h3>
+      <p class="mb-4">iFoundAnAppleは、紛失したAppleデバイスの所有者とそれらを見つけた個人（「発見者」）を結ぶプラットフォームを提供します。匿名マッチングシステムを通じてこの接続を促進し、安全なエスクロープロセスを通じて報酬支払いを管理します。私たちは、いかなるデバイスの物理的交換の当事者ではありません。</p>
+      <h3 class="text-xl font-semibold mb-2">3. ユーザーの義務</h3>
+      <p class="mb-4">デバイスを登録する際は、正確で真実の情報を提供することに同意します。紛失として報告するデバイスの法的所有者である必要があります。発見として報告するデバイスを合法的に見つけた必要があります。違法または無許可の目的でサービスを使用しないことに同意します。</p>
+      <h3 class="text-xl font-semibold mb-2">4. 支払いと手数料</h3>
+      <p class="mb-4">デバイス所有者は、成功したマッチング時に、記載された報酬額を当社のエスクローシステムに支払うことに同意します。交換が完了すると、この支払いは返金不可となります。発見者に支払われる報酬から差し引かれる5%のサービス手数料を請求します。</p>
+      <h3 class="text-xl font-semibold mb-2">5. 責任の制限</h3>
+      <p class="mb-4">iFoundAnAppleはプラットフォームプロバイダーです。返却されたデバイスの状態について責任を負いません。また、ユーザー間の物理的交換から生じる問題についても責任を負いません。安全な交換のためのガイドラインを提供しますが、責任はユーザーにあります。</p>
+    `,
+    privacyContent: `
+      <h3 class="text-xl font-semibold mb-2">1. 情報の収集</h3>
+      <p class="mb-4">お名前、メールアドレス、電話番号、デバイス情報など、お客様から直接提供される情報を収集します。また、サービスをご利用いただく際に、特定の情報を自動的に収集します。</p>
+      <h3 class="text-xl font-semibold mb-2">2. 情報の使用</h3>
+      <p class="mb-4">お客様の情報を使用して、サービスを提供、維持、改善し、取引を処理し、お客様とコミュニケーションを取り、プラットフォームのセキュリティを確保します。</p>
+      <h3 class="text-xl font-semibold mb-2">3. 情報の共有</h3>
+      <p class="mb-4">お客様の個人情報を販売することはありません。プラットフォームの運営を支援する第三者サービスプロバイダーとお客様の情報を共有する場合がありますが、サービスを提供するために必要な範囲でのみです。</p>
+      <h3 class="text-xl font-semibold mb-2">4. お客様の権利</h3>
+      <p class="mb-4">お客様の個人データにアクセス、訂正、または削除する権利があります。また、特定の処理を制限または異議を唱える権利もあります。これらの権利を行使するには、<a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>までお問い合わせください。</p>
+    `,
   },
   es: {
     // Header & Nav
@@ -2449,7 +2489,7 @@ NET ALACAK:               386.28 TL</code></pre>
     finderNetPayment: "Pago Neto al Buscador",
     afterServiceFeeDeduction: "Después de la deducción de la tarifa de servicio",
     securePaymentSystem: "Sistema de Depósito Seguro (Escrow)",
-    escrowSystemDesc: "Su pago se mantiene en nuestra cuenta de depósito segura y no se transferirá hasta que el dispositivo sea entregado y confirmado. Con la garantía de Iyzico, tiene derechos de cancelación y reembolso excluyendo una tarifa del 3.43%.",
+    escrowSystemDesc: "Su pago se mantiene en nuestra cuenta de depósito segura y no se transferirá hasta que el dispositivo sea entregado y confirmado. Con la garantía de pago seguro, tiene derechos de cancelación y reembolso excluyendo las tarifas de procesamiento.",
     // Payment Method Selector translations
     paymentMethod: "Método de Pago",
     securePaymentOptions: "Opciones de pago seguras",
@@ -2462,7 +2502,7 @@ NET ALACAK:               386.28 TL</code></pre>
     turkeyMostTrustedPayment: "Sistema de Pago Más Confiable de Turquía",
     worldStandardSecurity: "Seguridad de Estándar Mundial",
     developmentTestMode: "Modo de Prueba de Desarrollo",
-    iyzico3DSecure: "Protegido por 3D Secure, pago seguro certificado PCI DSS. Todos los bancos turcos son compatibles.",
+    securePayment: "Protegido por 3D Secure, pago seguro certificado PCI DSS. Todos los bancos principales son compatibles.",
     stripeInternational: "Seguridad de estándares internacionales, protegido con cifrado SSL de 256 bits.",
     testModeDesc: "No hay transferencia de dinero real. Solo para fines de desarrollo y prueba.",
     securityFeatures: "🔒 Características de Seguridad",
@@ -2541,8 +2581,28 @@ NET ALACAK:               386.28 TL</code></pre>
         q6: "¿Cuáles son las tarifas?",
         a6: "Deducimos una pequeña tarifa de servicio del 5% del importe de la recompensa pagada al buscador. Esto nos ayuda a cubrir los costes operativos, mantener la plataforma y garantizar un entorno seguro para todos."
     },
-    termsContent: `...`, // Content should be translated
-    privacyContent: `...`, // Content should be translated
+    termsContent: `
+      <h3 class="text-xl font-semibold mb-2">1. Introducción</h3>
+      <p class="mb-4">Bienvenido a iFoundAnApple. Estos Términos de Servicio ("Términos") rigen el uso de nuestro sitio web y servicios. Al crear una cuenta o usar nuestra plataforma, aceptas estar sujeto a estos Términos.</p>
+      <h3 class="text-xl font-semibold mb-2">2. El Servicio</h3>
+      <p class="mb-4">iFoundAnApple proporciona una plataforma para conectar a los propietarios de dispositivos Apple perdidos con las personas que los encuentran ("Buscadores"). Facilitamos esta conexión a través de un sistema de coincidencia anónimo y gestionamos un pago de recompensa a través de un proceso de depósito seguro. No somos parte del intercambio físico de ningún dispositivo.</p>
+      <h3 class="text-xl font-semibold mb-2">3. Obligaciones del Usuario</h3>
+      <p class="mb-4">Aceptas proporcionar información precisa y veraz al registrar un dispositivo. Debes ser el propietario legal de cualquier dispositivo que reportes como perdido. Debes haber encontrado legalmente cualquier dispositivo que reportes como encontrado. Aceptas no usar el servicio para ningún propósito ilegal o no autorizado.</p>
+      <h3 class="text-xl font-semibold mb-2">4. Pagos y Tarifas</h3>
+      <p class="mb-4">Los Propietarios de Dispositivos aceptan pagar el importe de recompensa indicado en nuestro sistema de depósito tras una coincidencia exitosa. Este pago no es reembolsable una vez completado el intercambio. Cobramos una tarifa de servicio del 5%, que se deduce de la recompensa pagada al Buscador.</p>
+      <h3 class="text-xl font-semibold mb-2">5. Limitación de Responsabilidad</h3>
+      <p class="mb-4">iFoundAnApple es un proveedor de plataforma. No somos responsables del estado de ningún dispositivo devuelto, ni somos responsables de ningún problema que surja del intercambio físico entre usuarios. Proporcionamos pautas para un intercambio seguro, pero la responsabilidad recae en los usuarios.</p>
+    `,
+    privacyContent: `
+      <h3 class="text-xl font-semibold mb-2">1. Recopilación de Información</h3>
+      <p class="mb-4">Recopilamos la información que nos proporcionas directamente, como tu nombre, dirección de correo electrónico, número de teléfono e información del dispositivo. También recopilamos automáticamente cierta información cuando usas nuestro servicio.</p>
+      <h3 class="text-xl font-semibold mb-2">2. Uso de la Información</h3>
+      <p class="mb-4">Usamos tu información para proporcionar, mantener y mejorar nuestro servicio, procesar transacciones, comunicarnos contigo y asegurar la seguridad de nuestra plataforma.</p>
+      <h3 class="text-xl font-semibold mb-2">3. Compartir Información</h3>
+      <p class="mb-4">No vendemos tu información personal. Podemos compartir tu información con proveedores de servicios terceros que nos ayudan a operar nuestra plataforma, pero solo en la medida necesaria para proporcionar nuestros servicios.</p>
+      <h3 class="text-xl font-semibold mb-2">4. Tus Derechos</h3>
+      <p class="mb-4">Tienes derecho a acceder, rectificar o borrar tus datos personales. También tienes derecho a restringir u oponerte a ciertos procesamientos. Para ejercer estos derechos, contáctanos en <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+    `,
   },
 };
 

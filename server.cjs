@@ -19,33 +19,13 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'İyzico API Server çalışıyor',
+    message: 'Payment API Server çalışıyor',
     timestamp: new Date().toISOString(),
     port: PORT
   });
 });
 
 // Import and use API handlers
-app.post('/api/iyzico-payment', async (req, res) => {
-  try {
-    const { handleIyzicoPayment } = await import('./api/iyzico-payment.js');
-    const response = await handleIyzicoPayment(req);
-    
-    // Convert Response to Express response
-    res.status(response.status);
-    Object.entries(response.headers).forEach(([key, value]) => {
-      res.setHeader(key, value);
-    });
-    res.send(await response.text());
-  } catch (error) {
-    console.error('Iyzico payment error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      message: error.message
-    });
-  }
-});
 
 app.post('/api/process-payment', async (req, res) => {
   try {
@@ -83,45 +63,6 @@ app.post('/api/release-escrow', async (req, res) => {
 });
 
 // Webhook endpoints
-app.post('/api/webhooks/iyzico-callback', async (req, res) => {
-  try {
-    const { handleIyzicoCallback } = await import('./api/webhooks/iyzico-callback.js');
-    const response = await handleIyzicoCallback(req);
-    
-    res.status(response.status);
-    Object.entries(response.headers).forEach(([key, value]) => {
-      res.setHeader(key, value);
-    });
-    res.send(await response.text());
-  } catch (error) {
-    console.error('Iyzico callback error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      message: error.message
-    });
-  }
-});
-
-app.post('/api/webhooks/iyzico-3d-callback', async (req, res) => {
-  try {
-    const { handleIyzico3DCallback } = await import('./api/webhooks/iyzico-3d-callback.js');
-    const response = await handleIyzico3DCallback(req);
-    
-    res.status(response.status);
-    Object.entries(response.headers).forEach(([key, value]) => {
-      res.setHeader(key, value);
-    });
-    res.send(await response.text());
-  } catch (error) {
-    console.error('Iyzico 3D callback error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      message: error.message
-    });
-  }
-});
 
 // Fee calculation endpoint
 app.post('/api/calculate-fees', async (req, res) => {

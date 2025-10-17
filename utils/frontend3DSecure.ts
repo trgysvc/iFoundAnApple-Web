@@ -74,7 +74,7 @@ export async function initiate3DSecurePayment(
       deviceId: paymentData.deviceId,
     });
 
-    const response = await fetch("/api/iyzico-3d-secure", {
+    const response = await fetch("/api/iyzico-payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

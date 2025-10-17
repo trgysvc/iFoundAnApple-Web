@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../contexts/AppContext.tsx';
 
-export type PaymentProvider = 'iyzico' | 'stripe' | 'test';
+export type PaymentProvider = 'stripe' | 'test';
 
 export interface PaymentMethod {
   id: PaymentProvider;
@@ -28,33 +28,23 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   const { t } = useAppContext();
   const paymentMethods: PaymentMethod[] = [
     {
-      id: 'iyzico',
-      name: 'Iyzico (Production)',
-      description: t('turkeyTrustedPayment'),
-      icon: '🇹🇷',
-      fees: '%2.9 ' + t('commission'),
-      processingTime: t('instant'),
-      isRecommended: false, // Production henüz aktif değil
-      isEnabled: false // Production için devre dışı (test tamamlanınca açılacak)
-    },
-    {
       id: 'stripe',
       name: 'Stripe',
       description: t('internationalSecurePayment'),
       icon: '💳',
       fees: '%2.9 ' + t('commission'),
       processingTime: t('instant'),
-      isRecommended: false,
+      isRecommended: true,
       isEnabled: true
     },
     {
       id: 'test',
-      name: 'Test Modu (Iyzico Sandbox)',
-      description: 'İyzico test API\'si ile gerçek ödeme testi',
+      name: 'Test Modu',
+      description: 'Test ödeme sistemi',
       icon: '🧪',
       fees: '%2.9 ' + t('commission') + ' (Test)',
       processingTime: t('instant'),
-      isRecommended: true, // Test modu şimdi önerilen
+      isRecommended: false,
       isEnabled: true
     }
   ];
@@ -165,12 +155,10 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-blue-900 mb-1">
-                          {method.id === 'iyzico' && t('turkeyMostTrustedPayment')}
                           {method.id === 'stripe' && t('worldStandardSecurity')}
                           {method.id === 'test' && t('developmentTestMode')}
                         </p>
                         <p className="text-xs text-blue-700 leading-relaxed">
-                          {method.id === 'iyzico' && t('iyzico3DSecure')}
                           {method.id === 'stripe' && t('stripeInternational')}
                           {method.id === 'test' && t('testModeDesc')}
                         </p>

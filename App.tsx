@@ -31,7 +31,6 @@ import {
   preloadAdminRoutes,
   preloadStaticRoutes,
 } from "./utils/lazyRoutes";
-import Payment3DSecureTestPage from "./pages/Payment3DSecureTestPage";
 import "./utils/testHelpers"; // Test helpers for browser console
 
 interface ProtectedRouteProps {
@@ -247,11 +246,11 @@ const AppContent: React.FC = () => {
             }
           />
 
-          {/* Payment Test Route - Development Only */}
-          <Route
+          {/* Payment Test Route - Development Only - REMOVED */}
+          {/* <Route
             path="/payment/test-3ds"
             element={<Payment3DSecureTestPage />}
-          />
+          /> */}
 
           {/* Admin Routes */}
           <Route
