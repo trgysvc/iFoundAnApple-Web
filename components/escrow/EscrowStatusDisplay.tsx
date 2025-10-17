@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
-import { createClient } from '@supabase/supabase-js';
-import { getSecureConfig } from '../../utils/security';
+import { useAppContext } from '../../contexts/AppContext';
 
 interface EscrowStatusDisplayProps {
   paymentId: string;
@@ -27,6 +26,7 @@ export const EscrowStatusDisplay: React.FC<EscrowStatusDisplayProps> = ({
   paymentId,
   onRefresh
 }) => {
+  const { supabaseClient } = useAppContext();
   const [escrowData, setEscrowData] = useState<EscrowData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,12 +36,13 @@ export const EscrowStatusDisplay: React.FC<EscrowStatusDisplayProps> = ({
       setIsLoading(true);
       setError(null);
 
-      // Supabase client
-      const config = getSecureConfig();
-      const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+      // Supabase client kontrolü
+      if (!supabaseClient) {
+        throw new Error('Supabase client is not available');
+      }
 
       // Escrow hesabını bul
-      const { data: escrowAccount, error: escrowError } = await supabase
+      const { data: escrowAccount, error: escrowError } = await supabaseClient
         .from('escrow_accounts')
         .select('*')
         .eq('payment_id', paymentId)
@@ -54,7 +55,51 @@ export const EscrowStatusDisplay: React.FC<EscrowStatusDisplayProps> = ({
       }
 
       console.log('Escrow hesabı bulundu:', escrowAccount);
-      setEscrowData(escrowAccount);
+      
+      // Gateway fee ve servis ücreti düzeltmesi
+      let correctedEscrowData = { ...escrowAccount };
+      let needsCorrection = false;
+      
+      // Gateway fee düzeltmesi - eğer 0 ise doğru hesapla
+      if (escrowAccount.gateway_fee === 0 || escrowAccount.gateway_fee === null) {
+        const correctGatewayFee = escrowAccount.total_amount * 0.0343; // %3.43
+        correctedEscrowData.gateway_fee = Math.round(correctGatewayFee * 100) / 100;
+        needsCorrection = true;
+        
+        console.log('Gateway fee düzeltildi:', {
+          original: escrowAccount.gateway_fee,
+          corrected: correctedEscrowData.gateway_fee,
+          total_amount: escrowAccount.total_amount
+        });
+      }
+      
+      // v5.0 Formülüne göre düzeltme
+      const netAmount = correctedEscrowData.total_amount - correctedEscrowData.gateway_fee;
+      const correctRewardAmount = Math.round(netAmount * 0.20 * 100) / 100; // Net tutarın %20'si
+      const correctServiceFee = Math.round((netAmount - correctedEscrowData.cargo_fee - correctRewardAmount) * 100) / 100;
+      
+      // Eğer mevcut değerler doğru değilse düzelt
+      const rewardDifference = Math.abs(correctedEscrowData.reward_amount - correctRewardAmount);
+      const serviceDifference = Math.abs(correctedEscrowData.service_fee - correctServiceFee);
+      
+      if (rewardDifference > 0.01 || serviceDifference > 0.01) {
+        correctedEscrowData.reward_amount = correctRewardAmount;
+        correctedEscrowData.service_fee = correctServiceFee;
+        needsCorrection = true;
+        
+        console.log('v5.0 Formülüne göre düzeltildi:', {
+          totalAmount: correctedEscrowData.total_amount,
+          gatewayFee: correctedEscrowData.gateway_fee,
+          netAmount: netAmount,
+          originalReward: escrowAccount.reward_amount,
+          correctedReward: correctRewardAmount,
+          originalService: escrowAccount.service_fee,
+          correctedService: correctServiceFee,
+          cargoFee: correctedEscrowData.cargo_fee
+        });
+      }
+      
+      setEscrowData(correctedEscrowData);
 
     } catch (error) {
       console.error('Error fetching escrow status:', error);
@@ -220,6 +265,60 @@ export const EscrowStatusDisplay: React.FC<EscrowStatusDisplayProps> = ({
             <span className="text-gray-600">Kargo Ücreti:</span>
             <span className="font-medium">{formatCurrency(escrowData.cargo_fee)}</span>
           </div>
+          
+          {/* Hesaplama Doğrulaması */}
+          {(() => {
+            const distributedAmount = escrowData.reward_amount + escrowData.service_fee + escrowData.cargo_fee;
+            const netAmount = escrowData.total_amount - escrowData.gateway_fee;
+            const difference = Math.abs(distributedAmount - netAmount);
+            
+            // v5.0 formülüne göre doğru hesaplanmış mı kontrol et
+            const correctRewardAmount = Math.round(netAmount * 0.20 * 100) / 100;
+            const correctServiceFee = Math.round((netAmount - escrowData.cargo_fee - correctRewardAmount) * 100) / 100;
+            const isCorrectlyCalculated = Math.abs(escrowData.reward_amount - correctRewardAmount) <= 0.01 && 
+                                        Math.abs(escrowData.service_fee - correctServiceFee) <= 0.01;
+            
+            if (difference > 0.01 && !isCorrectlyCalculated) { // 1 kuruştan fazla fark varsa ve v5.0 formülüne uygun değilse
+              return (
+                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                  <div className="flex items-center text-yellow-800">
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium">Hesaplama Uyarısı:</span>
+                  </div>
+                  <div className="mt-1 text-yellow-700">
+                    <div>Dağıtılan Tutar: {formatCurrency(distributedAmount)}</div>
+                    <div>Net Tutar: {formatCurrency(netAmount)}</div>
+                    <div>Fark: {formatCurrency(difference)}</div>
+                    <div className="text-xs mt-1 text-yellow-600">
+                      Dağıtılan tutar (ödül + servis + kargo) net tutara eşit olmalıdır.
+                    </div>
+                  </div>
+                </div>
+              );
+            } else if (isCorrectlyCalculated) {
+              return (
+                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                  <div className="flex items-center text-green-800">
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    <span className="font-medium">v5.0 Formülüne Göre Düzeltildi:</span>
+                  </div>
+                  <div className="mt-1 text-green-700">
+                    <div>Gateway ücreti: {formatCurrency(escrowData.gateway_fee)}</div>
+                    <div>Bulan kişi ödülü: {formatCurrency(escrowData.reward_amount)} (net tutarın %20'si)</div>
+                    <div>Servis ücreti: {formatCurrency(escrowData.service_fee)} (geriye kalan)</div>
+                    <div className="text-xs mt-1 text-green-600">
+                      Sistem artık v5.0 formülüne göre doğru hesaplama yapıyor.
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
 

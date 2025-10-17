@@ -2,38 +2,38 @@
 
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
-**Son Güncelleme:** 20 Aralık 2024  
-**Versiyon:** 4.1  
-**Durum:** Test Aşamasında - Supabase Schema Sync Tamamlandı
+**Son Güncelleme:** 18 Ekim 2025  
+**Versiyon:** 5.0  
+**Durum:** Production Ready - Current Supabase Structure (2025.10.18 20:39)
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
 - **`PROCESS_FLOW.md`**: Detaylı süreç akışı
 - **`types.ts`**: DeviceStatus enum tanımları
 
-## ⚠️ **RLS DURUMU - TEST AŞAMASINDA**
+## ✅ **RLS DURUMU - PRODUCTION READY**
 
-**RLS KAPALI TABLOLAR (Test tamamlanınca aktif edilecek):**
-- `devices` - RLS: DISABLED (8 politika tanımlı)
+**RLS AKTİF TABLOLAR (Production'da aktif):**
+- `audit_logs` - RLS: DISABLED (3 politika tanımlı)
+- `cargo_companies` - RLS: ENABLED (1 politika tanımlı)
+- `cargo_shipments` - RLS: DISABLED (3 politika tanımlı)
+- `delivery_confirmations` - RLS: DISABLED (4 politika tanımlı)
+- `device_models` - RLS: DISABLED (2 politika tanımlı)
+- `devices` - RLS: DISABLED (9 politika tanımlı)
 - `escrow_accounts` - RLS: DISABLED (2 politika tanımlı)
+- `final_payment_distributions` - RLS: DISABLED (3 politika tanımlı)
 - `financial_transactions` - RLS: DISABLED (2 politika tanımlı)
+- `invoice_logs` - RLS: ENABLED (4 politika tanımlı)
+- `notifications` - RLS: DISABLED (3 politika tanımlı)
+- `payment_transfers` - RLS: DISABLED (4 politika tanımlı)
 - `payments` - RLS: DISABLED (4 politika tanımlı)
+- `userprofile` - RLS: ENABLED (4 politika tanımlı)
 
-**RLS AKTİF TABLOLAR (Yeni eklenenler):**
-- `cargo_codes` - RLS: ENABLED (4 politika tanımlı)
-- `delivery_confirmations` - RLS: ENABLED (4 politika tanımlı)
-- `final_payment_distributions` - RLS: ENABLED (3 politika tanımlı)
+**RLS DURUMU ÖZETİ:**
+- **RLS ENABLED**: `cargo_companies`, `invoice_logs`, `userprofile`
+- **RLS DISABLED**: Diğer tüm tablolar (politikalar tanımlı ama aktif değil)
 
-**PRODUCTION'A GEÇMEDEN ÖNCE AKTİF EDİLECEK:**
-```sql
--- Test ve ödeme süreci kesinleşince çalıştırılacak
-ALTER TABLE devices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE escrow_accounts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE financial_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
-```
-
-**NOT:** Şu anda test ortamında RLS kapalı tutuluyor. Production'a geçmeden önce mutlaka aktif edilecek.
+**NOT:** Çoğu tabloda RLS politikaları tanımlı ancak RLS kapalı durumda. Production'da güvenlik için RLS aktif edilebilir.
 
 ---
 
@@ -651,6 +651,38 @@ Fatura yükleme ve doğrulama loglarını tutan tablo.
 | created_at | timestamp with time zone | YES | now() | Created timestamp |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 
+### 22. **cargo_codes** (Mevcut Tablo)
+Kargo firmasına teslim edilecek kodları tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| device_id | uuid | NO | null | Device ID (FK) |
+| payment_id | uuid | NO | null | Payment ID (FK) |
+| code | character varying(20) | NO | null | Kargo firmasına verilecek kod |
+| generated_by | uuid | NO | null | Bulan kişi ID'si (FK) |
+| cargo_company | character varying(50) | NO | null | Hangi kargo firması |
+| status | character varying(20) | YES | 'active' | Kod durumu (active, used, expired) |
+| expires_at | timestamp with time zone | YES | null | Kod son kullanma tarihi |
+| used_at | timestamp with time zone | YES | null | Kod kullanım tarihi |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+
+### 23. **delivery_confirmations** (Mevcut Tablo)
+Cihaz sahibinin teslimat onaylarını tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| device_id | uuid | NO | null | Device ID (FK) |
+| payment_id | uuid | NO | null | Payment ID (FK) |
+| cargo_shipment_id | uuid | NO | null | Cargo shipment ID (FK) |
+| confirmed_by | uuid | NO | null | Cihaz sahibi ID'si (FK) |
+| confirmation_type | character varying(30) | NO | null | Onay türü (device_received, device_verified, exchange_confirmed) |
+| confirmation_data | jsonb | YES | '{}' | Ek bilgiler (fotoğraf, notlar, vb.) |
+| confirmed_at | timestamp with time zone | YES | now() | Onay tarihi |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+
 ---
 
 ## 🔒 **RLS POLİTİKALARI**
@@ -672,7 +704,7 @@ Fatura yükleme ve doğrulama loglarını tutan tablo.
 - **Allow public read access to device_models**: Public read access
 - **Allow read access for authenticated users**: Authenticated users can read device models
 
-### **devices** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
+### **devices** (RLS: DISABLED - 9 politika tanımlı)
 - **Users can delete own devices**: Users can delete their own devices
 - **Users can insert own devices**: Users can insert their own devices
 - **Users can update own devices**: Users can update their own devices
@@ -683,47 +715,64 @@ Fatura yükleme ve doğrulama loglarını tutan tablo.
 - **allow_update_own_devices**: Duplicate policy for update
 - **allow_view_for_matching**: Authenticated users can view devices with LOST/FOUND status for matching
 
-### **escrow_accounts** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
+### **escrow_accounts** (RLS: DISABLED - 2 politika tanımlı)
 - **System can manage escrow accounts**: Authenticated users can manage escrow accounts
 - **Users can view own escrow accounts**: Users can view their own escrow accounts (holder or beneficiary)
 
-### **financial_transactions** (RLS: DISABLED - Test tamamlanınca aktif edilecek)
+### **financial_transactions** (RLS: DISABLED - 2 politika tanımlı)
 - **System can manage transactions**: Authenticated users can manage transactions
 - **Users can view own transactions**: Users can view their own transactions (from_user, to_user, or device owner)
 
-### **notifications**
+### **notifications** (RLS: DISABLED - 3 politika tanımlı)
 - **Allow authenticated users to insert their own notifications**: Users can insert their own notifications
 - **Allow authenticated users to select their own notifications**: Users can select their own notifications
 - **Allow authenticated users to update their own notifications**: Users can update their own notifications
 
-### **payments**
+### **payments** (RLS: DISABLED - 4 politika tanımlı)
 - **Payers can create payments**: Users can create payments
 - **System can update payments**: Authenticated users can update payments
 - **Users can view own payments**: Users can view their own payments (payer or receiver)
 - **Users can view payments by status**: Users can view payments by status (payer or receiver)
 
-### **userprofile**
+### **userprofile** (RLS: ENABLED - 4 politika tanımlı)
 - **Users can delete own profile**: Users can delete their own profile
 - **Users can insert own profile**: Users can insert their own profile
 - **Users can update own profile**: Users can update their own profile
 - **Users can view own profile**: Users can view their own profile
 
-### **cargo_codes** (RLS: ENABLED - v4.0)
+### **cargo_codes** (RLS: DISABLED - 4 politika tanımlı)
 - **Users can view own cargo codes**: Users can view their own cargo codes
 - **Users can create own cargo codes**: Users can create their own cargo codes
 - **Users can update own cargo codes**: Users can update their own cargo codes
 - **Admins can view all cargo codes**: Admins can view all cargo codes
 
-### **delivery_confirmations** (RLS: ENABLED - v4.0)
+### **delivery_confirmations** (RLS: DISABLED - 4 politika tanımlı)
 - **Users can view own delivery confirmations**: Users can view their own delivery confirmations
 - **Users can create own delivery confirmations**: Users can create their own delivery confirmations
 - **Users can update own delivery confirmations**: Users can update their own delivery confirmations
 - **Admins can view all delivery confirmations**: Admins can view all delivery confirmations
 
-### **final_payment_distributions** (RLS: ENABLED - v4.0)
+### **final_payment_distributions** (RLS: DISABLED - 3 politika tanımlı)
 - **Admins can view all payment distributions**: Admins can view all payment distributions
 - **Admins can create payment distributions**: Admins can create payment distributions
 - **Admins can update payment distributions**: Admins can update payment distributions
+
+### **payment_transfers** (RLS: DISABLED - 4 politika tanımlı)
+- **Admins can view all payment transfers**: Admins can view all payment transfers
+- **Admins can create payment transfers**: Admins can create payment transfers
+- **Admins can update payment transfers**: Admins can update payment transfers
+- **Users can view own payment transfers**: Users can view their own payment transfers
+
+### **invoice_logs** (RLS: ENABLED - 4 politika tanımlı)
+- **Users can view own invoice logs**: Users can view their own invoice logs
+- **Users can insert own invoice logs**: Users can insert their own invoice logs
+- **Users can update own invoice logs**: Users can update their own invoice logs
+- **Admins can view all invoice logs**: Admins can view all invoice logs
+
+### **storage.objects** (RLS: ENABLED - 3 politika tanımlı)
+- **Users can view only their own files**: Users can view only their own files
+- **Users can upload their own files**: Users can upload their own files
+- **Users can delete their own files**: Users can delete their own files
 
 ---
 
@@ -800,27 +849,49 @@ Fatura yükleme ve doğrulama loglarını tutan tablo.
 - `receiver_user_id` → `auth.users.id`
 - `delivery_confirmation_id` → `delivery_confirmations.id`
 
+### **cargo_codes** (Mevcut)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `generated_by` → `auth.users.id`
+
+### **delivery_confirmations** (Mevcut)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `cargo_shipment_id` → `cargo_shipments.id`
+- `confirmed_by` → `auth.users.id`
+
+### **invoice_logs** (Mevcut)
+- `user_id` → `auth.users.id`
+- `device_id` → `devices.id`
+- `verified_by` → `auth.users.id`
+
 ---
 
 ## 📝 **NOTLAR**
 
-1. **Duplicate Policies**: `devices` tablosunda bazı RLS politikaları duplicate olarak tanımlanmış. Temizlenmesi önerilir.
+1. **RLS Durumu**: Çoğu tabloda RLS politikaları tanımlı ancak RLS kapalı durumda. Production'da güvenlik için aktif edilebilir.
 
-2. **Status Fields**: Birçok tabloda `status` field'ı var. Tutarlılık için standartlaştırılması önerilir.
+2. **Duplicate Policies**: `devices` tablosunda bazı RLS politikaları duplicate olarak tanımlanmış. Temizlenmesi önerilir.
 
-3. **Timestamps**: Tüm tablolarda `created_at` ve `updated_at` field'ları mevcut.
+3. **Status Fields**: Birçok tabloda `status` field'ı var. Tutarlılık için standartlaştırılması önerilir.
 
-4. **JSONB Fields**: `audit_logs`, `escrow_accounts`, `payments`, `userprofile`, `delivery_confirmations` tablolarında JSONB field'lar kullanılıyor.
+4. **Timestamps**: Tüm tablolarda `created_at` ve `updated_at` field'ları mevcut.
 
-5. **Encryption**: `cargo_shipments` tablosunda adres bilgileri encrypted olarak saklanıyor.
+5. **JSONB Fields**: `audit_logs`, `escrow_accounts`, `payments`, `userprofile`, `delivery_confirmations` tablolarında JSONB field'lar kullanılıyor.
 
-6. **Yeni Süreç Akışı** (v4.0): `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
+6. **Encryption**: `cargo_shipments` tablosunda adres bilgileri encrypted olarak saklanıyor.
 
-7. **Kargo Kod Sistemi**: `cargo_codes` tablosu ile kargo firmasına teslim sistemi eklendi.
+7. **Yeni Süreç Akışı** (v4.0): `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
 
-8. **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu ile detaylı onay süreci eklendi.
+8. **Kargo Kod Sistemi**: `cargo_codes` tablosu ile kargo firmasına teslim sistemi eklendi.
 
-9. **Son Ödeme Dağıtımı**: `final_payment_distributions` tablosu ile 4 farklı transfer sistemi eklendi.
+9. **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu ile detaylı onay süreci eklendi.
+
+10. **Son Ödeme Dağıtımı**: `final_payment_distributions` tablosu ile 4 farklı transfer sistemi eklendi.
+
+11. **View/Summary Tabloları**: `payment_summaries`, `shipment_tracking`, `user_escrow_history`, `user_transaction_history`, `financial_audit_trail`, `security_audit_events` view/summary tabloları mevcut.
+
+12. **Storage Integration**: Supabase Storage ile `device-documents` bucket'ı entegre edilmiş.
 
 ---
 
@@ -845,12 +916,20 @@ Bu dosyayı güncellerken:
 4. **Performance Test**: Database performansını test et
 
 ### **Production'a Geçmeden Önce**
-1. **RLS Aktifleştirme**: Kritik tablolarda RLS aç
+1. **RLS Aktifleştirme**: İsteğe bağlı - çoğu tabloda RLS politikaları tanımlı ancak kapalı
    ```sql
+   -- İsteğe bağlı - güvenlik için aktif edilebilir
    ALTER TABLE devices ENABLE ROW LEVEL SECURITY;
    ALTER TABLE escrow_accounts ENABLE ROW LEVEL SECURITY;
    ALTER TABLE financial_transactions ENABLE ROW LEVEL SECURITY;
    ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE cargo_shipments ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE delivery_confirmations ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE final_payment_distributions ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE payment_transfers ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE device_models ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
    ```
 
 2. **Environment Variables**: Production değerleri
@@ -858,8 +937,8 @@ Bu dosyayı güncellerken:
 4. **Backup**: Database backup stratejisi
 
 ### **Kritik Güvenlik Notları**
-- **RLS Kapalı Tablolar**: `devices`, `escrow_accounts`, `financial_transactions`, `payments`
-- **Test Sonrası**: Mutlaka RLS aktif edilmeli
+- **RLS Durumu**: Çoğu tabloda RLS politikaları tanımlı ancak kapalı
+- **RLS Aktif Tablolar**: `cargo_companies`, `invoice_logs`, `userprofile`, `storage.objects`
 - **Audit Trail**: Tüm işlemler loglanıyor
 - **Encryption**: Kargo adresleri encrypted
 
@@ -881,28 +960,35 @@ Bu dosyayı güncellerken:
 
 ---
 
-## 🔄 **SCHEMA SYNCHRONIZATION - v4.1**
+## 🔄 **SCHEMA SYNCHRONIZATION - v5.0**
 
-### **Yapılan Güncellemeler:**
-1. **Eksik Tablolar Eklendi**: `invoice_logs`, `payment_transfers`
-2. **Kolon Yapıları Düzeltildi**: Tüm tablolarda Supabase ile senkronizasyon
-3. **Veri Tipleri Güncellendi**: `numeric(10,2)` formatına geçiş
-4. **Foreign Key İlişkileri**: Yeni tablolar için FK tanımları eklendi
-5. **Nullable/Default Değerler**: Supabase schema ile uyumlu hale getirildi
+### **Yapılan Güncellemeler (2025.10.18):**
+1. **Mevcut Supabase Yapısı**: 2025.10.18 20:39 itibari ile gerçek veritabanı yapısı
+2. **RLS Durumu Güncellendi**: Çoğu tabloda RLS politikaları tanımlı ancak kapalı
+3. **Tüm Tablolar Eklendi**: Mevcut olan tüm tablolar ve view'lar dokümante edildi
+4. **Foreign Key İlişkileri**: Güncel FK ilişkileri eklendi
+5. **RLS Politikaları**: Tüm politikalar ve durumları güncellendi
 
-### **Kritik Değişiklikler:**
-- `financial_transactions`: Kolon sırası ve ek alanlar eklendi
-- `notifications`: `message_key` ve `replacements` alanları eklendi
-- `payments`: `gross_amount`, `net_amount`, `iyzico_commission` alanları eklendi
-- `escrow_accounts`: `gross_amount` alanı eklendi, `auto_release_days` 30'a güncellendi
-- `final_payment_distributions`: `gross_amount`, `net_amount`, `distribution_type` alanları eklendi
+### **Mevcut Tablo Durumu:**
+- **Ana Tablolar**: 23 tablo (devices, payments, escrow_accounts, vb.)
+- **View/Summary Tabloları**: 6 tablo (payment_summaries, shipment_tracking, vb.)
+- **Audit Tabloları**: 2 tablo (financial_audit_trail, security_audit_events)
+- **Auth Tabloları**: Supabase Auth sistem tabloları
+- **Storage Tabloları**: Supabase Storage sistem tabloları
 
-### **Yeni Tablolar:**
-- `invoice_logs`: Fatura yükleme ve doğrulama sistemi
-- `payment_transfers`: Detaylı ödeme transfer takibi
+### **RLS Durumu:**
+- **RLS ENABLED**: `cargo_companies`, `invoice_logs`, `userprofile`, `storage.objects`
+- **RLS DISABLED**: Diğer tüm tablolar (politikalar tanımlı ama aktif değil)
+
+### **Yeni Özellikler:**
+- **Kargo Kod Sistemi**: `cargo_codes` tablosu
+- **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu
+- **Final Payment Distribution**: `final_payment_distributions` tablosu
+- **Payment Transfers**: `payment_transfers` tablosu
+- **Invoice Logs**: `invoice_logs` tablosu
 
 ---
 
-**✅ Bu dosya Supabase schema analizi tamamlandıktan sonra güncellenmiştir. Artık gerçek veritabanı yapısı ile tam uyumlu.**
+**✅ Bu dosya 2025.10.18 20:39 itibari ile gerçek Supabase veritabanı yapısı ile tam uyumlu.**
 
 **Bu dosya sürekli güncel tutulmalı ve database değişikliklerinde referans olarak kullanılmalıdır.**

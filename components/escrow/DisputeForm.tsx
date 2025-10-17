@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
-import { Select } from '../ui/Select';
 import { Textarea } from '../ui/Textarea';
 import { FileUpload } from '../ui/FileUpload';
 
@@ -12,13 +11,6 @@ interface DisputeFormProps {
   onError?: (error: string) => void;
 }
 
-const DISPUTE_REASONS = [
-  { value: 'device_damaged', label: 'Cihaz Hasarlı' },
-  { value: 'wrong_device', label: 'Yanlış Cihaz' },
-  { value: 'not_working', label: 'Çalışmıyor' },
-  { value: 'missing_accessories', label: 'Aksesuar Eksik' },
-  { value: 'other', label: 'Diğer' }
-];
 
 export const DisputeForm: React.FC<DisputeFormProps> = ({
   deviceId,
@@ -27,7 +19,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
   onSuccess,
   onError
 }) => {
-  const [disputeReason, setDisputeReason] = useState('');
   const [photos, setPhotos] = useState<File[]>([]);
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +56,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
           device_id: deviceId,
           payment_id: paymentId,
           cargo_shipment_id: cargoShipmentId,
-          dispute_reason: disputeReason,
           photos: photoBase64s,
           notes: notes
         }),
@@ -76,7 +66,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       if (data.success) {
         onSuccess?.();
         // Form'u temizle
-        setDisputeReason('');
         setPhotos([]);
         setNotes('');
       } else {
@@ -95,25 +84,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       <h3 className="text-lg font-semibold mb-4 text-red-600">Sorun Bildir</h3>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* İtiraz Sebebi */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Sorun Türü *
-          </label>
-          <Select
-            value={disputeReason}
-            onChange={(e) => setDisputeReason(e.target.value)}
-            required
-          >
-            <option value="">Sorun türünü seçin</option>
-            {DISPUTE_REASONS.map(reason => (
-              <option key={reason.value} value={reason.value}>
-                {reason.label}
-              </option>
-            ))}
-          </Select>
-        </div>
-
         {/* Fotoğraf Yükleme */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -183,7 +153,7 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isLoading || !disputeReason || !notes.trim()}
+            disabled={isLoading || !notes.trim()}
             className="bg-red-600 hover:bg-red-700 text-white"
           >
             {isLoading ? 'İtiraz Gönderiliyor...' : 'İtiraz Et'}

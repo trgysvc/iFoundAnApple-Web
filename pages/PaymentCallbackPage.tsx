@@ -60,7 +60,7 @@ const PaymentCallbackPage: React.FC = () => {
           total_amount: parseFloat(amount),
           reward_amount: parseFloat(amount) * 0.8, // %80 ödül
           cargo_fee: 25.00, // Standart kargo ücreti
-          payment_gateway_fee: parseFloat(amount) * 0.02, // %2 gateway ücreti
+          payment_gateway_fee: parseFloat(amount) * 0.0343, // %3.43 gateway ücreti
           service_fee: parseFloat(amount) * 0.18, // %18 servis ücreti
           net_payout: parseFloat(amount) * 0.8, // Net ödeme
           
@@ -103,6 +103,7 @@ const PaymentCallbackPage: React.FC = () => {
           gross_amount: parseFloat(amount),
           reward_amount: parseFloat(amount) * 0.8,
           service_fee: parseFloat(amount) * 0.18,
+          gateway_fee: parseFloat(amount) * 0.0343,
           cargo_fee: 25.00,
           net_payout: parseFloat(amount) * 0.8,
           net_amount: parseFloat(amount) * 0.8,
@@ -130,9 +131,9 @@ const PaymentCallbackPage: React.FC = () => {
           last_activity_at: new Date().toISOString(),
           activity_log: [],
           dispute_status: 'none',
-          processing_fee: parseFloat(amount) * 0.02,
+          processing_fee: parseFloat(amount) * 0.0343,
           platform_fee: parseFloat(amount) * 0.18,
-          total_fees: parseFloat(amount) * 0.20,
+          total_fees: parseFloat(amount) * 0.2143,
           metadata: {},
           priority: 'normal',
           created_at: new Date().toISOString(),

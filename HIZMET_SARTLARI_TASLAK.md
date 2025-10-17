@@ -95,6 +95,8 @@ Kayıp cihaz eklerken:
 - Sahiplik belgesi (fatura, garanti belgesi) sunabilmelisiniz
 - Çalıntı veya sahte cihaz bildirimi yapmadığınızı taahhüt edersiniz
 
+**Önemli:** Cihaz kaydı tamamen ücretsizdir. Ödeme yalnızca cihazınız bulunduğunda ve takas süreci başlatıldığında talep edilir.
+
 ### 4.2 Doğru Bilgi Verme
 
 - Cihaz modeli, seri numarası ve özelliklerini doğru girmelisiniz
@@ -106,7 +108,11 @@ Kayıp cihaz eklerken:
 Eşleşme gerçekleştiğinde:
 - Belirlenen ödül tutarını ödemeyi taahhüt edersiniz
 - **48 saat içinde** ödeme yapmalısınız
-- Platform hizmet bedelini (%3) ödemeyi kabul edersiniz
+- Ücretlendirme şu kalemleri kapsar:
+  - iFoundAnApple Hizmet Bedeli
+  - Ödeme Sağlayıcı Komisyonu (Güvenli ödeme altyapısı maliyeti)
+  - Kargo Bedeli (Cihazınızın size güvenle ulaştırılması için)
+  - Cihazı Bulan Kişiye Verilecek Ödül (Nazik katkısı için teşekkür niteliğinde)
 - Ödeme yapıldıktan sonra iptal edemezsiniz (geçerli sebepler hariç)
 
 ### 4.4 Kargo Teslim Alma
@@ -125,6 +131,8 @@ Eşleşme gerçekleştiğinde:
 - Cihazı yasalara uygun şekilde bulduğunuzu beyan edersiniz
 - Cihazı çalmadığınızı veya yasadışı yollarla edinmediğinizi taahhüt edersiniz
 - Bulduğunuz cihazı hasarsız ve eksiksiz teslim etmeyi kabul edersiniz
+
+**Önemli:** Bulunan cihaz kaydı tamamen ücretsizdir. Bu medeni ve onurlu davranış, bizim için paha biçilemez bir değer taşır.
 
 ### 5.2 Doğru Bilgi Verme
 
@@ -145,8 +153,14 @@ Eşleşme gerçekleştiğinde:
 - Kargo şirketine "ödemeli gönderi" olarak teslim edebilirsiniz
 - Veya önce siz ödeyip sonra ödül ile birlikte geri alabilirsiniz
 
-### 5.4 IBAN/Banka Bilgileri
+### 5.4 Ödül ve IBAN/Banka Bilgileri
 
+**Ödül Belirleme:**
+- Size iletilecek ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenir
+- Bu sayede, gösterdiğiniz çabanın ve örnek davranışın karşılığında küçük bir hediye almanızı sağlıyoruz
+- iFoundAnApple, cihazın güvenli bir şekilde sahibine ulaşmasını ve sizin ödülünüzü eksiksiz almanızı sağlayacak güvenli bir takas süreci sunar
+
+**IBAN/Banka Bilgileri:**
 - Ödül ödemesi için geçerli bir IBAN sağlamalısınız
 - IBAN'ın size ait olduğunu beyan edersiniz
 - Vergi yükümlülüklerinizi yerine getirmeyi kabul edersiniz
@@ -170,51 +184,57 @@ Eşleşme gerçekleştiğinde:
 
 ### 6.2 Hizmet Bedelleri
 
-**Cihaz Sahibi için Ücretler:**
-- Platform hizmet bedeli: Ödül tutarının **%3'ü**
-- Kargo ücreti: **25 TL** (sabit)
-- Ödeme işlem ücreti: Iyzico tarafından belirlenir (yaklaşık **%2**)
-- KDV: Yasal oran uygulanır (**%20**)
+**Cihaz Sahibi için Ücretler (v5.0 Formülü):**
+- **Gross Tutar**: Müşteriden alınan toplam tutar (İyzico komisyonu dahil)
+- **İyzico Komisyonu**: Gross tutarın **%3.43'ü** (otomatik kesilir)
+- **Net Tutar**: İyzico komisyonu düşüldükten sonra kalan tutar
+- **Kargo Ücreti**: **250 TL** (sabit)
+- **Bulan Kişi Ödülü**: Net tutarın **%20'si**
+- **Hizmet Bedeli**: Net tutar - kargo - ödül (geriye kalan)
 
-**Örnek Hesaplama (Cihaz Sahibi):**
+**Örnek Hesaplama (Cihaz Sahibi) - v5.0:**
 ```
-Ödül Tutarı:              5.000 TL
-Platform Bedeli (%3):       150 TL
-Kargo Ücreti:                25 TL
-İyzico İşlem Ücreti (%2):   100 TL
-Ara Toplam:              5.275 TL
-KDV (%20):               1.055 TL
-─────────────────────────────────
-TOPLAM ÖDEME:            6.330 TL
+Gross Tutar:              2.000 TL (müşteriden alınan toplam)
+├── İyzico Komisyonu:       68.60 TL (%3.43) - Otomatik kesilir
+└── Net Tutar:            1.931.40 TL (emanet sisteminde tutulan)
+    ├── Kargo Ücreti:       250.00 TL (sabit)
+    ├── Bulan Kişi Ödülü:   386.28 TL (%20)
+    └── Hizmet Bedeli:    1.295.12 TL (geriye kalan)
+─────────────────────────────────────────
+TOPLAM: 68.60 + 250 + 386.28 + 1.295.12 = 2.000.00 TL ✅
 ```
 
 **Bulan Kişi için Ücretler:**
-- Platform hizmet bedeli: Ödülün **%5'i**
+- **Net Alacak**: Bulan kişiye ödül (net tutarın %20'si)
 - Transfer ücreti: Banka transferinde uygulanabilir (yaklaşık 5-10 TL)
 
-**Örnek Hesaplama (Bulan Kişi):**
+**Örnek Hesaplama (Bulan Kişi) - v5.0:**
 ```
-Ödül Tutarı:            5.000 TL
-Platform Bedeli (%5):    -250 TL
+Net Tutar:              1.931.40 TL
+Bulan Kişi Ödülü (%20):   386.28 TL
 ─────────────────────────────────
-NET ALACAK:             4.750 TL
+NET ALACAK:               386.28 TL
 ```
 
 ### 6.3 Escrow (Emanet) Sistemi
 
-**Nasıl Çalışır:**
+**Nasıl Çalışır (v5.0):**
 1. Eşleşme gerçekleşir
-2. Cihaz sahibi ödemeyi yapar (48 saat içinde)
-3. Para Iyzico escrow hesabında **güvende tutulur** (status: "held")
-4. Bulan kişi kargoyu gönderir (5 iş günü içinde)
-5. Cihaz sahibi kargoyu alır ve **"Teslim Aldım, Onayla"** butonuna basar
-6. Para bulan kişinin IBAN'ına **otomatik transfer** edilir (1-3 iş günü)
+2. Cihaz sahibi **gross tutarı** öder (48 saat içinde)
+3. İyzico komisyonu (%3.43) **otomatik kesilir**
+4. **Net tutar** escrow hesabında **güvende tutulur** (status: "held")
+5. Bulan kişi kargoyu gönderir (5 iş günü içinde)
+6. Cihaz sahibi kargoyu alır ve **"Teslim Aldım, Onayla"** butonuna basar
+7. **Net tutar** şu şekilde dağıtılır:
+   - Kargo ücreti (250 TL) → Kargo firması
+   - Bulan kişi ödülü (%20) → Bulan kişinin IBAN'ına
+   - Hizmet bedeli (geriye kalan) → Platform
 
-**Escrow Süresi:**
+**Escrow Süresi (v5.0):**
 - Maksimum bekleme: 30 gün
-- Cihaz sahibi onayı: Anında ödeme serbest bırakılır
+- Cihaz sahibi onayı: Anında **net tutar** serbest bırakılır
 - Onay verilmezse: **7 gün sonra otomatik onay**
-- 30 gün içinde teslimat olmazsa: Otomatik iade
+- 30 gün içinde teslimat olmazsa: **Gross tutar** otomatik iade (İyzico komisyonu kesintili)
 
 **Onay Süreci:**
 - Sadece **cihaz sahibi** onay verir (tek taraflı onay)
@@ -233,6 +253,12 @@ NET ALACAK:             4.750 TL
 - Teknik sorunlardan kaynaklanan iptal: **Tam iade**
 - Karşılıklı anlaşma ile iptal: **Tam iade**
 
+**İade Kesintisi (v5.0):**
+- Takas sürecinde işlem iptali talep etmeniz halinde, **İyzico komisyonu (%3.43) kesintili** olarak iade edilir
+- **Gross tutar** ödenmiş, **net tutar** escrow'da tutulmuşsa: Net tutar tamamen iade edilir
+- **Kargo süreci başlamadan** iptal yapılmalıdır
+- İptal sonrası: Gross tutar - İyzico komisyonu = İade tutarı
+
 **İade Süreci:**
 1. İptal/iade talebi oluşturulur
 2. Platform inceleme yapar (1-3 iş günü)
@@ -245,6 +271,7 @@ NET ALACAK:             4.750 TL
 - Kredi kartı (Visa, Mastercard, American Express)
 - Banka kartı (debit card)
 - Sanal kart
+- **Apple Pay** (iPhone, iPad, Mac kullanıcıları için)
 - **3D Secure zorunlu** (güvenlik için)
 
 **Ödeme Güvenliği:**
@@ -281,7 +308,7 @@ NET ALACAK:             4.750 TL
 - **Yurtiçi Kargo**
 - **PTT Kargo**
 
-Bulan kişi bu firmalardan birini seçer ve takip numarasını sisteme girer.
+Cihazı bulan kişi bu firmalardan birini seçer ve sistemden aldığı kargo numarası ile cihazı firmaya teslim eder.
 
 ### 7.3 Anonim Kimlik Sistemi
 
@@ -294,10 +321,10 @@ Gizliliğinizi korumak için:
 ### 7.4 Kargo Güvenliği Önerileri
 
 **Gönderen İçin (Bulan Kişi):**
-- Sigortalı kargo kullanın
-- Paket fotoğrafı çekin (teslimat öncesi)
+
+- Cihazın ve paketin fotoğrafını çekin (teslimat öncesi)
 - Takip numarasını mutlaka kaydedin
-- İmzalı teslimat seçeneğini işaretleyin
+
 
 **Alan İçin (Cihaz Sahibi):**
 - Paketi teslim alırken kontrol edin
@@ -320,7 +347,7 @@ Gizliliğinizi korumak için:
 
 **Kargo Kaybolursa:**
 - Hemen kargo şirketiyle iletişime geçin
-- Platform destek ekibine bildirin (support@ifoundanapple.app)
+- Platform destek ekibine bildirin (support@ifoundanapple.com)
 - Kargo şirketinin sigortası devreye girer
 - Platform arabulucu rolü üstlenebilir
 - Escrow'daki para cihaz sahibine iade edilir
@@ -352,8 +379,8 @@ Gizliliğinizi korumak için:
 **Eşleşme Sonrası:**
 - **Kimlik:** GİZLİ kalır
 - **E-posta:** GİZLİ kalır
-- **Telefon:** Sadece kargo için paylaşılır
-- **Adres:** Sadece kargo teslimati için paylaşılır
+- **Telefon:** Sadece kargo firması ile teslimat için paylaşılır
+- **Adres:** Sadece kargo firması ile teslimat için paylaşılır
 
 **Kargo İçin Paylaşılan Bilgiler:**
 - Ad-soyad
@@ -554,7 +581,7 @@ Mücbir sebep durumunda kullanıcılar derhal bilgilendirilir ve alternatif çö
 
 **İlk Adım - Destek Ekibimiz:**
 Herhangi bir sorun yaşarsanız önce destek ekibimizle iletişime geçin:
-- **E-posta:** support@ifoundanapple.app
+- **E-posta:** support@ifoundanapple.com
 - **Yanıt Süresi:** 24-48 saat
 - **Çözüm Süresi:** 5 iş günü (ortalama)
 
@@ -583,7 +610,7 @@ Tüketiciler, Tüketicinin Korunması Hakkında Kanun uyarınca Tüketici Hakem 
 **Online Uyuşmazlık Çözümü (ODR):**
 AB'de bulunan tüketiciler, AB ODR platformunu kullanabilir:
 - Platform: https://ec.europa.eu/consumers/odr
-- İletişim: support@ifoundanapple.app
+- İletişim: info@ifoundanapple.com
 
 ---
 
@@ -625,9 +652,9 @@ Platform, içeriğinizi başka amaçlarla kullanmaz, satmaz veya paylaşmaz.
 - SMS (acil durumlar için)
 
 **Sizden Platform'a:**
-- **Genel:** support@ifoundanapple.app
-- **Hukuki:** legal@ifoundanapple.app
-- **Güvenlik:** security@ifoundanapple.app
+- **Genel:** info@ifoundanapple.com
+- **Hukuki:** legal@ifoundanapple.com
+- **Güvenlik:** security@ifoundanapple.com
 
 ### 15.2 Sözleşmenin Bütünlüğü
 
@@ -654,17 +681,17 @@ Platform'un elektronik kayıtları, HMK 297 uyarınca kesin delil teşkil eder.
 **iFoundAnApple**
 
 **Genel Destek:**  
-E-posta: support@ifoundanapple.app  
+E-posta: info@ifoundanapple.com  
 Yanıt Süresi: 24-48 saat
 
 **Hukuki İşler:**  
-E-posta: legal@ifoundanapple.app  
+E-posta: legal@ifoundanapple.com  
 
 **Güvenlik:**  
-E-posta: security@ifoundanapple.app  
+E-posta: security@ifoundanapple.com  
 
 **Web Sitesi:**  
-https://ifoundanapple.app
+https://ifoundanapple.com
 
 ---
 

@@ -80,20 +80,23 @@ export async function calculateFeesAPI(
       deviceModel = modelData;
     }
 
-    // ifoundanapple_fee = müşteriden alınacak toplam tutar
+    // ifoundanapple_fee = müşteriden alınacak toplam tutar (gross)
     const totalAmount = deviceModel.ifoundanapple_fee || deviceModel.repair_price * 0.4;
     
     // Gateway komisyonu (toplam üzerinden %3.43)
     const gatewayFee = totalAmount * (FIXED_FEES.GATEWAY_FEE_PERCENTAGE / 100);
     
+    // Net tutar (gateway komisyonu düşüldükten sonra)
+    const netAmount = totalAmount - gatewayFee;
+    
     // Sabit kargo ücreti
     const cargoFee = FIXED_FEES.CARGO_FEE;
     
-    // Bulan kişiye ödül (%20)
-    const rewardAmount = totalAmount * (FIXED_FEES.REWARD_PERCENTAGE / 100);
+    // Bulan kişiye ödül (net tutarın %20'si)
+    const rewardAmount = netAmount * (FIXED_FEES.REWARD_PERCENTAGE / 100);
     
     // Hizmet bedeli (geriye kalan)
-    const serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount;
+    const serviceFee = netAmount - cargoFee - rewardAmount;
     
     // Bulan kişiye net ödeme (ödül)
     const netPayout = rewardAmount;

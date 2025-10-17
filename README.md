@@ -520,6 +520,6 @@ Supabase Backend-as-a-Service
 
 **Made with ❤️ in Turkey**
 
-[Website](https://ifoundanapple.app) • [GitHub](https://github.com/trgysvc/iFoundAnApple-Web) • [Support](mailto:support@ifoundanapple.app)
+[Website](https://ifoundanapple.com) • [GitHub](https://github.com/trgysvc/iFoundAnApple-Web) • [Support](mailto:support@ifoundanapple.com)
 
 </div>

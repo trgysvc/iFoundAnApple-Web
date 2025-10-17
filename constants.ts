@@ -292,7 +292,7 @@ export const translations = {
       <h3 class="text-xl font-semibold mb-2">4. Data Retention</h3>
       <p class="mb-4">We retain your data for as long as your account is active or as needed to provide you services. We may retain some information for compliance with legal obligations, to resolve disputes, and to enforce our agreements.</p>
       <h3 class="text-xl font-semibold mb-2">5. Your Rights (GDPR)</h3>
-      <p class="mb-4">You have the right to access, rectify, or erase your personal data. You also have the right to restrict or object to certain processing. To exercise these rights, please contact us at <a href="mailto:privacy@ifoundanapple.app" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+      <p class="mb-4">You have the right to access, rectify, or erase your personal data. You also have the right to restrict or object to certain processing. To exercise these rights, please contact us at <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
     `,
   },
   tr: {
@@ -559,35 +559,1170 @@ export const translations = {
       q3: "Ödül miktarı nasıl belirleniyor?",
       a3: "Kayıp bir cihazı bildirirken, sahibi bir ödül miktarı belirler. Ayrıca, cihazın modeline ve tahmini ikinci el piyasa değerine göre adil bir ödül öneren yapay zeka destekli bir öneri özelliği de sunuyoruz.",
       q4: "Güvenli emanet (escrow) sistemi nedir?",
-      a4: "Bir eşleşme bulunduğunda, cihaz sahibi ödül miktarını güvenli emanet sistemimize öder. Cihazın başarıyla takas edildiği her iki tarafça onaylanana kadar ödemeyi güvenli bir şekilde tutarız. Bu, hem sahibini hem de bulanı korur.",
+      a4: "Bir eşleşme bulunduğunda, cihaz sahibi ödemeyi güvenli emanet sistemimize yapar. Cihazın başarıyla takas edildiği her iki tarafça onaylanana kadar ödemeyi güvenli bir şekilde tutarız. Bu, hem sahibini hem de bulanı korur.",
       q5: "Fiziksel takas nasıl gerçekleşiyor?",
-      a5: "Güvenli takas yönergeleri sunuyoruz. Güvenli bir kamuya açık yerde (karakol gibi) buluşmanızı veya takip edilebilir, sigortalı bir kargo hizmeti kullanmanızı şiddetle tavsiye ederiz. Platform, kişisel iletişim bilgilerinizi paylaşmanıza gerek kalmadan iadeyi kolaylaştırmak için tasarlanmıştır.",
+      a5: "Kimlik bilgilerinizi saklayarak kargo firması cihazı; bulan kişiden sahibine ulaştırmaktadır.",
       q6: "Ücretler nelerdir?",
-      a6: "Bulanana ödenen ödül miktarından küçük bir %5 hizmet bedeli kesiyoruz. Bu, operasyonel maliyetleri karşılamamıza, platformu sürdürmemize ve herkes için güvenli bir ortam sağlamamıza yardımcı olur."
+      a6: "Platformu sürdürebilmemiz ve herkes için güvenli bir ortam sağlayabilmek için operasyonel maliyetlerimiz ile güvenli ödeme sistemi ve kargo hizmetleri kesintilerini içerir."
     },
     termsContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Giriş</h3>
-      <p class="mb-4">iFoundAnApple'a hoş geldiniz. Bu Hizmet Şartları ("Şartlar"), web sitemizi ve hizmetlerimizi kullanımınızı yönetir. Bir hesap oluşturarak veya platformumuzu kullanarak, bu Şartlara bağlı kalmayı kabul etmiş olursunuz.</p>
-      <h3 class="text-xl font-semibold mb-2">2. Hizmet</h3>
-      <p class="mb-4">iFoundAnApple, kayıp Apple cihazlarının sahiplerini, onları bulan kişilerle ("Bulanlar") bir araya getiren bir platform sağlar. Bu bağlantıyı anonim bir eşleştirme sistemi aracılığıyla kolaylaştırır ve güvenli bir emanet süreciyle ödül ödemesini yönetiriz. Herhangi bir cihazın fiziksel değişiminde taraf değiliz.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Kullanıcı Yükümlülükleri</h3>
-      <p class="mb-4">Bir cihazı kaydederken doğru ve gerçeğe uygun bilgiler vermeyi kabul edersiniz. Kayıp olarak bildirdiğiniz herhangi bir cihazın yasal sahibi olmalısınız. Bulundu olarak bildirdiğiniz herhangi bir cihazı yasal olarak bulmuş olmalısınız. Hizmeti yasa dışı veya yetkisiz herhangi bir amaç için kullanmamayı kabul edersiniz.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Ödemeler ve Ücretler</h3>
-      <p class="mb-4">Cihaz Sahipleri, başarılı bir eşleşme üzerine belirtilen ödül tutarını emanet sistemimize ödemeyi kabul eder. Bu ödeme, takas tamamlandıktan sonra iade edilmez. Bulana ödenen ödülden düşülen %5'lik bir hizmet bedeli alıyoruz.</p>
-      <h3 class="text-xl font-semibold mb-2">5. Sorumluluğun Sınırlandırılması</h3>
-      <p class="mb-4">iFoundAnApple bir platform sağlayıcısıdır. İade edilen herhangi bir cihazın durumundan sorumlu değiliz ve kullanıcılar arasındaki fiziksel takastan kaynaklanan herhangi bir sorundan sorumlu tutulamayız. Güvenli bir takas için yönergeler sunuyoruz, ancak sorumluluk kullanıcılara aittir.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">HİZMET ŞARTLARI</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Son Güncelleme: 14 Ekim 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. SÖZLEŞME KAPSAMI</h2>
+
+      <p class="mb-4 leading-relaxed">Bu şartlar, <strong class="font-semibold">iFoundAnApple</strong> platformu ile kullanıcılar arasındaki hukuki ilişkiyi düzenler.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform Sahibi:</strong> iFoundAnApple</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İletişim:</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Hukuk:</strong> Türkiye Cumhuriyeti kanunları</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">1.1 Kabulün Anlamı</h3>
+
+      <p class="mb-4 leading-relaxed">Platforma kayıt olarak, hesap oluşturarak veya hizmetleri kullanarak bu Şartları kabul etmiş sayılırsınız.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">1.2 Değişiklik Hakkı</h3>
+
+      <p class="mb-4 leading-relaxed">Bu Şartları <strong class="font-semibold">7 gün önceden</strong> bildirimle değiştirebiliriz. Değişiklikler:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">E-posta ile bildirilir</li>
+        <li class="mb-1">Web sitesinde duyurulur</li>
+        <li class="mb-1">Uygulama içi bildirim gönderilir</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. PLATFORMUN HİZMETLERİ</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.1 Sunduğumuz Hizmetler</h3>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Kayıp Cihaz Kaydı:</strong> Apple cihazlarını sisteme kaydetme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Bulunan Cihaz Bildirimi:</strong> Bulduğunuz cihazları bildirme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Otomatik Eşleştirme:</strong> Seri numarası bazlı eşleştirme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Anonim Sistem:</strong> Kimlik bilgileriniz gizli tutulur</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Güvenli Ödeme:</strong> Iyzico altyapısıyla PCI-DSS uyumlu ödeme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Escrow Sistemi:</strong> Para güvende tutulur</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Kargo Organizasyonu:</strong> Kargo şirketi seçimi ve takip</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Bildirim Sistemi:</strong> Gerçek zamanlı güncellemeler</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">AI Destekli Öneriler:</strong> Google Gemini ile ödül önerileri</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.2 Sunmadığımız Hizmetler</h3>
+
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Kargo Teslimatı:</strong> Kargo hizmetini biz sağlamıyoruz</p>
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Fiziksel Buluşma:</strong> Tarafları fiziksel olarak buluşturmuyoruz</p>
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Cihaz Onarımı:</strong> Teknik destek vermiyoruz</p>
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Hukuki Temsil:</strong> Avukatlık hizmeti sunmuyoruz</p>
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Garanti:</strong> Cihazın durumu veya çalışması garantilenmez</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. KAYIT VE HESAP YÖNETİMİ</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.1 Kayıt Şartları</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">18 yaş ve üzeri olmalısınız</li>
+        <li class="mb-1">Geçerli e-posta adresi gereklidir</li>
+        <li class="mb-1">Doğru bilgiler vermelisiniz</li>
+        <li class="mb-1">Türkiye veya AB ülkelerinde ikamet etmelisiniz</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.2 Kayıt Yöntemleri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">E-posta ile Kayıt:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ad, soyad, e-posta, doğum tarihi ve şifre gereklidir</li>
+        <li class="mb-1">E-posta doğrulaması zorunludur</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">OAuth ile Kayıt (Google / Apple):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Üçüncü taraf kimlik doğrulama</li>
+        <li class="mb-1">OAuth sağlayıcısının şartlarına tabi</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.3 Hesap Güvenliği</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Şifrenizi güçlü tutun ve paylaşmayın</li>
+        <li class="mb-1">Hesap bilgilerinizi kimseyle paylaşmayın</li>
+        <li class="mb-1">Şüpheli aktiviteleri derhal bildirin</li>
+        <li class="mb-1">Her kullanıcı sadece <strong class="font-semibold">1 hesap</strong> açabilir</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.4 Yasak Hesap Faaliyetleri</h3>
+
+      <p class="mb-4 leading-relaxed">Aşağıdaki durumlar hesap kapatmaya yol açar:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sahte kimlik bilgileri kullanma</li>
+        <li class="mb-1">Birden fazla hesap açma (aynı kişi için)</li>
+        <li class="mb-1">Başkasının hesabını kullanma</li>
+        <li class="mb-1">Bot veya otomatik araçlar kullanma</li>
+        <li class="mb-1">Sistemi manipüle etmeye çalışma</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. CİHAZ SAHİBİNİN SORUMLULUKLARI</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.1 Yasal Sahiplik</h3>
+
+      <p class="mb-4 leading-relaxed">Kayıp cihaz eklerken:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihazın yasal sahibi olduğunuzu beyan edersiniz</li>
+        <li class="mb-1">Sahiplik belgesi (fatura, garanti belgesi) sunabilmelisiniz</li>
+        <li class="mb-1">Çalıntı veya sahte cihaz bildirimi yapmadığınızı taahhüt edersiniz</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Önemli:</strong> Cihaz kaydı tamamen ücretsizdir. Ödeme yalnızca cihazınız bulunduğunda ve takas süreci başlatıldığında talep edilir.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.2 Doğru Bilgi Verme</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihaz modeli, seri numarası ve özelliklerini doğru girmelisiniz</li>
+        <li class="mb-1">Cihaz durumunu gerçeğe uygun bildirmelisiniz</li>
+        <li class="mb-1">Kayıp tarihi ve konumu mümkün olduğunca doğru belirtmelisiniz</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.3 Ödeme Yükümlülüğü</h3>
+
+      <p class="mb-4 leading-relaxed">Eşleşme gerçekleştiğinde:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Belirlenen ödül tutarını ödemeyi taahhüt edersiniz</li>
+        <li class="mb-1"><strong class="font-semibold">48 saat içinde</strong> ödeme yapmalısınız</li>
+        <li class="mb-1">Ücretlendirme şu kalemleri kapsar:</li>
+      </ul>
+      <p class="mb-4 leading-relaxed">  - iFoundAnApple Hizmet Bedeli</p>
+      <p class="mb-4 leading-relaxed">  - Ödeme Sağlayıcı Komisyonu (Güvenli ödeme altyapısı maliyeti)</p>
+      <p class="mb-4 leading-relaxed">  - Kargo Bedeli (Cihazınızın size güvenle ulaştırılması için)</p>
+      <p class="mb-4 leading-relaxed">  - Cihazı Bulan Kişiye Verilecek Ödül (Nazik katkısı için teşekkür niteliğinde)</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ödeme yapıldıktan sonra iptal edemezsiniz (geçerli sebepler hariç)</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.4 Kargo Teslim Alma</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kargonun teslim edilmesi için doğru adres bilgisi vermelisiniz</li>
+        <li class="mb-1">Kargoyu teslim aldığınızda kontrol etmelisiniz</li>
+        <li class="mb-1"><strong class="font-semibold">7 gün içinde</strong> "Teslim Aldım, Onayla" butonuna basmalısınız</li>
+        <li class="mb-1">Onay vermezseniz 7 gün sonra otomatik onay verilir</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. CİHAZI BULAN KİŞİNİN SORUMLULUKLARI</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.1 Dürüst Bulgu</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihazı yasalara uygun şekilde bulduğunuzu beyan edersiniz</li>
+        <li class="mb-1">Cihazı çalmadığınızı veya yasadışı yollarla edinmediğinizi taahhüt edersiniz</li>
+        <li class="mb-1">Bulduğunuz cihazı hasarsız ve eksiksiz teslim etmeyi kabul edersiniz</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Önemli:</strong> Bulunan cihaz kaydı tamamen ücretsizdir. Bu medeni ve onurlu davranış, bizim için paha biçilemez bir değer taşır.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.2 Doğru Bilgi Verme</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihaz bilgilerini doğru girmelisiniz</li>
+        <li class="mb-1">Bulunma tarihi ve konumunu gerçeğe uygun bildirmelisiniz</li>
+        <li class="mb-1">Cihazın durumu hakkında şeffaf olmalısınız</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.3 Kargo Gönderimi</h3>
+
+      <p class="mb-4 leading-relaxed">Ödeme tamamlandıktan sonra:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">5 iş günü içinde</strong> cihazı kargoya vermelisiniz</li>
+        <li class="mb-1">Kargo şirketi seçip takip numarasını sisteme girmelisiniz</li>
+        <li class="mb-1">Cihazı orijinal haliyle, hasarsız göndermelisiniz</li>
+        <li class="mb-1">Cihaza müdahale etmemeyi (şifre kırma, parça değişimi) taahhüt edersiniz</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kargo Ücreti:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kargo ücreti (25 TL) cihaz sahibi tarafından ödenmiştir</li>
+        <li class="mb-1">Kargo şirketine "ödemeli gönderi" olarak teslim edebilirsiniz</li>
+        <li class="mb-1">Veya önce siz ödeyip sonra ödül ile birlikte geri alabilirsiniz</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.4 Ödül ve IBAN/Banka Bilgileri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödül Belirleme:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Size iletilecek ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenir</li>
+        <li class="mb-1">Bu sayede, gösterdiğiniz çabanın ve örnek davranışın karşılığında küçük bir hediye almanızı sağlıyoruz</li>
+        <li class="mb-1">iFoundAnApple, cihazın güvenli bir şekilde sahibine ulaşmasını ve sizin ödülünüzü eksiksiz almanızı sağlayacak güvenli bir takas süreci sunar</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">IBAN/Banka Bilgileri:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ödül ödemesi için geçerli bir IBAN sağlamalısınız</li>
+        <li class="mb-1">IBAN'ın size ait olduğunu beyan edersiniz</li>
+        <li class="mb-1">Vergi yükümlülüklerinizi yerine getirmeyi kabul edersiniz</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. ÖDEMELER, ÜCRETLER VE ESCROW SİSTEMİ</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.1 Ödül Sistemi</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödül Belirleme:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihaz sahibi ödül tutarını özgürce belirler</li>
+        <li class="mb-1">Minimum: 500 TL, Maksimum: 50.000 TL</li>
+        <li class="mb-1">AI öneri sistemi kullanılabilir (isteğe bağlı, Google Gemini)</li>
+        <li class="mb-1">Ödül, cihazın piyasa değerinin makul bir oranı olmalıdır</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme Zamanlaması:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Eşleşme gerçekleştiğinde <strong class="font-semibold">48 saat içinde</strong> ödeme yapılmalıdır</li>
+        <li class="mb-1">Ödeme yapılmazsa eşleşme iptal edilir</li>
+        <li class="mb-1">Ödeme escrow sistemine alınır ve güvende bekletilir</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.2 Hizmet Bedelleri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Cihaz Sahibi için Ücretler (v5.0 Formülü):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Gross Tutar</strong>: Müşteriden alınan toplam tutar (İyzico komisyonu dahil)</li>
+        <li class="mb-1"><strong class="font-semibold">İyzico Komisyonu</strong>: Gross tutarın <strong class="font-semibold">%3.43'ü</strong> (otomatik kesilir)</li>
+        <li class="mb-1"><strong class="font-semibold">Net Tutar</strong>: İyzico komisyonu düşüldükten sonra kalan tutar</li>
+        <li class="mb-1"><strong class="font-semibold">Kargo Ücreti</strong>: <strong class="font-semibold">250 TL</strong> (sabit)</li>
+        <li class="mb-1"><strong class="font-semibold">Bulan Kişi Ödülü</strong>: Net tutarın <strong class="font-semibold">%20'si</strong></li>
+        <li class="mb-1"><strong class="font-semibold">Hizmet Bedeli</strong>: Net tutar - kargo - ödül (geriye kalan)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Örnek Hesaplama (Cihaz Sahibi) - v5.0:</strong></p>
+      <pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4"><code class="text-sm">Gross Tutar:              2.000 TL (müşteriden alınan toplam)
+├── İyzico Komisyonu:       68.60 TL (%3.43) - Otomatik kesilir
+└── Net Tutar:            1.931.40 TL (emanet sisteminde tutulan)
+    ├── Kargo Ücreti:       250.00 TL (sabit)
+    ├── Bulan Kişi Ödülü:   386.28 TL (%20)
+    └── Hizmet Bedeli:    1.295.12 TL (geriye kalan)
+─────────────────────────────────────────
+TOPLAM: 68.60 + 250 + 386.28 + 1.295.12 = 2.000.00 TL ✅</code></pre>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Bulan Kişi için Ücretler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Net Alacak</strong>: Bulan kişiye ödül (net tutarın %20'si)</li>
+        <li class="mb-1">Transfer ücreti: Banka transferinde uygulanabilir (yaklaşık 5-10 TL)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Örnek Hesaplama (Bulan Kişi) - v5.0:</strong></p>
+      <pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4"><code class="text-sm">Net Tutar:              1.931.40 TL
+Bulan Kişi Ödülü (%20):   386.28 TL
+─────────────────────────────────
+NET ALACAK:               386.28 TL</code></pre>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.3 Escrow (Emanet) Sistemi</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Nasıl Çalışır (v5.0):</strong></p>
+      <p class="mb-4 leading-relaxed">1. Eşleşme gerçekleşir</p>
+      <p class="mb-4 leading-relaxed">2. Cihaz sahibi <strong class="font-semibold">gross tutarı</strong> öder (48 saat içinde)</p>
+      <p class="mb-4 leading-relaxed">3. İyzico komisyonu (%3.43) <strong class="font-semibold">otomatik kesilir</strong></p>
+      <p class="mb-4 leading-relaxed">4. <strong class="font-semibold">Net tutar</strong> escrow hesabında <strong class="font-semibold">güvende tutulur</strong> (status: "held")</p>
+      <p class="mb-4 leading-relaxed">5. Bulan kişi kargoyu gönderir (5 iş günü içinde)</p>
+      <p class="mb-4 leading-relaxed">6. Cihaz sahibi kargoyu alır ve <strong class="font-semibold">"Teslim Aldım, Onayla"</strong> butonuna basar</p>
+      <p class="mb-4 leading-relaxed">7. <strong class="font-semibold">Net tutar</strong> şu şekilde dağıtılır:</p>
+      <p class="mb-4 leading-relaxed">   - Kargo ücreti (250 TL) → Kargo firması</p>
+      <p class="mb-4 leading-relaxed">   - Bulan kişi ödülü (%20) → Bulan kişinin IBAN'ına</p>
+      <p class="mb-4 leading-relaxed">   - Hizmet bedeli (geriye kalan) → Platform</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Escrow Süresi (v5.0):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Maksimum bekleme: 30 gün</li>
+        <li class="mb-1">Cihaz sahibi onayı: Anında <strong class="font-semibold">net tutar</strong> serbest bırakılır</li>
+        <li class="mb-1">Onay verilmezse: <strong class="font-semibold">7 gün sonra otomatik onay</strong></li>
+        <li class="mb-1">30 gün içinde teslimat olmazsa: <strong class="font-semibold">Gross tutar</strong> otomatik iade (İyzico komisyonu kesintili)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Onay Süreci:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sadece <strong class="font-semibold">cihaz sahibi</strong> onay verir (tek taraflı onay)</li>
+        <li class="mb-1">Bulan kişi onay vermez, sadece kargoyu gönderir</li>
+        <li class="mb-1">İki taraflı onay sistemi <strong class="font-semibold">yoktur</strong></li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.4 İptal ve İade Politikası</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İptal Hakkı:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ödeme yapıldıktan sonra cayma hakkınız yoktur (hizmet başladığı için)</li>
+        <li class="mb-1">Kargo gönderilmeden önce karşılıklı anlaşmayla iptal mümkündür</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İade Koşulları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Bulan kişi 5 iş günü içinde kargo göndermezse: <strong class="font-semibold">Tam iade</strong></li>
+        <li class="mb-1">Teslim edilen cihaz farklıysa: <strong class="font-semibold">Tam iade</strong> + bulan kişiye yaptırım</li>
+        <li class="mb-1">Teknik sorunlardan kaynaklanan iptal: <strong class="font-semibold">Tam iade</strong></li>
+        <li class="mb-1">Karşılıklı anlaşma ile iptal: <strong class="font-semibold">Tam iade</strong></li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İade Kesintisi (v5.0):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Takas sürecinde işlem iptali talep etmeniz halinde, <strong class="font-semibold">İyzico komisyonu (%3.43) kesintili</strong> olarak iade edilir</li>
+        <li class="mb-1"><strong class="font-semibold">Gross tutar</strong> ödenmiş, <strong class="font-semibold">net tutar</strong> escrow'da tutulmuşsa: Net tutar tamamen iade edilir</li>
+        <li class="mb-1"><strong class="font-semibold">Kargo süreci başlamadan</strong> iptal yapılmalıdır</li>
+        <li class="mb-1">İptal sonrası: Gross tutar - İyzico komisyonu = İade tutarı</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İade Süreci:</strong></p>
+      <p class="mb-4 leading-relaxed">1. İptal/iade talebi oluşturulur</p>
+      <p class="mb-4 leading-relaxed">2. Platform inceleme yapar (1-3 iş günü)</p>
+      <p class="mb-4 leading-relaxed">3. Karar verilir</p>
+      <p class="mb-4 leading-relaxed">4. İade onaylanırsa <strong class="font-semibold">5-10 iş günü</strong> içinde hesaba geçer</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.5 Ödeme Yöntemleri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kabul Edilen Ödeme Yöntemleri:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kredi kartı (Visa, Mastercard, American Express)</li>
+        <li class="mb-1">Banka kartı (debit card)</li>
+        <li class="mb-1">Sanal kart</li>
+        <li class="mb-1"><strong class="font-semibold">Apple Pay</strong> (iPhone, iPad, Mac kullanıcıları için)</li>
+        <li class="mb-1"><strong class="font-semibold">3D Secure zorunlu</strong> (güvenlik için)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme Güvenliği:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">PCI-DSS Level 1 sertifikalı <strong class="font-semibold">Iyzico</strong> altyapısı</li>
+        <li class="mb-1">SSL/TLS şifreleme</li>
+        <li class="mb-1">3D Secure doğrulama</li>
+        <li class="mb-1">Tokenization (kart bilgileri bizde saklanmaz)</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. KARGO SÜRECİ VE TESLİMAT</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.1 Platform'un Rolü</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Önemli:</strong> Platform, kargo teslimatının tarafı değildir. Kargo tamamen kargo şirketleri tarafından gerçekleştirilir.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform Sağladıkları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kargo şirketi seçenekleri (Aras, MNG, Yurtiçi, PTT)</li>
+        <li class="mb-1">Kargo takip sistemi</li>
+        <li class="mb-1">Teslimat adresi paylaşımı (anonim sistem)</li>
+        <li class="mb-1">Kargo durum bildirimleri</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform Sağlamadıkları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Fiziksel kargo teslimat hizmeti</li>
+        <li class="mb-1">Kargo kurye organizasyonu</li>
+        <li class="mb-1">Kargo sigortası (kargo şirketinden alınmalı)</li>
+        <li class="mb-1">Kargo kayıp/hasar garantisi</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.2 Kargo Şirketleri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Desteklenen Kargo Firmaları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Aras Kargo</strong></li>
+        <li class="mb-1"><strong class="font-semibold">MNG Kargo</strong></li>
+        <li class="mb-1"><strong class="font-semibold">Yurtiçi Kargo</strong></li>
+        <li class="mb-1"><strong class="font-semibold">PTT Kargo</strong></li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">Cihazı bulan kişi bu firmalardan birini seçer ve sistemden aldığı kargo numarası ile cihazı firmaya teslim eder.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.3 Anonim Kimlik Sistemi</h3>
+
+      <p class="mb-4 leading-relaxed">Gizliliğinizi korumak için:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Bulan kişiye anonim kod verilir: <strong class="font-semibold">FND-XXX123</strong></li>
+        <li class="mb-1">Cihaz sahibine anonim kod verilir: <strong class="font-semibold">OWN-YYY456</strong></li>
+        <li class="mb-1">Kargo gönderi bilgilerinde bu kodlar kullanılır</li>
+        <li class="mb-1">Gerçek kimlikler kargo şirketiyle paylaşılmaz</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.4 Kargo Güvenliği Önerileri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Gönderen İçin (Bulan Kişi):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihazın ve paketin fotoğrafını çekin (teslimat öncesi)</li>
+        <li class="mb-1">Takip numarasını mutlaka kaydedin</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Alan İçin (Cihaz Sahibi):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Paketi teslim alırken kontrol edin</li>
+        <li class="mb-1">Hasar varsa hemen tutanak tutturun</li>
+        <li class="mb-1">Paket açılışını video/fotoğraf ile belgeleyin</li>
+        <li class="mb-1">Cihazın seri numarasını doğrulayın</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.5 Kargo Takibi</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Platform üzerinden kargo durumunu anlık takip edebilirsiniz</li>
+        <li class="mb-1">Otomatik durum güncellemeleri alırsınız:</li>
+      </ul>
+      <p class="mb-4 leading-relaxed">  - Kargo oluşturuldu</p>
+      <p class="mb-4 leading-relaxed">  - Kargo toplandı</p>
+      <p class="mb-4 leading-relaxed">  - Kargodaki şubede</p>
+      <p class="mb-4 leading-relaxed">  - Dağıtıma çıktı</p>
+      <p class="mb-4 leading-relaxed">  - Teslim edildi</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Tahmini teslimat tarihi gösterilir</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">7.6 Teslimat Sorunları</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kargo Kaybolursa:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Hemen kargo şirketiyle iletişime geçin</li>
+        <li class="mb-1">Platform destek ekibine bildirin (<a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a>)</li>
+        <li class="mb-1">Kargo şirketinin sigortası devreye girer</li>
+        <li class="mb-1">Platform arabulucu rolü üstlenebilir</li>
+        <li class="mb-1">Escrow'daki para cihaz sahibine iade edilir</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Hasarlı Teslimat:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kargoyu teslim alırken kontrol edin</li>
+        <li class="mb-1">Hasar varsa <strong class="font-semibold">teslim almadan</strong> kargo görevlisine tutanak tutturun</li>
+        <li class="mb-1">Platform'u hemen bilgilendirin</li>
+        <li class="mb-1">Fotoğraf/video kanıtı sağlayın</li>
+        <li class="mb-1">İade süreci başlatılır</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Yanlış/Farklı Cihaz:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Seri numarasını kontrol edin</li>
+        <li class="mb-1">Farklıysa <strong class="font-semibold">onaylama</strong>yın</li>
+        <li class="mb-1">Destek ekibine bildirin</li>
+        <li class="mb-1">Tam iade işlemi başlatılır</li>
+        <li class="mb-1">Bulan kişiye yaptırım uygulanır</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. ANONİMLİK VE GİZLİLİK</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">8.1 Kimlik Gizliliği</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Eşleşme Öncesi:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Hiçbir kullanıcı bilgisi paylaşılmaz</li>
+        <li class="mb-1">Tamamen anonim sistem</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Eşleşme Sonrası:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Kimlik:</strong> GİZLİ kalır</li>
+        <li class="mb-1"><strong class="font-semibold">E-posta:</strong> GİZLİ kalır</li>
+        <li class="mb-1"><strong class="font-semibold">Telefon:</strong> Sadece kargo firması ile teslimat için paylaşılır</li>
+        <li class="mb-1"><strong class="font-semibold">Adres:</strong> Sadece kargo firması ile teslimat için paylaşılır</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kargo İçin Paylaşılan Bilgiler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ad-soyad</li>
+        <li class="mb-1">Teslimat adresi</li>
+        <li class="mb-1">Telefon numarası</li>
+        <li class="mb-1">Anonim gönderici/alıcı kodu (FND-XXX, OWN-XXX)</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">8.2 İletişim</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform İçi Bildirimler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">E-posta bildirimleri</li>
+        <li class="mb-1">Uygulama içi bildirimler</li>
+        <li class="mb-1">SMS bildirimleri (kritik durumlar için)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Direkt İletişim:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kullanıcılar arasında <strong class="font-semibold">direkt mesajlaşma yoktur</strong></li>
+        <li class="mb-1">Tüm iletişim platform üzerinden yönetilir</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. PLATFORM SORUMLULUKLARI VE SINIRLAMALAR</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">9.1 Platform Sorumluluklarımız</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Sağladığımız Hizmetler İçin:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Platform altyapısını çalışır halde tutmak</li>
+        <li class="mb-1">Veri güvenliğini sağlamak</li>
+        <li class="mb-1">Ödeme sistemini güvenli işletmek</li>
+        <li class="mb-1">Escrow'u doğru yönetmek</li>
+        <li class="mb-1">Müşteri desteği sunmak</li>
+        <li class="mb-1">Dolandırıcılık önlemleri almak</li>
+        <li class="mb-1">Yasal yükümlülüklere uymak</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">9.2 Sorumluluk Sınırlamaları</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform SORUMLU DEĞİLDİR:</strong></p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Cihaz ve Teslimat:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Teslim edilen cihazın gerçek durumu</li>
+        <li class="mb-1">Cihazın çalışır/kullanılabilir olması</li>
+        <li class="mb-1">Fiziksel hasarlar veya eksiklikler</li>
+        <li class="mb-1">Cihazın orijinal olup olmadığı</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kargo:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kargo şirketlerinin hataları, gecikmeler, kayıplar</li>
+        <li class="mb-1">Hasarlı teslimat</li>
+        <li class="mb-1">Kargo sigortası (kullanıcı sorumluluğu)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kullanıcı Davranışları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kullanıcıların verdikleri yanlış/eksik bilgiler</li>
+        <li class="mb-1">Dolandırıcılık girişimleri (tespit edemediğimiz)</li>
+        <li class="mb-1">Sahiplik ihtilafları</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Üçüncü Taraf Hizmetler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Iyzico, Supabase, Google kesintileri</li>
+        <li class="mb-1">OAuth sağlayıcılarının sorunları</li>
+        <li class="mb-1">İnternet servis sağlayıcılarının kesintileri</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">9.3 Tazminat Sınırlaması</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Azami Tazminat:</strong></p>
+      <p class="mb-4 leading-relaxed">Herhangi bir durumda platform'un sorumluluğu, ilgili işlemde alınan <strong class="font-semibold">hizmet bedeli tutarı</strong> ile sınırlıdır.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Örnek:</strong> 5.000 TL ödüllü işlemde platform bedeli 150 TL ise, azami tazminat tutarı <strong class="font-semibold">150 TL</strong>'dir.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kapsam Dışı Zararlar:</strong></p>
+      <p class="mb-4 leading-relaxed">Platform aşağıdaki zararlardan sorumlu tutulamaz:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Dolaylı zararlar</li>
+        <li class="mb-1">Kar kaybı</li>
+        <li class="mb-1">İtibar kaybı</li>
+        <li class="mb-1">Manevi zararlar</li>
+        <li class="mb-1">Veri kaybı</li>
+        <li class="mb-1">İş kaybı</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İstisna:</strong> Platform'un kasıtlı veya ağır kusuru varsa bu sınırlamalar uygulanmaz.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">9.4 Hizmet Garantisi ve Kesintiler</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Garanti Verilmeyen Hususlar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kesintisiz hizmet</li>
+        <li class="mb-1">Hatasız çalışma</li>
+        <li class="mb-1">Mutlaka eşleşme bulunması</li>
+        <li class="mb-1">Belirli bir sürede sonuç alınması</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Planlı Bakımlar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Önceden duyurulur (en az 24 saat)</li>
+        <li class="mb-1">Genellikle gece saatlerinde yapılır</li>
+        <li class="mb-1">Maksimum 4 saat sürer</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Acil Bakımlar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Önceden duyurulamayabilir</li>
+        <li class="mb-1">Güvenlik veya kritik hatalar için</li>
+        <li class="mb-1">En kısa sürede tamamlanır</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. YASAK FAALİYETLER</h2>
+
+      <p class="mb-4 leading-relaxed">Aşağıdaki faaliyetler <strong class="font-semibold">kesinlikle yasaktır:</strong></p>
+
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Dolandırıcılık:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sahte bilgi verme</li>
+        <li class="mb-1">Çalıntı cihaz bildirimi</li>
+        <li class="mb-1">Başkasının cihazını sahiplenmek</li>
+        <li class="mb-1">Sahte seri numarası</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Hesap İhlalleri:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sahte kimlik kullanma</li>
+        <li class="mb-1">Birden fazla hesap açma</li>
+        <li class="mb-1">Başkasının hesabını kullanma</li>
+        <li class="mb-1">Bot veya otomatik araçlar</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Sistem Manipülasyonu:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Platform dışı anlaşma yapma</li>
+        <li class="mb-1">Sistemi atlatmaya çalışma</li>
+        <li class="mb-1">Escrow'u atlatma girişimi</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><span class="text-red-600">❌</span> <strong class="font-semibold">Diğer:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Taciz, tehdit</li>
+        <li class="mb-1">Fikri mülkiyet ihlali</li>
+        <li class="mb-1">Virüs, zararlı yazılım</li>
+        <li class="mb-1">Veri scraping</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Yaptırım:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Hesap kapatma</li>
+        <li class="mb-1">Ödeme iptali</li>
+        <li class="mb-1">Yasal işlem başlatma</li>
+        <li class="mb-1">Hak edilen tutarların iadesi</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. HESAP ASKIYA ALMA VE SONLANDIRMA</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">11.1 Platform Tarafından Kapatma</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Derhal Kapatma Sebepleri:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Dolandırıcılık veya sahte bilgi</li>
+        <li class="mb-1">Çalıntı cihaz bildirimi</li>
+        <li class="mb-1">Sahte kimlik</li>
+        <li class="mb-1">Ödeme dolandırıcılığı</li>
+        <li class="mb-1">Yasadışı faaliyetler</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Uyarı Sonrası Kapatma:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sürekli yanlış bilgi girme</li>
+        <li class="mb-1">Platform kurallarını ihlal</li>
+        <li class="mb-1">Ödeme yükümlülüğünü yerine getirmeme (tekrarlayan)</li>
+        <li class="mb-1">Kargo göndermeme (geçerli sebep olmadan)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Askıya Alma:</strong></p>
+      <p class="mb-4 leading-relaxed">Şüpheli durumlar araştırılırken hesap geçici olarak askıya alınabilir (maksimum 30 gün).</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">11.2 Kullanıcı Tarafından Hesap Kapatma</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kendi Hesabınızı Kapatma:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Profil ayarlarından "Hesabı Sil" seçeneğini kullanabilirsiniz</li>
+        <li class="mb-1">Devam eden işlemler varsa tamamlanana kadar kapatma yapılamaz</li>
+        <li class="mb-1">Escrow'da bekleyen ödemeler varsa sonuçlanmalıdır</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Hesap Kapatma Sonuçları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kişisel verileriniz <strong class="font-semibold">30 gün içinde</strong> silinir</li>
+        <li class="mb-1">İşlem geçmişiniz anonimleştirilir</li>
+        <li class="mb-1">Kapatılan hesap geri açılamaz</li>
+        <li class="mb-1">Mali kayıtlar 10 yıl saklanır (yasal zorunluluk, anonim)</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. MÜCBIR SEBEPLER</h2>
+
+      <p class="mb-4 leading-relaxed">Aşağıdaki mücbir sebep durumlarında platform yükümlülüklerinden sorumlu tutulamaz:</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Doğal Afetler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Deprem, sel, yangın, fırtına</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Toplumsal Olaylar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Savaş, terör, ayaklanma, sokağa çıkma yasağı</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Teknik Sorunlar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">İnternet altyapı kesintileri (ISP sorunları)</li>
+        <li class="mb-1">Elektrik kesintisi</li>
+        <li class="mb-1">Sunucu sağlayıcı (Supabase) kesintileri</li>
+        <li class="mb-1">Ödeme sistemleri (Iyzico) kesintileri</li>
+        <li class="mb-1">DDoS saldırıları, siber saldırılar</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Yasal Değişiklikler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ani kanun değişiklikleri, yasaklar, düzenlemeler</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Pandemi/Sağlık Krizi:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Salgın hastalık durumları</li>
+        <li class="mb-1">Resmi kısıtlamalar</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">Mücbir sebep durumunda kullanıcılar derhal bilgilendirilir ve alternatif çözümler sunulur.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">13. UYUŞMAZLIK ÇÖZÜMÜ</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">13.1 İletişim ve Destek</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İlk Adım - Destek Ekibimiz:</strong></p>
+      <p class="mb-4 leading-relaxed">Herhangi bir sorun yaşarsanız önce destek ekibimizle iletişime geçin:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">E-posta:</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Yanıt Süresi:</strong> 24-48 saat</li>
+        <li class="mb-1"><strong class="font-semibold">Çözüm Süresi:</strong> 5 iş günü (ortalama)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Arabuluculuk:</strong></p>
+      <p class="mb-4 leading-relaxed">Kullanıcılar arasında uyuşmazlık varsa, platform arabulucu rol üstlenebilir (isteğe bağlı).</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">13.2 Uygulanacak Hukuk</h3>
+
+      <p class="mb-4 leading-relaxed">İşbu Sözleşme, <strong class="font-semibold">Türkiye Cumhuriyeti kanunlarına</strong> tabidir.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">13.3 Yetkili Mahkeme ve İcra Daireleri</h3>
+
+      <p class="mb-4 leading-relaxed">Bu Sözleşmeden doğan uyuşmazlıklarda:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Türkiye'deki kullanıcılar için:</strong> İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir</li>
+        <li class="mb-1"><strong class="font-semibold">AB'deki kullanıcılar için:</strong> Kullanıcının yerleşim yeri mahkemeleri de yetkilidir (GDPR gereği)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Tüketici Hakları:</strong></p>
+      <p class="mb-4 leading-relaxed">Tüketiciler, Tüketicinin Korunması Hakkında Kanun uyarınca Tüketici Hakem Heyetleri ve Tüketici Mahkemelerine başvurabilir.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Tüketici Hakem Heyeti:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Web: <a href="https://tuketicihakemleri.ticaret.gov.tr" class="text-blue-600 hover:text-blue-800" target="_blank">https://tuketicihakemleri.ticaret.gov.tr</a></li>
+        <li class="mb-1">Elektronik başvuru sistemi mevcuttur</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">13.4 Alternatif Uyuşmazlık Çözümü</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Online Uyuşmazlık Çözümü (ODR):</strong></p>
+      <p class="mb-4 leading-relaxed">AB'de bulunan tüketiciler, AB ODR platformunu kullanabilir:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Platform: <a href="https://ec.europa.eu/consumers/odr" class="text-blue-600 hover:text-blue-800" target="_blank">https://ec.europa.eu/consumers/odr</a></li>
+        <li class="mb-1">İletişim: <a href="mailto:info@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">info@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">14. FİKRİ MÜLKİYET HAKLARI</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">14.1 Platform'un Hakları</h3>
+
+      <p class="mb-4 leading-relaxed">Platform'da yer alan tüm içerik, tasarım, logo, yazılım kodu, algoritmalar iFoundAnApple'ın telif hakkı altındadır.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Yasak İşlemler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">İçerikleri kopyalama veya çoğaltma</li>
+        <li class="mb-1">Logoyu izinsiz kullanma</li>
+        <li class="mb-1">Kaynak kodunu tersine mühendislik</li>
+        <li class="mb-1">Veri scraping (otomatik veri toplama)</li>
+        <li class="mb-1">API'yi izinsiz kullanma</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">14.2 Kullanıcı İçeriği</h3>
+
+      <p class="mb-4 leading-relaxed">Platforma yüklediğiniz içerik (fotoğraflar, açıklamalar) sizin fikri mülkiyetinizdir.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platforma Verdiğiniz Lisans:</strong></p>
+      <p class="mb-4 leading-relaxed">İçerik yükleyerek, platforma aşağıdaki hakları verirsiniz:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">İçeriği platformda gösterme</li>
+        <li class="mb-1">İçeriği depolama ve işleme</li>
+        <li class="mb-1">İçeriği yedekleme</li>
+        <li class="mb-1">Teknik olarak optimize etme (sıkıştırma vb.)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">Platform, içeriğinizi başka amaçlarla kullanmaz, satmaz veya paylaşmaz.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">15. ÇEŞİTLİ HÜKÜMLER</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">15.1 Bildirimlerin Yapılması</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform'dan Size:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">E-posta (kayıtlı e-posta adresiniz)</li>
+        <li class="mb-1">Uygulama içi bildirim</li>
+        <li class="mb-1">SMS (acil durumlar için)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Sizden Platform'a:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Genel:</strong> <a href="mailto:info@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">info@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Hukuki:</strong> <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Güvenlik:</strong> <a href="mailto:security@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">security@ifoundanapple.com</a></li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">15.2 Sözleşmenin Bütünlüğü</h3>
+
+      <p class="mb-4 leading-relaxed">Bu Şartlar, taraflar arasındaki tüm anlaşmayı oluşturur.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">15.3 Kısmi Geçersizlik</h3>
+
+      <p class="mb-4 leading-relaxed">Şartların herhangi bir hükmü geçersiz sayılırsa, diğer hükümler geçerliliğini korur.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">15.4 Devir Yasağı</h3>
+
+      <p class="mb-4 leading-relaxed">Kullanıcılar, bu sözleşmeden doğan hak ve yükümlülüklerini üçüncü kişilere devredemez.</p>
+
+      <p class="mb-4 leading-relaxed">Platform, işin devri, birleşme veya satın alma durumunda haklarını devredebilir.</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">15.5 Elektronik Kayıtlar</h3>
+
+      <p class="mb-4 leading-relaxed">Platform'un elektronik kayıtları, HMK 297 uyarınca kesin delil teşkil eder.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">16. İLETİŞİM BİLGİLERİ</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">iFoundAnApple</strong></p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Genel Destek:</strong></p>
+      <p class="mb-4 leading-relaxed">E-posta: <a href="mailto:info@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">info@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed">Yanıt Süresi: 24-48 saat</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Hukuki İşler:</strong></p>
+      <p class="mb-4 leading-relaxed">E-posta: <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Güvenlik:</strong></p>
+      <p class="mb-4 leading-relaxed">E-posta: <a href="mailto:security@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">security@ifoundanapple.com</a></p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Web Sitesi:</strong></p>
+      <p class="mb-4 leading-relaxed"><a href="https://ifoundanapple.com" class="text-blue-600 hover:text-blue-800" target="_blank">https://ifoundanapple.com</a></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">17. KABUL VE ONAY</h2>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> Bu Hizmet Şartlarını okudum, anladım ve kabul ediyorum.</p>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> 18 yaşından büyük olduğumu ve yasal ehliyete sahip olduğumu beyan ederim.</p>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> Platformu kullanarak, bu Şartlara ve Gizlilik Politikasına bağlı kalmayı kabul ediyorum.</p>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> E-posta, SMS ve uygulama içi bildirimlerin gönderilmesine izin veriyorum.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Son Güncelleme:</strong> 14 Ekim 2025</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Versiyon:</strong> 2.0</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Geçerlilik:</strong> Türkiye ve Avrupa Birliği</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. Tüm hakları saklıdır.</strong></p>
     `,
     privacyContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Topladığımız Bilgiler</h3>
-      <p class="mb-4">Adınız, e-posta adresiniz ve cihaz detaylarınız (model, seri numarası) gibi doğrudan bize sağladığınız bilgileri toplarız. Bulanlar için, ödülün transferi amacıyla banka bilgilerini de toplarız.</p>
-      <h3 class="text-xl font-semibold mb-2">2. Bilgilerinizi Nasıl Kullanırız?</h3>
-      <p class="mb-4">Bilgileriniz, hizmetimizin özelliklerini işletmek, sürdürmek ve sağlamak için kullanılır. Özellikle, cihaz bilgilerini eşleştirme için ve iletişim bilgilerinizi hizmetle ilgili bildirimler göndermek için kullanırız. Kişisel iletişim veya kimlik bilgilerinizi asla diğer kullanıcılarla paylaşmayacağız.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Veri Güvenliği</h3>
-      <p class="mb-4">Toplanan tüm bilgilerin bütünlüğünü ve güvenliğini korumak için ticari olarak makul fiziksel, idari ve teknolojik önlemler kullanıyoruz. Ancak, hiçbir güvenlik sistemi aşılamaz ve sistemlerimizin güvenliğini %100 garanti edemeyiz.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Veri Saklama</h3>
-      <p class="mb-4">Verilerinizi, hesabınız aktif olduğu sürece veya size hizmet sunmak için gerektiği sürece saklarız. Yasal yükümlülüklere uymak, anlaşmazlıkları çözmek ve anlaşmalarımızı uygulamak için bazı bilgileri saklayabiliriz.</p>
-      <h3 class="text-xl font-semibold mb-2">5. Haklarınız (GDPR)</h3>
-      <p class="mb-4">Kişisel verilerinize erişme, bunları düzeltme veya silme hakkına sahipsiniz. Ayrıca belirli işlemelere kısıtlama veya itiraz etme hakkınız da vardır. Bu hakları kullanmak için lütfen <a href="mailto:privacy@ifoundanapple.app" class="text-brand-blue underline">privacy@ifoundanapple.app</a> adresinden bizimle iletişime geçin.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">GİZLİLİK POLİTİKASI</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Son Güncelleme: 14 Ekim 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. VERİ SORUMLUSU</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">iFoundAnApple</strong></p>
+      <p class="mb-4 leading-relaxed">E-posta: <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed">Web: <a href="https://ifoundanapple.com" class="text-blue-600 hover:text-blue-800" target="_blank">https://ifoundanapple.com</a></p>
+
+      <p class="mb-4 leading-relaxed">Bu politika, KVKK ve GDPR uyarınca hazırlanmıştır.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. TOPLANAN KİŞİSEL VERİLER</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.1 Kayıt ve Kimlik Doğrulama</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">E-posta ile Kayıt:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ad, soyad</li>
+        <li class="mb-1">E-posta adresi</li>
+        <li class="mb-1">Şifre (şifreli saklanır)</li>
+        <li class="mb-1">Doğum tarihi</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">OAuth ile Giriş (Google/Apple):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">OAuth sağlayıcısından alınan temel profil bilgileri</li>
+        <li class="mb-1">Ad, soyad, e-posta</li>
+        <li class="mb-1">Şifre oluşturmanıza gerek yoktur</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.2 Cihaz Bilgileri</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cihaz modeli (iPhone 15 Pro, MacBook Air vb.)</li>
+        <li class="mb-1">Seri numarası</li>
+        <li class="mb-1">Cihaz rengi ve açıklaması</li>
+        <li class="mb-1">Kayıp/bulunma tarihi ve konumu</li>
+        <li class="mb-1">Fatura/sahiplik belgesi (görsel - silinebilir şekilde)</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.3 Ödeme ve Finansal Bilgiler</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Ödeme İşlemleri (Iyzico):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kredi/banka kartı bilgileri <strong class="font-semibold">Iyzico</strong> tarafından işlenir (PCI-DSS uyumlu)</li>
+        <li class="mb-1">Kart bilgileriniz bizim sunucularımızda <strong class="font-semibold">saklanmaz</strong></li>
+        <li class="mb-1">İşlem geçmişi ve tutarlar kaydedilir</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Banka Bilgileri:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">IBAN numarası (ödül transferi için)</li>
+        <li class="mb-1">Hesap sahibi adı</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.4 Profil ve İletişim Bilgileri</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">TC Kimlik Numarası (isteğe bağlı, yüksek tutarlı işlemler için)</li>
+        <li class="mb-1">Telefon numarası</li>
+        <li class="mb-1">Teslimat adresi (kargo için)</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">2.5 Otomatik Toplanan Veriler</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">IP adresi</li>
+        <li class="mb-1">Tarayıcı ve cihaz bilgileri</li>
+        <li class="mb-1">Oturum bilgileri</li>
+        <li class="mb-1">Platform kullanım istatistikleri</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. VERİLERİN KULLANIM AMAÇLARI</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.1 Hizmet Sunumu</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Kayıp ve bulunan cihazları eşleştirme (seri numarası bazlı)</li>
+        <li class="mb-1">Kullanıcı hesap yönetimi</li>
+        <li class="mb-1">Kargo organizasyonu ve takibi</li>
+        <li class="mb-1">Bildirim gönderme</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.2 Ödeme ve Escrow İşlemleri</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Güvenli ödeme işleme (Iyzico)</li>
+        <li class="mb-1">Escrow (emanet) sistemini işletme</li>
+        <li class="mb-1">Ödül ödemelerini IBAN'a transfer etme</li>
+        <li class="mb-1">Mali kayıtların tutulması</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.3 AI Destekli Öneriler</h3>
+
+      <p class="mb-4 leading-relaxed">Bu özellik isteğe bağlıdır</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.4 Güvenlik</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Dolandırıcılık önleme</li>
+        <li class="mb-1">Kimlik doğrulama</li>
+        <li class="mb-1">Audit log tutma</li>
+        <li class="mb-1">Güvenlik ihlali tespiti</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">3.5 Yasal Uyumluluk</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">KVKK ve GDPR gerekliliklerine uyum</li>
+        <li class="mb-1">Vergi mevzuatı yükümlülükleri (10 yıl kayıt tutma)</li>
+        <li class="mb-1">Mahkeme kararları ve yasal süreçler</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. VERİLERİN PAYLAŞIMI</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.1 Hizmet Sağlayıcılar</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Supabase (Backend Altyapısı):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Veritabanı, kimlik doğrulama, dosya depolama</li>
+        <li class="mb-1">SOC 2 Type II, GDPR uyumlu</li>
+        <li class="mb-1">Veri konumu: ABD/AB</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Iyzico (Ödeme Sağlayıcısı):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Ödeme işleme, 3D Secure, escrow</li>
+        <li class="mb-1">PCI-DSS Level 1 sertifikalı</li>
+        <li class="mb-1">Türkiye merkezli</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Google/Apple (OAuth Kimlik Doğrulama):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Üçüncü taraf giriş (isteğe bağlı)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Google Gemini (AI Önerileri):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Sadece cihaz modeli bilgisi paylaşılır</li>
+        <li class="mb-1">Kişisel kimlik bilgisi paylaşılmaz</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kargo Şirketleri (Aras, MNG, Yurtiçi, PTT):</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Teslimat adresi ve telefon</li>
+        <li class="mb-1">Anonim gönderici/alıcı kodları (FND-XXX, OWN-XXX)</li>
+        <li class="mb-1">Gerçek kimlikler gizli tutulur</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.2 Kullanıcılar Arası Paylaşım</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">ÖNEMLİ:</strong> Kimliğiniz, e-postanız ve telefon numaranız <strong class="font-semibold">asla</strong> diğer kullanıcılarla paylaşılmaz.</p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Eşleşme Sonrası:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Karşı tarafın kimliği anonim kalır</li>
+        <li class="mb-1">Sadece "Eşleşme bulundu" bildirimi gönderilir</li>
+        <li class="mb-1">Kargo için sadece teslimat adresi paylaşılır (ad-soyad ve adres)</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">4.3 Yasal Zorunluluk</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Mahkeme kararı veya celp</li>
+        <li class="mb-1">Kolluk kuvvetleri talepleri</li>
+        <li class="mb-1">Vergi daireleri (mali kayıtlar için)</li>
+        <li class="mb-1">KVKK Kurumu talepleri</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. VERİ GÜVENLİĞİ VE SAKLAMA</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.1 Güvenlik Önlemleri</h3>
+
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">SSL/TLS şifreleme (HTTPS)</li>
+        <li class="mb-1">Şifre hash'leme (bcrypt)</li>
+        <li class="mb-1">Veritabanı şifreleme</li>
+        <li class="mb-1">Row Level Security (RLS) politikaları</li>
+        <li class="mb-1">3D Secure ödeme doğrulama</li>
+        <li class="mb-1">İki faktörlü kimlik doğrulama (2FA) desteği</li>
+        <li class="mb-1">Düzenli güvenlik denetimleri</li>
+      </ul>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">5.2 Saklama Süreleri</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Aktif Hesaplar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Hesabınız aktif olduğu sürece saklanır</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kapalı Hesaplar:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Hesap kapatma sonrası 30 gün içinde silinir</li>
+        <li class="mb-1">Mali kayıtlar 10 yıl saklanır (yasal zorunluluk)</li>
+        <li class="mb-1">Anonim istatistikler süresiz saklanabilir</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">İşlem Kayıtları:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Mali işlemler: 10 yıl</li>
+        <li class="mb-1">Kargo kayıtları: 2 yıl</li>
+        <li class="mb-1">Audit loglar: 5 yıl</li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. KULLANICI HAKLARI (KVKK & GDPR)</h2>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.1 Haklarınız</h3>
+
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Bilgi Talep Etme:</strong> Verilerinizin işlenip işlenmediğini öğrenme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Erişim Hakkı:</strong> Verilerinizin bir kopyasını alma</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Düzeltme Hakkı:</strong> Yanlış bilgileri düzeltme</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Silme Hakkı:</strong> Verilerinizi silme (unutulma hakkı)</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">İtiraz Etme:</strong> Veri işleme faaliyetlerine itiraz</p>
+      <p class="mb-4 leading-relaxed"><span class="text-green-600">✅</span> <strong class="font-semibold">Veri Taşınabilirliği:</strong> Verilerinizi başka bir platforma aktarma</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.2 Başvuru Yöntemi</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">E-posta:</strong> <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Konu:</strong> KVKK/GDPR Başvurusu</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Yanıt Süresi:</strong> 30 gün (en geç)</p>
+
+      <h3 class="text-lg font-medium mb-2 text-gray-600 mt-4">6.3 Şikayet Hakkı</h3>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Türkiye:</strong></p>
+      <p class="mb-4 leading-relaxed">Kişisel Verileri Koruma Kurumu - <a href="https://www.kvkk.gov.tr" class="text-blue-600 hover:text-blue-800" target="_blank">https://www.kvkk.gov.tr</a></p>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">AB:</strong></p>
+      <p class="mb-4 leading-relaxed">İlgili ülkenin Veri Koruma Otoritesi</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. ÇOCUKLARIN GİZLİLİĞİ</h2>
+
+      <p class="mb-4 leading-relaxed">Platform <strong class="font-semibold">18 yaş altı</strong> kullanıcılara yönelik değildir. 18 yaş altı kişilerden bilerek veri toplamıyoruz.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. ÇEREZLER</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Kullandığımız Çerezler:</strong></p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Oturum yönetimi (zorunlu)</li>
+        <li class="mb-1">Dil tercihleri (fonksiyonel)</li>
+        <li class="mb-1">Güvenlik (zorunlu)</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">Çerezleri tarayıcı ayarlarınızdan yönetebilirsiniz.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. ULUSLARARASI VERİ TRANSFERİ</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Supabase:</strong> ABD/AB veri merkezleri (GDPR uyumlu, SCC)</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Iyzico:</strong> Türkiye</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Google:</strong> Küresel (OAuth ve AI için)</p>
+
+      <p class="mb-4 leading-relaxed">Tüm transferler KVKK ve GDPR hükümlerine uygun yapılır.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. DEĞİŞİKLİKLER VE GÜNCELLEMELER</h2>
+
+      <p class="mb-4 leading-relaxed">Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Önemli değişiklikler yapıldığında:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Web sitesinde duyuru yayınlarız</li>
+        <li class="mb-1">E-posta ile bildirim göndeririz</li>
+        <li class="mb-1">"Son Güncelleme" tarihi değiştirilir</li>
+      </ul>
+
+      <p class="mb-4 leading-relaxed">Güncellemeler yayınlandığı tarihte yürürlüğe girer.</p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. İLETİŞİM</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Genel:</strong> <a href="mailto:info@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">info@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Gizlilik:</strong> <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Güvenlik:</strong> <a href="mailto:security@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">security@ifoundanapple.com</a></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple - Versiyon 2.0</strong></p>
     `,
   },
   fr: {

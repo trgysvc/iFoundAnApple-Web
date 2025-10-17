@@ -653,7 +653,7 @@ const AddDevicePage: React.FC = () => {
                   className="mt-1 h-4 w-4 text-brand-blue border-gray-300 rounded focus:ring-brand-blue cursor-pointer"
                 />
                 <span className="ml-3 text-sm text-brand-gray-700 group-hover:text-brand-blue transition-colors">
-                  {isLostReport ? '☐ Yukarıdaki şartları okudum ve kabul ediyorum.' : 'Yukarıdaki şartları okudum ve kabul ediyorum.'}
+                  {isLostReport ? ' Yukarıdaki şartları okudum ve kabul ediyorum.' : 'Yukarıdaki şartları okudum ve kabul ediyorum.'}
                 </span>
               </label>
             </div>

@@ -7,8 +7,8 @@
 ## 1. VERİ SORUMLUSU
 
 **iFoundAnApple**  
-E-posta: privacy@ifoundanapple.app  
-Web: https://ifoundanapple.app
+E-posta: privacy@ifoundanapple.com
+Web: https://ifoundanapple.com
 
 Bu politika, KVKK ve GDPR uyarınca hazırlanmıştır.
 
@@ -78,8 +78,6 @@ Bu politika, KVKK ve GDPR uyarınca hazırlanmıştır.
 - Mali kayıtların tutulması
 
 ### 3.3 AI Destekli Öneriler
-- Google Gemini API ile ödül tutarı önerileri
-- Cihaz açıklaması önerileri
 - Bu özellik isteğe bağlıdır
 
 ### 3.4 Güvenlik
@@ -181,7 +179,7 @@ Bu politika, KVKK ve GDPR uyarınca hazırlanmıştır.
 
 ### 6.2 Başvuru Yöntemi
 
-**E-posta:** privacy@ifoundanapple.app  
+**E-posta:** privacy@ifoundanapple.com  
 **Konu:** KVKK/GDPR Başvurusu  
 **Yanıt Süresi:** 30 gün (en geç)
 
@@ -235,9 +233,9 @@ Güncellemeler yayınlandığı tarihte yürürlüğe girer.
 
 ## 11. İLETİŞİM
 
-**Genel:** support@ifoundanapple.app  
-**Gizlilik:** privacy@ifoundanapple.app  
-**Güvenlik:** security@ifoundanapple.app  
+**Genel:** info@ifoundanapple.com  
+**Gizlilik:** privacy@ifoundanapple.com  
+**Güvenlik:** security@ifoundanapple.com  
 
 ---
 

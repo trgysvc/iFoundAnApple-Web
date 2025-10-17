@@ -2,9 +2,9 @@
 
 Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi bilginin hangi tabloya yazılacağını gösterir.
 
-**Son Güncelleme:** 20 Aralık 2024  
-**Versiyon:** 4.0  
-**Durum:** Test Aşamasında - Yeni Süreç Akışı Eklendi
+**Son Güncelleme:** 18 Ekim 2025  
+**Versiyon:** 5.0  
+**Durum:** Production Ready - Current Supabase Structure (2025.10.18)
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -44,13 +44,15 @@ export enum DeviceStatus {
 - **`device_models`** - Cihaz modelleri ve fiyatlandırma
 - **`cargo_companies`** - Kargo şirketleri
 - **`audit_logs`** - Denetim kayıtları
+- **`invoice_logs`** - Fatura yükleme ve doğrulama logları
 
-### **Yeni Süreç Tabloları (v4.0):**
+### **Süreç Tabloları (v5.0):**
 - **`cargo_codes`** - Kargo kod sistemi
 - **`delivery_confirmations`** - Teslimat onay sistemi
 - **`final_payment_distributions`** - Son ödeme dağıtım sistemi
+- **`payment_transfers`** - Ödeme transfer kayıtları
 
-### **Yardımcı Tablolar:**
+### **View/Summary Tabloları:**
 - **`payment_summaries`** - Ödeme özetleri
 - **`shipment_tracking`** - Kargo takibi
 - **`user_escrow_history`** - Kullanıcı escrow geçmişi
@@ -814,7 +816,7 @@ Bulan kişi → "Kargo Bilgilerini Gir" → Form
 
 **Girilen Bilgiler:**
 - Kargo Şirketi: Dropdown (Aras, Yurtiçi, MNG, PTT)
-- Kargo Takip Numarası: Manuel giriş
+- Sistemden alınan kargo numarası ile cihazı firmaya teslim eder
 - Gönderim Tarihi: Tarih seçici
 
 **Sorular:**

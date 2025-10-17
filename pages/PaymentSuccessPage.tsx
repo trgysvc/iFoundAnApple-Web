@@ -309,7 +309,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
           </div>
 
           {/* İtiraz Formu */}
-          <div className="mt-6">
+          <div className="mt-6 mb-6">
             <DisputeForm
               deviceId={device?.id || ''}
               paymentId={payment.id}

@@ -95,6 +95,6 @@ Platformumuzu kullanarak, hizmetlerimizin kullanımını yöneten kuralları ve 
 
 Herhangi bir sorunuz, öneriniz veya desteğe ihtiyacınız olursa bizimle iletişime geçmekten çekinmeyin.
 
-*   **E-posta:** `destek@ifoundanapple.app`
+*   **E-posta:** `destek@ifoundanapple.com`
 
 Size yardımcı olmak için buradayız!
