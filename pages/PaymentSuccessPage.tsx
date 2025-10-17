@@ -4,6 +4,9 @@ import { useAppContext } from '../contexts/AppContext';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { EscrowStatusDisplay } from '../components/escrow/EscrowStatusDisplay.tsx';
+import { DeliveryConfirmationForm } from '../components/escrow/DeliveryConfirmationForm.tsx';
+import { DisputeForm } from '../components/escrow/DisputeForm.tsx';
 
 interface PaymentSuccessPageProps {}
 
@@ -283,57 +286,43 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
             </div>
           </div>
 
-          {/* Escrow Status Card */}
-          {escrow ? (
-            <div className="bg-blue-50 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Escrow Durumu
-              </h2>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Escrow ID:</span>
-                  <span className="font-mono text-sm">{escrow.id}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Durum:</span>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    {escrow.status === 'held' ? 'Beklemede' : escrow.status}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Escrow Tutarı:</span>
-                  <span className="font-semibold text-lg text-blue-600">
-                    {escrow.total_amount.toFixed(2)} TL
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-yellow-50 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Ödeme Durumu
-              </h2>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Durum:</span>
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                    Ödeme Tamamlandı
-                  </span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Not:</span>
-                  <span className="text-sm text-gray-600">
-                    Bu ödeme eski sistem ile yapıldı
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Emanet Durumu */}
+          <EscrowStatusDisplay 
+            paymentId={payment.id} 
+            onRefresh={() => window.location.reload()}
+          />
+
+          {/* Teslimat Onay Formu */}
+          <div className="mt-6">
+            <DeliveryConfirmationForm
+              deviceId={device?.id || ''}
+              paymentId={payment.id}
+              cargoShipmentId={device?.cargoShipmentId || ''}
+              onSuccess={() => {
+                alert('Teslimat onayı başarıyla alındı!');
+                window.location.reload();
+              }}
+              onError={(error) => {
+                alert('Hata: ' + error);
+              }}
+            />
+          </div>
+
+          {/* İtiraz Formu */}
+          <div className="mt-6">
+            <DisputeForm
+              deviceId={device?.id || ''}
+              paymentId={payment.id}
+              cargoShipmentId={device?.cargoShipmentId || ''}
+              onSuccess={() => {
+                alert('İtirazınız başarıyla alındı!');
+                window.location.reload();
+              }}
+              onError={(error) => {
+                alert('Hata: ' + error);
+              }}
+            />
+          </div>
 
           {/* Durum Bilgisi */}
           <div className="bg-yellow-50 rounded-lg p-6 mb-6">

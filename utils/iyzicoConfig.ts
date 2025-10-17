@@ -81,7 +81,7 @@ export const createIyzicoPaymentRequest = (paymentData: {
     basketId: paymentData.conversationId,
     paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
     paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
-    callbackUrl: `${getSecureConfig().iyzico.callbackUrl}?conversationId=${paymentData.conversationId}`,
+    callbackUrl: `${getSecureConfig().iyzico.callbackUrl}?conversationId=${paymentData.conversationId}&deviceId=${paymentData.deviceId}`,
   
     // Alıcı bilgileri
     buyer: {

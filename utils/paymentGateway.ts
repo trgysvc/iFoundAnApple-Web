@@ -85,6 +85,10 @@ const STRIPE_CONFIG = {
  */
 export type PaymentProvider = "iyzico" | "stripe" | "test";
 
+import { validateProfileForPayment } from './profileValidation';
+import { createClient } from './supabaseClient';
+import { getSecureConfig } from './security';
+
 export const initiatePayment = async (
   request: PaymentRequest,
   provider: PaymentProvider = "iyzico"
@@ -94,14 +98,51 @@ export const initiatePayment = async (
       `[PAYMENT] Ödeme başlatılıyor - Provider: ${provider}, Device: ${request.deviceId}`
     );
 
+    // Debug: Request bilgilerini kontrol et
+    console.log('[PAYMENT] Request bilgileri:', {
+      payerId: request.payerId,
+      deviceId: request.deviceId,
+      feeBreakdown: request.feeBreakdown
+    });
+
     // Input validation
     if (!request.payerId || !request.deviceId || !request.feeBreakdown) {
+      console.error('[PAYMENT] Eksik ödeme bilgileri:', {
+        payerId: request.payerId,
+        deviceId: request.deviceId,
+        feeBreakdown: request.feeBreakdown
+      });
       throw new Error("Eksik ödeme bilgileri");
     }
 
     if (request.feeBreakdown.totalAmount < 10) {
       throw new Error("Minimum ödeme tutarı 10 TL");
     }
+
+    // Profil bilgileri kontrolü
+    console.log('[PAYMENT] Kullanıcı profil bilgileri kontrol ediliyor...');
+    const config = getSecureConfig();
+    const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+    
+    const { data: userProfile, error: profileError } = await supabase
+      .from('userprofile')
+      .select('*')
+      .eq('user_id', request.payerId)
+      .single();
+
+    if (profileError) {
+      console.error('[PAYMENT] Profil bilgisi alınamadı:', profileError);
+      throw new Error('Profil bilgileriniz alınamadı. Lütfen tekrar deneyin.');
+    }
+
+    const profileValidation = validateProfileForPayment(userProfile);
+    
+    if (!profileValidation.isValid) {
+      console.warn('[PAYMENT] Profil bilgileri eksik:', profileValidation.missingFields);
+      throw new Error(profileValidation.message);
+    }
+
+    console.log('[PAYMENT] Profil bilgileri doğrulandı, ödeme işlemi devam ediyor...');
 
     // Provider'a göre farklı işlem yap
     let paymentResult: PaymentResponse;
@@ -190,7 +231,6 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
         net_payout: request.feeBreakdown.netPayout,
         payment_provider: request.paymentProvider || 'test',
         provider_payment_id: paymentResult.providerPaymentId,
-        status: paymentResult.status,
         payment_status: paymentResult.status,
         provider_response: paymentResult.providerResponse,
         payment_method: request.paymentProvider || 'test',
@@ -235,20 +275,18 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
       console.log("[DATABASE] Escrow kaydı oluşturuldu:", escrowData);
     }
 
-    // 3. Cihaz durumunu güncelle (ödeme tamamlandı)
-    if (paymentResult.status === 'completed') {
-      const { error: deviceError } = await supabase
-        .from('devices')
-        .update({
-          status: 'payment_completed'
-        })
-        .eq('id', request.deviceId);
+    // 3. Cihaz durumunu güncelle (ödeme başlatıldı)
+    const { error: deviceError } = await supabase
+      .from('devices')
+      .update({
+        status: 'payment_pending'
+      })
+      .eq('id', request.deviceId);
 
-      if (deviceError) {
-        console.error("[DATABASE] Device status güncelleme hatası:", deviceError);
-      } else {
-        console.log("[DATABASE] ✅ Device status güncellendi: payment_completed");
-      }
+    if (deviceError) {
+      console.error("[DATABASE] Device status güncelleme hatası:", deviceError);
+    } else {
+      console.log("[DATABASE] ✅ Device status güncellendi: payment_pending");
     }
 
     console.log("[DATABASE] Ödeme kaydı başarıyla tamamlandı");
@@ -366,9 +404,9 @@ const processIyzicoPayment = async (
         
         return {
           success: true,
-          paymentId: result.paymentId || crypto.randomUUID(),
+          paymentId: crypto.randomUUID(), // Gerçek UUID oluştur
           providerPaymentId: result.paymentId,
-          status: "3ds_redirect", // 3DS redirect durumu
+          status: "processing", // ✅ Constraint'te olan değer
           redirectUrl: result.redirectUrl,
           providerResponse: {
             threeDSHtmlContent: result.threeDSHtmlContent,

@@ -19,6 +19,8 @@ interface PaymentFlowPageProps {
   initialDeviceModel?: string;
 }
 
+import { validateProfileForPayment, getProfileCompletionPercentage } from "../utils/profileValidation";
+
 const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   deviceId,
   initialDeviceModel,
@@ -27,10 +29,60 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   const location = useLocation();
   const { currentUser, showNotification, t } = useAppContext();
 
+  // Profil durumu state'i
+  const [profileStatus, setProfileStatus] = useState<{
+    isValid: boolean;
+    completionPercentage: number;
+    message: string;
+  }>({
+    isValid: false,
+    completionPercentage: 0,
+    message: ''
+  });
+
   // URL'den parametreleri al
   const queryParams = new URLSearchParams(location.search);
   const urlDeviceId = queryParams.get("deviceId") || "";
   const urlDeviceModel = queryParams.get("deviceModel") || "";
+
+  // Profil bilgileri kontrolü
+  useEffect(() => {
+    const checkProfileStatus = async () => {
+      if (!currentUser) return;
+
+      try {
+        const { createClient } = await import('../utils/supabaseClient');
+        const { getSecureConfig } = await import('../utils/security');
+        
+        const config = getSecureConfig();
+        const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+        
+        const { data: userProfile, error } = await supabase
+          .from('userprofile')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        if (error) {
+          console.error('Profil bilgisi alınamadı:', error);
+          return;
+        }
+
+        const validation = validateProfileForPayment(userProfile);
+        const completionPercentage = getProfileCompletionPercentage(userProfile);
+        
+        setProfileStatus({
+          isValid: validation.isValid,
+          completionPercentage,
+          message: validation.message
+        });
+      } catch (error) {
+        console.error('Profil kontrolü hatası:', error);
+      }
+    };
+
+    checkProfileStatus();
+  }, [currentUser]);
 
   // State management
   const [step, setStep] = useState<"model" | "fees" | "payment">("model");
@@ -127,6 +179,13 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
     if (!agreementAccepted) {
       showNotification(t("acceptTermsRequired"), "error");
+      return;
+    }
+
+    // Profil bilgileri kontrolü
+    if (!profileStatus.isValid) {
+      showNotification(profileStatus.message, "error");
+      navigate("/profile");
       return;
     }
 
@@ -515,6 +574,50 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                     </label>
                   </div>
 
+                  {/* Profil Durumu Uyarısı */}
+                  {!profileStatus.isValid && (
+                    <div className="mb-6 p-5 bg-yellow-50 border-2 border-yellow-300 rounded-xl shadow-sm">
+                      <div className="flex items-start">
+                        <svg
+                          className="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <div className="flex-1">
+                          <h4 className="text-base font-semibold text-yellow-800 mb-1">
+                            ⚠️ Profil Bilgileri Eksik
+                          </h4>
+                          <p className="text-sm text-yellow-700 leading-relaxed mb-3">
+                            {profileStatus.message}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 bg-yellow-200 rounded-full h-2 mr-3">
+                              <div 
+                                className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${profileStatus.completionPercentage}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-yellow-800">
+                              %{profileStatus.completionPercentage}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => navigate("/profile")}
+                            className="mt-3 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium"
+                          >
+                            Profili Tamamla
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {error && (
                     <div className="mb-6 p-5 bg-red-50 border-2 border-red-300 rounded-xl shadow-sm animate-shake">
                       <div className="flex items-start">
@@ -558,9 +661,9 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
 
                     <button
                       onClick={handlePayment}
-                      disabled={!agreementAccepted || processing}
+                      disabled={!agreementAccepted || processing || !profileStatus.isValid}
                       className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-200 ${
-                        agreementAccepted && !processing
+                        agreementAccepted && !processing && profileStatus.isValid
                           ? "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
@@ -569,6 +672,23 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
                           {t("paymentProcessing")}
+                        </div>
+                      ) : !profileStatus.isValid ? (
+                        <div className="flex items-center justify-center">
+                          <svg
+                            className="w-6 h-6 mr-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                            />
+                          </svg>
+                          <span>Profil Bilgilerini Tamamla</span>
                         </div>
                       ) : (
                         <div className="flex items-center justify-center">

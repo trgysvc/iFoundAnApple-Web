@@ -126,20 +126,67 @@ export const uploadFileToStorage = async (
  * Upload invoice document for a device
  * @param file - Invoice file to upload
  * @param userId - User ID who owns the device
+ * @param deviceModel - Device model for filename
+ * @param deviceId - Optional device ID for logging
  * @returns Upload result with URL or error
  */
 export const uploadInvoiceDocument = async (
   file: File,
   userId: string,
-  deviceModel?: string
+  deviceModel?: string,
+  deviceId?: string
 ): Promise<FileUploadResult> => {
-  return uploadFileToStorage(
-    file,
-    "device-documents",
-    "invoices",
-    userId,
-    deviceModel
-  );
+  try {
+    // Upload file to storage
+    const uploadResult = await uploadFileToStorage(
+      file,
+      "device-documents",
+      "invoices",
+      userId,
+      deviceModel
+    );
+
+    if (!uploadResult.success) {
+      return uploadResult;
+    }
+
+    // Log invoice upload to database
+    try {
+      const { error: logError } = await supabase
+        .from("invoice_logs")
+        .insert({
+          user_id: userId,
+          device_id: deviceId || null,
+          device_model: deviceModel || null,
+          file_name: file.name,
+          file_path: uploadResult.url!,
+          file_size: file.size,
+          file_type: file.type,
+          upload_status: 'completed',
+          verification_status: 'pending'
+        });
+
+      if (logError) {
+        console.error("Error logging invoice upload:", logError);
+        // Don't fail the upload if logging fails
+      } else {
+        console.log("Invoice upload logged successfully");
+      }
+    } catch (logError) {
+      console.error("Error logging invoice upload:", logError);
+      // Don't fail the upload if logging fails
+    }
+
+    return uploadResult;
+  } catch (error) {
+    console.error("uploadInvoiceDocument: Unexpected error:", error);
+    return {
+      success: false,
+      error: `Unexpected error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+    };
+  }
 };
 
 /**

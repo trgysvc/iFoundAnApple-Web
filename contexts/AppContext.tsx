@@ -654,6 +654,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         is_read: false,
         created_at: new Date().toISOString(),
         replacements,
+        type: 'info', // Eksik olan type alanı eklendi
       };
 
       secureLogger.info("Inserting notification", { userId: userId.slice(-4) });

@@ -36,6 +36,8 @@ const AddDevicePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [serialNumberError, setSerialNumberError] = useState("");
+  const [isCheckingSerial, setIsCheckingSerial] = useState(false);
 
   const fetchDeviceModels = useCallback(async () => {
     setLoadingModels(true);
@@ -63,9 +65,63 @@ const AddDevicePage: React.FC = () => {
     }
   }, [t]);
 
+  // Seri numarası kontrol fonksiyonu - durum bazlı
+  const checkSerialNumberExists = useCallback(async (serial: string, deviceModel: string) => {
+    if (!serial.trim() || !deviceModel.trim()) {
+      setSerialNumberError("");
+      return false;
+    }
+
+    setIsCheckingSerial(true);
+    try {
+      // Durum bazlı kontrol - aynı seri numarası + aynı model + aynı durum = engelle
+      const deviceStatus = isLostReport ? "LOST" : "FOUND";
+      
+      const { data, error } = await supabase
+        .from("devices")
+        .select("id, serialNumber, model, status")
+        .eq("serialNumber", serial.trim())
+        .eq("model", deviceModel)
+        .eq("status", deviceStatus);
+
+      if (error) {
+        console.error("Error checking serial number:", error.message);
+        setSerialNumberError("");
+        return false;
+      }
+
+      if (data && data.length > 0) {
+        setSerialNumberError(`Bu seri numaralı ${deviceStatus} cihaz sistemde kayıtlı. Lütfen farklı bir seri numarası girin.`);
+        return true;
+      } else {
+        setSerialNumberError("");
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking serial number:", err);
+      setSerialNumberError("");
+      return false;
+    } finally {
+      setIsCheckingSerial(false);
+    }
+  }, [isLostReport]);
+
   useEffect(() => {
     fetchDeviceModels();
   }, [fetchDeviceModels]);
+
+  // Seri numarası değiştiğinde kontrol et
+  useEffect(() => {
+    if (serialNumber.trim() && model.trim()) {
+      const timeoutId = setTimeout(() => {
+        checkSerialNumberExists(serialNumber, model);
+      }, 500); // 500ms debounce
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSerialNumberError("");
+    }
+  }, [serialNumber, model, checkSerialNumberExists]);
 
   // Memoized available colors based on selected model
   const availableColors = useMemo(() => {
@@ -175,16 +231,27 @@ const AddDevicePage: React.FC = () => {
       return;
     }
 
-    // For lost devices, validate lost date and location
-    if (isLostReport) {
-      if (!lostDate) {
-        setError("Please select the date when the device was lost.");
-        return;
-      }
-      if (!sanitizedLostLocation) {
-        setError("Please enter where the device was lost.");
-        return;
-      }
+    // Seri numarası kontrolü
+    if (serialNumberError) {
+      setError(serialNumberError);
+      return;
+    }
+
+    // Son kontrol - seri numarası var mı?
+    const serialExists = await checkSerialNumberExists(sanitizedSerialNumber, sanitizedModel);
+    if (serialExists) {
+      setError(serialNumberError);
+      return;
+    }
+
+    // For both lost and found devices, validate date and location
+    if (!lostDate) {
+      setError(isLostReport ? "Please select the date when the device was lost." : "Please select the date when the device was found.");
+      return;
+    }
+    if (!sanitizedLostLocation) {
+      setError(isLostReport ? "Please enter where the device was lost." : "Please enter where the device was found.");
+      return;
     }
 
     if (!validators.serialNumber(sanitizedSerialNumber)) {
@@ -201,8 +268,8 @@ const AddDevicePage: React.FC = () => {
       rewardAmount,
       marketValue,
       invoice_url: uploadedFileUrl || undefined, // Use Supabase Storage URL
-      lost_date: isLostReport ? lostDate : undefined,
-      lost_location: isLostReport ? sanitizedLostLocation : undefined,
+      lost_date: lostDate, // Both lost and found devices have date
+      lost_location: sanitizedLostLocation, // Both lost and found devices have location
     };
 
     console.log(
@@ -248,6 +315,17 @@ const AddDevicePage: React.FC = () => {
             onChange={(e) => setSerialNumber(e.target.value)}
             required
           />
+          {serialNumberError && (
+            <div className="text-red-600 text-sm mt-1 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {serialNumberError}
+            </div>
+          )}
+          {isCheckingSerial && (
+            <div className="text-blue-600 text-sm mt-1">
+              Seri numarası kontrol ediliyor...
+            </div>
+          )}
           <div className="w-full">
             <label
               htmlFor="color"
@@ -379,52 +457,50 @@ const AddDevicePage: React.FC = () => {
             </div>
           )}
 
-          {/* Lost Date and Location - Only for lost devices */}
-          {isLostReport && (
-            <>
-              <div>
-                <label
-                  htmlFor="lostDate"
-                  className="block text-sm font-medium text-brand-gray-600 mb-1"
-                >
-                  Kayıp Tarihi
-                </label>
-                <input
-                  id="lostDate"
-                  type="date"
-                  value={lostDate}
-                  onChange={(e) => setLostDate(e.target.value)}
-                  max={new Date().toISOString().split('T')[0]} // Cannot be in the future
-                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  required
-                />
-                <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın kaybolduğu tarihi seçin
-                </p>
-              </div>
+          {/* Date and Location - For both lost and found devices */}
+          <>
+            <div>
+              <label
+                htmlFor="lostDate"
+                className="block text-sm font-medium text-brand-gray-600 mb-1"
+              >
+                {isLostReport ? "Kayıp Tarihi" : "Bulunma Tarihi"}
+              </label>
+              <input
+                id="lostDate"
+                type="date"
+                value={lostDate}
+                onChange={(e) => setLostDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]} // Cannot be in the future
+                className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                required
+              />
+              <p className="mt-1 text-xs text-brand-gray-500">
+                {isLostReport ? "Cihazın kaybolduğu tarihi seçin" : "Cihazın bulunduğu tarihi seçin"}
+              </p>
+            </div>
 
-              <div>
-                <label
-                  htmlFor="lostLocation"
-                  className="block text-sm font-medium text-brand-gray-600 mb-1"
-                >
-                  Kayıp Yeri
-                </label>
-                <input
-                  id="lostLocation"
-                  type="text"
-                  value={lostLocation}
-                  onChange={(e) => setLostLocation(e.target.value)}
-                  placeholder="Örn: Kadıköy, İstanbul - Bağdat Caddesi"
-                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  required
-                />
-                <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın kaybolduğu yeri detaylı olarak belirtin
-                </p>
-              </div>
-            </>
-          )}
+            <div>
+              <label
+                htmlFor="lostLocation"
+                className="block text-sm font-medium text-brand-gray-600 mb-1"
+              >
+                {isLostReport ? "Kayıp Yeri" : "Bulunma Yeri"}
+              </label>
+              <input
+                id="lostLocation"
+                type="text"
+                value={lostLocation}
+                onChange={(e) => setLostLocation(e.target.value)}
+                placeholder={isLostReport ? "Örn: Kadıköy, İstanbul - Bağdat Caddesi" : "Örn: Kadıköy, İstanbul - Bağdat Caddesi"}
+                className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                required
+              />
+              <p className="mt-1 text-xs text-brand-gray-500">
+                {isLostReport ? "Cihazın kaybolduğu yeri detaylı olarak belirtin" : "Cihazın bulunduğu yeri detaylı olarak belirtin"}
+              </p>
+            </div>
+          </>
 
 
           <div>

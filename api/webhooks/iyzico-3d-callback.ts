@@ -132,13 +132,12 @@ export async function handleIyzicoCallback(request: Request): Promise<Response> 
       }
     }
 
-    // Kullanıcıyı uygun sayfaya yönlendir
+    // Kullanıcıyı PaymentCallbackPage'e yönlendir (gerçek doğrulama için)
     const baseUrl = config.iyzico.callbackUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com');
-    const redirectUrl = params.status === 'success' 
-      ? `${baseUrl}/payment/success?paymentId=${params.conversationId}`
-      : `${baseUrl}/payment/failure?paymentId=${params.conversationId}&error=${encodeURIComponent(params.errorMessage || 'Payment failed')}`;
+    const deviceId = url.searchParams.get('deviceId');
+    const redirectUrl = `${baseUrl}/payment/callback?deviceId=${deviceId}&conversationId=${params.conversationId}&token=${params.token}&status=${params.status}`;
 
-    console.log('[IYZICO_CALLBACK] Redirecting to:', redirectUrl);
+    console.log('[IYZICO_CALLBACK] Redirecting to PaymentCallbackPage:', redirectUrl);
 
     return new Response(null, {
       status: 302,

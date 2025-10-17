@@ -6,7 +6,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   children: React.ReactNode;
 }
 
-const Select: React.FC<SelectProps> = ({ label, id, children, ...props }) => {
+export const Select: React.FC<SelectProps> = ({ label, id, children, ...props }) => {
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-brand-gray-600 mb-1">

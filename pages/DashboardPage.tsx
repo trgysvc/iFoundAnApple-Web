@@ -40,7 +40,7 @@ const DashboardPage: React.FC = () => {
       }
     };
     fetchDevices();
-  }, [currentUser, getUserDevices]);
+  }, [currentUser?.id]); // Sadece currentUser.id'yi dependency olarak kullan
 
   if (!currentUser) {
     console.log("DashboardPage: currentUser is null");

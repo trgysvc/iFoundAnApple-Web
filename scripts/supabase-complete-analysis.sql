@@ -388,3 +388,4 @@ Bu script'i Supabase SQL Editor'da çalıştırarak:
 Bu script'i çalıştırdıktan sonra sonuçları bana gönderin,
 sisteminizin tam durumunu analiz edip test planını hazırlayabilirim.
 */
+

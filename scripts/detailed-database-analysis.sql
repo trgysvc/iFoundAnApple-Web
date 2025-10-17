@@ -368,3 +368,4 @@ Bu script'i Supabase SQL Editor'da çalıştırarak:
 Her bölümü ayrı ayrı çalıştırarak detaylı bilgi alabilirsiniz.
 Özellikle 11. bölümdeki örnek veri sorgularını her tablo için çalıştırın.
 */
+

@@ -3,6 +3,9 @@
  * Backend olmadan direkt İyzico API ile çalışır
  */
 
+import { createClient } from './supabaseClient';
+import { getSecureConfig } from './security';
+
 interface PaymentData {
   deviceId: string;
   amount: number;
@@ -65,18 +68,10 @@ const generateHashV2 = async (apiKey: string, randomString: string, secretKey: s
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
   
-  const authorizationParams = [
-    "apiKey" + ":" + apiKey,
-    "randomKey" + ":" + randomString,
-    "signature" + ":" + signatureHex,
-  ];
+  // İyzico'nun beklediği format: IYZWS apiKey:signature
+  const authorization = apiKey + ":" + signatureHex;
   
-  // Türkçe karakterleri encode et
-  const encodeToBase64 = (str: string) => {
-    return btoa(unescape(encodeURIComponent(str)));
-  };
-  
-  return encodeToBase64(authorizationParams.join("&"));
+  return btoa(authorization);
 };
 
 const createHeaders = async (body: any, uri: string) => {
@@ -91,7 +86,7 @@ const createHeaders = async (body: any, uri: string) => {
     uri
   );
   
-  headers["Authorization"] = "IYZWSv2 " + authHash;
+  headers["Authorization"] = "IYZWS " + authHash;
   headers["x-iyzi-rnd"] = randomString;
   headers["x-iyzi-client-version"] = "iyzipay-frontend-1.0.0";
   
@@ -106,18 +101,65 @@ export const createIyzicoCheckoutForm = async (paymentData: PaymentData): Promis
       payer: paymentData.payerInfo.email
     });
 
-    // Callback URL (HashRouter için hash gerekli)
-    const callbackUrl = `${window.location.origin}/#/payment/callback`;
+    // Gerçek kullanıcı bilgilerini Supabase'den al
+    const config = getSecureConfig();
+    const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    let userProfile = null;
+    
+    if (user) {
+      const { data: profileData } = await supabase
+        .from('userprofile')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      userProfile = profileData;
+      console.log('[FRONTEND] Kullanıcı profili alındı:', userProfile);
+    }
+
+    // Callback URL (HashRouter için hash gerekli) - Device ID ile
+    const callbackUrl = `${window.location.origin}/#/payment/callback?deviceId=${paymentData.deviceId}`;
 
     // İyzico 3DS Initialize request (örnek koduna göre)
     const conversationId = crypto.randomUUID();
     const basketId = "SB" + Math.floor(Date.now() / 1000);
     
+    // Profil bilgileri kontrolü - ödeme için gerekli tüm bilgiler mevcut olmalı
+    if (!userProfile?.first_name || !userProfile?.last_name || !userProfile?.tc_kimlik_no || 
+        !userProfile?.phone_number || !userProfile?.address) {
+      throw new Error('Profil bilgilerinizi tamamlayınız. Lütfen tekrar deneyin.');
+    }
+
+    // Gerçek kullanıcı bilgilerini kullan
+    const buyerInfo = {
+      id: user?.id?.substring(0, 8) || 'BY' + Math.random().toString(36).substring(2, 8),
+      name: userProfile.first_name,
+      surname: userProfile.last_name,
+      identityNumber: userProfile.tc_kimlik_no,
+      email: userProfile.email || paymentData.payerInfo.email,
+      gsmNumber: userProfile.phone_number,
+      registrationAddress: userProfile.address,
+      city: userProfile.city || 'İstanbul',
+      country: userProfile.country || 'Turkey',
+      zipCode: userProfile.zip_code || '34732',
+      ip: window.location.hostname === 'localhost' ? '127.0.0.1' : '85.34.78.112' // Gerçek IP için backend gerekli
+    };
+
+    console.log('[FRONTEND] Gerçek kullanıcı bilgileri İyzico\'ya gönderiliyor:', {
+      name: buyerInfo.name,
+      surname: buyerInfo.surname,
+      identityNumber: buyerInfo.identityNumber?.substring(0, 3) + '***', // Güvenlik için maskelenmiş
+      email: buyerInfo.email,
+      phone: buyerInfo.gsmNumber?.substring(0, 3) + '***' // Güvenlik için maskelenmiş
+    });
+    
     const checkoutRequest = {
       locale: 'tr',
       conversationId: conversationId,
-      price: paymentData.amount.toFixed(1),
-      paidPrice: paymentData.amount.toFixed(1),
+      price: paymentData.amount.toFixed(2),
+      paidPrice: paymentData.amount.toFixed(2),
       installment: 1,
       paymentChannel: 'WEB',
       basketId: basketId,
@@ -129,37 +171,25 @@ export const createIyzicoCheckoutForm = async (paymentData: PaymentData): Promis
         expireMonth: '12',
         cvc: '123'
       },
-      buyer: {
-        id: 'BY' + Math.random().toString(36).substring(2, 8),
-        name: paymentData.payerInfo.name || 'John',
-        surname: paymentData.payerInfo.surname || 'Doe',
-        identityNumber: '1234512345123125213125213',
-        email: paymentData.payerInfo.email,
-        gsmNumber: (paymentData.payerInfo.phone || '+905350000000').toString(),
-        registrationAddress: 'Altunizade Mah. İnci Çıkmazı Sokak No: 3 İç Kapı No: 10 Üsküdar İstanbul',
-        city: 'İstanbul',
-        country: 'Turkey',
-        zipCode: '34732',
-        ip: '85.34.78.112'
-      },
+      buyer: buyerInfo,
       shippingAddress: {
-        address: 'Altunizade Mah. İnci Çıkmazı Sokak No: 3 İç Kapı No: 10 Üsküdar İstanbul',
-        zipCode: '34742',
-        contactName: (paymentData.payerInfo.name || 'John') + ' ' + (paymentData.payerInfo.surname || 'Doe'),
-        city: 'Istanbul',
-        country: 'Turkey'
+        address: buyerInfo.registrationAddress,
+        zipCode: buyerInfo.zipCode,
+        contactName: `${buyerInfo.name} ${buyerInfo.surname}`,
+        city: buyerInfo.city,
+        country: buyerInfo.country
       },
       billingAddress: {
-        address: 'Altunizade Mah. İnci Çıkmazı Sokak No: 3 İç Kapı No: 10 Üsküdar İstanbul',
-        zipCode: '34742',
-        contactName: (paymentData.payerInfo.name || 'John') + ' ' + (paymentData.payerInfo.surname || 'Doe'),
-        city: 'Istanbul',
-        country: 'Turkey'
+        address: buyerInfo.registrationAddress,
+        zipCode: buyerInfo.zipCode,
+        contactName: `${buyerInfo.name} ${buyerInfo.surname}`,
+        city: buyerInfo.city,
+        country: buyerInfo.country
       },
       basketItems: [
         {
           id: paymentData.deviceId,
-          price: paymentData.amount.toFixed(1),
+          price: paymentData.amount.toFixed(2),
           name: paymentData.deviceInfo.model || 'iPhone',
           category1: 'Electronics',
           itemType: 'PHYSICAL'
@@ -172,13 +202,12 @@ export const createIyzicoCheckoutForm = async (paymentData: PaymentData): Promis
     console.log('[FRONTEND] Creating checkout form...');
     console.log('[FRONTEND] Request data:', JSON.stringify(checkoutRequest, null, 2));
 
-    // Development'da mock response döndür (gerçek İyzico API'si yerine)
-    const apiUrl = import.meta.env.DEV 
-      ? '/api/iyzico'  // Vite proxy
-      : `${IYZICO_CONFIG.baseUrl}/payment/3dsecure/initialize`;  // 3DS Initialize endpoint
+    // Gerçek İyzico API'sini kullan
+    const apiUrl = `${IYZICO_CONFIG.baseUrl}/payment/iyzipos/checkoutform/auth/ecom/initialize`;
+    console.log('[FRONTEND] Gerçek İyzico API\'sine istek gönderiliyor...', apiUrl);
 
     // Gerçek İyzico signature ile headers oluştur
-    const uri = '/payment/3dsecure/initialize';
+    const uri = '/payment/iyzipos/checkoutform/auth/ecom/initialize';
     const headers = await createHeaders(checkoutRequest, uri);
     headers['Content-Type'] = 'application/json';
 
@@ -206,7 +235,7 @@ export const createIyzicoCheckoutForm = async (paymentData: PaymentData): Promis
     } else {
       return {
         success: false,
-        errorMessage: result.errorMessage || '3DS initialization failed',
+        errorMessage: result.errorMessage || 'Checkout form initialization failed',
         errorCode: result.errorCode
       };
     }
@@ -295,13 +324,33 @@ export const handle3DSRedirect = (threeDSHtmlContent: string) => {
     // İyzico'nun orijinal form'unu kullan (callbackUrl zaten doğru)
     console.log('[FRONTEND] İyzico 3DS form açılıyor...');
     
-    // Yeni window'da 3DS sayfasını aç
-    const newWindow = window.open('', '_blank');
-    if (newWindow) {
-      newWindow.document.write(decodedHtml);
-      newWindow.document.close();
+    // Aynı pencerede 3DS sayfasını aç - window.location.href ile
+    const newForm = document.createElement('form');
+    newForm.method = 'POST';
+    newForm.action = 'https://sandbox-api.iyzipay.com/payment/3dsecure/initialize';
+    newForm.target = '_self';
+    
+    // HTML content'i parse et ve form'a ekle
+    const newParser = new DOMParser();
+    const newDoc = newParser.parseFromString(decodedHtml, 'text/html');
+    const originalForm = newDoc.querySelector('form');
+    
+    if (originalForm) {
+      // Orijinal form'dan input'ları al
+      const inputs = originalForm.querySelectorAll('input');
+      inputs.forEach(input => {
+        const newInput = document.createElement('input');
+        newInput.type = 'hidden';
+        newInput.name = input.name;
+        newInput.value = input.value;
+        newForm.appendChild(newInput);
+      });
+      
+      // Form'u submit et
+      document.body.appendChild(newForm);
+      newForm.submit();
     } else {
-      // Popup engellenmişse, mevcut sayfada göster
+      // Fallback: Mevcut sayfada göster
       const container = document.getElementById('3ds-container');
       if (container) {
         container.innerHTML = decodedHtml;

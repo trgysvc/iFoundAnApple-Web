@@ -3,8 +3,8 @@
 Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi bilginin hangi tabloya yazılacağını gösterir.
 
 **Son Güncelleme:** 20 Aralık 2024  
-**Versiyon:** 3.0  
-**Durum:** Test Aşamasında - Sistem Analizi Tamamlandı
+**Versiyon:** 4.0  
+**Durum:** Test Aşamasında - Yeni Süreç Akışı Eklendi
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -17,15 +17,17 @@ Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi
 export enum DeviceStatus {
   LOST = "lost",                    // Cihaz sahibi kayıp bildirimi
   REPORTED = "reported",            // Bulan kişi buldu bildirimi  
-  MATCHED = "matched",              // Eşleşme bulundu
-  PAYMENT_PENDING = "payment_pending", // Ödeme bekleniyor
-  PAYMENT_COMPLETE = "payment_completed", // Ödeme tamamlandı ✅
-  EXCHANGE_PENDING = "exchange_pending", // Değişim bekleniyor
-  COMPLETED = "completed",           // İşlem tamamlandı
+  MATCHED = "matched",              // Cihaz eşleşiyor
+  PAYMENT_PENDING = "payment_pending", // Cihazı kaybeden ödemesini yapıyor
+  PAYMENT_COMPLETE = "payment_completed", // Ödeme emanet sisteminde bekletiliyor
+  CARGO_SHIPPED = "cargo_shipped",   // Cihazı bulan kargo firmasına kod ile teslim ediyor
+  DELIVERED = "delivered",           // Kargo firması cihazı sahibine teslim ediyor
+  CONFIRMED = "confirmed",           // Cihazın sahibi cihaz eline geçince onaylıyor
+  COMPLETED = "completed",           // İşlem tamamlanıyor
 }
 ```
 
-**NOT:** Enum tutarsızlığı düzeltildi. Artık tüm sistem `payment_completed` kullanıyor.
+**NOT:** Yeni süreç akışına göre güncellendi. `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
 
 ---
 
@@ -42,6 +44,11 @@ export enum DeviceStatus {
 - **`device_models`** - Cihaz modelleri ve fiyatlandırma
 - **`cargo_companies`** - Kargo şirketleri
 - **`audit_logs`** - Denetim kayıtları
+
+### **Yeni Süreç Tabloları (v4.0):**
+- **`cargo_codes`** - Kargo kod sistemi
+- **`delivery_confirmations`** - Teslimat onay sistemi
+- **`final_payment_distributions`** - Son ödeme dağıtım sistemi
 
 ### **Yardımcı Tablolar:**
 - **`payment_summaries`** - Ödeme özetleri
@@ -1045,7 +1052,7 @@ Hangi aşamalarda hangi bildirimler gidiyor?
 
 ---
 
-## 🔄 SÜREÇ AKIŞ DİYAGRAMI
+## 🔄 SÜREÇ AKIŞ DİYAGRAMI (YENİ - v4.0)
 
 ```
 CİHAZ SAHİBİ                           SİSTEM                           CİHAZ BULAN
@@ -1061,58 +1068,241 @@ PENDING ────────────────────────
     ↓                                   ↓                                      ↓
 payment_completed ←────────────── Escrow HELD ──────────────────────→ payment_completed
     ↓                                   ↓                                      ↓
-Kargo Bekle                        Kargo Takip                          Kargo Gönder
+Kargo Bekle                        Kargo Kod Oluştur                    Kargo Kod Al
     ↓                                   ↓                                      ↓
-CARGO_SHIPPED ←────────────────── Kargo Bilgisi ←──────────────────── CARGO_SHIPPED
+CARGO_SHIPPED ←────────────────── Kargo Kod Sistemi ←───────────────── CARGO_SHIPPED
     ↓                                   ↓                                      ↓
-Kargo Al                           Teslimat                             Teslimat Bekle
+Kargo Takip                         Teslimat Takip                       Teslimat Bekle
+    ↓                                   ↓                                      ↓
+DELIVERED ←─────────────────────── Teslimat Bildirimi ←───────────────── DELIVERED
     ↓                                   ↓                                      ↓
 Onay Ver ──────────────────────→ Escrow Release ──────────────────────→ Para Al
     ↓                                   ↓                                      ↓
+CONFIRMED ←────────────────────── Final Payment Distribution ──────────→ CONFIRMED
+    ↓                                   ↓                                      ↓
 COMPLETED                          COMPLETED                            COMPLETED
+```
+
+### **Yeni Süreç Adımları (v4.0):**
+
+#### **7. Kargo Kod Sistemi**
+```
+Bulan kişi → Kargo kod oluştur → Kargo firmasına teslim et
+```
+
+**Database Kayıtları:**
+```sql
+-- cargo_codes tablosuna kayıt
+INSERT INTO cargo_codes (
+  id,                    -- gen_random_uuid()
+  device_id,             -- Device ID'si
+  payment_id,            -- Payment ID'si
+  code,                  -- Kargo firmasına verilecek kod
+  generated_by,          -- Bulan kişinin ID'si
+  cargo_company,         -- Hangi kargo firması
+  status,                -- 'active'
+  expires_at,            -- Kod son kullanma tarihi
+  created_at,            -- now()
+  updated_at             -- now()
+);
+
+-- devices tablosunda güncelleme
+UPDATE devices 
+SET 
+  status = 'CARGO_SHIPPED',
+  cargo_code_id = [cargo_code_id],
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+#### **8. Teslimat Takibi**
+```
+Kargo firması → Teslimat yap → Status: DELIVERED
+```
+
+**Database Kayıtları:**
+```sql
+-- cargo_shipments tablosunda güncelleme
+UPDATE cargo_shipments 
+SET 
+  status = 'delivered',
+  delivered_at = now(),
+  updated_at = now()
+WHERE device_id = [device_id];
+
+-- devices tablosunda güncelleme
+UPDATE devices 
+SET 
+  status = 'DELIVERED',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+#### **9. Teslimat Onayı**
+```
+Cihaz sahibi → Cihazı kontrol et → Onay ver
+```
+
+**Database Kayıtları:**
+```sql
+-- delivery_confirmations tablosuna kayıt
+INSERT INTO delivery_confirmations (
+  id,                    -- gen_random_uuid()
+  device_id,             -- Device ID'si
+  payment_id,            -- Payment ID'si
+  cargo_shipment_id,     -- Cargo shipment ID'si
+  confirmed_by,          -- Cihaz sahibinin ID'si
+  confirmation_type,     -- 'device_received', 'device_verified', 'exchange_confirmed'
+  confirmation_data,     -- JSON: {photos, notes, device_condition}
+  confirmed_at,          -- now()
+  created_at             -- now()
+);
+
+-- devices tablosunda güncelleme
+UPDATE devices 
+SET 
+  status = 'CONFIRMED',
+  delivery_confirmed_at = now(),
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+#### **10. Emanet Serbest Bırakma**
+```
+Onay verildi → Escrow release → Final payment distribution
+```
+
+**Database Kayıtları:**
+```sql
+-- escrow_accounts tablosunda güncelleme
+UPDATE escrow_accounts 
+SET 
+  status = 'released',
+  released_at = now(),
+  confirmations = jsonb_build_array(
+    jsonb_build_object(
+      'user_id', [device_owner_id],
+      'confirmation_type', 'exchange_confirmed',
+      'timestamp', now()
+    )
+  ),
+  updated_at = now()
+WHERE payment_id = [payment_id];
+
+-- final_payment_distributions tablosuna kayıt
+INSERT INTO final_payment_distributions (
+  id,                    -- gen_random_uuid()
+  device_id,             -- Device ID'si
+  payment_id,            -- Payment ID'si
+  escrow_account_id,     -- Escrow account ID'si
+  total_amount,          -- Toplam dağıtım tutarı
+  gateway_fee,           -- İyzico işlem ücreti
+  cargo_fee,             -- Kargo ücreti
+  reward_amount,         -- Bulan kişi ödülü
+  service_fee,           -- Servis ücreti
+  status,                -- 'pending'
+  created_at,            -- now()
+  updated_at             -- now()
+);
+```
+
+#### **11. Son Ödeme Dağıtımı**
+```
+Sistem → 4 farklı transfer yap → Status: COMPLETED
+```
+
+**Database Kayıtları:**
+```sql
+-- final_payment_distributions tablosunda güncelleme
+UPDATE final_payment_distributions 
+SET 
+  gateway_transfer_id = [iyzico_transfer_id],
+  cargo_transfer_id = [cargo_company_transfer_id],
+  reward_transfer_id = [finder_transfer_id],
+  service_transfer_id = [platform_transfer_id],
+  status = 'completed',
+  processed_at = now(),
+  updated_at = now()
+WHERE id = [distribution_id];
+
+-- devices tablosunda güncelleme
+UPDATE devices 
+SET 
+  status = 'COMPLETED',
+  final_payment_distributed_at = now(),
+  updated_at = now()
+WHERE id = [device_id];
 ```
 
 ---
 
 ## 🧪 **TEST SENARYOLARI**
 
-### **Temel Test Akışı**
+### **Temel Test Akışı (Güncellenmiş - v4.0)**
 1. **Kayıt**: Email/şifre ile kayıt
 2. **Cihaz Ekleme**: Kayıp cihaz kaydı
 3. **Eşleşme**: Seri numarası ile eşleşme
 4. **Ödeme**: İyzico ile ödeme
-5. **Kargo**: Kargo bilgileri girme
-6. **Onay**: Teslimat onayı
-7. **Escrow Release**: Para transferi
+5. **Kargo Kod**: Kargo kod sistemi
+6. **Teslimat**: Kargo teslimat takibi
+7. **Onay**: Teslimat onayı
+8. **Escrow Release**: Emanet serbest bırakma
+9. **Final Distribution**: Son ödeme dağıtımı
 
 ### **Test Verileri**
 - **Cihaz Modelleri**: `device_models` tablosundan
 - **Kargo Şirketleri**: `cargo_companies` tablosundan
 - **Test Kartları**: İyzico sandbox kartları
+- **Kargo Kodları**: Test kargo kodları
 
-### **Kritik Test Noktaları**
+### **Kritik Test Noktaları (Güncellenmiş - v4.0)**
 - ✅ Enum tutarsızlığı düzeltildi
+- ✅ Yeni status akışı eklendi
+- ✅ Kargo kod sistemi eklendi
+- ✅ Teslimat onay sistemi eklendi
+- ✅ Son ödeme dağıtım sistemi eklendi
 - ⚠️ RLS politikaları test edilmeli
 - ⚠️ İyzico callback'leri test edilmeli
 - ⚠️ Escrow release süreci test edilmeli
+- ⚠️ Kargo kod sistemi test edilmeli
+- ⚠️ Final payment distribution test edilmeli
 
 ---
 
 ## 📚 **SONRAKI ADIMLAR**
 
-### **Test Aşaması**
+### **Test Aşaması (Güncellenmiş - v4.0)**
 1. **Manuel Test**: Tüm süreçleri test et
 2. **Payment Test**: İyzico sandbox ile test
-3. **RLS Test**: Güvenlik politikalarını test et
-4. **Performance Test**: Yük testi
+3. **Kargo Kod Test**: Kargo kod sistemi test
+4. **Teslimat Test**: Teslimat onay sistemi test
+5. **Final Distribution Test**: Son ödeme dağıtım test
+6. **RLS Test**: Güvenlik politikalarını test et
+7. **Performance Test**: Yük testi
 
-### **Production Hazırlığı**
+### **Production Hazırlığı (Güncellenmiş - v4.0)**
 1. **RLS Aktifleştirme**: Kritik tablolarda RLS aç
-2. **Environment Variables**: Production değerleri
-3. **Monitoring**: Log ve error tracking
-4. **Backup**: Database backup stratejisi
+2. **Kargo Firması Entegrasyonu**: Kargo kod sistemi entegrasyonu
+3. **Payment Gateway**: Final payment distribution entegrasyonu
+4. **Environment Variables**: Production değerleri
+5. **Monitoring**: Log ve error tracking
+6. **Backup**: Database backup stratejisi
+
+### **Yeni Özellikler (v4.0)**
+1. **Kargo Kod Sistemi**: Kargo firmasına teslim sistemi
+2. **Teslimat Onay Sistemi**: Detaylı onay süreci
+3. **Final Payment Distribution**: 4 farklı transfer sistemi
+4. **Gelişmiş Status Akışı**: 9 farklı status
+5. **Escrow Release Koşulları**: Detaylı serbest bırakma koşulları
 
 ---
 
-**✅ Bu dosya sistem analizi tamamlandıktan sonra güncellenmiştir. Test sürecine hazır.**
+**✅ Bu dosya yeni süreç akışına göre güncellenmiştir (v4.0). Test sürecine hazır.**
+
+**Yeni Özellikler:**
+- Kargo kod sistemi
+- Teslimat onay sistemi  
+- Final payment distribution
+- Gelişmiş status akışı
+- Detaylı escrow release koşulları
 

@@ -107,18 +107,6 @@ export default defineConfig(({ mode }) => {
         },
         // Proxy for İyzico API (CORS bypass)
         proxy: {
-          '/api/iyzico': {
-            target: 'https://sandbox-api.iyzipay.com',
-            changeOrigin: true,
-                    rewrite: (path) => path.replace(/^\/api\/iyzico/, '/payment/3dsecure/initialize'),
-            configure: (proxy, options) => {
-              proxy.on('proxyReq', (proxyReq, req, res) => {
-                // Add İyzico headers
-                proxyReq.setHeader('Content-Type', 'application/json');
-                        // Test modu - Authorization header kaldırıldı
-              });
-            }
-          },
           '/api/iyzico-verify': {
             target: 'https://sandbox-api.iyzipay.com',
             changeOrigin: true,
@@ -127,7 +115,7 @@ export default defineConfig(({ mode }) => {
               proxy.on('proxyReq', (proxyReq, req, res) => {
                 // Add İyzico headers
                 proxyReq.setHeader('Content-Type', 'application/json');
-                        // Test modu - Authorization header kaldırıldı
+                proxyReq.setHeader('Authorization', 'IYZWS sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL:' + Buffer.from('sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR').toString('base64'));
               });
             }
           }

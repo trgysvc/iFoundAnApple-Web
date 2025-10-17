@@ -539,3 +539,4 @@ Bu çıktıları dosyalara kaydederek bana gönderebilirsiniz.
 Alternatif olarak, her sorguyu ayrı ayrı çalıştırarak
 sonuçları kopyalayıp bana gönderebilirsiniz.
 */
+

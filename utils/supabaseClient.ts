@@ -4,6 +4,9 @@ import { getSecureConfig } from "./security.ts";
 // Get secure configuration from environment variables
 const { supabaseUrl, supabaseAnonKey } = getSecureConfig();
 
+// Export createClient function for dynamic client creation
+export { createClient };
+
 // Create a single Supabase client instance to be used throughout the application
 // This prevents multiple GoTrueClient instances warning
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

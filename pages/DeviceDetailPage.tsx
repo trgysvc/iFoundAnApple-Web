@@ -7,6 +7,9 @@ import Button from "../components/ui/Button.tsx";
 import NotFoundPage from "./NotFoundPage.tsx";
 import { getSecureInvoiceUrl } from "../utils/fileUpload.ts";
 import { supabase as supabaseClient } from "../utils/supabaseClient.ts";
+import { DeliveryConfirmationForm } from "../components/escrow/DeliveryConfirmationForm.tsx";
+import { DisputeForm } from "../components/escrow/DisputeForm.tsx";
+import { EscrowStatusDisplay } from "../components/escrow/EscrowStatusDisplay.tsx";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -17,6 +20,7 @@ import {
   Info,
   Paperclip,
   Check,
+  Download,
 } from "lucide-react";
 
 // A generic view for displaying status information and actions.
@@ -53,6 +57,38 @@ const DeviceDetailPage: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [secureInvoiceUrl, setSecureInvoiceUrl] = useState<string | null>(null);
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
+
+  // Dosya indirme fonksiyonu
+  const handleDownloadInvoice = async () => {
+    if (!device?.invoice_url) return;
+    
+    setIsLoadingInvoice(true);
+    try {
+      const secureUrl = await getSecureInvoiceUrl(device.invoice_url);
+      if (secureUrl) {
+        // Fetch ile dosyayı al ve blob olarak indir
+        const response = await fetch(secureUrl);
+        const blob = await response.blob();
+        
+        // Blob URL oluştur ve indir
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `fatura_${device.model}_${device.serialNumber}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Blob URL'yi temizle
+        window.URL.revokeObjectURL(blobUrl);
+      }
+    } catch (error) {
+      console.error("Dosya indirme hatası:", error);
+      alert("Dosya indirilemedi. Lütfen tekrar deneyin.");
+    } finally {
+      setIsLoadingInvoice(false);
+    }
+  };
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -436,17 +472,16 @@ const DeviceDetailPage: React.FC = () => {
                     {isLoadingInvoice ? (
                       <div className="flex items-center text-gray-500">
                         <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                        Yükleniyor...
+                        İndiriliyor...
                       </div>
                     ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                      <a
-                        href={secureInvoiceUrl || device.invoiceDataUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 font-medium underline"
+                      <button
+                        onClick={handleDownloadInvoice}
+                        className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
                       >
-                        EKLENEN DOSYA LİNKİ
-                      </a>
+                        <Download className="w-4 h-4 mr-1" />
+                        Dosyayı İndir
+                      </button>
                     ) : (
                       <span className="text-gray-500">Dosya eklenmemiş</span>
                     )}
@@ -1089,17 +1124,16 @@ const DeviceDetailPage: React.FC = () => {
                     {isLoadingInvoice ? (
                       <div className="flex items-center text-gray-500">
                         <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                        Yükleniyor...
+                        İndiriliyor...
                       </div>
                     ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                      <a
-                        href={secureInvoiceUrl || device.invoiceDataUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 font-medium underline"
+                      <button
+                        onClick={handleDownloadInvoice}
+                        className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
                       >
-                        EKLENEN DOSYA LİNKİ
-                      </a>
+                        <Download className="w-4 h-4 mr-1" />
+                        Dosyayı İndir
+                      </button>
                     ) : (
                       <span className="text-gray-500">Dosya eklenmemiş</span>
                     )}
@@ -1475,19 +1509,48 @@ const DeviceDetailPage: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
-                        <div className="flex items-center justify-between">
-                          <p className="text-gray-600 text-sm">Teslim aldığınızı onaylayın</p>
-                          <Button 
-                            variant="primary" 
-                            className="ml-4"
-                            disabled
-                          >
-                            Onay
-                          </Button>
-                        </div>
+                        <p className="text-gray-600 text-sm">Teslim aldığınızı onaylayın</p>
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Emanet Durumu */}
+                <EscrowStatusDisplay 
+                  paymentId={device.paymentId || ''} 
+                  onRefresh={() => window.location.reload()}
+                />
+
+                {/* Teslimat Onay Formu */}
+                <div className="mt-6">
+                  <DeliveryConfirmationForm
+                    deviceId={device.id}
+                    paymentId={device.paymentId || ''}
+                    cargoShipmentId={device.cargoShipmentId || ''}
+                    onSuccess={() => {
+                      alert('Teslimat onayı başarıyla alındı!');
+                      window.location.reload();
+                    }}
+                    onError={(error) => {
+                      alert('Hata: ' + error);
+                    }}
+                  />
+                </div>
+
+                {/* İtiraz Formu */}
+                <div className="mt-6">
+                  <DisputeForm
+                    deviceId={device.id}
+                    paymentId={device.paymentId || ''}
+                    cargoShipmentId={device.cargoShipmentId || ''}
+                    onSuccess={() => {
+                      alert('İtirazınız başarıyla alındı!');
+                      window.location.reload();
+                    }}
+                    onError={(error) => {
+                      alert('Hata: ' + error);
+                    }}
+                  />
                 </div>
 
                 {/* Action Buttons */}

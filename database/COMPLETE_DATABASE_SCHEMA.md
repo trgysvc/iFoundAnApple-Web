@@ -3,8 +3,8 @@
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
 **Son Güncelleme:** 20 Aralık 2024  
-**Versiyon:** 3.0  
-**Durum:** Test Aşamasında - Sistem Analizi Tamamlandı
+**Versiyon:** 4.1  
+**Durum:** Test Aşamasında - Supabase Schema Sync Tamamlandı
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -18,6 +18,11 @@ Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içe
 - `escrow_accounts` - RLS: DISABLED (2 politika tanımlı)
 - `financial_transactions` - RLS: DISABLED (2 politika tanımlı)
 - `payments` - RLS: DISABLED (4 politika tanımlı)
+
+**RLS AKTİF TABLOLAR (Yeni eklenenler):**
+- `cargo_codes` - RLS: ENABLED (4 politika tanımlı)
+- `delivery_confirmations` - RLS: ENABLED (4 politika tanımlı)
+- `final_payment_distributions` - RLS: ENABLED (3 politika tanımlı)
 
 **PRODUCTION'A GEÇMEDEN ÖNCE AKTİF EDİLECEK:**
 ```sql
@@ -38,15 +43,17 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 export enum DeviceStatus {
   LOST = "lost",                    // Cihaz sahibi kayıp bildirimi
   REPORTED = "reported",            // Bulan kişi buldu bildirimi  
-  MATCHED = "matched",              // Eşleşme bulundu
-  PAYMENT_PENDING = "payment_pending", // Ödeme bekleniyor
-  PAYMENT_COMPLETE = "payment_completed", // Ödeme tamamlandı ✅
-  EXCHANGE_PENDING = "exchange_pending", // Değişim bekleniyor
-  COMPLETED = "completed",           // İşlem tamamlandı
+  MATCHED = "matched",              // Cihaz eşleşiyor
+  PAYMENT_PENDING = "payment_pending", // Cihazı kaybeden ödemesini yapıyor
+  PAYMENT_COMPLETE = "payment_completed", // Ödeme emanet sisteminde bekletiliyor
+  CARGO_SHIPPED = "cargo_shipped",   // Cihazı bulan kargo firmasına kod ile teslim ediyor
+  DELIVERED = "delivered",           // Kargo firması cihazı sahibine teslim ediyor
+  CONFIRMED = "confirmed",           // Cihazın sahibi cihaz eline geçince onaylıyor
+  COMPLETED = "completed",           // İşlem tamamlanıyor
 }
 ```
 
-**NOT:** Enum tutarsızlığı düzeltildi. Artık tüm sistem `payment_completed` kullanıyor.
+**NOT:** Yeni süreç akışına göre güncellendi. `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
 
 ---
 
@@ -137,6 +144,8 @@ Kargo gönderilerini takip eden tablo.
 | special_instructions | text | YES | null | Special instructions |
 | notes | text | YES | null | Notes |
 | failure_reason | text | YES | null | Failure reason |
+| cargo_code | character varying(20) | YES | null | Kargo firmasına verilen kod |
+| delivery_confirmation_id | uuid | YES | null | Teslimat onay ID'si (FK) |
 
 ### 4. **device_models**
 Cihaz modellerini tutan tablo.
@@ -176,6 +185,9 @@ Kayıp/bulunan cihazları tutan ana tablo.
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 | lost_date | date | YES | null | Date when device was lost (YYYY-MM-DD) |
 | lost_location | text | YES | null | Location where device was lost |
+| cargo_code_id | uuid | YES | null | Kargo kod ID'si (FK) |
+| delivery_confirmed_at | timestamp with time zone | YES | null | Teslimat onay tarihi |
+| final_payment_distributed_at | timestamp with time zone | YES | null | Son ödeme dağıtım tarihi |
 
 ### 6. **escrow_accounts**
 Escrow hesaplarını tutan tablo.
@@ -187,19 +199,18 @@ Escrow hesaplarını tutan tablo.
 | device_id | uuid | NO | null | Device ID (FK) |
 | holder_user_id | uuid | NO | null | Holder user ID (FK) |
 | beneficiary_user_id | uuid | NO | null | Beneficiary user ID (FK) |
-| total_amount | numeric | NO | null | Total amount |
-| reward_amount | numeric | NO | null | Reward amount |
-| service_fee | numeric | NO | 0.00 | Service fee |
-| gateway_fee | numeric | NO | 0.00 | Gateway fee |
-| cargo_fee | numeric | NO | 0.00 | Cargo fee |
-| net_payout | numeric | NO | 0.00 | Net payout |
+| total_amount | numeric(10,2) | NO | null | Total amount |
+| reward_amount | numeric(10,2) | NO | null | Reward amount |
+| service_fee | numeric(10,2) | NO | 0.00 | Service fee |
+| cargo_fee | numeric(10,2) | NO | 0.00 | Cargo fee |
+| net_payout | numeric(10,2) | NO | 0.00 | Net payout |
 | status | character varying(20) | NO | 'pending' | Escrow status |
 | created_at | timestamp with time zone | YES | now() | Created timestamp |
 | held_at | timestamp with time zone | YES | null | Held timestamp |
 | released_at | timestamp with time zone | YES | null | Released timestamp |
 | refunded_at | timestamp with time zone | YES | null | Refunded timestamp |
-| release_conditions | jsonb | NO | '[]' | Release conditions |
-| confirmations | jsonb | NO | '[]' | Confirmations |
+| release_conditions | jsonb | NO | '[]' | Emanet serbest bırakma koşulları |
+| confirmations | jsonb | NO | '[]' | Onaylar listesi |
 | currency | character varying(3) | YES | 'TRY' | Currency |
 | notes | text | YES | null | Notes |
 | admin_notes | text | YES | null | Admin notes |
@@ -207,9 +218,9 @@ Escrow hesaplarını tutan tablo.
 | released_by | uuid | YES | null | Released by (FK) |
 | refunded_by | uuid | YES | null | Refunded by (FK) |
 | escrow_type | character varying(20) | YES | 'standard' | Escrow type |
-| auto_release_days | integer | YES | 30 | Auto release days |
-| escrow_fee | numeric | YES | 0.00 | Escrow fee |
-| insurance_amount | numeric | YES | 0.00 | Insurance amount |
+| auto_release_days | integer | YES | 30 | Otomatik serbest bırakma gün sayısı |
+| escrow_fee | numeric(10,2) | YES | 0.00 | Escrow fee |
+| insurance_amount | numeric(10,2) | YES | 0.00 | Insurance amount |
 | risk_assessment | character varying(20) | YES | 'low' | Risk assessment |
 | compliance_verified | boolean | YES | false | Compliance verified |
 | release_reason | text | YES | null | Release reason |
@@ -222,14 +233,15 @@ Escrow hesaplarını tutan tablo.
 | dispute_reason | text | YES | null | Dispute reason |
 | resolution_method | character varying(20) | YES | null | Resolution method |
 | resolution_notes | text | YES | null | Resolution notes |
-| processing_fee | numeric | YES | 0.00 | Processing fee |
-| platform_fee | numeric | YES | 0.00 | Platform fee |
-| total_fees | numeric | YES | 0.00 | Total fees |
-| net_amount | numeric | YES | 0.00 | Net amount |
+| processing_fee | numeric(10,2) | YES | 0.00 | Processing fee |
+| platform_fee | numeric(10,2) | YES | 0.00 | Platform fee |
+| total_fees | numeric(10,2) | YES | 0.00 | Total fees |
+| net_amount | numeric(10,2) | YES | 0.00 | Net amount |
 | metadata | jsonb | YES | '{}' | Metadata |
-| tags | text[] | YES | null | Tags |
+| tags | ARRAY | YES | null | Tags |
 | priority | character varying(10) | YES | 'normal' | Priority |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+| gross_amount | numeric(10,2) | NO | 0.00 | Gross amount |
 
 ### 7. **financial_transactions**
 Finansal işlemleri tutan tablo.
@@ -237,16 +249,26 @@ Finansal işlemleri tutan tablo.
 | Column | Type | Nullable | Default | Description |
 |--------|------|----------|---------|-------------|
 | id | uuid | NO | gen_random_uuid() | Primary key |
-| transaction_type | character varying(50) | NO | null | Transaction type |
+| payment_id | uuid | YES | null | Payment ID (FK) |
+| device_id | uuid | NO | null | Device ID (FK) |
 | from_user_id | uuid | YES | null | From user ID (FK) |
 | to_user_id | uuid | YES | null | To user ID (FK) |
-| device_id | uuid | YES | null | Device ID (FK) |
-| payment_id | uuid | YES | null | Payment ID (FK) |
-| amount | numeric | NO | null | Amount |
+| transaction_type | character varying(30) | NO | null | Transaction type |
+| amount | numeric(10,2) | NO | null | Amount |
 | currency | character varying(3) | YES | 'TRY' | Currency |
 | status | character varying(20) | NO | 'pending' | Status |
-| description | text | YES | null | Description |
+| external_transaction_id | character varying(200) | YES | null | External transaction ID |
+| external_reference | character varying(200) | YES | null | External reference |
 | created_at | timestamp with time zone | YES | now() | Created timestamp |
+| processed_at | timestamp with time zone | YES | null | Processed timestamp |
+| completed_at | timestamp with time zone | YES | null | Completed timestamp |
+| description | text | YES | null | Description |
+| metadata | jsonb | YES | null | Metadata |
+| notes | text | YES | null | Notes |
+| debit_account | character varying(50) | YES | null | Debit account |
+| credit_account | character varying(50) | YES | null | Credit account |
+| created_by | uuid | YES | null | Created by (FK) |
+| approved_by | uuid | YES | null | Approved by (FK) |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 
 ### 8. **notifications**
@@ -256,12 +278,12 @@ Kullanıcı bildirimlerini tutan tablo.
 |--------|------|----------|---------|-------------|
 | id | uuid | NO | gen_random_uuid() | Primary key |
 | user_id | uuid | NO | null | User ID (FK) |
+| message_key | text | NO | null | Message key |
+| link | text | YES | null | Link |
+| is_read | boolean | NO | false | Is read |
+| created_at | timestamp with time zone | NO | now() | Created timestamp |
+| replacements | jsonb | YES | null | Message replacements |
 | type | character varying(50) | NO | null | Notification type |
-| title | text | NO | null | Title |
-| message | text | NO | null | Message |
-| is_read | boolean | YES | false | Is read |
-| created_at | timestamp with time zone | YES | now() | Created timestamp |
-| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 
 ### 9. **payments**
 Ödeme işlemlerini tutan tablo.
@@ -272,12 +294,12 @@ Kullanıcı bildirimlerini tutan tablo.
 | device_id | uuid | NO | null | Device ID (FK) |
 | payer_id | uuid | NO | null | Payer ID (FK) |
 | receiver_id | uuid | YES | null | Receiver ID (FK) |
-| total_amount | numeric | NO | null | Total amount |
-| reward_amount | numeric | NO | null | Reward amount |
-| cargo_fee | numeric | NO | 25.00 | Cargo fee |
-| payment_gateway_fee | numeric | NO | 0.00 | Payment gateway fee |
-| service_fee | numeric | NO | 0.00 | Service fee |
-| net_payout | numeric | NO | 0.00 | Net payout |
+| total_amount | numeric(10,2) | NO | null | Total amount |
+| reward_amount | numeric(10,2) | NO | null | Reward amount |
+| cargo_fee | numeric(10,2) | NO | 25.00 | Cargo fee |
+| payment_gateway_fee | numeric(10,2) | NO | 0.00 | Payment gateway fee |
+| service_fee | numeric(10,2) | NO | 0.00 | Service fee |
+| net_payout | numeric(10,2) | NO | 0.00 | Net payout |
 | payment_provider | character varying(50) | NO | 'iyzico' | Payment provider |
 | provider_payment_id | character varying(200) | YES | null | Provider payment ID |
 | provider_transaction_id | character varying(200) | YES | null | Provider transaction ID |
@@ -321,15 +343,18 @@ Kullanıcı bildirimlerini tutan tablo.
 | kyc_verified | boolean | YES | false | KYC verified |
 | aml_checked | boolean | YES | false | AML checked |
 | audit_trail | jsonb | YES | null | Audit trail |
-| refund_amount | numeric | YES | 0.00 | Refund amount |
+| refund_amount | numeric(10,2) | YES | 0.00 | Refund amount |
 | refund_reason_code | character varying(20) | YES | null | Refund reason code |
 | dispute_status | character varying(20) | YES | 'none' | Dispute status |
 | dispute_reason | text | YES | null | Dispute reason |
 | processing_time_ms | integer | YES | null | Processing time |
 | gateway_response_time_ms | integer | YES | null | Gateway response time |
 | retry_count | integer | YES | 0 | Retry count |
-| success_rate | numeric | YES | null | Success rate |
+| success_rate | numeric(5,2) | YES | null | Success rate |
 | status | character varying(20) | NO | 'pending' | Status |
+| gross_amount | numeric(10,2) | YES | 0.00 | Gross amount |
+| net_amount | numeric(10,2) | YES | 0.00 | Net amount |
+| iyzico_commission | numeric(10,2) | YES | 0.00 | Iyzico commission |
 
 ### 10. **userprofile**
 Kullanıcı profil bilgilerini tutan tablo.
@@ -524,6 +549,108 @@ Güvenlik denetim olaylarını tutan tablo.
 | tags | ARRAY | YES | null | Tags |
 | user_email | character varying(255) | YES | null | User email |
 
+### 17. **cargo_codes** (Yeni Tablo - v4.0)
+Kargo firmasına teslim edilecek kodları tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| device_id | uuid | NO | null | Device ID (FK) |
+| payment_id | uuid | NO | null | Payment ID (FK) |
+| code | character varying(20) | NO | null | Kargo firmasına verilecek kod |
+| generated_by | uuid | NO | null | Bulan kişi ID'si (FK) |
+| cargo_company | character varying(50) | NO | null | Hangi kargo firması |
+| status | character varying(20) | YES | 'active' | Kod durumu (active, used, expired) |
+| expires_at | timestamp with time zone | YES | null | Kod son kullanma tarihi |
+| used_at | timestamp with time zone | YES | null | Kod kullanım tarihi |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+
+### 18. **delivery_confirmations** (Yeni Tablo - v4.0)
+Cihaz sahibinin teslimat onaylarını tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| device_id | uuid | NO | null | Device ID (FK) |
+| payment_id | uuid | NO | null | Payment ID (FK) |
+| cargo_shipment_id | uuid | NO | null | Cargo shipment ID (FK) |
+| confirmed_by | uuid | NO | null | Cihaz sahibi ID'si (FK) |
+| confirmation_type | character varying(30) | NO | null | Onay türü (device_received, device_verified, exchange_confirmed) |
+| confirmation_data | jsonb | YES | '{}' | Ek bilgiler (fotoğraf, notlar, vb.) |
+| confirmed_at | timestamp with time zone | YES | now() | Onay tarihi |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+
+### 19. **final_payment_distributions** (Yeni Tablo - v4.0)
+Emanet serbest bırakıldıktan sonra yapılan ödeme dağıtımlarını tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| device_id | uuid | NO | null | Device ID (FK) |
+| payment_id | uuid | NO | null | Payment ID (FK) |
+| escrow_account_id | uuid | NO | null | Escrow account ID (FK) |
+| total_amount | numeric(10,2) | NO | 0.00 | Toplam dağıtım tutarı |
+| cargo_fee | numeric(10,2) | NO | 0.00 | Kargo ücreti |
+| reward_amount | numeric(10,2) | NO | 0.00 | Bulan kişi ödülü |
+| service_fee | numeric(10,2) | NO | 0.00 | Servis ücreti |
+| gateway_transfer_id | character varying(200) | YES | null | İyzico transfer ID |
+| cargo_transfer_id | character varying(200) | YES | null | Kargo firması transfer ID |
+| reward_transfer_id | character varying(200) | YES | null | Bulan kişi transfer ID |
+| service_transfer_id | character varying(200) | YES | null | Platform transfer ID |
+| status | character varying(20) | YES | 'pending' | Dağıtım durumu (pending, processing, completed, failed) |
+| processed_at | timestamp with time zone | YES | null | İşlem tarihi |
+| failed_reason | text | YES | null | Hata nedeni |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+| gross_amount | numeric(10,2) | NO | 0.00 | Gross amount |
+| net_amount | numeric(10,2) | NO | 0.00 | Net amount |
+| distribution_type | character varying(20) | YES | 'automatic' | Distribution type |
+
+### 20. **invoice_logs** (Yeni Tablo - v4.0)
+Fatura yükleme ve doğrulama loglarını tutan tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | null | User ID (FK) |
+| device_id | uuid | YES | null | Device ID (FK) |
+| device_model | text | YES | null | Device model |
+| file_name | text | NO | null | File name |
+| file_path | text | NO | null | File path |
+| file_size | bigint | NO | null | File size in bytes |
+| file_type | text | NO | null | File type |
+| upload_status | text | NO | 'pending' | Upload status |
+| verification_status | text | NO | 'pending' | Verification status |
+| verification_notes | text | YES | null | Verification notes |
+| uploaded_at | timestamp with time zone | NO | now() | Upload timestamp |
+| verified_at | timestamp with time zone | YES | null | Verification timestamp |
+| verified_by | uuid | YES | null | Verified by (FK) |
+| created_at | timestamp with time zone | NO | now() | Created timestamp |
+| updated_at | timestamp with time zone | NO | now() | Updated timestamp |
+
+### 21. **payment_transfers** (Yeni Tablo - v4.0)
+Ödeme transferlerini detaylı olarak takip eden tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| distribution_id | uuid | NO | null | Distribution ID (FK) |
+| transfer_type | character varying(20) | NO | null | Transfer type |
+| recipient_type | character varying(20) | NO | null | Recipient type |
+| recipient_user_id | uuid | YES | null | Recipient user ID (FK) |
+| recipient_name | character varying(100) | NO | null | Recipient name |
+| amount | numeric(10,2) | NO | 0.00 | Transfer amount |
+| transfer_method | character varying(20) | YES | 'bank_transfer' | Transfer method |
+| transfer_reference | character varying(200) | YES | null | Transfer reference |
+| status | character varying(20) | YES | 'pending' | Transfer status |
+| processed_at | timestamp with time zone | YES | null | Processed timestamp |
+| failed_reason | text | YES | null | Failed reason |
+| notes | text | YES | null | Notes |
+| metadata | jsonb | YES | '{}' | Metadata |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+
 ---
 
 ## 🔒 **RLS POLİTİKALARI**
@@ -581,6 +708,23 @@ Güvenlik denetim olaylarını tutan tablo.
 - **Users can update own profile**: Users can update their own profile
 - **Users can view own profile**: Users can view their own profile
 
+### **cargo_codes** (RLS: ENABLED - v4.0)
+- **Users can view own cargo codes**: Users can view their own cargo codes
+- **Users can create own cargo codes**: Users can create their own cargo codes
+- **Users can update own cargo codes**: Users can update their own cargo codes
+- **Admins can view all cargo codes**: Admins can view all cargo codes
+
+### **delivery_confirmations** (RLS: ENABLED - v4.0)
+- **Users can view own delivery confirmations**: Users can view their own delivery confirmations
+- **Users can create own delivery confirmations**: Users can create their own delivery confirmations
+- **Users can update own delivery confirmations**: Users can update their own delivery confirmations
+- **Admins can view all delivery confirmations**: Admins can view all delivery confirmations
+
+### **final_payment_distributions** (RLS: ENABLED - v4.0)
+- **Admins can view all payment distributions**: Admins can view all payment distributions
+- **Admins can create payment distributions**: Admins can create payment distributions
+- **Admins can update payment distributions**: Admins can update payment distributions
+
 ---
 
 ## 🔗 **FOREIGN KEY İLİŞKİLERİ**
@@ -620,6 +764,42 @@ Güvenlik denetim olaylarını tutan tablo.
 ### **userprofile**
 - `user_id` → `auth.users.id`
 
+### **cargo_codes** (Yeni - v4.0)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `generated_by` → `auth.users.id`
+
+### **delivery_confirmations** (Yeni - v4.0)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `cargo_shipment_id` → `cargo_shipments.id`
+- `confirmed_by` → `auth.users.id`
+
+### **final_payment_distributions** (Yeni - v4.0)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `escrow_account_id` → `escrow_accounts.id`
+
+### **invoice_logs** (Yeni - v4.0)
+- `user_id` → `auth.users.id`
+- `device_id` → `devices.id`
+- `verified_by` → `auth.users.id`
+
+### **payment_transfers** (Yeni - v4.0)
+- `distribution_id` → `final_payment_distributions.id`
+- `recipient_user_id` → `auth.users.id`
+
+### **devices** (Güncellenmiş - v4.0)
+- `userId` → `auth.users.id`
+- `cargo_code_id` → `cargo_codes.id`
+
+### **cargo_shipments** (Güncellenmiş - v4.0)
+- `device_id` → `devices.id`
+- `payment_id` → `payments.id`
+- `sender_user_id` → `auth.users.id`
+- `receiver_user_id` → `auth.users.id`
+- `delivery_confirmation_id` → `delivery_confirmations.id`
+
 ---
 
 ## 📝 **NOTLAR**
@@ -630,9 +810,17 @@ Güvenlik denetim olaylarını tutan tablo.
 
 3. **Timestamps**: Tüm tablolarda `created_at` ve `updated_at` field'ları mevcut.
 
-4. **JSONB Fields**: `audit_logs`, `escrow_accounts`, `payments`, `userprofile` tablolarında JSONB field'lar kullanılıyor.
+4. **JSONB Fields**: `audit_logs`, `escrow_accounts`, `payments`, `userprofile`, `delivery_confirmations` tablolarında JSONB field'lar kullanılıyor.
 
 5. **Encryption**: `cargo_shipments` tablosunda adres bilgileri encrypted olarak saklanıyor.
+
+6. **Yeni Süreç Akışı** (v4.0): `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
+
+7. **Kargo Kod Sistemi**: `cargo_codes` tablosu ile kargo firmasına teslim sistemi eklendi.
+
+8. **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu ile detaylı onay süreci eklendi.
+
+9. **Son Ödeme Dağıtımı**: `final_payment_distributions` tablosu ile 4 farklı transfer sistemi eklendi.
 
 ---
 
@@ -693,6 +881,28 @@ Bu dosyayı güncellerken:
 
 ---
 
-**✅ Bu dosya sistem analizi tamamlandıktan sonra güncellenmiştir. Test sürecine hazır.**
+## 🔄 **SCHEMA SYNCHRONIZATION - v4.1**
+
+### **Yapılan Güncellemeler:**
+1. **Eksik Tablolar Eklendi**: `invoice_logs`, `payment_transfers`
+2. **Kolon Yapıları Düzeltildi**: Tüm tablolarda Supabase ile senkronizasyon
+3. **Veri Tipleri Güncellendi**: `numeric(10,2)` formatına geçiş
+4. **Foreign Key İlişkileri**: Yeni tablolar için FK tanımları eklendi
+5. **Nullable/Default Değerler**: Supabase schema ile uyumlu hale getirildi
+
+### **Kritik Değişiklikler:**
+- `financial_transactions`: Kolon sırası ve ek alanlar eklendi
+- `notifications`: `message_key` ve `replacements` alanları eklendi
+- `payments`: `gross_amount`, `net_amount`, `iyzico_commission` alanları eklendi
+- `escrow_accounts`: `gross_amount` alanı eklendi, `auto_release_days` 30'a güncellendi
+- `final_payment_distributions`: `gross_amount`, `net_amount`, `distribution_type` alanları eklendi
+
+### **Yeni Tablolar:**
+- `invoice_logs`: Fatura yükleme ve doğrulama sistemi
+- `payment_transfers`: Detaylı ödeme transfer takibi
+
+---
+
+**✅ Bu dosya Supabase schema analizi tamamlandıktan sonra güncellenmiştir. Artık gerçek veritabanı yapısı ile tam uyumlu.**
 
 **Bu dosya sürekli güncel tutulmalı ve database değişikliklerinde referans olarak kullanılmalıdır.**

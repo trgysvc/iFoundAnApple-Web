@@ -69,7 +69,7 @@ export const create3DSecurePaymentRequest = (paymentData: {
     paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
     
     // Callback URL
-    callbackUrl: `${process.env.VITE_IYZICO_CALLBACK_URL || 'http://localhost:5173'}/api/webhooks/iyzico-3d-callback?conversationId=${paymentData.conversationId}`,
+    callbackUrl: `${process.env.VITE_IYZICO_CALLBACK_URL || 'http://localhost:5173'}/api/webhooks/iyzico-3d-callback?conversationId=${paymentData.conversationId}&deviceId=${paymentData.deviceId}`,
     
     // Kart bilgileri
     paymentCard: {
@@ -330,8 +330,9 @@ export const handle3DSecureCallback = async (callbackData: {
   });
 };
 
-// 3D Secure test kartları
+// 3D Secure test kartları - İyzico Test Kartları
 export const THREEDS_TEST_CARDS = {
+  // Başarılı ödeme kartı
   success: {
     cardNumber: '5528790000000008',
     expiryMonth: '12',
@@ -339,6 +340,7 @@ export const THREEDS_TEST_CARDS = {
     cvc: '123',
     cardHolderName: 'John Doe'
   },
+  // Başarısız ödeme kartı
   failure: {
     cardNumber: '5528790000000016',
     expiryMonth: '12',
@@ -346,8 +348,25 @@ export const THREEDS_TEST_CARDS = {
     cvc: '123',
     cardHolderName: 'John Doe'
   },
+  // 3D Secure doğrulama kartı (SMS kodu: 123456)
   '3d-secure': {
     cardNumber: '5528790000000024',
+    expiryMonth: '12',
+    expiryYear: '2030',
+    cvc: '123',
+    cardHolderName: 'John Doe'
+  },
+  // 3D Secure başarılı kartı (SMS kodu: 123456)
+  '3d-secure-success': {
+    cardNumber: '5528790000000032',
+    expiryMonth: '12',
+    expiryYear: '2030',
+    cvc: '123',
+    cardHolderName: 'John Doe'
+  },
+  // 3D Secure başarısız kartı (SMS kodu: 000000)
+  '3d-secure-failure': {
+    cardNumber: '5528790000000040',
     expiryMonth: '12',
     expiryYear: '2030',
     cvc: '123',
