@@ -149,7 +149,8 @@ const PaymentCallbackPage: React.FC = () => {
         console.log('[DATABASE] Escrow hesabı oluşturuldu:', escrowData.id);
       }
 
-      // 3. Device durumunu güncelle (ödeme alındı)
+      // 3. Device durumunu güncelle (ödeme alındı) - HER İKİ CİHAZ İÇİN
+      // Önce cihaz sahibinin device'ını güncelle
       const { error: deviceError } = await supabase
         .from('devices')
         .update({
@@ -162,10 +163,66 @@ const PaymentCallbackPage: React.FC = () => {
         console.error('[DATABASE] Device güncelleme hatası:', deviceError);
         // Payment kaydedildi ama device güncellenemedi, hata fırlatma
       } else {
-        console.log('[DATABASE] Device durumu güncellendi: payment_status = paid');
+        console.log('[DATABASE] Cihaz sahibinin device durumu güncellendi: payment_completed');
       }
 
-      // 3. Notification ekle - DETAYLI HATA ANALİZİ
+      // Bulan kişinin device'ını bul ve güncelle
+      const { data: deviceData } = await supabase
+        .from('devices')
+        .select('serialNumber, model')
+        .eq('id', deviceId)
+        .single();
+
+      if (deviceData) {
+        // Aynı seri numarası ve model ile bulan kişinin device'ını bul
+        const { data: matchingDevices, error: matchingError } = await supabase
+          .from('devices')
+          .select('id, userId, status')
+          .eq('serialNumber', deviceData.serialNumber)
+          .eq('model', deviceData.model)
+          .neq('id', deviceId) // Cihaz sahibinin device'ı hariç
+          .eq('status', 'matched'); // Sadece matched olanları güncelle
+
+        if (matchingError) {
+          console.error('[DATABASE] Eşleşen device bulma hatası:', matchingError);
+        } else if (matchingDevices && matchingDevices.length > 0) {
+          // Bulan kişinin device'ını güncelle
+          const { error: finderDeviceError } = await supabase
+            .from('devices')
+            .update({
+              status: 'payment_completed',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', matchingDevices[0].id);
+
+          if (finderDeviceError) {
+            console.error('[DATABASE] Bulan kişinin device güncelleme hatası:', finderDeviceError);
+          } else {
+            console.log('[DATABASE] Bulan kişinin device durumu güncellendi: payment_completed');
+            
+            // Bulan kişiye bildirim ekle
+            const { error: finderNotificationError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: matchingDevices[0].userId,
+                type: 'payment_success',
+                message_key: 'payment_received_finder',
+                is_read: false,
+                created_at: new Date().toISOString()
+              });
+
+            if (finderNotificationError) {
+              console.error('[DATABASE] Bulan kişiye bildirim hatası:', finderNotificationError);
+            } else {
+              console.log('[DATABASE] Bulan kişiye bildirim eklendi');
+            }
+          }
+        } else {
+          console.log('[DATABASE] Eşleşen device bulunamadı');
+        }
+      }
+
+      // 4. Cihaz sahibine bildirim ekle
       console.log('[DATABASE] Notification ekleniyor...', {
         user_id: payerId,
         type: 'payment_success',

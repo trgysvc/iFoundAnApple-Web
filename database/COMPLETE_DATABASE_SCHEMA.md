@@ -2,9 +2,9 @@
 
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
-**Son Güncelleme:** 18 Ekim 2025  
-**Versiyon:** 5.0  
-**Durum:** Production Ready - Current Supabase Structure (2025.10.18 20:39)
+**Son Güncelleme:** 19 Ekim 2025  
+**Versiyon:** 5.1  
+**Durum:** Production Ready - Current Supabase Structure (2025.10.19)
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -549,8 +549,20 @@ Güvenlik denetim olaylarını tutan tablo.
 | tags | ARRAY | YES | null | Tags |
 | user_email | character varying(255) | YES | null | User email |
 
-### 17. **cargo_codes** (Yeni Tablo - v4.0)
-Kargo firmasına teslim edilecek kodları tutan tablo.
+### 17. **cargo_codes** (Yeni Tablo - v4.0, Güncellenmiş - v5.1)
+Kargo firmasına teslim edilecek kodları tutan tablo. Dinamik kargo bilgileri UI'da gösteriliyor.
+
+**Kullanım:**
+- DeviceDetailPage: Kargo bilgilerini dinamik olarak alır
+- PaymentSuccessPage: Durum Bilgisi bölümünde kargo bilgilerini gösterir
+- Test Sistemi: Manuel test verisi ile çalışır
+- Gelecek: Kargo API entegrasyonu ile otomatik doldurulacak
+- Dinamik Durum Mesajları: cargo_status alanı ile 5 farklı durum mesajı
+
+**Yeni Özellikler (v5.1):**
+- `cargo_status` alanı eklendi (pending, picked_up, in_transit, delivered, confirmed)
+- Dinamik UI mesajları eklendi
+- Test verisi sistemi hazır
 
 | Column | Type | Nullable | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -561,6 +573,7 @@ Kargo firmasına teslim edilecek kodları tutan tablo.
 | generated_by | uuid | NO | null | Bulan kişi ID'si (FK) |
 | cargo_company | character varying(50) | NO | null | Hangi kargo firması |
 | status | character varying(20) | YES | 'active' | Kod durumu (active, used, expired) |
+| cargo_status | character varying(20) | YES | 'pending' | Kargo durumu (pending, picked_up, in_transit, delivered, confirmed) |
 | expires_at | timestamp with time zone | YES | null | Kod son kullanma tarihi |
 | used_at | timestamp with time zone | YES | null | Kod kullanım tarihi |
 | created_at | timestamp with time zone | YES | now() | Created timestamp |
@@ -883,7 +896,7 @@ Cihaz sahibinin teslimat onaylarını tutan tablo.
 
 7. **Yeni Süreç Akışı** (v4.0): `CARGO_SHIPPED`, `DELIVERED`, `CONFIRMED` status'ları eklendi.
 
-8. **Kargo Kod Sistemi**: `cargo_codes` tablosu ile kargo firmasına teslim sistemi eklendi.
+8. **Kargo Kod Sistemi**: `cargo_codes` tablosu ile kargo firmasına teslim sistemi eklendi. Dinamik kargo bilgileri UI'da gösteriliyor. `cargo_status` alanı ile 5 farklı durum mesajı sistemi (v5.1).
 
 9. **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu ile detaylı onay süreci eklendi.
 
@@ -981,7 +994,8 @@ Bu dosyayı güncellerken:
 - **RLS DISABLED**: Diğer tüm tablolar (politikalar tanımlı ama aktif değil)
 
 ### **Yeni Özellikler:**
-- **Kargo Kod Sistemi**: `cargo_codes` tablosu
+- **Kargo Kod Sistemi**: `cargo_codes` tablosu - Dinamik UI entegrasyonu (v5.1)
+- **Kargo Durum Sistemi**: `cargo_status` alanı ile 5 farklı durum mesajı
 - **Teslimat Onay Sistemi**: `delivery_confirmations` tablosu
 - **Final Payment Distribution**: `final_payment_distributions` tablosu
 - **Payment Transfers**: `payment_transfers` tablosu
@@ -989,6 +1003,36 @@ Bu dosyayı güncellerken:
 
 ---
 
-**✅ Bu dosya 2025.10.18 20:39 itibari ile gerçek Supabase veritabanı yapısı ile tam uyumlu.**
+**✅ Bu dosya 2025.10.19 itibari ile gerçek Supabase veritabanı yapısı ile tam uyumlu.**
+
+---
+
+## 🚀 **KARGO SİSTEMİ GÜNCELLEMELERİ - v5.1 (19 Ekim 2025)**
+
+### **Veritabanı Değişiklikleri:**
+1. **cargo_codes tablosuna cargo_status alanı eklendi:**
+   ```sql
+   ALTER TABLE cargo_codes ADD COLUMN cargo_status VARCHAR(20) DEFAULT 'pending';
+   ALTER TABLE cargo_codes ADD CONSTRAINT cargo_status_check_new 
+   CHECK (cargo_status IN ('pending', 'picked_up', 'in_transit', 'delivered', 'confirmed'));
+   CREATE INDEX IF NOT EXISTS idx_cargo_codes_cargo_status ON cargo_codes(cargo_status);
+   ```
+
+2. **Mevcut kayıtlar güncellendi:**
+   ```sql
+   UPDATE cargo_codes SET cargo_status = 'pending' WHERE cargo_status IS NULL;
+   ```
+
+### **Frontend Değişiklikleri:**
+- PaymentSuccessPage.tsx: Seri numarası bazlı kargo bilgisi sorgusu
+- DeviceDetailPage.tsx: Bulan kişi ekranı için dinamik kargo durum mesajları
+- Supabase sorgu hatası çözüldü (iki aşamalı sorgu)
+
+### **Test Verisi:**
+- SVC223344 için test kargo verisi: ABC123456, Aras Kargo, picked_up durumu
+
+### **Sonuç:**
+✅ Dinamik kargo bilgileri her iki ekranda da çalışıyor
+✅ Seri numarası bazlı sorgulama başarıyla çalışıyor
 
 **Bu dosya sürekli güncel tutulmalı ve database değişikliklerinde referans olarak kullanılmalıdır.**

@@ -31,6 +31,7 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi
 - 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
 - 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
+- 🚚 **Dinamik Kargo Sistemi**: Gerçek zamanlı kargo takip ve teslimat yönetimi (v5.1 güncellenmiş)
 
 ---
 
@@ -42,7 +43,7 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - **Tailwind CSS** - Utility-first CSS framework (CDN)
 - **React Router DOM 7.6.3** - Client-side routing
 - **Lucide React 0.525.0** - Modern ikonlar
-- **Vite 6.2.0** - Hızlı build tool ve dev server
+- **Vite 6.3.6** - Hızlı build tool ve dev server
 
 ### Backend & Database
 - **Supabase 2.55.0** - Backend-as-a-Service
@@ -66,6 +67,11 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
   - Çift taraflı onay mekanizması
   - Otomatik ödeme serbest bırakma
   - İade ve geri ödeme desteği
+- **Cargo Management System** - Dinamik kargo takip sistemi
+  - `cargo_codes` tablosu ile veri yönetimi
+  - Gerçek zamanlı kargo bilgileri
+  - Test verisi sistemi (API entegrasyonu hazır)
+  - Dinamik UI entegrasyonu
 
 ### AI & APIs
 - **Google Gemini API** - AI destekli öneriler (@google/genai latest)
@@ -141,15 +147,13 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
     ```bash
    # Terminal 2 - Frontend
    npm run dev
-   
-   # Veya tek komutla ikisini birden
-   npm run dev:full
    ```
 
 6. **Tarayıcınızda açın:**
    ```
    Frontend: http://localhost:5173
    Backend API: http://localhost:3001
+   Production: http://localhost:3000 (Docker)
    ```
 
 ---
@@ -176,6 +180,13 @@ iFoundAnApple-Web/
 │   │   ├── PaymentMethodSelector.tsx  # Ödeme yöntemi seçici
 │   │   ├── FeeBreakdownCard.tsx       # Ücret detayları
 │   │   └── EscrowStatusCard.tsx       # Escrow durumu
+│   ├── 📁 cargo/          # Kargo bileşenleri
+│   │   ├── CargoInstructionsCard.tsx  # Kargo talimatları
+│   │   └── CargoTrackingCard.tsx      # Kargo takip kartı
+│   ├── 📁 escrow/         # Emanet bileşenleri
+│   │   ├── EscrowStatusDisplay.tsx    # Emanet durumu
+│   │   ├── DeliveryConfirmationForm.tsx # Teslimat onayı
+│   │   └── DisputeForm.tsx            # İtiraz formu
 │   ├── DeviceCard.tsx     # Cihaz kartı bileşeni
 │   ├── Footer.tsx         # Site altbilgisi
 │   └── Header.tsx         # Site başlığı ve navigasyon
@@ -188,10 +199,12 @@ iFoundAnApple-Web/
 │   ├── DashboardPage.tsx  # Kullanıcı paneli
 │   ├── ProfilePage.tsx    # Profil yönetimi
 │   ├── AddDevicePage.tsx  # Cihaz ekleme
-│   ├── DeviceDetailPage.tsx # Cihaz detayları
+│   ├── DeviceDetailPage.tsx # Cihaz detayları (dinamik kargo bilgileri)
 │   ├── MatchPaymentPage.tsx # Eşleşme ödemesi
 │   ├── PaymentFlowPage.tsx  # Ödeme akışı
-│   ├── PaymentSuccessPage.tsx # Ödeme başarı sayfası
+│   ├── PaymentSuccessPage.tsx # Ödeme başarı sayfası (kargo entegrasyonu)
+│   ├── PaymentCallbackPage.tsx # Ödeme callback (bulan kişi status güncelleme)
+│   ├── CargoManagementPage.tsx # Kargo yönetim sayfası
 │   ├── AdminDashboardPage.tsx # Yönetici paneli
 │   ├── FAQPage.tsx        # Sıkça sorulan sorular
 │   ├── TermsPage.tsx      # Kullanım şartları
@@ -200,18 +213,17 @@ iFoundAnApple-Web/
 │   └── NotFoundPage.tsx   # 404 sayfası
 ├── 📁 utils/              # Yardımcı fonksiyonlar
 │   ├── paymentGateway.ts  # Ödeme gateway entegrasyonu
-│   ├── iyzicoConfig.ts    # İyzico konfigürasyonu
 │   ├── feeCalculation.ts  # Ücret hesaplama
 │   ├── escrowManager.ts   # Escrow yönetimi
+│   ├── cargoSystem.ts     # Kargo sistemi yönetimi
+│   ├── deviceStatusUpdater.ts # Cihaz durumu güncelleme
 │   ├── security.ts        # Güvenlik fonksiyonları
 │   └── auditLogger.ts     # Audit log sistemi
-├── 📁 database/           # Database migration scripts
-│   ├── 01_create_device_models_table.sql
-│   ├── 02_create_payments_table.sql
-│   ├── 03_create_cargo_shipments_table.sql
-│   ├── 04_create_financial_transactions_table.sql
-│   ├── 05_create_escrow_accounts_table.sql
-│   └── 06_create_audit_logs_table.sql
+├── 📁 database/           # Database migration scripts ve dokümantasyon
+│   ├── COMPLETE_DATABASE_SCHEMA.md # Tam veritabanı şeması
+│   ├── insert_complete_apple_devices_correct.sql # Test verileri
+│   ├── insert_device_models_data.sql # Cihaz modeli verileri
+│   └── test-cargo-data.sql # Kargo test verileri
 ├── 📁 public/             # Statik dosyalar
 │   └── 📁 icons/          # SVG ikonları
 ├── server.cjs             # Express backend server (İyzico için)
@@ -222,8 +234,10 @@ iFoundAnApple-Web/
 ├── vite.config.ts         # Vite konfigürasyonu
 ├── README.md              # Bu dosya
 ├── USER_GUIDE.md          # Kullanıcı rehberi
-├── TESTING.md             # Test dokümantasyonu
-├── COOLIFY_SETUP.md       # Coolify deployment rehberi
+├── PROCESS_FLOW.md        # Süreç akışı dokümantasyonu
+├── SYSTEM_ANALYSIS_REPORT.md # Sistem analiz raporu
+├── PAYMENT_SUCCESS_PAGE_ANALYSIS.md # Ödeme sayfası analizi
+├── SUPABASE_STORAGE_SETUP.md # Supabase storage kurulumu
 └── CHANGELOG.md           # Sürüm geçmişi
 ```
 
@@ -346,8 +360,6 @@ VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
 ```
 
 ### Coolify Deployment
-Detaylı Coolify deployment rehberi için [COOLIFY_SETUP.md](COOLIFY_SETUP.md) dosyasına bakın.
-
 **Hızlı Başlangıç:**
 ```bash
 # Build command
@@ -357,8 +369,10 @@ npm install && npm run build
 npm start
 
 # Port
-3001
+3000
 ```
+
+**Not**: Production ortamında backend server (server.cjs) ayrı olarak çalıştırılmalıdır.
 
 ### Vite Konfigürasyonu
 Proje, Vite build tool kullanır ve environment değişkenlerini şu şekilde yönetir:
@@ -405,7 +419,9 @@ export default defineConfig(({ mode }) => {
 ## 📚 Dokümantasyon
 
 - [**Kullanıcı Rehberi**](USER_GUIDE.md) - Platform kullanım kılavuzu
-- [**Test Dokümantasyonu**](TESTING.md) - Test stratejisi ve senaryoları
+- [**Süreç Akışı**](PROCESS_FLOW.md) - Detaylı sistem süreç akışı
+- [**Sistem Analiz Raporu**](SYSTEM_ANALYSIS_REPORT.md) - Kapsamlı sistem analizi
+- [**Veritabanı Şeması**](database/COMPLETE_DATABASE_SCHEMA.md) - Tam veritabanı dokümantasyonu
 - [**Sürüm Geçmişi**](CHANGELOG.md) - Detaylı değişiklik kayıtları
 
 ---
@@ -457,11 +473,32 @@ Supabase Backend-as-a-Service
 2. **Cihaz Ekleme** → PostgreSQL → Real-time Notifications
 3. **AI Önerileri** → Google Gemini → Structured Response
 4. **Eşleştirme** → Database Query → Bildirim Sistemi
-5. **Profil Güncelleme** → RLS Kontrolü → Database Update
+5. **Ödeme Süreci** → İyzico Gateway → PaymentCallbackPage → Status Update
+6. **Kargo Sistemi** → cargo_codes Tablosu → Dinamik UI Güncelleme
+7. **Profil Güncelleme** → RLS Kontrolü → Database Update
 
 ---
 
 ## 🔄 Son Güncellemeler (2025)
+
+### v5.1 - Kargo Sistemi Sorun Giderme ve İyileştirmeler ✅
+- ✅ **Supabase Sorgu Hatası Çözüldü**: "more than one relationship" hatası giderildi
+- ✅ **Seri Numarası Bazlı Sorgulama**: İki aşamalı sorgu ile kargo bilgisi alma
+- ✅ **Dinamik Kargo Bilgileri**: Her iki ekranda da çalışan kargo bilgisi sistemi
+- ✅ **Test Verisi**: SVC223344 için ABC123456 takip numarası, Aras Kargo, picked_up durumu
+- ✅ **Frontend Optimizasyonu**: PaymentSuccessPage ve DeviceDetailPage sorgu iyileştirmeleri
+- ✅ **Dokümantasyon Güncelleme**: PROCESS_FLOW, COMPLETE_DATABASE_SCHEMA, SYSTEM_ANALYSIS_REPORT güncellendi
+
+### v2.4.0 - Dinamik Kargo Sistemi ve UI Tutarlılığı ✅
+- ✅ **Dinamik Kargo Bilgileri**: `cargo_codes` tablosundan gerçek zamanlı kargo bilgileri
+- ✅ **Kargo Durum Sistemi**: `cargo_status` alanı ile 5 farklı durum mesajı sistemi
+- ✅ **PaymentCallbackPage Güncelleme**: Bulan kişi status güncelleme sistemi
+- ✅ **DeviceDetailPage Entegrasyonu**: Dinamik kargo bilgileri gösterimi
+- ✅ **PaymentSuccessPage Entegrasyonu**: Durum Bilgisi bölümünde kargo gösterimi
+- ✅ **UI Tutarlılığı**: "Süreç Durumu" → "Durum Bilgisi" değişikliği
+- ✅ **Test Verisi Sistemi**: `test-cargo-data.sql` ile kargo test verileri
+- ✅ **API Hazırlığı**: Gerçek kargo API entegrasyonu için hazır altyapı
+- ✅ **Dokümantasyon Güncelleme**: PROCESS_FLOW, COMPLETE_DATABASE_SCHEMA, README
 
 ### v2.3.0 - İyzico Payment Gateway Entegrasyonu ✅
 - ✅ **İyzico Sandbox API Entegrasyonu**: Gerçek ödeme gateway entegrasyonu tamamlandı
@@ -496,9 +533,12 @@ Supabase Backend-as-a-Service
 - ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
 
 ### Yaklaşan Özellikler
+- 🔄 **Kargo API Entegrasyonu**: Gerçek kargo firmaları ile API entegrasyonu
+- 🔄 **Otomatik Kargo Kodu Oluşturma**: Ödeme sonrası otomatik kargo kodu üretimi
+- 🔄 **Webhook Sistemi**: Kargo durumu güncellemeleri için webhook sistemi
+- 🔄 **Kargo Durum Güncelleme API'leri**: Gerçek zamanlı kargo durumu güncelleme
 - 🔄 **İyzico Production**: Gerçek ödeme sistemine geçiş
 - 🔄 **3D Secure Flow**: Gelişmiş güvenlik akışı
-- 🔄 **Webhook Integration**: Otomatik ödeme güncellemeleri
 - 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
 - 🔄 **Push Notifications**: Mobil bildirimler
 

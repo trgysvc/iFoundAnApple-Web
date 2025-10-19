@@ -53,12 +53,69 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
   const [device, setDevice] = useState<DeviceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cargoInfo, setCargoInfo] = useState<{code: string, company: string, status: string} | null>(null);
 
   useEffect(() => {
     if (paymentId) {
       fetchPaymentData();
     }
   }, [paymentId]);
+
+  // Kargo bilgilerini seri numarası bazlı al
+  const fetchCargoInfo = async (serialNumber: string) => {
+    try {
+      console.log('[PaymentSuccessPage] Kargo bilgisi aranıyor, serialNumber:', serialNumber);
+      
+      // Önce seri numarasına göre device_id'yi bul
+      const { data: devices, error: deviceError } = await supabaseClient
+        .from('devices')
+        .select('id')
+        .eq('serialNumber', serialNumber)
+        .eq('status', 'payment_completed');
+
+      if (deviceError) {
+        console.log('Device bulunamadı:', deviceError.message);
+        return;
+      }
+
+      if (!devices || devices.length === 0) {
+        console.log('Seri numarasına göre device bulunamadı');
+        return;
+      }
+
+      // Device ID'leri al
+      const deviceIds = devices.map(d => d.id);
+      console.log('[PaymentSuccessPage] Bulunan device IDs:', deviceIds);
+
+      // Bu device ID'lerden kargo bilgisi olanı bul
+      const { data, error } = await supabaseClient
+        .from('cargo_codes')
+        .select('code, cargo_company, cargo_status')
+        .in('device_id', deviceIds)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      console.log('[PaymentSuccessPage] Kargo sorgu sonucu:', { data, error });
+
+      if (error) {
+        console.log('Kargo bilgisi bulunamadı:', error.message);
+        return;
+      }
+
+      if (data) {
+        console.log('[PaymentSuccessPage] Kargo bilgisi bulundu:', data);
+        setCargoInfo({
+          code: data.code,
+          company: data.cargo_company,
+          status: data.cargo_status
+        });
+      }
+    } catch (error) {
+      console.error('Kargo bilgisi alma hatası:', error);
+    }
+  };
 
   const fetchPaymentData = async () => {
     try {
@@ -106,6 +163,8 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         setDevice(null);
       } else {
         setDevice(deviceData);
+        // Kargo bilgilerini seri numarası ile al
+        await fetchCargoInfo(deviceData.serialNumber);
       }
 
       // Fetch escrow data - optional, might not exist for older payments
@@ -336,8 +395,36 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
                   1
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900 mb-1">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
-                  <p className="text-gray-600 text-sm">Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></p>
+                  <p className="font-medium text-gray-900 mb-1">
+                    {cargoInfo ? (
+                      <>
+                        {cargoInfo.status === 'pending' && (
+                          <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firmasına <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Teslim Edilmesi Bekleniyor</>
+                        )}
+                        {cargoInfo.status === 'picked_up' && (
+                          <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firmasına <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Teslim Edildi</>
+                        )}
+                        {cargoInfo.status === 'in_transit' && (
+                          <>Cihazınız <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması ile <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Yolda</>
+                        )}
+                        {cargoInfo.status === 'delivered' && (
+                          <>Cihazınız <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması tarafından <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Size Teslim Edildi</>
+                        )}
+                        {cargoInfo.status === 'confirmed' && (
+                          <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması tarafından <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Size Teslim Edildiği Onaylandı</>
+                        )}
+                      </>
+                    ) : (
+                      <>Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</>
+                    )}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {cargoInfo ? (
+                      <>Takip için kargo numaranız: <span className="font-mono font-semibold">{cargoInfo.code}</span> ({cargoInfo.company})</>
+                    ) : (
+                      <>Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></>
+                    )}
+                  </p>
                 </div>
               </div>
               

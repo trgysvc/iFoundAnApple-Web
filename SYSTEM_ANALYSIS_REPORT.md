@@ -1,8 +1,8 @@
 # iFoundAnApple - Sistem Analizi Raporu
 
-**Tarih:** 18 Ekim 2025  
-**Versiyon:** 5.0  
-**Durum:** Production Ready - Current Supabase Structure (2025.10.18)
+**Tarih:** 19 Ekim 2025  
+**Versiyon:** 5.1  
+**Durum:** Production Ready - Current Supabase Structure (2025.10.19)
 
 ---
 
@@ -11,7 +11,7 @@
 ### **Platform Amacı**
 iFoundAnApple, kayıp Apple cihazlarını bulan kişiler ile cihaz sahipleri arasında güvenli bir değişim platformu sağlar. Escrow sistemi ile ödemeleri güvence altına alır.
 
-### **Ana Süreçler (v5.0)**
+### **Ana Süreçler (v5.1)**
 1. **Cihaz Sahibi (Device Owner)**: Kayıp cihaz kaydı → Eşleşme → Ödeme → Kargo alma → Onay → Emanet serbest bırakma
 2. **Cihaz Bulan (Finder)**: Bulunan cihaz kaydı → Eşleşme → Ödeme bekleme → Kargo gönderme → Ödül alma
 3. **Kargo Firması**: Kod ile teslim alma → Teslimat → Teslim onayı
@@ -40,8 +40,8 @@ iFoundAnApple, kayıp Apple cihazlarını bulan kişiler ile cihaz sahipleri ara
 10. **`audit_logs`** - Denetim kayıtları
 11. **`invoice_logs`** - Fatura yükleme ve doğrulama logları
 
-### **Süreç Tabloları (v5.0)**
-12. **`cargo_codes`** - Kargo kod sistemi
+### **Süreç Tabloları (v5.1)**
+12. **`cargo_codes`** - Kargo kod sistemi (cargo_status alanı eklendi)
 13. **`delivery_confirmations`** - Teslimat onay sistemi
 14. **`final_payment_distributions`** - Son ödeme dağıtım sistemi
 15. **`payment_transfers`** - Ödeme transfer kayıtları
@@ -681,6 +681,70 @@ export const THREEDS_TEST_CARDS = {
 1. **3DS Test Kartları** ile ödeme testi
 2. **Escrow Sistemi** testi
 3. **SMS Kodu** doğrulama testi
+4. **Kargo API Entegrasyonu** - Gerçek kargo firması API'si
+5. **Otomatik Kargo Kodu Oluşturma** - API'den veri alma sistemi
+
+---
+
+## 🚚 **KARGO SİSTEMİ GÜNCELLEMELERİ - 2025-01-17**
+
+### **Tarih:** 2025-01-17
+### **Problem:** 
+1. **Statik Kargo Bilgileri**: Kargo bilgileri sabit kodlanmıştı
+2. **Eksik Dinamik Veri**: `cargo_codes` tablosundan veri alınmıyordu
+3. **UI Tutarsızlığı**: Cihaz sahibi ve bulan kişi ekranları farklıydı
+
+### **Çözümler:**
+
+#### **1. PaymentCallbackPage Güncellemesi:**
+- **Bulan Kişi Status Güncelleme**: Ödeme tamamlandığında bulan kişinin device status'u da `payment_completed` oluyor
+- **Bildirim Sistemi**: Bulan kişiye `payment_received_finder` bildirimi gönderiliyor
+- **Çift Device Güncelleme**: Hem cihaz sahibi hem bulan kişi için status güncelleniyor
+
+#### **2. DeviceDetailPage Dinamik Kargo Sistemi:**
+```typescript
+// Kargo bilgilerini dinamik olarak alma
+const fetchCargoInfo = async (deviceId: string) => {
+  const { data, error } = await supabaseClient
+    .from('cargo_codes')
+    .select('code, cargo_company')
+    .eq('device_id', deviceId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+};
+```
+
+#### **3. PaymentSuccessPage Kargo Entegrasyonu:**
+- **Durum Bilgisi Bölümü**: Kargo bilgileri dinamik olarak gösteriliyor
+- **Kayıp Cihaz Detayları**: Kargo bilgileri kaldırıldı, sadece Durum Bilgisi'nde gösteriliyor
+- **Dinamik Mesajlar**: `[KARGO_FİRMASI]` ve `[TAKİP_NUMARASI]` placeholder'ları gerçek verilerle değiştiriliyor
+
+#### **4. UI Tutarlılığı:**
+- **Cihaz Sahibi**: "Cihazınızın [KARGO_FİRMASI] kargo firmasına [TAKİP_NUMARASI] takip numarası ile Teslim Edilmesi Bekleniyor"
+- **Bulan Kişi**: "Cihazı [TAKİP_NUMARASI] takip numarası ile [KARGO_FİRMASI] firmasına teslim edin"
+- **Başlık Değişikliği**: "Süreç Durumu" → "Durum Bilgisi"
+
+### **Database Schema:**
+```sql
+-- cargo_codes tablosu kullanımı
+SELECT code, cargo_company 
+FROM cargo_codes 
+WHERE device_id = ? AND status = 'active'
+ORDER BY created_at DESC 
+LIMIT 1;
+```
+
+### **Test Sistemi:**
+- **Manuel Test Verisi**: `test-cargo-data.sql` ile test verileri oluşturuluyor
+- **Dinamik Gösterim**: UI'da kargo bilgileri gerçek zamanlı olarak gösteriliyor
+- **Çoklu Device Desteği**: Hem cihaz sahibi hem bulan kişi için aynı kargo bilgileri
+
+### **Gelecek Geliştirmeler:**
+1. **Kargo API Entegrasyonu**: Gerçek kargo firması API'si
+2. **Otomatik Kargo Kodu**: API'den otomatik veri alma
+3. **Webhook Sistemi**: Kargo firmasından gerçek zamanlı güncellemeler
 
 ---
 
@@ -743,4 +807,40 @@ if (!verificationResult.success) {
 
 ---
 
+## 🚀 **KARGO SİSTEMİ GÜNCELLEMELERİ - v5.1 (19 Ekim 2025)**
+
+### **Sorun:**
+- SVC223344 seri numaralı cihaz için "Durum Bilgisi" bölümünde dinamik kargo bilgileri görünmüyordu
+- PaymentSuccessPage ve DeviceDetailPage'de kargo bilgileri statik mesajlarla gösteriliyordu
+- Supabase'de "more than one relationship" hatası alınıyordu
+
+### **Çözüm:**
+1. **Kargo Durum Sistemi Eklendi:**
+   - `cargo_codes` tablosuna `cargo_status` alanı eklendi
+   - 5 farklı durum: `pending`, `picked_up`, `in_transit`, `delivered`, `confirmed`
+   - Her durum için dinamik mesajlar oluşturuldu
+
+2. **Frontend Güncellemeleri:**
+   - PaymentSuccessPage.tsx: Seri numarası bazlı kargo bilgisi sorgusu
+   - DeviceDetailPage.tsx: Bulan kişi ekranı için dinamik kargo durum mesajları
+   - Supabase sorgu hatası çözüldü (iki aşamalı sorgu)
+
+3. **Test Verisi:**
+   - SVC223344 için test kargo verisi oluşturuldu
+   - ABC123456 takip numarası, Aras Kargo, picked_up durumu
+
+### **Sonuç:**
+- ✅ Cihaz sahibi ekranında dinamik kargo bilgileri görünüyor
+- ✅ Bulan kişi ekranında dinamik kargo durum mesajları çalışıyor
+- ✅ Her iki ekran da aynı kargo bilgilerini gösteriyor
+- ✅ Seri numarası bazlı sorgulama başarıyla çalışıyor
+
+**Test URL'leri:**
+- Cihaz Sahibi: `http://localhost:5173/#/payment/success?paymentId=b8ca00b5-5916-4fb3-b929-b702e1688a77`
+- Bulan Kişi: `http://localhost:5173/#/device/febac4c3-1138-4d65-a44f-eca27129696f`
+
 ---
+
+**Rapor Tarihi:** 19 Ekim 2025  
+**Versiyon:** 5.1  
+**Durum:** Production Ready

@@ -2,9 +2,9 @@
 
 Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi bilginin hangi tabloya yazılacağını gösterir.
 
-**Son Güncelleme:** 18 Ekim 2025  
-**Versiyon:** 5.0  
-**Durum:** Production Ready - Current Supabase Structure (2025.10.18)
+**Son Güncelleme:** 19 Ekim 2025  
+**Versiyon:** 5.1  
+**Durum:** Production Ready - Current Supabase Structure (2025.10.19)
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -46,8 +46,8 @@ export enum DeviceStatus {
 - **`audit_logs`** - Denetim kayıtları
 - **`invoice_logs`** - Fatura yükleme ve doğrulama logları
 
-### **Süreç Tabloları (v5.0):**
-- **`cargo_codes`** - Kargo kod sistemi
+### **Süreç Tabloları (v5.1):**
+- **`cargo_codes`** - Kargo kod sistemi (cargo_status alanı eklendi)
 - **`delivery_confirmations`** - Teslimat onay sistemi
 - **`final_payment_distributions`** - Son ödeme dağıtım sistemi
 - **`payment_transfers`** - Ödeme transfer kayıtları
@@ -470,10 +470,28 @@ INSERT INTO notifications (
 INSERT INTO notifications (
   id,                    -- gen_random_uuid()
   user_id,              -- Bulan kişinin ID'si
-  message_key,          -- 'payment_completed_finder'
-  type,                 -- 'success'
+  message_key,          -- 'payment_received_finder'
+  type,                 -- 'payment_success'
   is_read,              -- false
   created_at            -- now()
+);
+```
+
+**7. `cargo_codes` tablosuna kayıt (Dinamik Kargo Sistemi - v5.1):**
+```sql
+-- Kargo kodu oluştur (tek kayıt - seri numarası bazlı)
+INSERT INTO cargo_codes (
+  id,                    -- gen_random_uuid()
+  device_id,            -- Cihaz ID'si (sahibi için)
+  payment_id,           -- Payment ID'si
+  code,                 -- Kargo takip numarası (test: ABC123456)
+  generated_by,         -- Bulan kişi ID'si
+  cargo_company,        -- Kargo firması (test: Aras Kargo)
+  status,               -- 'active'
+  cargo_status,         -- 'pending', 'picked_up', 'in_transit', 'delivered', 'confirmed' (v5.1)
+  expires_at,           -- 7 gün sonra
+  created_at,           -- now()
+  updated_at            -- now()
 );
 ```
 
@@ -487,11 +505,43 @@ INSERT INTO notifications (
 Dashboard → Cihaz Kartına Tıkla → DeviceDetailPage açılır
 ```
 - Status: payment_completed için ne görünüyor?
-  - Başlık: "Ödeme Tamamlandı!" mı?
-  - Mesaj: "Cihazınız kargoya verilecek, bildirim alacaksınız" gibi mi?
-  - Ödeme detayları görünüyor mu? (Tutar, tarih, vb.)
-  - Escrow durumu görünüyor mu?
-  - Herhangi bir aksiyon butonu var mı?
+  - **Cihaz Sahibi Ekranı:**
+    - Başlık: "Ödeme Başarıyla Tamamlandı!"
+    - Mesaj: "Ödemeniz güvenli escrow sisteminde bekletiliyor"
+    - Durum Bilgisi: Dinamik kargo durum mesajları:
+      - `pending`: "Cihazınızın [KARGO_FİRMASI] kargo firmasına [TAKİP_NUMARASI] takip numarası ile Teslim Edilmesi Bekleniyor"
+      - `picked_up`: "Cihazınızın [KARGO_FİRMASI] kargo firmasına [TAKİP_NUMARASI] takip numarası ile Teslim Edildi"
+      - `in_transit`: "Cihazınız [KARGO_FİRMASI] kargo firması ile [TAKİP_NUMARASI] takip numarası ile Yolda"
+      - `delivered`: "Cihazınız [KARGO_FİRMASI] kargo firması tarafından [TAKİP_NUMARASI] takip numarası ile Size Teslim Edildi"
+      - `confirmed`: "Cihazınızın [KARGO_FİRMASI] kargo firması tarafından [TAKİP_NUMARASI] takip numarası ile Size Teslim Edildiği Onaylandı"
+    - Kargo bilgileri dinamik olarak `cargo_codes` tablosundan alınıyor
+  - **Bulan Kişi Ekranı:**
+    - Başlık: "Cihazı Kargo Firmasına Teslim Edin!"
+    - Mesaj: "Cihaz sahibi ödeme yaptı. Kargo işlemleri başlatılacak"
+    - Durum Bilgisi: Dinamik kargo durum mesajları:
+      - `pending`: "Cihazı [TAKİP_NUMARASI] takip numarası ile [KARGO_FİRMASI] firmasına teslim edin"
+      - `picked_up`: "Cihaz [KARGO_FİRMASI] firmasına [TAKİP_NUMARASI] takip numarası ile teslim edildi"
+      - `in_transit`: "Cihaz [KARGO_FİRMASI] firması ile [TAKİP_NUMARASI] takip numarası ile yolda"
+      - `delivered`: "Cihaz [KARGO_FİRMASI] firması tarafından [TAKİP_NUMARASI] takip numarası ile sahibine teslim edildi"
+      - `confirmed`: "Cihaz teslimi onaylandı - Ödül ödemesi bekleniyor"
+    - Kargo bilgileri dinamik olarak `cargo_codes` tablosundan alınıyor
+
+**PaymentSuccessPage (Ödeme Başarı Sayfası):**
+```
+Ödeme tamamlandığında otomatik yönlendirme
+```
+- Status: payment_completed için ne görünüyor?
+  - Başlık: "Ödeme Başarıyla Tamamlandı!"
+  - Mesaj: "Ödemeniz güvenli escrow sisteminde bekletiliyor"
+  - Durum Bilgisi: Dinamik kargo durum mesajları:
+    - `pending`: "Cihazınızın [KARGO_FİRMASI] kargo firmasına [TAKİP_NUMARASI] takip numarası ile Teslim Edilmesi Bekleniyor"
+    - `picked_up`: "Cihazınızın [KARGO_FİRMASI] kargo firmasına [TAKİP_NUMARASI] takip numarası ile Teslim Edildi"
+    - `in_transit`: "Cihazınız [KARGO_FİRMASI] kargo firması ile [TAKİP_NUMARASI] takip numarası ile Yolda"
+    - `delivered`: "Cihazınız [KARGO_FİRMASI] kargo firması tarafından [TAKİP_NUMARASI] takip numarası ile Size Teslim Edildi"
+    - `confirmed`: "Cihazınızın [KARGO_FİRMASI] kargo firması tarafından [TAKİP_NUMARASI] takip numarası ile Size Teslim Edildiği Onaylandı"
+  - Kargo bilgileri dinamik olarak `cargo_codes` tablosundan alınıyor
+  - Escrow durumu görünüyor
+  - Teslimat onay formu mevcut
 
 **Bildirimler:**
 - Email: ?
@@ -1299,7 +1349,7 @@ WHERE id = [device_id];
 
 ---
 
-**✅ Bu dosya yeni süreç akışına göre güncellenmiştir (v4.0). Test sürecine hazır.**
+**✅ Bu dosya yeni süreç akışına göre güncellenmiştir (v5.1). Test sürecine hazır.**
 
 **Yeni Özellikler:**
 - Kargo kod sistemi
@@ -1307,4 +1357,38 @@ WHERE id = [device_id];
 - Final payment distribution
 - Gelişmiş status akışı
 - Detaylı escrow release koşulları
+
+---
+
+## 🚀 **KARGO SİSTEMİ GÜNCELLEMELERİ - v5.1 (19 Ekim 2025)**
+
+### **Sorun:**
+- SVC223344 seri numaralı cihaz için "Durum Bilgisi" bölümünde dinamik kargo bilgileri görünmüyordu
+- PaymentSuccessPage ve DeviceDetailPage'de kargo bilgileri statik mesajlarla gösteriliyordu
+- Supabase'de "more than one relationship" hatası alınıyordu
+
+### **Çözüm:**
+1. **Kargo Durum Sistemi Eklendi:**
+   - `cargo_codes` tablosuna `cargo_status` alanı eklendi
+   - 5 farklı durum: `pending`, `picked_up`, `in_transit`, `delivered`, `confirmed`
+   - Her durum için dinamik mesajlar oluşturuldu
+
+2. **Frontend Güncellemeleri:**
+   - PaymentSuccessPage.tsx: Seri numarası bazlı kargo bilgisi sorgusu
+   - DeviceDetailPage.tsx: Bulan kişi ekranı için dinamik kargo durum mesajları
+   - Supabase sorgu hatası çözüldü (iki aşamalı sorgu)
+
+3. **Test Verisi:**
+   - SVC223344 için test kargo verisi oluşturuldu
+   - ABC123456 takip numarası, Aras Kargo, picked_up durumu
+
+### **Sonuç:**
+- ✅ Cihaz sahibi ekranında dinamik kargo bilgileri görünüyor
+- ✅ Bulan kişi ekranında dinamik kargo durum mesajları çalışıyor
+- ✅ Her iki ekran da aynı kargo bilgilerini gösteriyor
+- ✅ Seri numarası bazlı sorgulama başarıyla çalışıyor
+
+**Test URL'leri:**
+- Cihaz Sahibi: `http://localhost:5173/#/payment/success?paymentId=b8ca00b5-5916-4fb3-b929-b702e1688a77`
+- Bulan Kişi: `http://localhost:5173/#/device/febac4c3-1138-4d65-a44f-eca27129696f`
 

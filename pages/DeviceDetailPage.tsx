@@ -57,6 +57,63 @@ const DeviceDetailPage: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [secureInvoiceUrl, setSecureInvoiceUrl] = useState<string | null>(null);
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
+  const [cargoInfo, setCargoInfo] = useState<{code: string, company: string, status: string} | null>(null);
+
+  // Kargo bilgilerini al
+  const fetchCargoInfo = async (serialNumber: string) => {
+    try {
+      console.log('[DEBUG] Kargo bilgisi aranıyor, serialNumber:', serialNumber);
+      
+      // Önce seri numarasına göre device_id'yi bul
+      const { data: devices, error: deviceError } = await supabaseClient
+        .from('devices')
+        .select('id')
+        .eq('serialNumber', serialNumber)
+        .eq('status', 'payment_completed');
+
+      if (deviceError) {
+        console.log('Device bulunamadı:', deviceError.message);
+        return;
+      }
+
+      if (!devices || devices.length === 0) {
+        console.log('Seri numarasına göre device bulunamadı');
+        return;
+      }
+
+      // Device ID'leri al
+      const deviceIds = devices.map(d => d.id);
+      console.log('[DEBUG] Bulunan device IDs:', deviceIds);
+
+      // Bu device ID'lerden kargo bilgisi olanı bul
+      const { data, error } = await supabaseClient
+        .from('cargo_codes')
+        .select('code, cargo_company, cargo_status')
+        .in('device_id', deviceIds)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      console.log('[DEBUG] Kargo sorgu sonucu:', { data, error });
+
+      if (error) {
+        console.log('Kargo bilgisi bulunamadı:', error.message);
+        return;
+      }
+
+      if (data) {
+        console.log('[DEBUG] Kargo bilgisi bulundu:', data);
+        setCargoInfo({
+          code: data.code,
+          company: data.cargo_company,
+          status: data.cargo_status
+        });
+      }
+    } catch (error) {
+      console.error('Kargo bilgisi alma hatası:', error);
+    }
+  };
 
   // Dosya indirme fonksiyonu
   const handleDownloadInvoice = async () => {
@@ -154,6 +211,11 @@ const DeviceDetailPage: React.FC = () => {
             setIsLoadingInvoice(false);
           }
         }
+
+        // Kargo bilgilerini al
+        if (foundDevice) {
+          await fetchCargoInfo(foundDevice.serialNumber);
+        }
       }
     };
 
@@ -174,7 +236,9 @@ const DeviceDetailPage: React.FC = () => {
     "DeviceDetailPage: Current state - device:",
     device,
     "currentUser:",
-    currentUser
+    currentUser,
+    "cargoInfo:",
+    cargoInfo
   );
 
   if (device === undefined) {
@@ -1498,8 +1562,52 @@ const DeviceDetailPage: React.FC = () => {
                         2
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
-                        <p className="text-gray-600 text-sm">Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></p>
+                        <p className="font-medium text-gray-900 mb-1">
+                          {cargoInfo ? (
+                            <>
+                              {cargoInfo.status === 'pending' && (
+                                <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firmasına <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Teslim Edilmesi Bekleniyor</>
+                              )}
+                              {cargoInfo.status === 'picked_up' && (
+                                <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firmasına <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Teslim Edildi</>
+                              )}
+                              {cargoInfo.status === 'in_transit' && (
+                                <>Cihazınız <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması ile <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Yolda</>
+                              )}
+                              {cargoInfo.status === 'delivered' && (
+                                <>Cihazınız <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması tarafından <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Size Teslim Edildi</>
+                              )}
+                              {cargoInfo.status === 'confirmed' && (
+                                <>Cihazınızın <span className="font-semibold text-blue-600">{cargoInfo.company}</span> kargo firması tarafından <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile Size Teslim Edildiği Onaylandı</>
+                              )}
+                            </>
+                          ) : (
+                            <>Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</>
+                          )}
+                        </p>
+                        <p className="text-gray-600 text-sm">
+                          {cargoInfo ? (
+                            <>
+                              {cargoInfo.status === 'pending' && (
+                                <>Cihazınızın belirtilen takip numarası ile kargo firmasına teslim edilmesi bekleniyor</>
+                              )}
+                              {cargoInfo.status === 'picked_up' && (
+                                <>Cihazınız kargo firması tarafından alındı</>
+                              )}
+                              {cargoInfo.status === 'in_transit' && (
+                                <>Cihazınız size ulaştırılıyor</>
+                              )}
+                              {cargoInfo.status === 'delivered' && (
+                                <>Cihazınız size teslim edildi</>
+                              )}
+                              {cargoInfo.status === 'confirmed' && (
+                                <>Teslim onaylandı, işlem tamamlandı</>
+                              )}
+                            </>
+                          ) : (
+                            <>Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></>
+                          )}
+                        </p>
                       </div>
                     </div>
                     
@@ -1584,9 +1692,9 @@ const DeviceDetailPage: React.FC = () => {
               <div className="max-w-2xl mx-auto py-12">
                 {/* Success Header */}
                 <div className="text-center mb-8">
-                  <div className="text-green-500 text-6xl mb-4">🎉</div>
+                  <div className="text-green-500 text-6xl mb-4">🚚</div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Ödülünüz Hazırlanıyor!
+                    Cihazı Kargo Firmasına Teslim Edin!
                   </h1>
                   <p className="text-gray-600">
                     Cihaz sahibi ödeme yaptı. Kargo işlemleri başlatılacak.
@@ -1622,7 +1730,7 @@ const DeviceDetailPage: React.FC = () => {
                 {/* Status Information */}
                 <div className="bg-green-50 rounded-lg p-6 mb-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Süreç Durumu
+                    Durum Bilgisi
                   </h2>
                   
                   <div className="space-y-4">
@@ -1641,8 +1749,52 @@ const DeviceDetailPage: React.FC = () => {
                         2
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Kargo Hazırlanıyor</p>
-                        <p className="text-gray-600 text-sm">Cihaz kargo ile gönderilecek</p>
+                        <p className="font-medium text-gray-900 mb-1">
+                          {cargoInfo ? (
+                            <>
+                              {cargoInfo.status === 'pending' && (
+                                <>Cihazı <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile <span className="font-semibold text-blue-600">{cargoInfo.company}</span> firmasına teslim edin</>
+                              )}
+                              {cargoInfo.status === 'picked_up' && (
+                                <>Cihaz <span className="font-semibold text-blue-600">{cargoInfo.company}</span> firmasına <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile teslim edildi</>
+                              )}
+                              {cargoInfo.status === 'in_transit' && (
+                                <>Cihaz <span className="font-semibold text-blue-600">{cargoInfo.company}</span> firması ile <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile yolda</>
+                              )}
+                              {cargoInfo.status === 'delivered' && (
+                                <>Cihaz <span className="font-semibold text-blue-600">{cargoInfo.company}</span> firması tarafından <span className="font-semibold text-blue-600">{cargoInfo.code}</span> takip numarası ile sahibine teslim edildi</>
+                              )}
+                              {cargoInfo.status === 'confirmed' && (
+                                <>Cihaz teslimi onaylandı - Ödül ödemesi bekleniyor</>
+                              )}
+                            </>
+                          ) : (
+                            <>Cihazı Kargo Firmasına Teslim Edin</>
+                          )}
+                        </p>
+                        <p className="text-gray-600 text-sm">
+                          {cargoInfo ? (
+                            <>
+                              {cargoInfo.status === 'pending' && (
+                                <>Cihazı belirtilen takip numarası ile kargo firmasına teslim edin</>
+                              )}
+                              {cargoInfo.status === 'picked_up' && (
+                                <>Cihaz kargo firması tarafından alındı</>
+                              )}
+                              {cargoInfo.status === 'in_transit' && (
+                                <>Cihaz sahibine ulaştırılıyor</>
+                              )}
+                              {cargoInfo.status === 'delivered' && (
+                                <>Cihaz sahibine teslim edildi</>
+                              )}
+                              {cargoInfo.status === 'confirmed' && (
+                                <>Teslim onaylandı, ödül ödemesi işleme alınacak</>
+                              )}
+                            </>
+                          ) : (
+                            <>Kargo detayları henüz hazırlanmadı</>
+                          )}
+                        </p>
                       </div>
                     </div>
                     
