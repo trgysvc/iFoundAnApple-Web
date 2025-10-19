@@ -167,19 +167,19 @@ const PaymentCallbackPage: React.FC = () => {
       }
 
       // Bulan kişinin device'ını bul ve güncelle
-      const { data: deviceData } = await supabase
+      const { data: ownerDeviceData } = await supabase
         .from('devices')
         .select('serialNumber, model')
         .eq('id', deviceId)
         .single();
 
-      if (deviceData) {
+      if (ownerDeviceData) {
         // Aynı seri numarası ve model ile bulan kişinin device'ını bul
         const { data: matchingDevices, error: matchingError } = await supabase
           .from('devices')
           .select('id, userId, status')
-          .eq('serialNumber', deviceData.serialNumber)
-          .eq('model', deviceData.model)
+          .eq('serialNumber', ownerDeviceData.serialNumber)
+          .eq('model', ownerDeviceData.model)
           .neq('id', deviceId) // Cihaz sahibinin device'ı hariç
           .eq('status', 'matched'); // Sadece matched olanları güncelle
 
