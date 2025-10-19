@@ -3,8 +3,8 @@
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
 **Son Güncelleme:** 19 Ekim 2025  
-**Versiyon:** 5.1  
-**Durum:** Production Ready - Current Supabase Structure (2025.10.19)
+**Versiyon:** 5.2  
+**Durum:** Production Ready - Admin Panel Implemented (2025.10.19)
 
 ## 📋 **REFERANS DOSYALAR**
 - **`SYSTEM_ANALYSIS_REPORT.md`**: Sistem analizi raporu
@@ -14,6 +14,7 @@ Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içe
 ## ✅ **RLS DURUMU - PRODUCTION READY**
 
 **RLS AKTİF TABLOLAR (Production'da aktif):**
+- `admin_permissions` - RLS: ENABLED (3 politika tanımlı) **[YENİ v5.2]**
 - `audit_logs` - RLS: DISABLED (3 politika tanımlı)
 - `cargo_companies` - RLS: ENABLED (1 politika tanımlı)
 - `cargo_shipments` - RLS: DISABLED (3 politika tanımlı)
@@ -30,7 +31,7 @@ Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içe
 - `userprofile` - RLS: ENABLED (4 politika tanımlı)
 
 **RLS DURUMU ÖZETİ:**
-- **RLS ENABLED**: `cargo_companies`, `invoice_logs`, `userprofile`
+- **RLS ENABLED**: `admin_permissions`, `cargo_companies`, `invoice_logs`, `userprofile`
 - **RLS DISABLED**: Diğer tüm tablolar (politikalar tanımlı ama aktif değil)
 
 **NOT:** Çoğu tabloda RLS politikaları tanımlı ancak RLS kapalı durumda. Production'da güvenlik için RLS aktif edilebilir.
@@ -59,7 +60,32 @@ export enum DeviceStatus {
 
 ## 📊 **TABLO YAPILARI**
 
-### 1. **audit_logs**
+### 1. **admin_permissions** **[YENİ v5.2]**
+Admin yetkilerini yöneten tablo.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | null | User ID (FK to auth.users) |
+| role | character varying(20) | NO | null | Admin role (admin/super_admin) |
+| permissions | jsonb | YES | null | Detailed permissions |
+| is_active | boolean | YES | true | Is active |
+| granted_by | uuid | YES | null | Granted by user ID |
+| granted_at | timestamp with time zone | YES | now() | Granted timestamp |
+| expires_at | timestamp with time zone | YES | null | Expires timestamp |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+
+**RLS Policies:**
+- `admin_permissions_select_policy` - Users can read their own permissions
+- `admin_permissions_insert_policy` - Only super admins can insert
+- `admin_permissions_update_policy` - Only super admins can update
+
+**Foreign Keys:**
+- `user_id` → `auth.users(id)`
+- `granted_by` → `auth.users(id)`
+
+### 2. **audit_logs**
 Sistemdeki tüm işlemleri loglayan tablo.
 
 | Column | Type | Nullable | Default | Description |

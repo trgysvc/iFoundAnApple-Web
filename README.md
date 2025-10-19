@@ -28,10 +28,11 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - 👤 **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN bilgileri
 - 📱 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - 🔔 **Gerçek Zamanlı Bildirimler**: Anlık güncellemeler ve bildirimler
-- 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi
+- 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi ve gerçek zamanlı raporlama **[YENİ v5.2]**
 - 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
 - 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
 - 🚚 **Dinamik Kargo Sistemi**: Gerçek zamanlı kargo takip ve teslimat yönetimi (v5.1 güncellenmiş)
+- 📊 **Admin Raporlama**: Gerçek zamanlı analitik ve export fonksiyonu **[YENİ v5.2]**
 
 ---
 
@@ -166,6 +167,17 @@ iFoundAnApple-Web/
 │   ├── calculate-fees.ts   # Ücret hesaplama API
 │   ├── process-payment.ts  # Ödeme işleme API
 │   ├── release-escrow.ts   # Escrow serbest bırakma
+│   ├── admin-reports.ts    # Admin raporlama API **[YENİ v5.2]**
+│   └── 📁 admin/           # Admin panel API'leri **[YENİ v5.2]**
+│       ├── users.ts        # Kullanıcı yönetimi API
+│       ├── devices.ts      # Cihaz yönetimi API
+│       ├── payments.ts     # Ödeme yönetimi API
+│       ├── escrow.ts       # Emanet yönetimi API
+│       ├── cargo.ts        # Kargo yönetimi API
+│       ├── logs.ts         # Sistem logları API
+│       ├── permissions.ts  # Yetki yönetimi API
+│       ├── reports.ts      # Raporlama API
+│       └── settings.ts     # Sistem ayarları API
 │   ├── iyzico-payment.ts   # İyzico ödeme endpoint
 │   └── 📁 webhooks/        # Webhook handlers
 │       ├── iyzico-callback.ts      # İyzico webhook
@@ -206,6 +218,17 @@ iFoundAnApple-Web/
 │   ├── PaymentCallbackPage.tsx # Ödeme callback (bulan kişi status güncelleme)
 │   ├── CargoManagementPage.tsx # Kargo yönetim sayfası
 │   ├── AdminDashboardPage.tsx # Yönetici paneli
+│   └── 📁 admin/              # Admin panel sayfaları **[YENİ v5.2]**
+│       ├── AdminLayout.tsx    # Admin panel layout
+│       ├── UserManagementPage.tsx # Kullanıcı yönetimi
+│       ├── DeviceManagementPage.tsx # Cihaz yönetimi
+│       ├── PaymentManagementPage.tsx # Ödeme yönetimi
+│       ├── EscrowManagementPage.tsx # Emanet yönetimi
+│       ├── CargoManagementPage.tsx # Kargo yönetimi
+│       ├── SystemLogsPage.tsx # Sistem logları
+│       ├── ReportsPage.tsx    # Raporlar ve analitik
+│       ├── AdminPermissionsPage.tsx # Yetki yönetimi
+│       └── SystemSettingsPage.tsx # Sistem ayarları
 │   ├── FAQPage.tsx        # Sıkça sorulan sorular
 │   ├── TermsPage.tsx      # Kullanım şartları
 │   ├── PrivacyPage.tsx    # Gizlilik politikası
@@ -541,6 +564,43 @@ Supabase Backend-as-a-Service
 - 🔄 **3D Secure Flow**: Gelişmiş güvenlik akışı
 - 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
 - 🔄 **Push Notifications**: Mobil bildirimler
+
+---
+
+## 🛡️ Admin Panel Sistemi (v5.2)
+
+### Admin Panel Özellikleri
+- **Dashboard**: Sistem genel bakış ve istatistikler
+- **Kullanıcı Yönetimi**: Kullanıcı listesi, rol yönetimi, profil kontrolü
+- **Cihaz Yönetimi**: Cihaz listesi, durum yönetimi, detay görüntüleme
+- **Ödeme Yönetimi**: Ödeme işlemleri, durum takibi, tutar kontrolü
+- **Emanet Yönetimi**: Escrow hesapları, serbest bırakma işlemleri
+- **Kargo Yönetimi**: Kargo takibi, teslimat onayı, durum güncelleme
+- **Sistem Logları**: Audit logları, kullanıcı aktiviteleri, sistem olayları
+- **Raporlar**: Gerçek zamanlı raporlar, analitik, export fonksiyonu
+- **Yetki Yönetimi**: Admin rolleri, yetki detayları, süre yönetimi
+- **Sistem Ayarları**: Platform konfigürasyonu, ödeme ayarları, bildirim ayarları
+
+### Admin Panel Erişimi
+1. **Admin Girişi**: `turgaysavaci@gmail.com` ile giriş yapın
+2. **Admin Panel**: Sağ üst menüden "Admin Paneli" linkine tıklayın
+3. **Dashboard**: `http://localhost:5174/#/admin` adresine gidin
+4. **Raporlar**: `http://localhost:5174/#/admin/reports` ile raporlara erişin
+
+### Admin Panel Test Sonuçları
+- ✅ **Admin girişi**: Başarılı
+- ✅ **Rol kontrolü**: SUPER_ADMIN rolü doğru çalışıyor
+- ✅ **Sayfa erişimi**: Tüm admin sayfalarına erişim sağlandı
+- ✅ **Veri görüntüleme**: Gerçek veriler doğru görüntüleniyor
+- ✅ **Raporlama sistemi**: Gerçek verilerle çalışıyor
+- ✅ **Export fonksiyonu**: PDF/Excel/CSV indirme çalışıyor
+- ✅ **Build optimizasyonu**: Chunk boyutları optimize edildi (534KB → 431KB)
+
+### Admin Panel Dokümantasyonu
+- **`ADMIN_PANEL_TEST.md`**: Admin panel test dokümantasyonu
+- **`ADMIN_REPORTS_ACTIVATED.md`**: Raporlama sistemi dokümantasyonu
+- **`ADMIN_PERMISSION_SYSTEM.md`**: Yetki sistemi dokümantasyonu
+- **`ADMIN_SETUP_INSTRUCTIONS.md`**: Kurulum talimatları
 
 ---
 
