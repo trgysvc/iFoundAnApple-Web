@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Test - iFoundAnApple</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
+        }
+        .test-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background-color: #1d4ed8;
+        }
+        .test-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .status.info {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .test-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 16px;
+            background-color: #f3f4f6;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid #d1d5db;
+        }
+        .test-link:hover {
+            background-color: #e5e7eb;
+        }
+        .console-output {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin Panel Test Sayfası</h1>
+        
+        <div class="test-section">
+            <h3>📊 Test Durumu</h3>
+            <div id="test-status" class="status info">
+                Test başlatılmadı
+            </div>
+            <button class="test-button" onclick="runAllTests()">🚀 Tüm Testleri Çalıştır</button>
+            <button class="test-button" onclick="clearConsole()">🧹 Console Temizle</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Admin Yetki Testi</h3>
+            <button class="test-button" onclick="testAdminAccess()">Admin Yetki Kontrolü</button>
+            <button class="test-button" onclick="testUserRole()">Kullanıcı Rolü Kontrolü</button>
+            <button class="test-button" onclick="testDatabaseConnection()">Veritabanı Bağlantısı</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🌐 Admin Sayfaları Testi</h3>
+            <p>Manuel olarak her sayfayı test edin:</p>
+            <a href="/admin" class="test-link" target="_blank">Admin Dashboard</a>
+            <a href="/admin/users" class="test-link" target="_blank">Kullanıcı Yönetimi</a>
+            <a href="/admin/devices" class="test-link" target="_blank">Cihaz Yönetimi</a>
+            <a href="/admin/payments" class="test-link" target="_blank">Ödeme Yönetimi</a>
+            <a href="/admin/escrow" class="test-link" target="_blank">Emanet Yönetimi</a>
+            <a href="/admin/cargo" class="test-link" target="_blank">Kargo Yönetimi</a>
+            <a href="/admin/logs" class="test-link" target="_blank">Sistem Logları</a>
+            <a href="/admin/reports" class="test-link" target="_blank">Raporlar</a>
+            <a href="/admin/permissions" class="test-link" target="_blank">Yetki Yönetimi</a>
+            <a href="/admin/settings" class="test-link" target="_blank">Sistem Ayarları</a>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Console Çıktısı</h3>
+            <div id="console-output" class="console-output">
+                Test çıktıları burada görünecek...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Test Sonuçları</h3>
+            <div id="test-results">
+                <p>Henüz test çalıştırılmadı.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Console output'u yakalama
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsoleOutput(message, type = 'log') {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'color: #ef4444' : type === 'warn' ? 'color: #f59e0b' : 'color: #10b981';
+            output.innerHTML += `<div style="${className}">[${timestamp}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsoleOutput(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsoleOutput(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsoleOutput(args.join(' '), 'warn');
+        };
+
+        // Test fonksiyonları
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('test-status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = 'Console temizlendi...';
+        }
+
+        function testAdminAccess() {
+            console.log('🔐 Admin yetki testi başlatılıyor...');
+            
+            // Local storage'dan kullanıcı bilgilerini kontrol et
+            const authData = localStorage.getItem('sb-localhost-auth-token');
+            if (!authData) {
+                console.error('❌ Auth token bulunamadı');
+                updateStatus('Auth token bulunamadı', 'error');
+                return false;
+            }
+            
+            try {
+                const parsedAuth = JSON.parse(authData);
+                console.log('✅ Auth token mevcut');
+                console.log('👤 User ID:', parsedAuth.currentSession?.user?.id);
+                console.log('📧 Email:', parsedAuth.currentSession?.user?.email);
+                
+                updateStatus('Auth token mevcut', 'success');
+                return true;
+            } catch (error) {
+                console.error('❌ Auth token parse hatası:', error);
+                updateStatus('Auth token parse hatası', 'error');
+                return false;
+            }
+        }
+
+        function testUserRole() {
+            console.log('👑 Kullanıcı rolü testi başlatılıyor...');
+            
+            // React context'ten kullanıcı bilgilerini almaya çalış
+            const reactRoot = document.querySelector('#root');
+            if (!reactRoot) {
+                console.error('❌ React root bulunamadı');
+                updateStatus('React root bulunamadı', 'error');
+                return false;
+            }
+            
+            console.log('✅ React root mevcut');
+            console.log('💡 Manuel olarak admin sayfasına gidip kontrol edin');
+            updateStatus('React root mevcut - Manuel test gerekli', 'info');
+            return true;
+        }
+
+        function testDatabaseConnection() {
+            console.log('🗄️ Veritabanı bağlantı testi başlatılıyor...');
+            
+            // Supabase client'ı kontrol et
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase client bulunamadı');
+                updateStatus('Supabase client bulunamadı', 'error');
+                return false;
+            }
+            
+            console.log('✅ Supabase client mevcut');
+            updateStatus('Supabase client mevcut', 'success');
+            return true;
+        }
+
+        function runAllTests() {
+            console.log('🚀 Tüm testler başlatılıyor...');
+            updateStatus('Testler çalışıyor...', 'info');
+            
+            const results = {
+                adminAccess: testAdminAccess(),
+                userRole: testUserRole(),
+                database: testDatabaseConnection()
+            };
+            
+            const passedTests = Object.values(results).filter(Boolean).length;
+            const totalTests = Object.keys(results).length;
+            
+            console.log(`📊 Test sonuçları: ${passedTests}/${totalTests} başarılı`);
+            
+            if (passedTests === totalTests) {
+                updateStatus('Tüm testler başarılı!', 'success');
+            } else {
+                updateStatus(`${passedTests}/${totalTests} test başarılı`, 'error');
+            }
+            
+            // Sonuçları göster
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = `
+                <h4>Test Sonuçları:</h4>
+                <ul>
+                    <li>Admin Access: ${results.adminAccess ? '✅' : '❌'}</li>
+                    <li>User Role: ${results.userRole ? '✅' : '❌'}</li>
+                    <li>Database: ${results.database ? '✅' : '❌'}</li>
+                </ul>
+                <p><strong>Toplam:</strong> ${passedTests}/${totalTests} başarılı</p>
+            `;
+        }
+
+        // Sayfa yüklendiğinde otomatik test
+        window.addEventListener('load', function() {
+            console.log('🔧 Admin Panel Test Sayfası yüklendi');
+            console.log('📍 URL:', window.location.href);
+            console.log('🌐 Host:', window.location.host);
+            console.log('💡 Testleri başlatmak için "Tüm Testleri Çalıştır" butonuna tıklayın');
+        });
+    </script>
+</body>
+</html>

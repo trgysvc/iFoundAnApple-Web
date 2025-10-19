@@ -44,8 +44,17 @@ export default defineConfig(({ mode }) => {
                 return 'payment';
               }
               
-              // Admin components (low priority)
-              if (id.includes('admin/') || id.includes('AdminDashboard')) {
+              // Admin components (low priority) - split further
+              if (id.includes('admin/')) {
+                if (id.includes('ReportsPage') || id.includes('admin-reports')) {
+                  return 'admin-reports';
+                }
+                if (id.includes('UserManagement') || id.includes('DeviceManagement')) {
+                  return 'admin-management';
+                }
+                return 'admin';
+              }
+              if (id.includes('AdminDashboard')) {
                 return 'admin';
               }
               

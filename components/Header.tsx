@@ -297,8 +297,20 @@ const Header: React.FC = () => {
                             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                           />
                         </svg>
-                        <span className="font-medium">{t("dashboard")}</span>
+                        <span className="font-medium">Cihazlarım</span>
                       </NavLink>
+
+                      {/* Admin Panel Link - Only for admin users */}
+                      {(currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.SUPER_ADMIN) && (
+                        <NavLink
+                          to="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center px-4 py-3 text-sm text-brand-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200 group border-t border-brand-gray-100"
+                        >
+                          <Shield className="w-5 h-5 mr-3 text-purple-500 group-hover:text-purple-600 transition-colors" />
+                          <span className="font-medium">Admin Paneli</span>
+                        </NavLink>
+                      )}
 
                       {/* Language Selector */}
                       <div className="px-4 py-3 border-t border-brand-gray-100">

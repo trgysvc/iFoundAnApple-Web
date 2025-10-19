@@ -8,19 +8,26 @@ import { Users, Smartphone, BarChart2 } from 'lucide-react';
 const AdminDashboardPage: React.FC = () => {
     const { users, devices, t } = useAppContext();
 
+    // Debug logs
+    console.log('📊 AdminDashboard - Users:', users.length);
+    console.log('📊 AdminDashboard - Devices:', devices.length);
+
     const getRoleName = (role: UserRole) => {
         switch (role) {
             case UserRole.USER: return t('user');
             case UserRole.ADMIN: return t('admin');
+            case UserRole.SUPER_ADMIN: return 'Super Admin';
             default: return role;
         }
     };
     
-    const usersWithoutAdmin = users.filter(u => u.role !== UserRole.ADMIN);
+    const usersWithoutAdmin = users.filter(u => u.role !== UserRole.ADMIN && u.role !== UserRole.SUPER_ADMIN);
     const devicesByStatus = devices.reduce((acc, device) => {
         acc[device.status] = (acc[device.status] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
+
+    console.log('📊 AdminDashboard - Users without admin:', usersWithoutAdmin.length);
 
     return (
         <Container>

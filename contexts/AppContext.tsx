@@ -27,6 +27,7 @@ interface AppContextType {
   setLanguage: (lang: Language) => void;
   t: (key: string, replacements?: Record<string, string | number>) => string;
   currentUser: User | null;
+  users: User[]; // Added for admin panel
   login: (email: string, pass: string) => Promise<boolean>;
   logout: () => void;
   register: (
@@ -201,7 +202,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [language, setLanguage] = useLocalStorage<Language>("app-lang", getDefaultLanguage());
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  // const [users, setUsers] = useLocalStorage<User[]>('users', [defaultAdminUser]); // Removed as users are now managed by Supabase
+  const [users, setUsers] = useState<User[]>([]); // For admin panel - fetch all users
   const [devices, setDevices] = useState<Device[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isProfileFetching, setIsProfileFetching] = useState(false);
@@ -249,6 +250,80 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     fetchUserDevices();
   }, [currentUser?.id]);
+
+  // Fetch all users for admin panel (only if user is admin)
+  useEffect(() => {
+    console.log('🔍 Admin users fetch effect triggered - currentUser:', currentUser?.email, 'role:', currentUser?.role);
+    
+    if (!currentUser) {
+      console.log('⚠️ No current user, skipping users fetch');
+      setUsers([]);
+      return;
+    }
+
+    if (currentUser.role !== UserRole.ADMIN && currentUser.role !== UserRole.SUPER_ADMIN) {
+      console.log('⚠️ User is not admin, skipping users fetch. Role:', currentUser.role);
+      setUsers([]);
+      return;
+    }
+
+    const fetchAllUsers = async () => {
+      try {
+        console.log('🔍 Fetching all users for admin panel...');
+        
+        // Get user profiles (without role)
+        const { data: userProfiles, error: profileError } = await supabase
+          .from('userprofile')
+          .select('user_id, first_name, last_name');
+
+        if (profileError) {
+          console.error("❌ Error fetching user profiles:", profileError);
+          setUsers([]);
+          return;
+        }
+
+        console.log('✅ User profiles fetched:', userProfiles?.length || 0);
+
+        // Get admin permissions (to check roles)
+        const { data: adminPerms, error: permsError } = await supabase
+          .from('admin_permissions')
+          .select('user_id, role')
+          .eq('is_active', true);
+
+        if (permsError) {
+          console.warn("⚠️ Error fetching admin permissions:", permsError);
+        }
+
+        console.log('✅ Admin permissions fetched:', adminPerms?.length || 0);
+
+        // Transform userprofile data to User format
+        const usersData: User[] = (userProfiles || []).map((profile: any) => {
+          // Check if user has admin role
+          const adminPerm = adminPerms?.find((p: any) => p.user_id === profile.user_id);
+          const userRole = adminPerm?.role === 'super_admin' ? UserRole.SUPER_ADMIN :
+                          adminPerm?.role === 'admin' ? UserRole.ADMIN :
+                          UserRole.USER;
+
+          return {
+            id: profile.user_id,
+            email: `user-${profile.user_id.slice(0, 8)}@example.com`, // Mock email
+            firstName: profile.first_name || 'Bilinmiyor',
+            lastName: profile.last_name || 'Bilinmiyor',
+            fullName: `${profile.first_name || 'Bilinmiyor'} ${profile.last_name || 'Bilinmiyor'}`.trim(),
+            role: userRole,
+          };
+        });
+
+        console.log('✅ Users data transformed:', usersData.length, 'users');
+        setUsers(usersData);
+      } catch (error) {
+        console.error("❌ Error fetching users:", error);
+        setUsers([]);
+      }
+    };
+
+    fetchAllUsers();
+  }, [currentUser?.id, currentUser?.role]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -303,23 +378,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                         `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
                         session.user.email!;
         
-        const initialUser = {
-          id: session.user.id,
-          email: session.user.email!,
-          fullName: fullName,
-          firstName: parsedNames.firstName,
-          lastName: parsedNames.lastName,
-          role: UserRole.USER,
+        // Check admin permissions for OAuth users too
+        const checkAdminPermissions = async () => {
+          const { data: adminPermission } = await supabase
+            .from('admin_permissions')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .eq('is_active', true)
+            .single();
+
+          const userRole = adminPermission?.role === 'super_admin' ? UserRole.SUPER_ADMIN :
+                          adminPermission?.role === 'admin' ? UserRole.ADMIN :
+                          UserRole.USER;
+
+          const initialUser = {
+            id: session.user.id,
+            email: session.user.email!,
+            fullName: fullName,
+            firstName: parsedNames.firstName,
+            lastName: parsedNames.lastName,
+            role: userRole,
+          };
+
+          secureLogger.info("Parsed user metadata", {
+            provider: session.user.app_metadata?.provider,
+            hasFirstName: !!parsedNames.firstName,
+            hasLastName: !!parsedNames.lastName,
+            source: session.user.user_metadata.given_name ? 'OAuth' : 'Regular',
+            userRole: userRole,
+          });
+
+          setCurrentUser(initialUser);
         };
 
-        secureLogger.info("Parsed user metadata", {
-          provider: session.user.app_metadata?.provider,
-          hasFirstName: !!parsedNames.firstName,
-          hasLastName: !!parsedNames.lastName,
-          source: session.user.user_metadata.given_name ? 'OAuth' : 'Regular',
-        });
-
-        setCurrentUser(initialUser);
+        checkAdminPermissions();
 
         // Fetch additional profile data from userProfile table
         fetchUserProfile(session.user.id)
@@ -701,13 +793,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
                       `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
                       data.user.email!;
       
+      // Check if user has admin permissions
+      const { data: adminPermission } = await supabase
+        .from('admin_permissions')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .eq('is_active', true)
+        .single();
+
+      const userRole = adminPermission?.role === 'super_admin' ? UserRole.SUPER_ADMIN :
+                      adminPermission?.role === 'admin' ? UserRole.ADMIN :
+                      UserRole.USER;
+
       setCurrentUser({
         id: data.user.id,
         email: data.user.email!,
         fullName: fullName,
         firstName: parsedNames.firstName,
         lastName: parsedNames.lastName,
-        role: UserRole.USER,
+        role: userRole,
       });
       
       // Ensure user has a profile record
@@ -795,7 +899,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         fullName: fullName,
         firstName: signUpData.user.user_metadata.first_name || userData.firstName,
         lastName: signUpData.user.user_metadata.last_name || userData.lastName,
-        role: UserRole.USER,
+        role: UserRole.USER, // New users are always USER by default
       });
       
       // Create user profile record
@@ -1750,6 +1854,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     logout,
     register,
     signInWithOAuth,
+    users, // Added for admin panel
     devices,
     addDevice,
     getUserDevices,
