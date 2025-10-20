@@ -54,17 +54,8 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
   - Authentication & Authorization
   - Row Level Security (RLS)
   - Edge Functions (serverless)
-- **Express.js** - Backend API Server
-  - İyzico payment gateway entegrasyonu
-  - RESTful API endpoints
-  - CORS desteği
 
 ### Payment & Financial
-- **İyzico 2.0.64** - Türkiye'nin güvenilir ödeme altyapısı
-  - Sandbox/Production ortam desteği
-  - 3D Secure entegrasyonu
-  - Webhook ve callback sistemi
-  - PCI DSS uyumlu
 - **Escrow System** - Güvenli ödeme tutma sistemi
   - Çift taraflı onay mekanizması
   - Otomatik ödeme serbest bırakma
@@ -99,6 +90,7 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - Modern web tarayıcısı
 - Supabase hesabı
 - Google Gemini API anahtarı (opsiyonel)
+- Ödeme gateway API anahtarları (production için)
 
 ### Kurulum
 
@@ -124,37 +116,28 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
    # Google Gemini AI
    GEMINI_API_KEY=your_google_gemini_api_key
    
-   # İyzico Payment Gateway (Sandbox/Test)
-   VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-   VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-   VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
-   VITE_IYZICO_CALLBACK_URL=http://localhost:5173
+   # Payment Gateway (Production için gerekli)
+   VITE_PAYMENT_API_KEY=your_payment_api_key
+   VITE_PAYMENT_SECRET_KEY=your_payment_secret_key
+   VITE_PAYMENT_BASE_URL=your_payment_gateway_url
+   VITE_PAYMENT_CALLBACK_URL=http://localhost:5173
    ```
    
    **Not**: 
    - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
    - Anon key, Supabase dashboard'tan alınır (public key)
    - Gemini API key, Google AI Studio'dan alınır
-   - İyzico credentials yukarıdaki sandbox değerleridir (test için)
-   - Production için gerçek İyzico credentials kullanın
+   - Ödeme gateway bilgileri production için gereklidir
    - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
 
-4. **Backend server'ı başlatın (İyzico için gerekli):**
+4. **Geliştirme sunucusunu başlatın:**
     ```bash
-   # Terminal 1 - Backend Server
-   node server.cjs
-   ```
-
-5. **Geliştirme sunucusunu başlatın:**
-    ```bash
-   # Terminal 2 - Frontend
    npm run dev
    ```
 
-6. **Tarayıcınızda açın:**
+5. **Tarayıcınızda açın:**
    ```
    Frontend: http://localhost:5173
-   Backend API: http://localhost:3001
    Production: http://localhost:3000 (Docker)
    ```
 
@@ -179,10 +162,6 @@ iFoundAnApple-Web/
 │       ├── permissions.ts  # Yetki yönetimi API
 │       ├── reports.ts      # Raporlama API
 │       └── settings.ts     # Sistem ayarları API
-│   ├── iyzico-payment.ts   # İyzico ödeme endpoint
-│   └── 📁 webhooks/        # Webhook handlers
-│       ├── iyzico-callback.ts      # İyzico webhook
-│       └── iyzico-3d-callback.ts   # 3D Secure callback
 ├── 📁 components/          # Yeniden kullanılabilir UI bileşenleri
 │   ├── 📁 ui/             # Temel UI elemanları
 │   │   ├── Button.tsx     # Özelleştirilebilir buton bileşeni
@@ -255,7 +234,6 @@ iFoundAnApple-Web/
 │   └── test-cargo-data.sql # Kargo test verileri
 ├── 📁 public/             # Statik dosyalar
 │   └── 📁 icons/          # SVG ikonları
-├── server.cjs             # Express backend server (İyzico için)
 ├── App.tsx                # Ana uygulama bileşeni
 ├── constants.ts           # Çeviriler ve sabitler
 ├── index.tsx              # Uygulama giriş noktası
@@ -364,7 +342,6 @@ npm run preview
 ```bash
 # Production (.env)
 NODE_ENV=production
-PORT=3001
 
 # Supabase
 VITE_SUPABASE_URL=https://your-project.supabase.co
@@ -373,19 +350,16 @@ VITE_SUPABASE_ANON_KEY=your_production_anon_key
 # Google Gemini AI
 GEMINI_API_KEY=your_google_gemini_api_key
 
-# İyzico Payment Gateway (Production)
-VITE_IYZICO_API_KEY=your_production_api_key
-VITE_IYZICO_SECRET_KEY=your_production_secret_key
-VITE_IYZICO_BASE_URL=https://api.iyzipay.com
-VITE_IYZICO_CALLBACK_URL=https://yourdomain.com
+# Payment Gateway (Production)
+VITE_PAYMENT_API_KEY=your_production_api_key
+VITE_PAYMENT_SECRET_KEY=your_production_secret_key
+VITE_PAYMENT_BASE_URL=your_payment_gateway_url
+VITE_PAYMENT_CALLBACK_URL=https://yourdomain.com
 
 # Development (.env.local)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_development_anon_key
 GEMINI_API_KEY=your_google_gemini_api_key
-VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
 ```
 
 ### Coolify Deployment
@@ -401,7 +375,7 @@ npm start
 3000
 ```
 
-**Not**: Production ortamında backend server (server.cjs) ayrı olarak çalıştırılmalıdır.
+**Not**: Production ortamında ödeme gateway entegrasyonu için uygun API konfigürasyonları yapılmalıdır.
 
 ### Vite Konfigürasyonu
 Proje, Vite build tool kullanır ve environment değişkenlerini şu şekilde yönetir:
@@ -502,7 +476,7 @@ Supabase Backend-as-a-Service
 2. **Cihaz Ekleme** → PostgreSQL → Real-time Notifications
 3. **AI Önerileri** → Google Gemini → Structured Response
 4. **Eşleştirme** → Database Query → Bildirim Sistemi
-5. **Ödeme Süreci** → İyzico Gateway → PaymentCallbackPage → Status Update
+5. **Ödeme Süreci** → Payment Gateway → PaymentCallbackPage → Status Update
 6. **Kargo Sistemi** → cargo_codes Tablosu → Dinamik UI Güncelleme
 7. **Profil Güncelleme** → RLS Kontrolü → Database Update
 
@@ -529,16 +503,13 @@ Supabase Backend-as-a-Service
 - ✅ **API Hazırlığı**: Gerçek kargo API entegrasyonu için hazır altyapı
 - ✅ **Dokümantasyon Güncelleme**: PROCESS_FLOW, COMPLETE_DATABASE_SCHEMA, README
 
-### v2.3.0 - İyzico Payment Gateway Entegrasyonu ✅
-- ✅ **İyzico Sandbox API Entegrasyonu**: Gerçek ödeme gateway entegrasyonu tamamlandı
-- ✅ **Backend API Server**: Express.js ile İyzico SDK entegrasyonu (port 3001)
-- ✅ **Test Modu**: İyzico Sandbox API ile tam test ortamı
+### v2.3.0 - Payment Gateway Entegrasyonu ✅
+- ✅ **Payment Gateway Entegrasyonu**: Ödeme gateway entegrasyonu tamamlandı
 - ✅ **Payment Flow**: Baştan sona ödeme akışı çalışıyor
 - ✅ **Database Sync**: Payment, Escrow ve Device status senkronize
 - ✅ **Device Status Tracking**: Ödeme sonrası otomatik durum güncelleme
 - ✅ **Payment Success Page**: Detaylı durum bilgisi ve takip sistemi
 - ✅ **Error Handling**: Güvenli hata yönetimi ve kullanıcı bildirimleri
-- ✅ **UUID Compatibility**: İyzico payment ID'leri ile database UUID uyumu
 - ✅ **CSP Security**: Content Security Policy güncellemeleri
 - ✅ **Coolify Ready**: Production deployment hazır
 - ✅ **Docker Multi-stage Build**: Optimize edilmiş container image
@@ -566,7 +537,7 @@ Supabase Backend-as-a-Service
 - 🔄 **Otomatik Kargo Kodu Oluşturma**: Ödeme sonrası otomatik kargo kodu üretimi
 - 🔄 **Webhook Sistemi**: Kargo durumu güncellemeleri için webhook sistemi
 - 🔄 **Kargo Durum Güncelleme API'leri**: Gerçek zamanlı kargo durumu güncelleme
-- 🔄 **İyzico Production**: Gerçek ödeme sistemine geçiş
+- 🔄 **Payment Gateway Production**: Gerçek ödeme sistemine geçiş
 - 🔄 **3D Secure Flow**: Gelişmiş güvenlik akışı
 - 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
 - 🔄 **Push Notifications**: Mobil bildirimler
@@ -628,7 +599,6 @@ Not: RLS aktifse, anon key için ilgili tablolarda SELECT yetkileri gereklidir.
 ## 🙏 Teşekkürler
 
 - **Supabase** - Backend altyapısı için
-- **İyzico** - Güvenli ödeme altyapısı için
 - **Tailwind CSS** - Harika CSS framework için
 - **React Team** - Muhteşem framework için
 - **Lucide** - Güzel ikonlar için

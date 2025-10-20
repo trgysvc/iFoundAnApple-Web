@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Device, DeviceStatus } from '../types';
+import { Device, DeviceStatus } from '../types.ts';
 import { useAppContext } from '../contexts/AppContext.tsx';
 import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, CreditCard, Package, ChevronRight } from 'lucide-react';
 

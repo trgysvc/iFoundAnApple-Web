@@ -4,7 +4,7 @@
  */
 
 import { supabase } from './supabaseClient';
-import { DisputeStatus, DisputeReason, Dispute, DisputeResolution } from '../types';
+import { DisputeStatus, DisputeReason, Dispute, DisputeResolution } from '../types.ts';
 
 export interface DisputeWorkflowStep {
   status: DisputeStatus;

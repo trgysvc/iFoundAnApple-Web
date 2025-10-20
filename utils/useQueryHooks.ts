@@ -8,7 +8,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from './supabaseClient';
-import { AppNotification, Device } from '../types';
+import { AppNotification, Device } from '../types.ts';
 
 /**
  * Hook for fetching user notifications with React Query

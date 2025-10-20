@@ -1,5 +1,5 @@
 // utils/profileValidation.ts
-import { UserProfile } from '../types';
+import { UserProfile } from '../types.ts';
 
 export interface ProfileValidationResult {
   isValid: boolean;
