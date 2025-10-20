@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import { supabase } from '../../utils/supabaseClient';
 import { 
   FileText, 
   Search, 
@@ -66,126 +67,109 @@ const SystemLogsPage: React.FC = () => {
   const [showLogModal, setShowLogModal] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
 
-  // Mock log data - gerçek uygulamada API'den gelecek
-  useEffect(() => {
-    const mockLogs: LogEntry[] = [
-      {
-        id: 'log-1',
-        event_type: 'user_login',
-        event_category: 'authentication',
-        event_action: 'login',
-        event_severity: 'info',
-        user_id: users[0]?.id || 'user-1',
-        session_id: 'session-123',
-        ip_address: '192.168.1.100',
-        user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        event_description: 'User successfully logged in',
-        created_at: '2024-01-15T10:30:00Z',
-        request_id: 'req-123',
-        environment: 'production',
-        application_version: 'v5.1',
-        is_sensitive: false,
-        user: {
-          id: users[0]?.id || 'user-1',
-          email: users[0]?.email || 'user@example.com',
-          firstName: users[0]?.firstName || 'Ahmet',
-          lastName: users[0]?.lastName || 'Yılmaz'
-        }
-      },
-      {
-        id: 'log-2',
-        event_type: 'device_registration',
-        event_category: 'device',
-        event_action: 'create',
-        event_severity: 'info',
-        user_id: users[0]?.id || 'user-1',
-        resource_type: 'device',
-        resource_id: 'device-123',
-        event_description: 'New device registered successfully',
-        event_data: {
-          model: 'iPhone 15 Pro Max',
-          serialNumber: 'ABC123456789',
-          status: 'lost'
-        },
-        created_at: '2024-01-15T10:35:00Z',
-        request_id: 'req-124',
-        environment: 'production',
-        application_version: 'v5.1',
-        is_sensitive: false,
-        user: {
-          id: users[0]?.id || 'user-1',
-          email: users[0]?.email || 'user@example.com',
-          firstName: users[0]?.firstName || 'Ahmet',
-          lastName: users[0]?.lastName || 'Yılmaz'
-        }
-      },
-      {
-        id: 'log-3',
-        event_type: 'payment_processing',
-        event_category: 'payment',
-        event_action: 'process',
-        event_severity: 'warning',
-        user_id: users[1]?.id || 'user-2',
-        resource_type: 'payment',
-        resource_id: 'payment-456',
-        event_description: 'Payment processing delayed',
-        event_data: {
-          amount: 1250,
-          provider: 'iyzico',
-          status: 'pending'
-        },
-        error_details: {
-          code: 'TIMEOUT',
-          message: 'Payment gateway timeout'
-        },
-        created_at: '2024-01-15T11:00:00Z',
-        request_id: 'req-125',
-        environment: 'production',
-        application_version: 'v5.1',
-        is_sensitive: true,
-        user: {
-          id: users[1]?.id || 'user-2',
-          email: users[1]?.email || 'user2@example.com',
-          firstName: users[1]?.firstName || 'Mehmet',
-          lastName: users[1]?.lastName || 'Kaya'
-        }
-      },
-      {
-        id: 'log-4',
-        event_type: 'security_violation',
-        event_category: 'security',
-        event_action: 'block',
-        event_severity: 'error',
-        ip_address: '192.168.1.200',
-        event_description: 'Multiple failed login attempts detected',
-        event_data: {
-          attempts: 5,
-          timeWindow: '5 minutes'
-        },
-        created_at: '2024-01-15T11:30:00Z',
-        request_id: 'req-126',
-        environment: 'production',
-        application_version: 'v5.1',
-        is_sensitive: true
+  // Supabase'ten gerçek log verilerini çek
+  const fetchLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('audit_logs')
+        .select(`*`)
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      if (severityFilter !== 'all') {
+        query = query.eq('event_severity', severityFilter);
       }
-    ];
-    
-    setLogs(mockLogs);
-    setFilteredLogs(mockLogs);
-    setLoading(false);
-  }, [users]);
+      if (categoryFilter !== 'all') {
+        query = query.eq('event_category', categoryFilter);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const logsRaw = data || [];
+
+      // userprofile join'ı REST ile yapılamıyorsa, kullanıcı profillerini ikinci sorguda çek
+      const userIds = Array.from(
+        new Set(
+          logsRaw
+            .map((r: any) => r.user_id)
+            .filter((id: string | null) => Boolean(id))
+        )
+      ) as string[];
+
+      let profilesByUserId: Record<string, any> = {};
+      if (userIds.length > 0) {
+        const { data: profiles, error: profileErr } = await supabase
+          .from('userprofile')
+          .select('id, user_id, first_name, last_name, email')
+          .in('user_id', userIds);
+        if (profileErr) {
+          console.warn('Failed to fetch user profiles for logs:', profileErr);
+        } else {
+          profilesByUserId = (profiles || []).reduce((acc: any, p: any) => {
+            acc[p.user_id] = p;
+            return acc;
+          }, {});
+        }
+      }
+
+      const mapped: LogEntry[] = logsRaw.map((row: any) => ({
+        id: row.id,
+        event_type: row.event_type,
+        event_category: row.event_category,
+        event_action: row.event_action,
+        event_severity: row.event_severity,
+        user_id: row.user_id || undefined,
+        session_id: row.session_id || undefined,
+        ip_address: row.ip_address || undefined,
+        user_agent: row.user_agent || undefined,
+        resource_type: row.resource_type || undefined,
+        resource_id: row.resource_id || undefined,
+        event_description: row.event_description,
+        event_data: row.event_data || undefined,
+        error_details: row.error_details || undefined,
+        created_at: row.created_at,
+        request_id: row.request_id || undefined,
+        correlation_id: row.correlation_id || undefined,
+        is_sensitive: Boolean(row.is_sensitive),
+        environment: row.environment || 'production',
+        application_version: row.application_version || undefined,
+        user: row.user_id && profilesByUserId[row.user_id]
+          ? {
+              id: profilesByUserId[row.user_id].id,
+              email: profilesByUserId[row.user_id].email,
+              firstName: profilesByUserId[row.user_id].first_name || undefined,
+              lastName: profilesByUserId[row.user_id].last_name || undefined,
+            }
+          : undefined,
+      }));
+
+      setLogs(mapped);
+      setFilteredLogs(mapped);
+    } catch (err) {
+      console.error('Failed to fetch logs from Supabase:', err);
+      setLogs([]);
+      setFilteredLogs([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [severityFilter, categoryFilter]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   // Auto refresh
   useEffect(() => {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      // Mock refresh - gerçek uygulamada API'den yeni loglar gelecek
-      console.log('Refreshing logs...');
+      fetchLogs();
     }, 30000); // 30 saniyede bir
 
     return () => clearInterval(interval);
-  }, [autoRefresh]);
+  }, [autoRefresh, fetchLogs]);
 
   // Filtreleme
   useEffect(() => {

@@ -100,6 +100,33 @@ export interface CargoCode {
   updated_at: string;
 }
 
+// Kullanıcı Değerlendirme Sistemi (User Ratings)
+export type RatingContext = 'general' | 'exchange' | 'dispute';
+
+export interface UserRating {
+  id: string;
+  rater_user_id: string;
+  rated_user_id: string;
+  rating: number; // 1-5
+  review?: string;
+  context: RatingContext;
+  device_id?: string;
+  payment_id?: string;
+  dispute_id?: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserRatingStats {
+  rated_user_id: string;
+  rating_count: number;
+  rating_avg: number; // numeric(4,2)
+  rating_median?: number;
+  first_rating_at?: string;
+  last_rating_at?: string;
+}
+
 export interface DeliveryConfirmation {
   id: string;
   device_id: string;
@@ -146,4 +173,48 @@ export interface EscrowReleaseConditions {
   device_verified: boolean;        // Cihaz doğrulandı
   exchange_confirmed: boolean;     // Değişim onaylandı
   auto_release_days?: number;     // Otomatik serbest bırakma (7 gün)
+}
+
+// Dispute Management Types - Mevcut sistemle uyumlu
+export enum DisputeStatus {
+  NONE = "none",           // Mevcut sistemdeki default değer
+  PENDING = "pending",     // İtiraz bekleniyor
+  UNDER_REVIEW = "under_review", // İnceleniyor
+  RESOLVED = "resolved",   // Çözüldü
+  REJECTED = "rejected",   // Reddedildi
+  ESCALATED = "escalated"  // Üst seviyeye çıkarıldı
+}
+
+export enum DisputeReason {
+  DEVICE_DAMAGED = "device_damaged",
+  WRONG_DEVICE = "wrong_device", 
+  NOT_DELIVERED = "not_delivered",
+  DELIVERY_DELAY = "delivery_delay",
+  COMMUNICATION_ISSUE = "communication_issue",
+  PAYMENT_ISSUE = "payment_issue",
+  OTHER = "other"
+}
+
+export interface Dispute {
+  id: string;
+  device_id: string;
+  payment_id: string;
+  dispute_reason: DisputeReason;
+  status: DisputeStatus;
+  created_at: string;
+  updated_at?: string;
+  admin_notes?: string;
+  resolution?: string;
+  photos?: string[];
+  notes: string;
+  device_model?: string;
+  device_serial?: string;
+  user_email?: string;
+  user_name?: string;
+}
+
+export interface DisputeResolution {
+  status: DisputeStatus;
+  admin_notes: string;
+  resolution?: string;
 }

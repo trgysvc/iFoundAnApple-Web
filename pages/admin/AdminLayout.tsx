@@ -16,7 +16,8 @@ import {
   Bell,
   Truck,
   Key,
-  UserCircle
+  UserCircle,
+  AlertTriangle
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 
@@ -76,6 +77,13 @@ const AdminLayout: React.FC = () => {
       icon: <Truck className="w-5 h-5" />,
       path: '/admin/cargo',
       description: 'Kargo gönderilerini takip et'
+    },
+    {
+      id: 'disputes',
+      label: 'İtiraz Yönetimi',
+      icon: <AlertTriangle className="w-5 h-5" />,
+      path: '/admin/disputes',
+      description: 'İtirazları yönet ve çöz'
     },
     {
       id: 'logs',

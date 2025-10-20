@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import { supabase } from '../../utils/supabaseClient';
 import { 
   CreditCard, 
   Search, 
@@ -59,7 +60,7 @@ interface PaymentData {
 }
 
 const PaymentManagementPage: React.FC = () => {
-  const { devices, users, t } = useAppContext();
+  const { t } = useAppContext();
   const [payments, setPayments] = useState<PaymentData[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<PaymentData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,82 +70,69 @@ const PaymentManagementPage: React.FC = () => {
   const [selectedPayment, setSelectedPayment] = useState<PaymentData | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  // Mock payment data - gerçek uygulamada API'den gelecek
-  useEffect(() => {
-    const mockPayments: PaymentData[] = [
-      {
-        id: 'payment-1',
-        device_id: devices[0]?.id || 'device-1',
-        payer_id: users[0]?.id || 'user-1',
-        receiver_id: users[1]?.id || 'user-2',
-        total_amount: 1250,
-        reward_amount: 1000,
-        cargo_fee: 25,
-        service_fee: 50,
-        gateway_fee: 37.5,
-        net_payout: 887.5,
-        payment_provider: 'iyzico',
-        payment_status: 'completed',
-        escrow_status: 'held',
-        created_at: '2024-01-15T10:30:00Z',
-        completed_at: '2024-01-15T10:35:00Z',
-        device: {
-          id: devices[0]?.id || 'device-1',
-          model: 'iPhone 15 Pro Max',
-          serialNumber: 'ABC123456789'
-        },
-        payer: {
-          id: users[0]?.id || 'user-1',
-          email: users[0]?.email || 'payer@example.com',
-          firstName: users[0]?.firstName || 'Ahmet',
-          lastName: users[0]?.lastName || 'Yılmaz'
-        },
-        receiver: {
-          id: users[1]?.id || 'user-2',
-          email: users[1]?.email || 'receiver@example.com',
-          firstName: users[1]?.firstName || 'Mehmet',
-          lastName: users[1]?.lastName || 'Kaya'
-        }
-      },
-      {
-        id: 'payment-2',
-        device_id: devices[1]?.id || 'device-2',
-        payer_id: users[1]?.id || 'user-2',
-        receiver_id: users[0]?.id || 'user-1',
-        total_amount: 850,
-        reward_amount: 700,
-        cargo_fee: 25,
-        service_fee: 35,
-        gateway_fee: 25.5,
-        net_payout: 614.5,
-        payment_provider: 'stripe',
-        payment_status: 'pending',
-        escrow_status: 'pending',
-        created_at: '2024-01-16T14:20:00Z',
-        device: {
-          id: devices[1]?.id || 'device-2',
-          model: 'iPhone 14 Pro',
-          serialNumber: 'DEF987654321'
-        },
-        payer: {
-          id: users[1]?.id || 'user-2',
-          email: users[1]?.email || 'payer2@example.com',
-          firstName: users[1]?.firstName || 'Mehmet',
-          lastName: users[1]?.lastName || 'Kaya'
-        },
-        receiver: {
-          id: users[0]?.id || 'user-1',
-          email: users[0]?.email || 'receiver2@example.com',
-          firstName: users[0]?.firstName || 'Ahmet',
-          lastName: users[0]?.lastName || 'Yılmaz'
+  const fetchPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (error) throw error;
+
+      const rows = data || [];
+
+      // Cihaz bilgilerini almak için ikinci sorgu (id -> model, serialNumber)
+      const deviceIds = Array.from(new Set(rows.map((r: any) => r.device_id)));
+      let deviceMap: Record<string, any> = {};
+      if (deviceIds.length > 0) {
+        const { data: devs, error: devErr } = await supabase
+          .from('devices')
+          .select('id, model, "serialNumber"')
+          .in('id', deviceIds);
+        if (!devErr) {
+          deviceMap = (devs || []).reduce((acc: any, d: any) => {
+            acc[d.id] = d; return acc;
+          }, {});
         }
       }
-    ];
-    
-    setPayments(mockPayments);
-    setFilteredPayments(mockPayments);
-    setLoading(false);
-  }, [devices, users]);
+
+      const mapped: PaymentData[] = rows.map((r: any) => ({
+        id: r.id,
+        device_id: r.device_id,
+        payer_id: r.payer_id,
+        receiver_id: r.receiver_id || undefined,
+        total_amount: r.total_amount,
+        reward_amount: r.reward_amount,
+        cargo_fee: Number(r.cargo_fee ?? 25),
+        service_fee: r.service_fee,
+        gateway_fee: r.payment_gateway_fee ?? r.gateway_fee ?? 0,
+        net_payout: r.net_payout,
+        payment_provider: r.payment_provider,
+        payment_status: r.payment_status,
+        escrow_status: r.escrow_status,
+        created_at: r.created_at,
+        completed_at: r.completed_at || undefined,
+        device: deviceMap[r.device_id]
+          ? { id: r.device_id, model: deviceMap[r.device_id].model, serialNumber: deviceMap[r.device_id].serialNumber }
+          : undefined,
+      }));
+
+      setPayments(mapped);
+      setFilteredPayments(mapped);
+    } catch (err) {
+      console.error('Failed to fetch payments from Supabase:', err);
+      setPayments([]);
+      setFilteredPayments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
   // Filtreleme
   useEffect(() => {

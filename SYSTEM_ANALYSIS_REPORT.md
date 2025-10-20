@@ -28,19 +28,20 @@ iFoundAnApple, kayıp Apple cihazlarını bulan kişiler ile cihaz sahipleri ara
 
 ## 🗄️ **VERİTABANI YAPISI**
 
-### **Ana Tablolar (24 adet)**
+### **Ana Tablolar (25 adet)**
 1. **`admin_permissions`** - Admin yetkileri **[YENİ v5.2]**
-2. **`devices`** - Cihaz kayıtları (LOST/FOUND)
-3. **`payments`** - Ödeme işlemleri (62 sütun)
-4. **`escrow_accounts`** - Escrow hesapları (47 sütun)
-5. **`financial_transactions`** - Mali işlemler
-6. **`cargo_shipments`** - Kargo gönderileri
-7. **`notifications`** - Bildirimler
-8. **`userprofile`** - Kullanıcı profilleri
-9. **`device_models`** - Cihaz modelleri ve fiyatlandırma
-10. **`cargo_companies`** - Kargo şirketleri
-11. **`audit_logs`** - Denetim kayıtları
-12. **`invoice_logs`** - Fatura yükleme ve doğrulama logları
+2. **`user_ratings`** - Kullanıcı değerlendirme sistemi **[YENİ v5.2]**
+3. **`devices`** - Cihaz kayıtları (LOST/FOUND)
+4. **`payments`** - Ödeme işlemleri (62 sütun)
+5. **`escrow_accounts`** - Escrow hesapları (47 sütun)
+6. **`financial_transactions`** - Mali işlemler
+7. **`cargo_shipments`** - Kargo gönderileri
+8. **`notifications`** - Bildirimler
+9. **`userprofile`** - Kullanıcı profilleri
+10. **`device_models`** - Cihaz modelleri ve fiyatlandırma
+11. **`cargo_companies`** - Kargo şirketleri
+12. **`audit_logs`** - Denetim kayıtları
+13. **`invoice_logs`** - Fatura yükleme ve doğrulama logları
 
 ### **Süreç Tabloları (v5.1)**
 12. **`cargo_codes`** - Kargo kod sistemi (cargo_status alanı eklendi)
@@ -48,7 +49,8 @@ iFoundAnApple, kayıp Apple cihazlarını bulan kişiler ile cihaz sahipleri ara
 14. **`final_payment_distributions`** - Son ödeme dağıtım sistemi
 15. **`payment_transfers`** - Ödeme transfer kayıtları
 
-### **View/Summary Tabloları (6 adet)**
+### **View/Summary Tabloları (7 adet)**
+- **`user_rating_stats`** - Kullanıcı değerlendirme istatistikleri **[YENİ v5.2]**
 - **`payment_summaries`** - Ödeme özetleri
 - **`shipment_tracking`** - Kargo takibi
 - **`user_escrow_history`** - Kullanıcı escrow geçmişi
@@ -868,6 +870,12 @@ iFoundAnApple platformuna kapsamlı bir admin panel sistemi eklendi. Bu sistem, 
 - **Yetki Yönetimi**: Admin rolleri, yetki detayları, süre yönetimi
 - **Sistem Ayarları**: Platform konfigürasyonu, ödeme ayarları, bildirim ayarları
 
+#### **3. Veri Kaynakları (2025-10-20 güncellemesi)**
+- Kullanıcı Yönetimi: Supabase `userprofile` tablosundan direkt çekim
+- Cihaz Yönetimi: Supabase `devices` tablosu (kullanıcı adı/eposta AppContext ile eşlenir)
+- Ödeme Yönetimi: Supabase `payments` tablosu + `devices` ile lookup
+- Sistem Logları: Supabase `audit_logs` tablosu + `userprofile` lookup
+
 #### **3. Raporlama Sistemi**
 - **Gerçek Zamanlı Veriler**: Supabase'den canlı veri çekme
 - **Zaman Aralığı Seçimi**: 7d, 30d, 90d, 1y, custom
@@ -938,6 +946,22 @@ iFoundAnApple platformuna kapsamlı bir admin panel sistemi eklendi. Bu sistem, 
 - ✅ **Sayfa erişimi**: Tüm admin sayfalarına erişim sağlandı
 - ✅ **Veri görüntüleme**: Gerçek veriler doğru görüntüleniyor
 - ✅ **API testleri**: Tüm admin API'leri çalışıyor
+
+### **Dispute/İtiraz Sistemi (Güncelleme)**
+- "Sorun Bildir" formu sadeleştirildi: İtiraz nedeni dropdown kaldırıldı.
+- Zorunlu: Detaylı açıklama; fotoğraf yükleme opsiyonel.
+- `dispute_reason` geçici olarak `other` gönderilir; sınıflandırma admin tarafında yapılır.
+
+### **Kullanıcı Değerlendirme Sistemi** **[YENİ v5.2]**
+- **Tablo**: `user_ratings` — Kullanıcıların birbirini 1-5 arası puanlayıp yorum bırakabildiği kayıtlar
+- **Görünüm**: `user_rating_stats` — Kullanıcı başına ortalama puan, toplam oy sayısı, median
+- **Frontend Bileşenleri**:
+  - `components/rating/RatingForm.tsx` — insert akışı (RLS: yalnızca rater kendi kaydını ekler/günceller/siler)
+  - `components/rating/RatingDisplay.tsx` — ortalama ve son yorumları gösterir
+  - `components/rating/UserRatingCard.tsx` — kart içinde hem gösterim hem form
+  - `pages/UserRatingPage.tsx` — kullanıcı değerlendirme sayfası
+- **Admin Entegrasyonu**: Admin panelinde kullanıcı değerlendirmeleri görüntülenir ve yönetilir
+- **Güvenlik (RLS)**: Public yorumlar herkes tarafından görülebilir; kullanıcı kendi değerlendirmesini yönetebilir
 
 #### **2. Performans Testleri**
 - ✅ **Sayfa yükleme**: Hızlı yükleme süreleri

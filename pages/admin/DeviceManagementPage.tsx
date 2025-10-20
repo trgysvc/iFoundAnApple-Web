@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import { DeviceStatus } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import { supabase } from '../../utils/supabaseClient';
 import { 
   Smartphone, 
   Search, 
@@ -47,7 +48,7 @@ interface DeviceWithUser {
 }
 
 const DeviceManagementPage: React.FC = () => {
-  const { devices, users, t } = useAppContext();
+  const { users, t } = useAppContext();
   const [devicesWithUsers, setDevicesWithUsers] = useState<DeviceWithUser[]>([]);
   const [filteredDevices, setFilteredDevices] = useState<DeviceWithUser[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,16 +58,53 @@ const DeviceManagementPage: React.FC = () => {
   const [selectedDevice, setSelectedDevice] = useState<DeviceWithUser | null>(null);
   const [showDeviceModal, setShowDeviceModal] = useState(false);
 
+  const fetchDevices = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('devices')
+        .select('id, "userId", model, "serialNumber", status, color, description, "rewardAmount", lost_date, lost_location, found_date, found_location, created_at, updated_at')
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (error) throw error;
+
+      const raw = data || [];
+      const mapped: DeviceWithUser[] = raw.map((d: any) => ({
+        id: d.id,
+        userId: d.userId,
+        model: d.model,
+        serialNumber: d.serialNumber,
+        status: d.status as DeviceStatus,
+        color: d.color || undefined,
+        description: d.description || undefined,
+        rewardAmount: d.rewardAmount || undefined,
+        lostDate: d.lost_date || undefined,
+        lostLocation: d.lost_location || undefined,
+        foundDate: d.found_date || undefined,
+        foundLocation: d.found_location || undefined,
+        created_at: d.created_at,
+        updated_at: d.updated_at,
+        user: (() => {
+          const u = users.find(u => u.id === d.userId);
+          return u ? { id: u.id, email: u.email, firstName: u.firstName, lastName: u.lastName } : undefined;
+        })()
+      }));
+
+      setDevicesWithUsers(mapped);
+      setFilteredDevices(mapped);
+    } catch (err) {
+      console.error('Failed to fetch devices from Supabase:', err);
+      setDevicesWithUsers([]);
+      setFilteredDevices([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [users]);
+
   useEffect(() => {
-    const devicesWithUserInfo: DeviceWithUser[] = devices.map(device => ({
-      ...device,
-      user: users.find(u => u.id === device.userId)
-    }));
-    
-    setDevicesWithUsers(devicesWithUserInfo);
-    setFilteredDevices(devicesWithUserInfo);
-    setLoading(false);
-  }, [devices, users]);
+    fetchDevices();
+  }, [fetchDevices]);
 
   // Filtreleme
   useEffect(() => {

@@ -1417,6 +1417,12 @@ export enum UserRole {
 - **`is_active`** - Aktif durumu
 - **`expires_at`** - Süre sonu tarihi
 
+#### **3. Kullanıcı Değerlendirme Sistemi** **[YENİ v5.2]**
+- **`user_ratings`** - Kullanıcı değerlendirme tablosu
+- **`user_rating_stats`** - Kullanıcı başına istatistik görünümü
+- **RLS Politikaları**: Public yorumlar herkes tarafından görülebilir
+- **Admin Entegrasyonu**: Admin panelinde kullanıcı değerlendirmeleri görüntülenir
+
 #### **3. Admin Giriş Süreci**
 1. **Kullanıcı girişi** → `auth.users` tablosunda kontrol
 2. **Admin yetkisi kontrolü** → `admin_permissions` tablosunda sorgu
@@ -1436,6 +1442,8 @@ export enum UserRole {
 - **Rol görüntüleme** → Admin/Super Admin rozetleri
 - **Kullanıcı detayları** → Profil bilgileri
 - **Yetki yönetimi** → Admin rolü atama/değiştirme
+- **Kullanıcı değerlendirmeleri** → `user_rating_stats` ile ortalama puan ve oy sayısı **[YENİ v5.2]**
+- **Değerlendirme görüntüleme** → `RatingDisplay` bileşeni ile son yorumlar **[YENİ v5.2]**
 
 #### **3. Cihaz Yönetimi (`/admin/devices`)**
 - **Cihaz listesi** → `devices` tablosundan
@@ -1627,4 +1635,34 @@ exportReportAPI(request: ReportRequest, format: 'pdf' | 'excel' | 'csv'): Promis
 - **Performance Monitoring** → Sayfa yükleme süreleri
 - **Error Tracking** → Hata takibi ve raporlama
 - **User Analytics** → Admin kullanım istatistikleri
+
+---
+
+## 🛠️ 2025-10-20 Güncellemeleri (Admin Panel + Dispute Form)
+
+### Admin Panel Veri Kaynakları (Mock kaldırıldı)
+- Kullanıcı Yönetimi (`#/admin/users`): Supabase `userprofile` tablosundan doğrudan çekim. Rol rozetleri mevcut `AppContext` rol bilgisinden gösterilir.
+- Cihaz Yönetimi (`#/admin/devices`): Supabase `devices` tablosu; kullanıcı adı/eposta için mevcut `AppContext.users` ile client-side eşleştirme.
+- Ödeme Yönetimi (`#/admin/payments`): Supabase `payments` tablosu; cihaz modeli/seri için `devices` tablosu ile ikinci sorgu ve eşleme.
+- Sistem Logları (`#/admin/logs`): Supabase `audit_logs` tablosu; kullanıcı bilgisi için `userprofile` ikinci sorgu ile client-side birleştirme.
+
+Notlar:
+- RLS açıksa ilgili tablolara anon key ile SELECT izinleri gereklidir.
+- Otomatik yenileme periyodik olarak aynı Supabase sorgularını tekrar çalıştırır.
+
+### Dispute (İtiraz) Formu Basitleştirme
+- "Sorun Bildir" formundan itiraz nedeni (dropdown) kaldırıldı.
+- Zorunlu alan: Detaylı açıklama; fotoğraflar opsiyonel.
+- API'ye gönderilen `dispute_reason` geçici olarak `other` sabit değeriyle iletilir.
+
+### Kullanıcı Değerlendirme Sistemi **[YENİ v5.2]**
+- **Tablo**: `user_ratings` (rater_user_id, rated_user_id, rating 1-5, review, context, created_at)
+- **Görünüm**: `user_rating_stats` (rated_user_id başına ortalama ve sayı)
+- **UI Bileşenleri**:
+  - `components/rating/RatingForm.tsx`: Yeni değerlendirme gönderimi (Supabase insert)
+  - `components/rating/RatingDisplay.tsx`: Ortalama ve son yorumlar
+  - `components/rating/UserRatingCard.tsx`: Kart bileşeni (gösterim + form)
+  - `pages/UserRatingPage.tsx`: Kullanıcı değerlendirme sayfası
+- **RLS Politikaları**: Sadece kullanıcı kendi yaptığı değerlendirmeyi ekler/günceller/siler; public olanlar herkes tarafından görülebilir
+- **Admin Entegrasyonu**: Admin panelinde kullanıcı değerlendirmeleri görüntülenir ve yönetilir
 

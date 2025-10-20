@@ -29,6 +29,7 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
 - 📱 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - 🔔 **Gerçek Zamanlı Bildirimler**: Anlık güncellemeler ve bildirimler
 - 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi ve gerçek zamanlı raporlama **[YENİ v5.2]**
+- ⭐ **Kullanıcı Değerlendirme Sistemi**: 1-5 arası puanlama ve yorum sistemi **[YENİ v5.2]**
 - 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
 - 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
 - 🚚 **Dinamik Kargo Sistemi**: Gerçek zamanlı kargo takip ve teslimat yönetimi (v5.1 güncellenmiş)
@@ -199,6 +200,10 @@ iFoundAnApple-Web/
 │   │   ├── EscrowStatusDisplay.tsx    # Emanet durumu
 │   │   ├── DeliveryConfirmationForm.tsx # Teslimat onayı
 │   │   └── DisputeForm.tsx            # İtiraz formu
+│   ├── 📁 rating/        # Kullanıcı değerlendirme bileşenleri **[YENİ v5.2]**
+│   │   ├── RatingForm.tsx             # Değerlendirme formu
+│   │   ├── RatingDisplay.tsx          # Değerlendirme görüntüleme
+│   │   └── UserRatingCard.tsx         # Kullanıcı değerlendirme kartı
 │   ├── DeviceCard.tsx     # Cihaz kartı bileşeni
 │   ├── Footer.tsx         # Site altbilgisi
 │   └── Header.tsx         # Site başlığı ve navigasyon
@@ -217,6 +222,7 @@ iFoundAnApple-Web/
 │   ├── PaymentSuccessPage.tsx # Ödeme başarı sayfası (kargo entegrasyonu)
 │   ├── PaymentCallbackPage.tsx # Ödeme callback (bulan kişi status güncelleme)
 │   ├── CargoManagementPage.tsx # Kargo yönetim sayfası
+│   ├── UserRatingPage.tsx      # Kullanıcı değerlendirme sayfası **[YENİ v5.2]**
 │   ├── AdminDashboardPage.tsx # Yönetici paneli
 │   └── 📁 admin/              # Admin panel sayfaları **[YENİ v5.2]**
 │       ├── AdminLayout.tsx    # Admin panel layout
@@ -586,6 +592,21 @@ Supabase Backend-as-a-Service
 2. **Admin Panel**: Sağ üst menüden "Admin Paneli" linkine tıklayın
 3. **Dashboard**: `http://localhost:5174/#/admin` adresine gidin
 4. **Raporlar**: `http://localhost:5174/#/admin/reports` ile raporlara erişin
+
+### Admin Panel Veri Kaynakları (2025-10-20)
+- Kullanıcılar: Supabase `userprofile` tablosundan client-side sorgu
+- Cihazlar: Supabase `devices` tablosu (kullanıcı adı/eposta AppContext ile eşleşir)
+- Ödemeler: Supabase `payments` tablosu + `devices` ile model/seri eşleme
+- Loglar: Supabase `audit_logs` tablosu + `userprofile` ile client-side eşleme
+
+Not: RLS aktifse, anon key için ilgili tablolarda SELECT yetkileri gereklidir.
+
+### Kullanıcı Değerlendirme Sistemi **[YENİ v5.2]**
+- **Supabase Tabloları**: `user_ratings`, view: `user_rating_stats`
+- **Bileşenler**: `RatingForm`, `RatingDisplay`, `UserRatingCard`
+- **Sayfa**: `pages/UserRatingPage.tsx`
+- **Admin Entegrasyonu**: Admin panelinde kullanıcı değerlendirmeleri görüntülenir ve yönetilir
+- **Kullanım**: Giriş yaptıktan sonra değerlendirme formu ile 1-5 arası puan ve opsiyonel yorum gönderin; ortalama ve yorumlar otomatik listelenir
 
 ### Admin Panel Test Sonuçları
 - ✅ **Admin girişi**: Başarılı

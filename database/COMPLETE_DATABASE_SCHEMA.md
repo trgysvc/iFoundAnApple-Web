@@ -63,6 +63,63 @@ export enum DeviceStatus {
 ### 1. **admin_permissions** **[YENİ v5.2]**
 Admin yetkilerini yöneten tablo.
 
+### 2. **user_ratings** **[YENİ v5.2]**
+Kullanıcı değerlendirme sistemi tablosu.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| rater_user_id | uuid | NO | null | Değerlendiren kullanıcı ID'si (FK) |
+| rated_user_id | uuid | NO | null | Değerlendirilen kullanıcı ID'si (FK) |
+| rating | integer | NO | null | Değerlendirme puanı (1-5) |
+| review | text | YES | null | Değerlendirme yorumu |
+| context | character varying(20) | NO | 'general' | Değerlendirme bağlamı |
+| device_id | uuid | YES | null | İlgili cihaz ID'si (FK) |
+| payment_id | uuid | YES | null | İlgili ödeme ID'si (FK) |
+| dispute_id | uuid | YES | null | İlgili itiraz ID'si (FK) |
+| is_public | boolean | YES | true | Herkese açık mı |
+| created_at | timestamp with time zone | YES | now() | Created timestamp |
+| updated_at | timestamp with time zone | YES | now() | Updated timestamp |
+
+**RLS Policies:**
+- `user_ratings_select_policy` - Public yorumlar herkes tarafından görülebilir
+- `user_ratings_insert_policy` - Kullanıcılar sadece kendi değerlendirmelerini ekleyebilir
+- `user_ratings_update_policy` - Kullanıcılar sadece kendi değerlendirmelerini güncelleyebilir
+- `user_ratings_delete_policy` - Kullanıcılar sadece kendi değerlendirmelerini silebilir
+
+**Foreign Keys:**
+- `rater_user_id` → `auth.users(id)`
+- `rated_user_id` → `auth.users(id)`
+- `device_id` → `devices(id)`
+- `payment_id` → `payments(id)`
+
+### 3. **user_rating_stats** **[YENİ v5.2]**
+Kullanıcı değerlendirme istatistikleri görünümü.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| rated_user_id | uuid | YES | null | Değerlendirilen kullanıcı ID'si |
+| rating_count | bigint | YES | null | Toplam değerlendirme sayısı |
+| rating_avg | numeric | YES | null | Ortalama puan |
+| rating_median | numeric | YES | null | Medyan puan |
+| first_rating_at | timestamp with time zone | YES | null | İlk değerlendirme tarihi |
+| last_rating_at | timestamp with time zone | YES | null | Son değerlendirme tarihi |
+
+**View Definition:**
+```sql
+CREATE VIEW user_rating_stats AS
+SELECT 
+  rated_user_id,
+  COUNT(*) as rating_count,
+  AVG(rating) as rating_avg,
+  PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY rating) as rating_median,
+  MIN(created_at) as first_rating_at,
+  MAX(created_at) as last_rating_at
+FROM user_ratings
+WHERE is_public = true
+GROUP BY rated_user_id;
+```
+
 | Column | Type | Nullable | Default | Description |
 |--------|------|----------|---------|-------------|
 | id | uuid | NO | gen_random_uuid() | Primary key |

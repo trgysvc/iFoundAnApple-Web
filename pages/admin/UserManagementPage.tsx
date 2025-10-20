@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import { UserRole } from '../../types';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import { supabase } from '../../utils/supabaseClient';
+import { RatingDisplay } from '../../components/rating/RatingDisplay';
 import { 
   Users, 
   Search, 
@@ -35,6 +37,8 @@ interface UserProfile {
   date_of_birth?: string;
   created_at: string;
   updated_at: string;
+  rating_avg?: number;
+  rating_count?: number;
 }
 
 const UserManagementPage: React.FC = () => {
@@ -48,27 +52,68 @@ const UserManagementPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
 
-  // Mock data - gerçek uygulamada API'den gelecek
+  const fetchUserProfiles = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('userprofile')
+        .select('id,user_id,first_name,last_name,phone_number,address,iban,tc_kimlik_no,date_of_birth,created_at,updated_at')
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (error) throw error;
+
+      const base: UserProfile[] = (data || []).map((row: any) => ({
+        id: row.id,
+        user_id: row.user_id,
+        first_name: row.first_name || undefined,
+        last_name: row.last_name || undefined,
+        email: undefined, // email userprofile'da yok; gerekirse auth'tan ayrıca alınır
+        phone_number: row.phone_number || undefined,
+        address: row.address || undefined,
+        iban: row.iban || undefined,
+        tc_kimlik_no: row.tc_kimlik_no || undefined,
+        date_of_birth: row.date_of_birth || undefined,
+        created_at: row.created_at,
+        updated_at: row.updated_at
+      }));
+
+      // Rating istatistikleri (user_rating_stats) ile eşleştir
+      const userIds = base.map(u => u.user_id);
+      let statsMap: Record<string, { rating_avg: number; rating_count: number }> = {};
+      if (userIds.length > 0) {
+        const { data: stats, error: statsErr } = await supabase
+          .from('user_rating_stats')
+          .select('rated_user_id,rating_avg,rating_count')
+          .in('rated_user_id', userIds);
+        if (!statsErr && stats) {
+          statsMap = (stats as any).reduce((acc: any, s: any) => {
+            acc[s.rated_user_id] = { rating_avg: Number(s.rating_avg), rating_count: Number(s.rating_count) };
+            return acc;
+          }, {});
+        }
+      }
+
+      const mapped: UserProfile[] = base.map(u => ({
+        ...u,
+        rating_avg: statsMap[u.user_id]?.rating_avg,
+        rating_count: statsMap[u.user_id]?.rating_count
+      }));
+
+      setUserProfiles(mapped);
+      setFilteredUsers(mapped);
+    } catch (err) {
+      console.error('Failed to fetch user profiles from Supabase:', err);
+      setUserProfiles([]);
+      setFilteredUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const mockProfiles: UserProfile[] = users.map(user => ({
-      id: `profile-${user.id}`,
-      user_id: user.id,
-      first_name: user.firstName || 'Bilinmiyor',
-      last_name: user.lastName || 'Bilinmiyor',
-      email: user.email,
-      phone_number: '+90 555 123 4567',
-      address: 'İstanbul, Türkiye',
-      iban: 'TR12 0006 4000 0011 2345 6789 01',
-      tc_kimlik_no: '12345678901',
-      date_of_birth: '1990-01-01',
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    }));
-    
-    setUserProfiles(mockProfiles);
-    setFilteredUsers(mockProfiles);
-    setLoading(false);
-  }, [users]);
+    fetchUserProfiles();
+  }, [fetchUserProfiles]);
 
   // Filtreleme
   useEffect(() => {
@@ -246,6 +291,9 @@ const UserManagementPage: React.FC = () => {
                   İletişim
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Değerlendirme
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Durum
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -280,6 +328,12 @@ const UserManagementPage: React.FC = () => {
                       <Phone className="w-3 h-3 mr-1" />
                       {user.phone_number}
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {user.rating_avg ? `${user.rating_avg.toFixed(2)} / 5` : '-'}
+                    </div>
+                    <div className="text-xs text-gray-500">{user.rating_count || 0} oy</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(user)}
@@ -359,6 +413,10 @@ const UserManagementPage: React.FC = () => {
                         <span className="text-sm text-gray-900">
                           Kayıt: {formatDate(selectedUser.created_at)}
                         </span>
+                      </div>
+                      <div className="pt-3 mt-3 border-t">
+                        <h4 className="text-sm font-medium mb-2">Değerlendirmeler</h4>
+                        <RatingDisplay ratedUserId={selectedUser.user_id} />
                       </div>
                     </div>
                   </div>

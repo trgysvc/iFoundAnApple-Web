@@ -2,13 +2,23 @@ import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { FileUpload } from '../ui/FileUpload';
+import { supabase } from '../../utils/supabaseClient';
 
-interface DisputeFormProps {
+export interface DisputeFormProps {
   deviceId: string;
   paymentId: string;
-  cargoShipmentId: string;
+  cargoShipmentId?: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
+}
+
+export interface DisputeData {
+  device_id: string;
+  payment_id: string;
+  cargo_shipment_id?: string;
+  dispute_reason: string;
+  photos: string[];
+  notes: string;
 }
 
 
@@ -23,6 +33,7 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+
   const handlePhotoUpload = (files: File[]) => {
     setPhotos(prev => [...prev, ...files]);
   };
@@ -33,6 +44,13 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+
+    if (!notes.trim()) {
+      onError?.('Lütfen detaylı açıklama girin');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -47,18 +65,21 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
 
       const photoBase64s = await Promise.all(photoPromises);
 
+             const disputeData: DisputeData = {
+               device_id: deviceId,
+               payment_id: paymentId,
+               cargo_shipment_id: cargoShipmentId || undefined,
+               dispute_reason: 'other', // Sabit değer olarak 'other' kullan
+               photos: photoBase64s,
+               notes: notes.trim()
+             };
+
       const response = await fetch('/api/escrow/raise-dispute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          device_id: deviceId,
-          payment_id: paymentId,
-          cargo_shipment_id: cargoShipmentId,
-          photos: photoBase64s,
-          notes: notes
-        }),
+        body: JSON.stringify(disputeData),
       });
 
       const data = await response.json();
@@ -66,8 +87,8 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       if (data.success) {
         onSuccess?.();
         // Form'u temizle
-        setPhotos([]);
-        setNotes('');
+               setPhotos([]);
+               setNotes('');
       } else {
         onError?.(data.error || 'İtiraz başarısız');
       }
@@ -84,10 +105,24 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
       <h3 className="text-lg font-semibold mb-4 text-red-600">Sorun Bildir</h3>
       
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Detaylı Açıklama */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Detaylı Açıklama *
+          </label>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Sorunu detaylı olarak açıklayın..."
+            rows={4}
+            required
+          />
+        </div>
+
         {/* Fotoğraf Yükleme */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Sorun Fotoğrafları
+            Sorun Fotoğrafları (Opsiyonel)
           </label>
           <FileUpload
             onUpload={handlePhotoUpload}
@@ -119,20 +154,6 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
           )}
         </div>
 
-        {/* Detaylı Açıklama */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Detaylı Açıklama *
-          </label>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Sorunu detaylı olarak açıklayın..."
-            rows={4}
-            required
-          />
-        </div>
-
         {/* Uyarı */}
         <div className="bg-red-50 border border-red-200 rounded-md p-3">
           <div className="flex">
@@ -151,13 +172,13 @@ export const DisputeForm: React.FC<DisputeFormProps> = ({
 
         {/* Submit Button */}
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isLoading || !notes.trim()}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            {isLoading ? 'İtiraz Gönderiliyor...' : 'İtiraz Et'}
-          </Button>
+        <Button
+          type="submit"
+          disabled={isLoading || !notes.trim()}
+          className="bg-red-600 hover:bg-red-700 text-white"
+        >
+          {isLoading ? 'İtiraz Gönderiliyor...' : 'İtiraz Et'}
+        </Button>
         </div>
       </form>
     </div>
