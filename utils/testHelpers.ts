@@ -222,16 +222,9 @@ export class TestRunner {
 }
 
 // Global window'a ekle (browser console'da kullanım için)
+// Sessizce ekle - kullanıcı ihtiyaç duyarsa TestRunner komutlarını kullanabilir
 if (typeof window !== 'undefined') {
   (window as any).TestRunner = TestRunner;
-  console.log('🧪 TestRunner browser console\'a eklendi!');
-  console.log('Kullanım:');
-  console.log('  TestRunner.runAllTests()           - Tüm testleri çalıştır');
-  console.log('  TestRunner.testDeviceModels()      - Cihaz modellerini test et');
-  console.log('  TestRunner.testFeeCalculation()    - Ücret hesaplamayı test et');
-  console.log('  TestRunner.testCustomReward()      - Özel ödül testleri');
-  console.log('  TestRunner.testPaymentGateway()    - Payment gateway testleri');
-  console.log('  TestRunner.testSpecificModel("iPhone 15 Pro Max") - Belirli model testi');
 }
 
 export default TestRunner;

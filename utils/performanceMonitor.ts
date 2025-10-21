@@ -93,13 +93,21 @@ export const useRoutePerformance = (routeName: string) => {
   }, [routeName]);
 };
 
-// Web Vitals monitoring
+// Web Vitals monitoring (sessiz mod - sadece ölçüm yapar, console'a yazmaz)
 export const measureWebVitals = () => {
+  // Metrikleri saklamak için
+  const metrics = {
+    lcp: 0,
+    fid: 0,
+    cls: 0
+  };
+  
   // Measure Largest Contentful Paint (LCP)
   const observer = new PerformanceObserver((list) => {
     const entries = list.getEntries();
     const lastEntry = entries[entries.length - 1];
-    console.log('LCP:', lastEntry.startTime);
+    metrics.lcp = lastEntry.startTime;
+    // Sessiz mod - console'a yazmıyoruz
   });
   
   try {
@@ -113,7 +121,8 @@ export const measureWebVitals = () => {
     const entries = list.getEntries();
     entries.forEach((entry) => {
       const fid = entry.processingStart - entry.startTime;
-      console.log('FID:', fid);
+      metrics.fid = fid;
+      // Sessiz mod - console'a yazmıyoruz
     });
   });
 
@@ -132,7 +141,8 @@ export const measureWebVitals = () => {
         clsValue += entry.value;
       }
     });
-    console.log('CLS:', clsValue);
+    metrics.cls = clsValue;
+    // Sessiz mod - console'a yazmıyoruz
   });
 
   try {
@@ -140,14 +150,12 @@ export const measureWebVitals = () => {
   } catch (e) {
     // CLS not supported
   }
+  
+  // Metrikleri window objesine ekle (isteyen erişebilir)
+  if (typeof window !== 'undefined') {
+    (window as any).__webVitals = metrics;
+  }
 };
 
-// Initialize performance monitoring in development
-if (process.env.NODE_ENV === 'development') {
-  measureWebVitals();
-  
-  // Log performance report every 30 seconds
-  setInterval(() => {
-    performanceMonitor.logPerformanceReport();
-  }, 30000);
-}
+// Initialize performance monitoring (sessiz mod)
+measureWebVitals();

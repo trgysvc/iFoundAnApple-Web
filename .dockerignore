@@ -14,3 +14,14 @@ dist
 coverage
 .DS_Store
 Thumbs.db
+# Test files
+test-*.ts
+*.test.ts
+*.test.tsx
+# Documentation
+ADMIN_*.md
+DISPUTE_*.md
+PAYMENT_*.md
+SYSTEM_*.md
+USER_*.md
+*.sql

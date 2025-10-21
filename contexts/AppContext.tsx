@@ -253,36 +253,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Fetch all users for admin panel (only if user is admin)
   useEffect(() => {
-    console.log('🔍 Admin users fetch effect triggered - currentUser:', currentUser?.email, 'role:', currentUser?.role);
-    
     if (!currentUser) {
-      console.log('⚠️ No current user, skipping users fetch');
       setUsers([]);
       return;
     }
 
     if (currentUser.role !== UserRole.ADMIN && currentUser.role !== UserRole.SUPER_ADMIN) {
-      console.log('⚠️ User is not admin, skipping users fetch. Role:', currentUser.role);
       setUsers([]);
       return;
     }
 
     const fetchAllUsers = async () => {
       try {
-        console.log('🔍 Fetching all users for admin panel...');
-        
         // Get user profiles (without role)
         const { data: userProfiles, error: profileError } = await supabase
           .from('userprofile')
           .select('user_id, first_name, last_name');
 
         if (profileError) {
-          console.error("❌ Error fetching user profiles:", profileError);
+          console.error("Error fetching user profiles:", profileError);
           setUsers([]);
           return;
         }
-
-        console.log('✅ User profiles fetched:', userProfiles?.length || 0);
 
         // Get admin permissions (to check roles)
         const { data: adminPerms, error: permsError } = await supabase
@@ -291,10 +283,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           .eq('is_active', true);
 
         if (permsError) {
-          console.warn("⚠️ Error fetching admin permissions:", permsError);
+          console.warn("Error fetching admin permissions:", permsError);
         }
-
-        console.log('✅ Admin permissions fetched:', adminPerms?.length || 0);
 
         // Transform userprofile data to User format
         const usersData: User[] = (userProfiles || []).map((profile: any) => {
@@ -314,10 +304,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           };
         });
 
-        console.log('✅ Users data transformed:', usersData.length, 'users');
         setUsers(usersData);
       } catch (error) {
-        console.error("❌ Error fetching users:", error);
+        console.error("Error fetching users:", error);
         setUsers([]);
       }
     };
@@ -357,7 +346,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Only process SIGNED_IN events, completely ignore INITIAL_SESSION
       if (event === 'INITIAL_SESSION') {
-        console.log(`Auth state change: INITIAL_SESSION - Ignoring INITIAL_SESSION event`);
         return;
       }
 
