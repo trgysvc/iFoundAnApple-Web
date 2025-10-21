@@ -271,28 +271,270 @@ export const translations = {
       a6: "We deduct a small 5% service fee from the reward amount paid to the finder. This helps us cover operational costs, maintain the platform, and ensure a secure environment for everyone."
     },
     termsContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Introduction</h3>
-      <p class="mb-4">Welcome to iFoundAnApple. These Terms of Service ("Terms") govern your use of our website and services. By registering an account or using our platform, you agree to be bound by these Terms.</p>
-      <h3 class="text-xl font-semibold mb-2">2. The Service</h3>
-      <p class="mb-4">iFoundAnApple provides a platform to connect owners of lost Apple devices with individuals who find them ("Finders"). We facilitate this connection through an anonymous matching system and manage a reward payment through a secure escrow process. We are not a party to the physical exchange of any device.</p>
-      <h3 class="text-xl font-semibold mb-2">3. User Obligations</h3>
-      <p class="mb-4">You agree to provide accurate and truthful information when registering a device. You must be the legal owner of any device you report as lost. You must have lawfully found any device you report as found. You agree not to use the service for any illegal or unauthorized purpose.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Payments and Fees</h3>
-      <p class="mb-4">Device Owners agree to pay the stated reward amount into our escrow system upon a successful match. This payment is non-refundable once the exchange is completed. We charge a 5% service fee, which is deducted from the reward paid to the Finder. </p>
-      <h3 class="text-xl font-semibold mb-2">5. Limitation of Liability</h3>
-      <p class="mb-4">iFoundAnApple is a platform provider. We are not responsible for the condition of any returned device, nor are we liable for any issues arising from the physical exchange between users. We provide guidelines for a safe exchange, but the responsibility lies with the users.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">TERMS OF SERVICE</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Last Updated: October 14, 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. AGREEMENT SCOPE</h2>
+
+      <p class="mb-4 leading-relaxed">These terms govern the legal relationship between the <strong class="font-semibold">iFoundAnApple</strong> platform and users.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. DEFINITIONS</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Platform:</strong> iFoundAnApple digital platform and all its services.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">User:</strong> Any person who uses the platform services.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Device Owner:</strong> Person who has lost their Apple device and reports it through the platform.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Finder:</strong> Person who finds a lost device and reports it through the platform.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Match:</strong> Automatic pairing of lost and found device reports based on serial number and model.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. PLATFORM SERVICES</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple provides the following services:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Anonymous matching of lost and found Apple devices</li>
+        <li class="mb-1">Secure escrow payment system</li>
+        <li class="mb-1">Secure cargo delivery service</li>
+        <li class="mb-1">Communication facilitation between parties</li>
+        <li class="mb-1">Dispute resolution system</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. USER RESPONSIBILITIES</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Device Owner Responsibilities</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Must be the legal owner of the reported device</li>
+        <li class="mb-1">Must provide accurate device information (model, serial number, etc.)</li>
+        <li class="mb-1">Must pay the specified reward amount upon successful match</li>
+        <li class="mb-1">Must not make false reports</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Finder Responsibilities</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Must have lawfully found the device</li>
+        <li class="mb-1">Must provide accurate device information</li>
+        <li class="mb-1">Must deliver the device to the owner through secure cargo service</li>
+        <li class="mb-1">Must not claim ownership of found devices</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. PAYMENT AND FEES</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.1. Reward Payment</h3>
+      <p class="mb-4 leading-relaxed">Device owners must pay the specified reward amount into the escrow system upon successful match. This payment is non-refundable once the exchange is completed.</p>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.2. Service Fees</h3>
+      <p class="mb-4 leading-relaxed">The platform charges a 5% service fee, which is deducted from the reward amount paid to the finder. This fee covers:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Platform maintenance and development</li>
+        <li class="mb-1">Secure payment system operations</li>
+        <li class="mb-1">Secure cargo service</li>
+        <li class="mb-1">Customer support</li>
+        <li class="mb-1">Dispute resolution services</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. SECURE DELIVERY SYSTEM</h2>
+
+      <p class="mb-4 leading-relaxed">All device exchanges are conducted through our secure cargo delivery system:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Devices are delivered through tracked and insured cargo services</li>
+        <li class="mb-1">Personal information is not shared between parties</li>
+        <li class="mb-1">Delivery address is only shared with the cargo company</li>
+        <li class="mb-1">Payment is released only after successful delivery confirmation</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. DISPUTE RESOLUTION</h2>
+
+      <p class="mb-4 leading-relaxed">In case of disputes between users:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Users can raise disputes through the platform</li>
+        <li class="mb-1">Our dispute resolution team will investigate the matter</li>
+        <li class="mb-1">Decisions are made based on evidence and platform policies</li>
+        <li class="mb-1">Dispute resolution decisions are final and binding</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. LIMITATION OF LIABILITY</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple is a platform provider. We are not responsible for:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">The condition of any returned device</li>
+        <li class="mb-1">Issues arising from the physical exchange between users</li>
+        <li class="mb-1">Cargo service delays or issues</li>
+        <li class="mb-1">User violations of these terms</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. DATA PROTECTION</h2>
+
+      <p class="mb-4 leading-relaxed">We protect user data in accordance with applicable data protection laws. Detailed information is provided in our Privacy Policy.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. TERMINATION</h2>
+
+      <p class="mb-4 leading-relaxed">Users can terminate their accounts at any time. The platform reserves the right to terminate accounts that violate these terms.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. CHANGES TO TERMS</h2>
+
+      <p class="mb-4 leading-relaxed">We may update these terms from time to time. Users will be notified of significant changes through the platform or email.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. CONTACT INFORMATION</h2>
+
+      <p class="mb-4 leading-relaxed">For questions about these terms:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Email:</strong> <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Support:</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. All rights reserved.</strong></p>
     `,
     privacyContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Information We Collect</h3>
-      <p class="mb-4">We collect information you provide directly to us, such as your name, email address, and device details (model, serial number). For Finders, we also collect bank information solely for the purpose of transferring the reward.</p>
-      <h3 class="text-xl font-semibold mb-2">2. How We Use Your Information</h3>
-      <p class="mb-4">Your information is used to operate, maintain, and provide the features of our service. Specifically, we use device information for matching and your contact information for sending service-related notifications. We will never share your personal contact or identity information with other users.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Data Security</h3>
-      <p class="mb-4">We use commercially reasonable physical, administrative, and technological safeguards to preserve the integrity and security of all information collected. However, no security system is impenetrable, and we cannot guarantee the security of our systems 100%.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Data Retention</h3>
-      <p class="mb-4">We retain your data for as long as your account is active or as needed to provide you services. We may retain some information for compliance with legal obligations, to resolve disputes, and to enforce our agreements.</p>
-      <h3 class="text-xl font-semibold mb-2">5. Your Rights (GDPR)</h3>
-      <p class="mb-4">You have the right to access, rectify, or erase your personal data. You also have the right to restrict or object to certain processing. To exercise these rights, please contact us at <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">PRIVACY POLICY</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Last Updated: October 14, 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. DATA CONTROLLER</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">iFoundAnApple</strong></p>
+      <p class="mb-4 leading-relaxed">Email: <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. INFORMATION WE COLLECT</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.1. Personal Information</h3>
+      <p class="mb-4 leading-relaxed">We collect the following personal information:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Name and Surname:</strong> For account creation and communication</li>
+        <li class="mb-1"><strong class="font-semibold">Email Address:</strong> For account verification and notifications</li>
+        <li class="mb-1"><strong class="font-semibold">Phone Number:</strong> For account verification and cargo delivery</li>
+        <li class="mb-1"><strong class="font-semibold">Date of Birth:</strong> For age verification and legal compliance</li>
+        <li class="mb-1"><strong class="font-semibold">Identity Number:</strong> For legal compliance and fraud prevention</li>
+        <li class="mb-1"><strong class="font-semibold">Address:</strong> Only shared with cargo company for delivery</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.2. Device Information</h3>
+      <p class="mb-4 leading-relaxed">For device matching services:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Device model and serial number</li>
+        <li class="mb-1">Device color and condition</li>
+        <li class="mb-1">Reward amount</li>
+        <li class="mb-1">Invoice documents (if provided)</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.3. Financial Information</h3>
+      <p class="mb-4 leading-relaxed">For payment processing:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">IBAN information (for finders)</li>
+        <li class="mb-1">Payment card information (processed securely by payment providers)</li>
+        <li class="mb-1">Transaction records</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. HOW WE USE YOUR INFORMATION</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.1. Service Provision</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Device matching and notification</li>
+        <li class="mb-1">Secure payment processing</li>
+        <li class="mb-1">Cargo delivery coordination</li>
+        <li class="mb-1">Customer support</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.2. Legal Compliance</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Identity verification</li>
+        <li class="mb-1">Fraud prevention</li>
+        <li class="mb-1">Legal obligation fulfillment</li>
+        <li class="mb-1">Dispute resolution</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. DATA SHARING</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Information Shared for Cargo Delivery</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Name and surname</li>
+        <li class="mb-1">Phone number</li>
+        <li class="mb-1">Delivery address</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Third-Party Services</h3>
+      <p class="mb-4 leading-relaxed">We share information with trusted third parties:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Payment Providers:</strong> For secure payment processing</li>
+        <li class="mb-1"><strong class="font-semibold">Cargo Companies:</strong> For device delivery</li>
+        <li class="mb-1"><strong class="font-semibold">Cloud Services:</strong> For secure data storage</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. DATA SECURITY</h2>
+
+      <p class="mb-4 leading-relaxed">We implement comprehensive security measures:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">256-bit SSL encryption for data transmission</li>
+        <li class="mb-1">Encrypted data storage</li>
+        <li class="mb-1">Regular security audits</li>
+        <li class="mb-1">Access controls and authentication</li>
+        <li class="mb-1">PCI DSS compliance for payment data</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. DATA RETENTION</h2>
+
+      <p class="mb-4 leading-relaxed">We retain your data:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Account data: Until account deletion</li>
+        <li class="mb-1">Transaction records: 10 years (legal requirement)</li>
+        <li class="mb-1">Device information: Until successful completion</li>
+        <li class="mb-1">Communication logs: 3 years</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. YOUR RIGHTS (GDPR/KVKK)</h2>
+
+      <p class="mb-4 leading-relaxed">You have the following rights:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Access:</strong> Request information about your data</li>
+        <li class="mb-1"><strong class="font-semibold">Rectification:</strong> Correct inaccurate data</li>
+        <li class="mb-1"><strong class="font-semibold">Erasure:</strong> Request deletion of your data</li>
+        <li class="mb-1"><strong class="font-semibold">Restriction:</strong> Limit processing of your data</li>
+        <li class="mb-1"><strong class="font-semibold">Portability:</strong> Receive your data in a structured format</li>
+        <li class="mb-1"><strong class="font-semibold">Objection:</strong> Object to certain processing activities</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. COOKIES AND TRACKING</h2>
+
+      <p class="mb-4 leading-relaxed">We use cookies for:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Authentication and session management</li>
+        <li class="mb-1">Language preference</li>
+        <li class="mb-1">Security and fraud prevention</li>
+        <li class="mb-1">Analytics and performance monitoring</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. INTERNATIONAL DATA TRANSFERS</h2>
+
+      <p class="mb-4 leading-relaxed">Your data may be transferred to countries outside the EU/EEA. We ensure adequate protection through:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Standard contractual clauses</li>
+        <li class="mb-1">Adequacy decisions</li>
+        <li class="mb-1">Certification schemes</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. CHILDREN'S PRIVACY</h2>
+
+      <p class="mb-4 leading-relaxed">Our service is not intended for children under 16. We do not knowingly collect personal information from children under 16.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. CHANGES TO THIS POLICY</h2>
+
+      <p class="mb-4 leading-relaxed">We may update this privacy policy from time to time. We will notify you of significant changes through email or platform notifications.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. CONTACT US</h2>
+
+      <p class="mb-4 leading-relaxed">For privacy-related questions or to exercise your rights:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Email:</strong> <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Data Protection Officer:</strong> <a href="mailto:dpo@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">dpo@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. All rights reserved.</strong></p>
     `,
   },
   tr: {
@@ -1996,26 +2238,270 @@ NET ALACAK:               386.28 TL</code></pre>
       a6: "Nous déduisons des frais de service de 5% du montant de la récompense payée au trouveur. Cela nous aide à couvrir les coûts opérationnels, maintenir la plateforme et assurer un environnement sécurisé pour tous."
     },
     termsContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Introduction</h3>
-      <p class="mb-4">Bienvenue sur iFoundAnApple. Ces Conditions d'Utilisation ("Conditions") régissent votre utilisation de notre site web et de nos services. En créant un compte ou en utilisant notre plateforme, vous acceptez d'être lié par ces Conditions.</p>
-      <h3 class="text-xl font-semibold mb-2">2. Le Service</h3>
-      <p class="mb-4">iFoundAnApple fournit une plateforme pour connecter les propriétaires d'appareils Apple perdus avec les personnes qui les trouvent ("Trouveurs"). Nous facilitons cette connexion grâce à un système de correspondance anonyme et gérons un paiement de récompense via un processus d'escrow sécurisé. Nous ne sommes pas partie à l'échange physique d'aucun appareil.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Obligations de l'Utilisateur</h3>
-      <p class="mb-4">Vous acceptez de fournir des informations exactes et véridiques lors de l'enregistrement d'un appareil. Vous devez être le propriétaire légal de tout appareil que vous signalez comme perdu. Vous devez avoir trouvé légalement tout appareil que vous signalez comme trouvé. Vous acceptez de ne pas utiliser le service à des fins illégales ou non autorisées.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Paiements et Frais</h3>
-      <p class="mb-4">Les Propriétaires d'Appareils acceptent de payer le montant de récompense indiqué dans notre système d'escrow lors d'une correspondance réussie. Ce paiement n'est pas remboursable une fois l'échange terminé. Nous facturons des frais de service de 5%, qui sont déduits de la récompense payée au Trouveur.</p>
-      <h3 class="text-xl font-semibold mb-2">5. Limitation de Responsabilité</h3>
-      <p class="mb-4">iFoundAnApple est un fournisseur de plateforme. Nous ne sommes pas responsables de l'état de tout appareil retourné, ni ne sommes-nous responsables de tout problème découlant de l'échange physique entre utilisateurs. Nous fournissons des directives pour un échange sûr, mais la responsabilité incombe aux utilisateurs.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">CONDITIONS D'UTILISATION</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Dernière mise à jour : 14 octobre 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. PORTÉE DU CONTRAT</h2>
+
+      <p class="mb-4 leading-relaxed">Ces conditions régissent la relation juridique entre la plateforme <strong class="font-semibold">iFoundAnApple</strong> et les utilisateurs.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. DÉFINITIONS</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Plateforme :</strong> Plateforme numérique iFoundAnApple et tous ses services.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Utilisateur :</strong> Toute personne qui utilise les services de la plateforme.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Propriétaire d'Appareil :</strong> Personne qui a perdu son appareil Apple et le signale via la plateforme.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Trouveur :</strong> Personne qui trouve un appareil perdu et le signale via la plateforme.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Correspondance :</strong> Appariement automatique des rapports d'appareils perdus et trouvés basé sur le numéro de série et le modèle.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. SERVICES DE LA PLATEFORME</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple fournit les services suivants :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Correspondance anonyme des appareils Apple perdus et trouvés</li>
+        <li class="mb-1">Système de paiement d'escrow sécurisé</li>
+        <li class="mb-1">Service de livraison de colis sécurisé</li>
+        <li class="mb-1">Facilitation de la communication entre les parties</li>
+        <li class="mb-1">Système de résolution de litiges</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. RESPONSABILITÉS DE L'UTILISATEUR</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Responsabilités du Propriétaire d'Appareil</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Doit être le propriétaire légal de l'appareil signalé</li>
+        <li class="mb-1">Doit fournir des informations exactes sur l'appareil (modèle, numéro de série, etc.)</li>
+        <li class="mb-1">Doit payer le montant de récompense spécifié lors d'une correspondance réussie</li>
+        <li class="mb-1">Ne doit pas faire de faux rapports</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Responsabilités du Trouveur</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Doit avoir trouvé légalement l'appareil</li>
+        <li class="mb-1">Doit fournir des informations exactes sur l'appareil</li>
+        <li class="mb-1">Doit livrer l'appareil au propriétaire via le service de colis sécurisé</li>
+        <li class="mb-1">Ne doit pas revendiquer la propriété d'appareils trouvés</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. PAIEMENT ET FRAIS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.1. Paiement de Récompense</h3>
+      <p class="mb-4 leading-relaxed">Les propriétaires d'appareils doivent payer le montant de récompense spécifié dans le système d'escrow lors d'une correspondance réussie. Ce paiement n'est pas remboursable une fois l'échange terminé.</p>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.2. Frais de Service</h3>
+      <p class="mb-4 leading-relaxed">La plateforme facture des frais de service de 5%, qui sont déduits du montant de récompense payé au trouveur. Ces frais couvrent :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Maintenance et développement de la plateforme</li>
+        <li class="mb-1">Opérations du système de paiement sécurisé</li>
+        <li class="mb-1">Service de colis sécurisé</li>
+        <li class="mb-1">Support client</li>
+        <li class="mb-1">Services de résolution de litiges</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. SYSTÈME DE LIVRAISON SÉCURISÉ</h2>
+
+      <p class="mb-4 leading-relaxed">Tous les échanges d'appareils sont effectués via notre système de livraison de colis sécurisé :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Les appareils sont livrés via des services de colis suivis et assurés</li>
+        <li class="mb-1">Les informations personnelles ne sont pas partagées entre les parties</li>
+        <li class="mb-1">L'adresse de livraison n'est partagée qu'avec la société de colis</li>
+        <li class="mb-1">Le paiement n'est libéré qu'après confirmation de livraison réussie</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. RÉSOLUTION DE LITIGES</h2>
+
+      <p class="mb-4 leading-relaxed">En cas de litiges entre utilisateurs :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Les utilisateurs peuvent soulever des litiges via la plateforme</li>
+        <li class="mb-1">Notre équipe de résolution de litiges enquêtera sur la question</li>
+        <li class="mb-1">Les décisions sont prises sur la base de preuves et des politiques de la plateforme</li>
+        <li class="mb-1">Les décisions de résolution de litiges sont finales et contraignantes</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. LIMITATION DE RESPONSABILITÉ</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple est un fournisseur de plateforme. Nous ne sommes pas responsables :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">De l'état de tout appareil retourné</li>
+        <li class="mb-1">Des problèmes découlant de l'échange physique entre utilisateurs</li>
+        <li class="mb-1">Des retards ou problèmes du service de colis</li>
+        <li class="mb-1">Des violations de ces conditions par les utilisateurs</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. PROTECTION DES DONNÉES</h2>
+
+      <p class="mb-4 leading-relaxed">Nous protégeons les données des utilisateurs conformément aux lois applicables sur la protection des données. Des informations détaillées sont fournies dans notre Politique de Confidentialité.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. RÉSILIATION</h2>
+
+      <p class="mb-4 leading-relaxed">Les utilisateurs peuvent résilier leurs comptes à tout moment. La plateforme se réserve le droit de résilier les comptes qui violent ces conditions.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. MODIFICATIONS DES CONDITIONS</h2>
+
+      <p class="mb-4 leading-relaxed">Nous pouvons mettre à jour ces conditions de temps à autre. Les utilisateurs seront informés des changements significatifs via la plateforme ou par e-mail.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. INFORMATIONS DE CONTACT</h2>
+
+      <p class="mb-4 leading-relaxed">Pour des questions sur ces conditions :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">E-mail :</strong> <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Support :</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. Tous droits réservés.</strong></p>
     `,
     privacyContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Collecte d'Informations</h3>
-      <p class="mb-4">Nous collectons les informations que vous nous fournissez directement, telles que votre nom, adresse e-mail, numéro de téléphone et informations sur les appareils. Nous collectons également automatiquement certaines informations lorsque vous utilisez notre service.</p>
-      <h3 class="text-xl font-semibold mb-2">2. Utilisation des Informations</h3>
-      <p class="mb-4">Nous utilisons vos informations pour fournir, maintenir et améliorer notre service, traiter les transactions, communiquer avec vous et assurer la sécurité de notre plateforme.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Partage d'Informations</h3>
-      <p class="mb-4">Nous ne vendons pas vos informations personnelles. Nous pouvons partager vos informations avec des fournisseurs de services tiers qui nous aident à exploiter notre plateforme, mais uniquement dans la mesure nécessaire pour fournir nos services.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Vos Droits</h3>
-      <p class="mb-4">Vous avez le droit d'accéder, de rectifier ou d'effacer vos données personnelles. Vous avez également le droit de restreindre ou de vous opposer à certains traitements. Pour exercer ces droits, veuillez nous contacter à <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">POLITIQUE DE CONFIDENTIALITÉ</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Dernière mise à jour : 14 octobre 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. RESPONSABLE DU TRAITEMENT</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">iFoundAnApple</strong></p>
+      <p class="mb-4 leading-relaxed">E-mail : <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. INFORMATIONS QUE NOUS COLLECTONS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.1. Informations Personnelles</h3>
+      <p class="mb-4 leading-relaxed">Nous collectons les informations personnelles suivantes :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Nom et Prénom :</strong> Pour la création de compte et la communication</li>
+        <li class="mb-1"><strong class="font-semibold">Adresse E-mail :</strong> Pour la vérification de compte et les notifications</li>
+        <li class="mb-1"><strong class="font-semibold">Numéro de Téléphone :</strong> Pour la vérification de compte et la livraison de colis</li>
+        <li class="mb-1"><strong class="font-semibold">Date de Naissance :</strong> Pour la vérification d'âge et la conformité légale</li>
+        <li class="mb-1"><strong class="font-semibold">Numéro d'Identité :</strong> Pour la conformité légale et la prévention de fraude</li>
+        <li class="mb-1"><strong class="font-semibold">Adresse :</strong> Partagée uniquement avec la société de colis pour la livraison</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.2. Informations sur les Appareils</h3>
+      <p class="mb-4 leading-relaxed">Pour les services de correspondance d'appareils :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Modèle d'appareil et numéro de série</li>
+        <li class="mb-1">Couleur et état de l'appareil</li>
+        <li class="mb-1">Montant de la récompense</li>
+        <li class="mb-1">Documents de facture (si fournis)</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.3. Informations Financières</h3>
+      <p class="mb-4 leading-relaxed">Pour le traitement des paiements :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Informations IBAN (pour les trouveurs)</li>
+        <li class="mb-1">Informations de carte de paiement (traitées de manière sécurisée par les fournisseurs de paiement)</li>
+        <li class="mb-1">Enregistrements de transactions</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. COMMENT NOUS UTILISONS VOS INFORMATIONS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.1. Fourniture de Services</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Correspondance d'appareils et notification</li>
+        <li class="mb-1">Traitement sécurisé des paiements</li>
+        <li class="mb-1">Coordination de la livraison de colis</li>
+        <li class="mb-1">Support client</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.2. Conformité Légale</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Vérification d'identité</li>
+        <li class="mb-1">Prévention de fraude</li>
+        <li class="mb-1">Remplissage des obligations légales</li>
+        <li class="mb-1">Résolution de litiges</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. PARTAGE DE DONNÉES</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Informations Partagées pour la Livraison de Colis</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Nom et prénom</li>
+        <li class="mb-1">Numéro de téléphone</li>
+        <li class="mb-1">Adresse de livraison</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Services Tiers</h3>
+      <p class="mb-4 leading-relaxed">Nous partageons des informations avec des tiers de confiance :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Fournisseurs de Paiement :</strong> Pour le traitement sécurisé des paiements</li>
+        <li class="mb-1"><strong class="font-semibold">Sociétés de Colis :</strong> Pour la livraison d'appareils</li>
+        <li class="mb-1"><strong class="font-semibold">Services Cloud :</strong> Pour le stockage sécurisé des données</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. SÉCURITÉ DES DONNÉES</h2>
+
+      <p class="mb-4 leading-relaxed">Nous mettons en œuvre des mesures de sécurité complètes :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Chiffrement SSL 256 bits pour la transmission de données</li>
+        <li class="mb-1">Stockage de données chiffré</li>
+        <li class="mb-1">Audits de sécurité réguliers</li>
+        <li class="mb-1">Contrôles d'accès et authentification</li>
+        <li class="mb-1">Conformité PCI DSS pour les données de paiement</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. CONSERVATION DES DONNÉES</h2>
+
+      <p class="mb-4 leading-relaxed">Nous conservons vos données :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Données de compte : Jusqu'à la suppression du compte</li>
+        <li class="mb-1">Enregistrements de transactions : 10 ans (exigence légale)</li>
+        <li class="mb-1">Informations d'appareil : Jusqu'à l'achèvement réussi</li>
+        <li class="mb-1">Journaux de communication : 3 ans</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. VOS DROITS (RGPD)</h2>
+
+      <p class="mb-4 leading-relaxed">Vous avez les droits suivants :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Accès :</strong> Demander des informations sur vos données</li>
+        <li class="mb-1"><strong class="font-semibold">Rectification :</strong> Corriger les données inexactes</li>
+        <li class="mb-1"><strong class="font-semibold">Effacement :</strong> Demander la suppression de vos données</li>
+        <li class="mb-1"><strong class="font-semibold">Restriction :</strong> Limiter le traitement de vos données</li>
+        <li class="mb-1"><strong class="font-semibold">Portabilité :</strong> Recevoir vos données dans un format structuré</li>
+        <li class="mb-1"><strong class="font-semibold">Opposition :</strong> Vous opposer à certaines activités de traitement</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. COOKIES ET SUIVI</h2>
+
+      <p class="mb-4 leading-relaxed">Nous utilisons des cookies pour :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Authentification et gestion de session</li>
+        <li class="mb-1">Préférence de langue</li>
+        <li class="mb-1">Sécurité et prévention de fraude</li>
+        <li class="mb-1">Analytique et surveillance des performances</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. TRANSFERTS INTERNATIONAUX DE DONNÉES</h2>
+
+      <p class="mb-4 leading-relaxed">Vos données peuvent être transférées vers des pays en dehors de l'UE/EEE. Nous assurons une protection adéquate par :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Clauses contractuelles types</li>
+        <li class="mb-1">Décisions d'adéquation</li>
+        <li class="mb-1">Schémas de certification</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. CONFIDENTIALITÉ DES ENFANTS</h2>
+
+      <p class="mb-4 leading-relaxed">Notre service n'est pas destiné aux enfants de moins de 16 ans. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 16 ans.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. MODIFICATIONS DE CETTE POLITIQUE</h2>
+
+      <p class="mb-4 leading-relaxed">Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Nous vous informerons des changements significatifs par e-mail ou par notifications de la plateforme.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. NOUS CONTACTER</h2>
+
+      <p class="mb-4 leading-relaxed">Pour des questions liées à la confidentialité ou pour exercer vos droits :</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">E-mail :</strong> <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Délégué à la Protection des Données :</strong> <a href="mailto:dpo@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">dpo@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. Tous droits réservés.</strong></p>
     `,
   },
   ja: {
@@ -2289,16 +2775,121 @@ NET ALACAK:               386.28 TL</code></pre>
         a6: "発見者に支払われる報酬額から5%の少額のサービス手数料を差し引きます。これは、運営費をカバーし、プラットフォームを維持し、すべての人のための安全な環境を確保するのに役立ちます。"
     },
     termsContent: `
-      <h3 class="text-xl font-semibold mb-2">1. はじめに</h3>
-      <p class="mb-4">iFoundAnAppleへようこそ。これらの利用規約（「規約」）は、当社のウェブサイトとサービスの使用を規定します。アカウントを作成するか、プラットフォームを使用することで、これらの規約に拘束されることに同意したものとみなされます。</p>
-      <h3 class="text-xl font-semibold mb-2">2. サービス</h3>
-      <p class="mb-4">iFoundAnAppleは、紛失したAppleデバイスの所有者とそれらを見つけた個人（「発見者」）を結ぶプラットフォームを提供します。匿名マッチングシステムを通じてこの接続を促進し、安全なエスクロープロセスを通じて報酬支払いを管理します。私たちは、いかなるデバイスの物理的交換の当事者ではありません。</p>
-      <h3 class="text-xl font-semibold mb-2">3. ユーザーの義務</h3>
-      <p class="mb-4">デバイスを登録する際は、正確で真実の情報を提供することに同意します。紛失として報告するデバイスの法的所有者である必要があります。発見として報告するデバイスを合法的に見つけた必要があります。違法または無許可の目的でサービスを使用しないことに同意します。</p>
-      <h3 class="text-xl font-semibold mb-2">4. 支払いと手数料</h3>
-      <p class="mb-4">デバイス所有者は、成功したマッチング時に、記載された報酬額を当社のエスクローシステムに支払うことに同意します。交換が完了すると、この支払いは返金不可となります。発見者に支払われる報酬から差し引かれる5%のサービス手数料を請求します。</p>
-      <h3 class="text-xl font-semibold mb-2">5. 責任の制限</h3>
-      <p class="mb-4">iFoundAnAppleはプラットフォームプロバイダーです。返却されたデバイスの状態について責任を負いません。また、ユーザー間の物理的交換から生じる問題についても責任を負いません。安全な交換のためのガイドラインを提供しますが、責任はユーザーにあります。</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">利用規約</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">最終更新：2025年10月14日</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. 契約の範囲</h2>
+
+      <p class="mb-4 leading-relaxed">これらの規約は、<strong class="font-semibold">iFoundAnApple</strong>プラットフォームとユーザー間の法的関係を規律します。</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. 定義</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">プラットフォーム：</strong> iFoundAnAppleデジタルプラットフォームとそのすべてのサービス。</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">ユーザー：</strong> プラットフォームサービスを使用するすべての人。</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">デバイス所有者：</strong> Appleデバイスを紛失し、プラットフォームを通じて報告する人。</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">発見者：</strong> 紛失デバイスを見つけ、プラットフォームを通じて報告する人。</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">マッチング：</strong> シリアル番号とモデルに基づく紛失・発見デバイス報告の自動ペアリング。</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. プラットフォームサービス</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnAppleは以下のサービスを提供します：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">紛失・発見Appleデバイスの匿名マッチング</li>
+        <li class="mb-1">安全なエスクロー決済システム</li>
+        <li class="mb-1">安全な配送サービス</li>
+        <li class="mb-1">当事者間のコミュニケーション促進</li>
+        <li class="mb-1">紛争解決システム</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. ユーザーの責任</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. デバイス所有者の責任</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">報告するデバイスの法的所有者である必要があります</li>
+        <li class="mb-1">正確なデバイス情報（モデル、シリアル番号など）を提供する必要があります</li>
+        <li class="mb-1">成功したマッチング時に指定された報酬額を支払う必要があります</li>
+        <li class="mb-1">虚偽の報告をしてはいけません</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. 発見者の責任</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">デバイスを合法的に見つけた必要があります</li>
+        <li class="mb-1">正確なデバイス情報を提供する必要があります</li>
+        <li class="mb-1">安全な配送サービスを通じてデバイスを所有者に配送する必要があります</li>
+        <li class="mb-1">発見したデバイスの所有権を主張してはいけません</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. 支払いと手数料</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.1. 報酬支払い</h3>
+      <p class="mb-4 leading-relaxed">デバイス所有者は、成功したマッチング時にエスクローシステムに指定された報酬額を支払う必要があります。交換が完了すると、この支払いは返金不可となります。</p>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.2. サービス手数料</h3>
+      <p class="mb-4 leading-relaxed">プラットフォームは、発見者に支払われる報酬額から差し引かれる5%のサービス手数料を請求します。この手数料は以下をカバーします：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">プラットフォームの維持と開発</li>
+        <li class="mb-1">安全な決済システムの運用</li>
+        <li class="mb-1">安全な配送サービス</li>
+        <li class="mb-1">カスタマーサポート</li>
+        <li class="mb-1">紛争解決サービス</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. 安全な配送システム</h2>
+
+      <p class="mb-4 leading-relaxed">すべてのデバイス交換は、私たちの安全な配送システムを通じて行われます：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">デバイスは追跡・保険付き配送サービスで配送されます</li>
+        <li class="mb-1">個人情報は当事者間で共有されません</li>
+        <li class="mb-1">配送先住所は配送会社とのみ共有されます</li>
+        <li class="mb-1">支払いは成功した配送確認後にのみ解放されます</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. 紛争解決</h2>
+
+      <p class="mb-4 leading-relaxed">ユーザー間の紛争の場合：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">ユーザーはプラットフォームを通じて紛争を提起できます</li>
+        <li class="mb-1">紛争解決チームが問題を調査します</li>
+        <li class="mb-1">決定は証拠とプラットフォームポリシーに基づいて行われます</li>
+        <li class="mb-1">紛争解決決定は最終的で拘束力があります</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. 責任の制限</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnAppleはプラットフォームプロバイダーです。以下のことについて責任を負いません：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">返却されたデバイスの状態</li>
+        <li class="mb-1">ユーザー間の物理的交換から生じる問題</li>
+        <li class="mb-1">配送サービスの遅延や問題</li>
+        <li class="mb-1">これらの規約の違反</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. データ保護</h2>
+
+      <p class="mb-4 leading-relaxed">適用されるデータ保護法に従ってユーザーデータを保護します。詳細情報はプライバシーポリシーで提供されています。</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. 終了</h2>
+
+      <p class="mb-4 leading-relaxed">ユーザーはいつでもアカウントを終了できます。プラットフォームは、これらの規約に違反するアカウントを終了する権利を留保します。</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. 規約の変更</h2>
+
+      <p class="mb-4 leading-relaxed">これらの規約を随時更新する場合があります。重要な変更については、プラットフォームまたはメールでユーザーに通知されます。</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. 連絡先情報</h2>
+
+      <p class="mb-4 leading-relaxed">これらの規約に関する質問については：</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">メール：</strong> <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">サポート：</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. 全著作権所有。</strong></p>
     `,
     privacyContent: `
       <h3 class="text-xl font-semibold mb-2">1. 情報の収集</h3>
@@ -2582,26 +3173,270 @@ NET ALACAK:               386.28 TL</code></pre>
         a6: "Deducimos una pequeña tarifa de servicio del 5% del importe de la recompensa pagada al buscador. Esto nos ayuda a cubrir los costes operativos, mantener la plataforma y garantizar un entorno seguro para todos."
     },
     termsContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Introducción</h3>
-      <p class="mb-4">Bienvenido a iFoundAnApple. Estos Términos de Servicio ("Términos") rigen el uso de nuestro sitio web y servicios. Al crear una cuenta o usar nuestra plataforma, aceptas estar sujeto a estos Términos.</p>
-      <h3 class="text-xl font-semibold mb-2">2. El Servicio</h3>
-      <p class="mb-4">iFoundAnApple proporciona una plataforma para conectar a los propietarios de dispositivos Apple perdidos con las personas que los encuentran ("Buscadores"). Facilitamos esta conexión a través de un sistema de coincidencia anónimo y gestionamos un pago de recompensa a través de un proceso de depósito seguro. No somos parte del intercambio físico de ningún dispositivo.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Obligaciones del Usuario</h3>
-      <p class="mb-4">Aceptas proporcionar información precisa y veraz al registrar un dispositivo. Debes ser el propietario legal de cualquier dispositivo que reportes como perdido. Debes haber encontrado legalmente cualquier dispositivo que reportes como encontrado. Aceptas no usar el servicio para ningún propósito ilegal o no autorizado.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Pagos y Tarifas</h3>
-      <p class="mb-4">Los Propietarios de Dispositivos aceptan pagar el importe de recompensa indicado en nuestro sistema de depósito tras una coincidencia exitosa. Este pago no es reembolsable una vez completado el intercambio. Cobramos una tarifa de servicio del 5%, que se deduce de la recompensa pagada al Buscador.</p>
-      <h3 class="text-xl font-semibold mb-2">5. Limitación de Responsabilidad</h3>
-      <p class="mb-4">iFoundAnApple es un proveedor de plataforma. No somos responsables del estado de ningún dispositivo devuelto, ni somos responsables de ningún problema que surja del intercambio físico entre usuarios. Proporcionamos pautas para un intercambio seguro, pero la responsabilidad recae en los usuarios.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">TÉRMINOS DE SERVICIO</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Última actualización: 14 de octubre de 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. ALCANCE DEL CONTRATO</h2>
+
+      <p class="mb-4 leading-relaxed">Estos términos regulan la relación legal entre la plataforma <strong class="font-semibold">iFoundAnApple</strong> y los usuarios.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. DEFINICIONES</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Plataforma:</strong> Plataforma digital iFoundAnApple y todos sus servicios.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Usuario:</strong> Cualquier persona que utilice los servicios de la plataforma.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Propietario del Dispositivo:</strong> Persona que ha perdido su dispositivo Apple y lo reporta a través de la plataforma.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Buscador:</strong> Persona que encuentra un dispositivo perdido y lo reporta a través de la plataforma.</p>
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Coincidencia:</strong> Emparejamiento automático de reportes de dispositivos perdidos y encontrados basado en número de serie y modelo.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. SERVICIOS DE LA PLATAFORMA</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple proporciona los siguientes servicios:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Emparejamiento anónimo de dispositivos Apple perdidos y encontrados</li>
+        <li class="mb-1">Sistema de pago de depósito seguro</li>
+        <li class="mb-1">Servicio de entrega de envíos seguro</li>
+        <li class="mb-1">Facilitación de comunicación entre las partes</li>
+        <li class="mb-1">Sistema de resolución de disputas</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. RESPONSABILIDADES DEL USUARIO</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Responsabilidades del Propietario del Dispositivo</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Debe ser el propietario legal del dispositivo reportado</li>
+        <li class="mb-1">Debe proporcionar información precisa del dispositivo (modelo, número de serie, etc.)</li>
+        <li class="mb-1">Debe pagar el monto de recompensa especificado tras una coincidencia exitosa</li>
+        <li class="mb-1">No debe hacer reportes falsos</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Responsabilidades del Buscador</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Debe haber encontrado legalmente el dispositivo</li>
+        <li class="mb-1">Debe proporcionar información precisa del dispositivo</li>
+        <li class="mb-1">Debe entregar el dispositivo al propietario a través del servicio de envío seguro</li>
+        <li class="mb-1">No debe reclamar propiedad de dispositivos encontrados</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. PAGOS Y TARIFAS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.1. Pago de Recompensa</h3>
+      <p class="mb-4 leading-relaxed">Los propietarios de dispositivos deben pagar el monto de recompensa especificado en el sistema de depósito tras una coincidencia exitosa. Este pago no es reembolsable una vez completado el intercambio.</p>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">5.2. Tarifas de Servicio</h3>
+      <p class="mb-4 leading-relaxed">La plataforma cobra una tarifa de servicio del 5%, que se deduce del monto de recompensa pagado al buscador. Esta tarifa cubre:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Mantenimiento y desarrollo de la plataforma</li>
+        <li class="mb-1">Operaciones del sistema de pago seguro</li>
+        <li class="mb-1">Servicio de envío seguro</li>
+        <li class="mb-1">Soporte al cliente</li>
+        <li class="mb-1">Servicios de resolución de disputas</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. SISTEMA DE ENTREGA SEGURO</h2>
+
+      <p class="mb-4 leading-relaxed">Todos los intercambios de dispositivos se realizan a través de nuestro sistema de entrega de envíos seguro:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Los dispositivos se entregan a través de servicios de envío rastreados y asegurados</li>
+        <li class="mb-1">La información personal no se comparte entre las partes</li>
+        <li class="mb-1">La dirección de entrega solo se comparte con la empresa de envíos</li>
+        <li class="mb-1">El pago se libera solo después de la confirmación exitosa de la entrega</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. RESOLUCIÓN DE DISPUTAS</h2>
+
+      <p class="mb-4 leading-relaxed">En caso de disputas entre usuarios:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Los usuarios pueden plantear disputas a través de la plataforma</li>
+        <li class="mb-1">Nuestro equipo de resolución de disputas investigará el asunto</li>
+        <li class="mb-1">Las decisiones se toman basándose en evidencia y políticas de la plataforma</li>
+        <li class="mb-1">Las decisiones de resolución de disputas son finales y vinculantes</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. LIMITACIÓN DE RESPONSABILIDAD</h2>
+
+      <p class="mb-4 leading-relaxed">iFoundAnApple es un proveedor de plataforma. No somos responsables de:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">El estado de cualquier dispositivo devuelto</li>
+        <li class="mb-1">Problemas que surjan del intercambio físico entre usuarios</li>
+        <li class="mb-1">Retrasos o problemas del servicio de envíos</li>
+        <li class="mb-1">Violaciones de estos términos por parte de los usuarios</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. PROTECCIÓN DE DATOS</h2>
+
+      <p class="mb-4 leading-relaxed">Protegemos los datos de los usuarios de acuerdo con las leyes aplicables de protección de datos. La información detallada se proporciona en nuestra Política de Privacidad.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. TERMINACIÓN</h2>
+
+      <p class="mb-4 leading-relaxed">Los usuarios pueden terminar sus cuentas en cualquier momento. La plataforma se reserva el derecho de terminar cuentas que violen estos términos.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. CAMBIOS EN LOS TÉRMINOS</h2>
+
+      <p class="mb-4 leading-relaxed">Podemos actualizar estos términos de vez en cuando. Los usuarios serán notificados de cambios significativos a través de la plataforma o por correo electrónico.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. INFORMACIÓN DE CONTACTO</h2>
+
+      <p class="mb-4 leading-relaxed">Para preguntas sobre estos términos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Correo electrónico:</strong> <a href="mailto:legal@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">legal@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Soporte:</strong> <a href="mailto:support@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">support@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. Todos los derechos reservados.</strong></p>
     `,
     privacyContent: `
-      <h3 class="text-xl font-semibold mb-2">1. Recopilación de Información</h3>
-      <p class="mb-4">Recopilamos la información que nos proporcionas directamente, como tu nombre, dirección de correo electrónico, número de teléfono e información del dispositivo. También recopilamos automáticamente cierta información cuando usas nuestro servicio.</p>
-      <h3 class="text-xl font-semibold mb-2">2. Uso de la Información</h3>
-      <p class="mb-4">Usamos tu información para proporcionar, mantener y mejorar nuestro servicio, procesar transacciones, comunicarnos contigo y asegurar la seguridad de nuestra plataforma.</p>
-      <h3 class="text-xl font-semibold mb-2">3. Compartir Información</h3>
-      <p class="mb-4">No vendemos tu información personal. Podemos compartir tu información con proveedores de servicios terceros que nos ayudan a operar nuestra plataforma, pero solo en la medida necesaria para proporcionar nuestros servicios.</p>
-      <h3 class="text-xl font-semibold mb-2">4. Tus Derechos</h3>
-      <p class="mb-4">Tienes derecho a acceder, rectificar o borrar tus datos personales. También tienes derecho a restringir u oponerte a ciertos procesamientos. Para ejercer estos derechos, contáctanos en <a href="mailto:privacy@ifoundanapple.com" class="text-brand-blue underline">privacy@ifoundanapple.app</a>.</p>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">POLÍTICA DE PRIVACIDAD</h1>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">Última actualización: 14 de octubre de 2025</strong></p>
+
+      <hr class="my-6 border-gray-300">
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">1. RESPONSABLE DEL TRATAMIENTO</h2>
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">iFoundAnApple</strong></p>
+      <p class="mb-4 leading-relaxed">Correo electrónico: <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">2. INFORMACIÓN QUE RECOPILAMOS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.1. Información Personal</h3>
+      <p class="mb-4 leading-relaxed">Recopilamos la siguiente información personal:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Nombre y Apellidos:</strong> Para creación de cuenta y comunicación</li>
+        <li class="mb-1"><strong class="font-semibold">Dirección de Correo Electrónico:</strong> Para verificación de cuenta y espuestas</li>
+        <li class="mb-1"><strong class="font-semibold">Número de Teléfono:</strong> Para verificación de cuenta y entrega de envíos</li>
+        <li class="mb-1"><strong class="font-semibold">Fecha de Nacimiento:</strong> Para verificación de edad y cumplimiento legal</li>
+        <li class="mb-1"><strong class="font-semibold">Número de Identidad:</strong> Para cumplimiento legal y prevención de fraude</li>
+        <li class="mb-1"><strong class="font-semibold">Dirección:</strong> Solo compartida con la empresa de envíos para entrega</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.2. Información del Dispositivo</h3>
+      <p class="mb-4 leading-relaxed">Para servicios de emparejamiento de dispositivos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Modelo del dispositivo y número de serie</li>
+        <li class="mb-1">Color y condición del dispositivo</li>
+        <li class="mb-1">Monto de la recompensa</li>
+        <li class="mb-1">Documentos de factura (si se proporcionan)</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">2.3. Información Financiera</h3>
+      <p class="mb-4 leading-relaxed">Para procesamiento de pagos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Información IBAN (para buscadores)</li>
+        <li class="mb-1">Información de tarjeta de pago (procesada de forma segura por proveedores de pago)</li>
+        <li class="mb-1">Registros de transacciones</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">3. CÓMO USAMOS TU INFORMACIÓN</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.1. Prestación de Servicios</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Emparejamiento de dispositivos y notificación</li>
+        <li class="mb-1">Procesamiento seguro de pagos</li>
+        <li class="mb-1">Coordinación de entrega de envíos</li>
+        <li class="mb-1">Soporte al cliente</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">3.2. Cumplimiento Legal</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Verificación de identidad</li>
+        <li class="mb-1">Prevención de fraude</li>
+        <li class="mb-1">Cumplimiento de obligaciones legales</li>
+        <li class="mb-1">Resolución de disputas</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">4. COMPARTIR DATOS</h2>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.1. Información Compartida para Entrega de Envíos</h3>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Nombre y apellidos</li>
+        <li class="mb-1">Número de teléfono</li>
+        <li class="mb-1">Dirección de entrega</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold mb-2 text-gray-600">4.2. Servicios de Terceros</h3>
+      <p class="mb-4 leading-relaxed">Compartimos información con terceros de confianza:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Proveedores de Pago:</strong> Para procesamiento seguro de pagos</li>
+        <li class="mb-1"><strong class="font-semibold">Empresas de Envíos:</strong> Para entrega de dispositivos</li>
+        <li class="mb-1"><strong class="font-semibold">Servicios en la Nube:</strong> Para almacenamiento seguro de datos</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">5. SEGURIDAD DE DATOS</h2>
+
+      <p class="mb-4 leading-relaxed">Implementamos medidas de seguridad integrales:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cifrado SSL de 256 bits para transmisión de datos</li>
+        <li class="mb-1">Almacenamiento de datos cifrado</li>
+        <li class="mb-1">Auditorías de seguridad regulares</li>
+        <li class="mb-1">Controles de acceso y autenticación</li>
+        <li class="mb-1">Cumplimiento PCI DSS para datos de pago</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">6. CONSERVACIÓN DE DATOS</h2>
+
+      <p class="mb-4 leading-relaxed">Conservamos tus datos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Datos de cuenta: Hasta eliminación de la cuenta</li>
+        <li class="mb-1">Registros de transacciones: 10 años (requisito legal)</li>
+        <li class="mb-1">Información del dispositivo: Hasta finalización exitosa</li>
+        <li class="mb-1">Registros de comunicación: 3 años</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">7. TUS DERECHOS (RGPD)</h2>
+
+      <p class="mb-4 leading-relaxed">Tienes los siguientes derechos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Acceso:</strong> Solicitar información sobre tus datos</li>
+        <li class="mb-1"><strong class="font-semibold">Rectificación:</strong> Corregir datos inexactos</li>
+        <li class="mb-1"><strong class="font-semibold">Eliminación:</strong> Solicitar borrado de tus datos</li>
+        <li class="mb-1"><strong class="font-semibold">Restricción:</strong> Limitar el procesamiento de tus datos</li>
+        <li class="mb-1"><strong class="font-semibold">Portabilidad:</strong> Recibir tus datos en formato estructurado</li>
+        <li class="mb-1"><strong class="font-semibold">Oposición:</strong> Oponerte a ciertas actividades de procesamiento</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">8. COOKIES Y SEGUIMIENTO</h2>
+
+      <p class="mb-4 leading-relaxed">Utilizamos cookies para:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Autenticación y gestión de sesión</li>
+        <li class="mb-1">Preferencia de idioma</li>
+        <li class="mb-1">Seguridad y prevención de fraude</li>
+        <li class="mb-1">Análisis y monitoreo de rendimiento</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">9. TRANSFERENCIAS INTERNACIONALES DE DATOS</h2>
+
+      <p class="mb-4 leading-relaxed">Tus datos pueden transferirse a países fuera de la UE/EEE. Aseguramos protección adecuada mediante:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1">Cláusulas contractuales estándar</li>
+        <li class="mb-1">Decisiones de adecuación</li>
+        <li class="mb-1">Esquemas de certificación</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">10. PRIVACIDAD DE MENORES</h2>
+
+      <p class="mb-4 leading-relaxed">Nuestro servicio no está destinado a menores de 16 años. No recopilamos conscientemente información personal de menores de 16 años.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">11. CAMBIOS EN ESTA POLÍTICA</h2>
+
+      <p class="mb-4 leading-relaxed">Podemos actualizar esta política de privacidad de vez en cuando. Te notificaremos sobre cambios significativos por correo electrónico o notificaciones de la plataforma.</p>
+
+      <h2 class="text-xl font-semibold mb-3 text-gray-700 mt-6">12. CONTÁCTANOS</h2>
+
+      <p class="mb-4 leading-relaxed">Para preguntas relacionadas con la privacidad o para ejercer tus derechos:</p>
+      <ul class="list-disc list-inside mb-4 space-y-1">
+        <li class="mb-1"><strong class="font-semibold">Correo electrónico:</strong> <a href="mailto:privacy@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">privacy@ifoundanapple.com</a></li>
+        <li class="mb-1"><strong class="font-semibold">Delegado de Protección de Datos:</strong> <a href="mailto:dpo@ifoundanapple.com" class="text-blue-600 hover:text-blue-800">dpo@ifoundanapple.com</a></li>
+      </ul>
+
+      <hr class="my-6 border-gray-300">
+
+      <p class="mb-4 leading-relaxed"><strong class="font-semibold">© 2025 iFoundAnApple. Todos los derechos reservados.</strong></p>
     `,
   },
 };
