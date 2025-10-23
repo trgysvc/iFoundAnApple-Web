@@ -5,21 +5,19 @@ import DeviceModelSelector from "../components/DeviceModelSelector.tsx";
 import FeeBreakdownCard, {
   FeeBreakdown,
 } from "../components/payment/FeeBreakdownCard.tsx";
-import PaymentMethodSelector, {
-  PaymentProvider,
-} from "../components/payment/PaymentMethodSelector.tsx";
+import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.tsx";
 import {
   calculateFeesByModelName,
   DeviceModelData,
 } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
+import { PaymentProvider, PaymentProviderType } from "../types.ts";
+import { validateProfileForPayment, getProfileCompletionPercentage } from "../utils/profileValidation";
 
 interface PaymentFlowPageProps {
   deviceId?: string;
   initialDeviceModel?: string;
 }
-
-import { validateProfileForPayment, getProfileCompletionPercentage } from "../utils/profileValidation";
 
 const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   deviceId,
@@ -97,7 +95,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   >();
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
+    useState<PaymentProviderType>(PaymentProvider.IYZICO);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

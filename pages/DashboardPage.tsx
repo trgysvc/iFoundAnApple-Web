@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext.tsx";
-import { Device, UserRole } from "../types.ts";
+import { Device } from "../types.ts";
 import Container from "../components/ui/Container.tsx";
 import Button from "../components/ui/Button.tsx";
 import DeviceCard from "../components/DeviceCard";
@@ -91,62 +91,20 @@ const DashboardPage: React.FC = () => {
       {isLoading ? (
         <p className="text-center py-16 text-brand-gray-500">{t("loading")}</p>
       ) : userDevices.length > 0 ? (
-        <div className="space-y-6">
-          {/* Eşleşen Cihazlar için Özel Bölüm */}
-          {userDevices.some(
-            (device) =>
-              device.status === "MATCHED" || device.status === "PAYMENT_PENDING"
-          ) && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                🎯 Eşleşen Cihazlarınız
-              </h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {userDevices
-                  .filter(
-                    (device) =>
-                      device.status === "MATCHED" ||
-                      device.status === "PAYMENT_PENDING"
-                  )
-                  .map((device) => (
-                    <div key={`match-${device.id}`} className="flex gap-4">
-                      <div className="flex-1">
-                        <DeviceCard device={device} />
-                      </div>
-                      <div className="w-80">
-                        <MatchInfoCard
-                          deviceModel={device.model}
-                          matchStatus="Eşleşme Bulundu"
-                          className="h-full"
-                        />
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* Diğer Tüm Cihazlar */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              📱 Tüm Cihazlarınız
-            </h2>
-            <div className="space-y-4">
-              {userDevices
-                .sort((a, b) => b.id.localeCompare(a.id))
-                .map((device) => {
-                  console.log(
-                    "DashboardPage: Rendering DeviceCard for device:",
-                    device.id,
-                    "Status:",
-                    device.status,
-                    "Full Device Object:",
-                    device
-                  );
-                  return <DeviceCard key={device.id} device={device} />;
-                })}
-            </div>
-          </div>
+        <div className="space-y-4">
+          {userDevices
+            .sort((a, b) => b.id.localeCompare(a.id))
+            .map((device) => {
+              console.log(
+                "DashboardPage: Rendering DeviceCard for device:",
+                device.id,
+                "Status:",
+                device.status,
+                "Full Device Object:",
+                device
+              );
+              return <DeviceCard key={device.id} device={device} />;
+            })}
         </div>
       ) : (
         <div className="text-center py-16 border-2 border-dashed border-brand-gray-300 rounded-xl">

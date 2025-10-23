@@ -11,7 +11,6 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import CargoTrackingCard from '../components/cargo/CargoTrackingCard';
 import CargoInstructionsCard from '../components/cargo/CargoInstructionsCard';
 import { 
@@ -291,30 +290,28 @@ const CargoManagementPage: React.FC<CargoManagementPageProps> = ({ className = '
                 />
               </div>
 
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Durum Filtresi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tüm Durumlar</SelectItem>
-                  <SelectItem value="created">Oluşturuldu</SelectItem>
-                  <SelectItem value="picked_up">Alındı</SelectItem>
-                  <SelectItem value="in_transit">Yolda</SelectItem>
-                  <SelectItem value="out_for_delivery">Teslimat İçin Çıktı</SelectItem>
-                  <SelectItem value="delivered">Teslim Edildi</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={statusFilter} 
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Tüm Durumlar</option>
+                <option value="created">Oluşturuldu</option>
+                <option value="picked_up">Alındı</option>
+                <option value="in_transit">Yolda</option>
+                <option value="out_for_delivery">Teslimat İçin Çıktı</option>
+                <option value="delivered">Teslim Edildi</option>
+              </select>
 
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Rol Filtresi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tüm Roller</SelectItem>
-                  <SelectItem value="sender">Gönderici</SelectItem>
-                  <SelectItem value="receiver">Alıcı</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={roleFilter} 
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Tüm Roller</option>
+                <option value="sender">Gönderici</option>
+                <option value="receiver">Alıcı</option>
+              </select>
             </div>
           </CardContent>
         </Card>

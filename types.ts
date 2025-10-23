@@ -78,6 +78,10 @@ export interface Device {
   cargo_code_id?: string; // Kargo kod ID'si
   delivery_confirmed_at?: string; // Teslimat onay tarihi
   final_payment_distributed_at?: string; // Son ödeme dağıtım tarihi
+  
+  // Payment ve Cargo bilgileri
+  paymentId?: string; // Payment ID for escrow operations
+  cargoShipmentId?: string; // Cargo shipment ID for tracking
 }
 
 export interface AppNotification {
@@ -229,8 +233,30 @@ export interface Dispute {
   user_name?: string;
 }
 
-export interface DisputeResolution {
-  status: DisputeStatusType;
-  admin_notes: string;
-  resolution?: string;
+// Payment Provider Types
+export const PaymentProvider = {
+  IYZICO: "iyzico",
+  STRIPE: "stripe",
+  TEST: "test"
+} as const;
+
+export type PaymentProviderType = typeof PaymentProvider[keyof typeof PaymentProvider];
+
+// Payment Request Interface
+export interface PaymentRequest {
+  deviceId: string;
+  amount: number;
+  currency: string;
+  paymentProvider?: PaymentProviderType;
+  userInfo: {
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  };
+  deviceInfo: {
+    model: string;
+    serialNumber: string;
+    description?: string;
+  };
 }

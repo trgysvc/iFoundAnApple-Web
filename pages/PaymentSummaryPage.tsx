@@ -3,12 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import FeeBreakdownCard, {
   FeeBreakdown,
 } from "../components/payment/FeeBreakdownCard.tsx";
-import PaymentMethodSelector, {
-  PaymentProvider,
-} from "../components/payment/PaymentMethodSelector.tsx";
+import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.tsx";
 import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
 import { initiatePayment } from "../utils/paymentGateway.ts";
 import { useAppContext } from "../contexts/AppContext.tsx";
+import { PaymentProvider, PaymentProviderType } from "../types.ts";
 
 interface PaymentSummaryPageProps {
   deviceId?: string;
@@ -35,7 +34,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
   // State management
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
+    useState<PaymentProviderType>(PaymentProvider.IYZICO);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

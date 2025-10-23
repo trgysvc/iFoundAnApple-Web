@@ -4,18 +4,25 @@
  */
 
 import { supabase } from './supabaseClient';
-import { DisputeStatus, DisputeReason, Dispute, DisputeResolution } from '../types.ts';
+import { DisputeStatus, DisputeStatusType, DisputeReason, DisputeReasonType, Dispute, DisputeResolution } from '../types.ts';
 
 export interface DisputeWorkflowStep {
-  status: DisputeStatus;
+  status: DisputeStatusType;
   description: string;
-  nextPossibleStatuses: DisputeStatus[];
+  nextPossibleStatuses: DisputeStatusType[];
   requiredActions: string[];
   estimatedTimeHours?: number;
 }
 
 export class DisputeManager {
-  private static readonly WORKFLOW_STEPS: Record<DisputeStatus, DisputeWorkflowStep> = {
+  private static readonly WORKFLOW_STEPS: Record<DisputeStatusType, DisputeWorkflowStep> = {
+    [DisputeStatus.NONE]: {
+      status: DisputeStatus.NONE,
+      description: 'İtiraz yok - Normal durum',
+      nextPossibleStatuses: [DisputeStatus.PENDING],
+      requiredActions: ['İtiraz yok'],
+      estimatedTimeHours: 0
+    },
     [DisputeStatus.PENDING]: {
       status: DisputeStatus.PENDING,
       description: 'İtiraz bekliyor - Admin incelemesi bekleniyor',
@@ -60,7 +67,7 @@ export class DisputeManager {
     deviceId: string,
     paymentId: string,
     cargoShipmentId: string,
-    disputeReason: DisputeReason,
+    disputeReason: DisputeReasonType,
     notes: string,
     photos: string[] = [],
     userId: string
@@ -151,7 +158,7 @@ export class DisputeManager {
    */
   static async updateDisputeStatus(
     disputeId: string,
-    newStatus: DisputeStatus,
+    newStatus: DisputeStatusType,
     adminNotes: string,
     resolution?: string,
     adminUserId: string
@@ -286,8 +293,8 @@ export class DisputeManager {
         id: data.id,
         device_id: data.device_id,
         payment_id: data.payment_id,
-        dispute_reason: data.dispute_reason as DisputeReason,
-        status: data.dispute_status as DisputeStatus,
+        dispute_reason: data.dispute_reason as DisputeReasonType,
+        status: data.dispute_status as DisputeStatusType,
         created_at: data.created_at,
         updated_at: data.updated_at,
         admin_notes: data.admin_notes,
@@ -338,8 +345,8 @@ export class DisputeManager {
         id: dispute.id,
         device_id: dispute.device_id,
         payment_id: dispute.payment_id,
-        dispute_reason: dispute.dispute_reason as DisputeReason,
-        status: dispute.dispute_status as DisputeStatus,
+        dispute_reason: dispute.dispute_reason as DisputeReasonType,
+        status: dispute.dispute_status as DisputeStatusType,
         created_at: dispute.created_at,
         updated_at: dispute.updated_at,
         admin_notes: dispute.admin_notes,
@@ -393,8 +400,8 @@ export class DisputeManager {
         id: dispute.id,
         device_id: dispute.device_id,
         payment_id: dispute.payment_id,
-        dispute_reason: dispute.dispute_reason as DisputeReason,
-        status: dispute.dispute_status as DisputeStatus,
+        dispute_reason: dispute.dispute_reason as DisputeReasonType,
+        status: dispute.dispute_status as DisputeStatusType,
         created_at: dispute.created_at,
         updated_at: dispute.updated_at,
         admin_notes: dispute.admin_notes,
@@ -413,14 +420,14 @@ export class DisputeManager {
   /**
    * Get workflow step information
    */
-  static getWorkflowStep(status: DisputeStatus): DisputeWorkflowStep {
+  static getWorkflowStep(status: DisputeStatusType): DisputeWorkflowStep {
     return this.WORKFLOW_STEPS[status];
   }
 
   /**
    * Get all possible next statuses for a given status
    */
-  static getNextPossibleStatuses(currentStatus: DisputeStatus): DisputeStatus[] {
+  static getNextPossibleStatuses(currentStatus: DisputeStatusType): DisputeStatusType[] {
     return this.WORKFLOW_STEPS[currentStatus].nextPossibleStatuses;
   }
 
@@ -473,10 +480,11 @@ export class DisputeManager {
 
       const stats = data.reduce((acc, dispute) => {
         acc.total++;
-        acc[dispute.dispute_status as DisputeStatus]++;
+        acc[dispute.dispute_status as DisputeStatusType]++;
         return acc;
       }, {
         total: 0,
+        none: 0,
         pending: 0,
         under_review: 0,
         resolved: 0,

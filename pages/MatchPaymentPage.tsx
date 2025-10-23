@@ -4,13 +4,11 @@ import { useAppContext } from "../contexts/AppContext.tsx";
 import FeeBreakdownCard, {
   FeeBreakdown,
 } from "../components/payment/FeeBreakdownCard.tsx";
-import PaymentMethodSelector, {
-  PaymentProvider,
-} from "../components/payment/PaymentMethodSelector.tsx";
+import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.tsx";
 import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
 import { supabase } from "../utils/supabaseClient.ts";
-import { Device } from "../types.ts";
+import { Device, PaymentProvider, PaymentProviderType } from "../types.ts";
 
 interface MatchPaymentPageProps {
   deviceId?: string;
@@ -34,7 +32,7 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
   const [step, setStep] = useState<"fees" | "payment">("fees");
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
+    useState<PaymentProviderType>(PaymentProvider.IYZICO);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

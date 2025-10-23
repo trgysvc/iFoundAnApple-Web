@@ -13,6 +13,7 @@ export interface PaymentRequest {
   payerId: string;
   receiverId?: string;
   feeBreakdown: FeeBreakdown;
+  paymentProvider?: "iyzico" | "stripe" | "test";
   deviceInfo: {
     model: string;
     serialNumber: string;

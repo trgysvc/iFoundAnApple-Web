@@ -12,7 +12,8 @@ const TEST_DATA = {
   paymentId: 'test-payment-' + Date.now(),
   cargoShipmentId: 'test-cargo-' + Date.now(),
   userId: 'test-user-' + Date.now(),
-  adminUserId: 'admin-user-' + Date.now()
+  adminUserId: 'admin-user-' + Date.now(),
+  disputeId: '' as string
 };
 
 class DisputeSystemTester {

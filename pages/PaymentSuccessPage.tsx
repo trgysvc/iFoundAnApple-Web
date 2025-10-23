@@ -37,6 +37,7 @@ interface DeviceData {
   lost_date?: string;
   lost_location?: string;
   invoiceDataUrl?: string;
+  cargoShipmentId?: string;
 }
 
 const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
