@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
       build: {
         rollupOptions: {
           output: {
+            // Enum'ların düzgün işlenmesi için preserveModules kullan
+            preserveModules: false,
             manualChunks: (id) => {
               // Vendor chunks
               if (id.includes('node_modules')) {

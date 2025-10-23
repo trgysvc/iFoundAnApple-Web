@@ -1,10 +1,12 @@
 import { translations } from "./constants.ts";
 
-export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
-  SUPER_ADMIN = "super_admin",
-}
+export const UserRole = {
+  USER: "user",
+  ADMIN: "admin",
+  SUPER_ADMIN: "super_admin",
+} as const;
+
+export type UserRoleType = typeof UserRole[keyof typeof UserRole];
 
 export interface User {
   id: string;
@@ -13,7 +15,7 @@ export interface User {
   fullName?: string; // Tam ad (geriye uyumluluk için)
   email: string;
   password_hash?: string; // In a real app, never store plain text passwords
-  role: UserRole;
+  role: UserRoleType;
   // Extended profile information
   dateOfBirth?: string; // Doğum tarihi (YYYY-MM-DD)
   tcKimlikNo?: string; // TC Kimlik Numarası
@@ -39,18 +41,22 @@ export interface UserProfile {
   created_at: string;
 }
 
-export enum DeviceStatus {
-  LOST = "lost", // Cihaz sahibi kayıp bildirimi
-  REPORTED = "reported", // Bulan kişi buldu bildirimi
-  MATCHED = "matched", // Cihaz eşleşiyor
-  PAYMENT_PENDING = "payment_pending", // Cihazı kaybeden ödemesini yapıyor
-  PAYMENT_COMPLETE = "payment_completed", // Ödeme emanet sisteminde bekletiliyor
-  EXCHANGE_PENDING = "exchange_pending", // Değişim bekleniyor (eksikti)
-  CARGO_SHIPPED = "cargo_shipped", // Cihazı bulan kargo firmasına kod ile teslim ediyor
-  DELIVERED = "delivered", // Kargo firması cihazı sahibine teslim ediyor
-  CONFIRMED = "confirmed", // Cihazın sahibi cihaz eline geçince onaylıyor
-  COMPLETED = "completed", // İşlem tamamlanıyor
-}
+// Production build sorunlarını önlemek için const assertion kullanıyoruz
+export const DeviceStatus = {
+  LOST: "lost", // Cihaz sahibi kayıp bildirimi
+  REPORTED: "reported", // Bulan kişi buldu bildirimi
+  MATCHED: "matched", // Cihaz eşleşiyor
+  PAYMENT_PENDING: "payment_pending", // Cihazı kaybeden ödemesini yapıyor
+  PAYMENT_COMPLETE: "payment_completed", // Ödeme emanet sisteminde bekletiliyor
+  EXCHANGE_PENDING: "exchange_pending", // Değişim bekleniyor (eksikti)
+  CARGO_SHIPPED: "cargo_shipped", // Cihazı bulan kargo firmasına kod ile teslim ediyor
+  DELIVERED: "delivered", // Kargo firması cihazı sahibine teslim ediyor
+  CONFIRMED: "confirmed", // Cihazın sahibi cihaz eline geçince onaylıyor
+  COMPLETED: "completed", // İşlem tamamlanıyor
+} as const;
+
+// Type için enum benzeri type tanımı
+export type DeviceStatusType = typeof DeviceStatus[keyof typeof DeviceStatus];
 
 export interface Device {
   id: string;
@@ -61,7 +67,7 @@ export interface Device {
   invoice_url?: string; // URL to invoice file in Supabase Storage
   invoiceDataUrl?: string; // Legacy field - will be removed after migration
   description?: string;
-  status: DeviceStatus;
+  status: DeviceStatusType;
   rewardAmount?: number; // Maps to rewardamount in DB
   marketValue?: number; // AI estimated market value (maps to marketvalue in DB)
   exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed (maps to exchangeconfirmedby in DB)
@@ -101,7 +107,13 @@ export interface CargoCode {
 }
 
 // Kullanıcı Değerlendirme Sistemi (User Ratings)
-export type RatingContext = 'general' | 'exchange' | 'dispute';
+export const RatingContext = {
+  GENERAL: "general",
+  EXCHANGE: "exchange", 
+  DISPUTE: "dispute"
+} as const;
+
+export type RatingContextType = typeof RatingContext[keyof typeof RatingContext];
 
 export interface UserRating {
   id: string;
@@ -109,7 +121,7 @@ export interface UserRating {
   rated_user_id: string;
   rating: number; // 1-5
   review?: string;
-  context: RatingContext;
+  context: RatingContextType;
   device_id?: string;
   payment_id?: string;
   dispute_id?: string;
@@ -176,31 +188,35 @@ export interface EscrowReleaseConditions {
 }
 
 // Dispute Management Types - Mevcut sistemle uyumlu
-export enum DisputeStatus {
-  NONE = "none",           // Mevcut sistemdeki default değer
-  PENDING = "pending",     // İtiraz bekleniyor
-  UNDER_REVIEW = "under_review", // İnceleniyor
-  RESOLVED = "resolved",   // Çözüldü
-  REJECTED = "rejected",   // Reddedildi
-  ESCALATED = "escalated"  // Üst seviyeye çıkarıldı
-}
+export const DisputeStatus = {
+  NONE: "none",           // Mevcut sistemdeki default değer
+  PENDING: "pending",     // İtiraz bekleniyor
+  UNDER_REVIEW: "under_review", // İnceleniyor
+  RESOLVED: "resolved",   // Çözüldü
+  REJECTED: "rejected",   // Reddedildi
+  ESCALATED: "escalated"  // Üst seviyeye çıkarıldı
+} as const;
 
-export enum DisputeReason {
-  DEVICE_DAMAGED = "device_damaged",
-  WRONG_DEVICE = "wrong_device", 
-  NOT_DELIVERED = "not_delivered",
-  DELIVERY_DELAY = "delivery_delay",
-  COMMUNICATION_ISSUE = "communication_issue",
-  PAYMENT_ISSUE = "payment_issue",
-  OTHER = "other"
-}
+export type DisputeStatusType = typeof DisputeStatus[keyof typeof DisputeStatus];
+
+export const DisputeReason = {
+  DEVICE_DAMAGED: "device_damaged",
+  WRONG_DEVICE: "wrong_device", 
+  NOT_DELIVERED: "not_delivered",
+  DELIVERY_DELAY: "delivery_delay",
+  COMMUNICATION_ISSUE: "communication_issue",
+  PAYMENT_ISSUE: "payment_issue",
+  OTHER: "other"
+} as const;
+
+export type DisputeReasonType = typeof DisputeReason[keyof typeof DisputeReason];
 
 export interface Dispute {
   id: string;
   device_id: string;
   payment_id: string;
-  dispute_reason: DisputeReason;
-  status: DisputeStatus;
+  dispute_reason: DisputeReasonType;
+  status: DisputeStatusType;
   created_at: string;
   updated_at?: string;
   admin_notes?: string;
@@ -214,7 +230,7 @@ export interface Dispute {
 }
 
 export interface DisputeResolution {
-  status: DisputeStatus;
+  status: DisputeStatusType;
   admin_notes: string;
   resolution?: string;
 }
