@@ -65,8 +65,14 @@ export default defineConfig(({ mode }) => {
                 return 'static-pages';
               }
               
-              // Device-related pages
-              if (id.includes('Device') || id.includes('AddDevice')) {
+              // Device-related pages - split to avoid circular dependencies
+              if (id.includes('DeviceDetailPage')) {
+                return 'device-detail';
+              }
+              if (id.includes('AddDevicePage')) {
+                return 'add-device';
+              }
+              if (id.includes('Device')) {
                 return 'device-pages';
               }
               
