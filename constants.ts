@@ -1060,9 +1060,16 @@ export const translations = {
       <p class="mb-4"><strong>Web:</strong> https://ifoundanapple.com</p>
       <p class="mb-4">This policy is prepared in accordance with KVKK and GDPR.</p>
 
-      <h3 class="text-xl font-semibold mb-2">2. COLLECTED PERSONAL DATA</h3>
+      <h3 class="text-xl font-semibold mb-2">2. HOSTING AND DOMAIN INFORMATION</h3>
+      <p class="mb-4"><strong>Domain Owner:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Hosting Provider:</strong> Hetzner</p>
+      <p class="mb-4"><strong>SSL Certificate:</strong> Active (HTTPS)</p>
+      <p class="mb-4"><strong>Domain Verification:</strong> Hosted on our owned domain</p>
+      <p class="mb-4"><strong>IMPORTANT:</strong> This privacy policy is hosted on our owned domain, not on third-party platforms such as Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. COLLECTED PERSONAL DATA</h3>
       
-      <h4 class="text-lg font-semibold mb-2">2.1 Registration and Authentication</h4>
+      <h4 class="text-lg font-semibold mb-2">3.1 Registration and Authentication</h4>
       <p class="mb-2"><strong>Email Registration:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>First name, last name</li>
@@ -1078,7 +1085,7 @@ export const translations = {
         <li>No need to create a password</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.2 Device Information</h4>
+      <h4 class="text-lg font-semibold mb-2">3.2 Device Information</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Device model (iPhone 15 Pro, MacBook Air, etc.)</li>
         <li>Serial number</li>
@@ -1087,7 +1094,7 @@ export const translations = {
         <li>Invoice/ownership document (visual - can be deleted)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.3 Payment and Financial Information</h4>
+      <h4 class="text-lg font-semibold mb-2">3.3 Payment and Financial Information</h4>
       <p class="mb-2"><strong>Payment Transactions:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Credit/bank card information processed by secure payment provider (PCI-DSS compliant)</li>
@@ -1101,14 +1108,14 @@ export const translations = {
         <li>Account holder name</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.4 Profile and Contact Information</h4>
+      <h4 class="text-lg font-semibold mb-2">3.4 Profile and Contact Information</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>National ID Number (optional, for high-value transactions)</li>
         <li>Phone number</li>
         <li>Delivery address (for cargo)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.5 Automatically Collected Data</h4>
+      <h4 class="text-lg font-semibold mb-2">3.5 Automatically Collected Data</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>IP address</li>
         <li>Browser and device information</li>
@@ -1116,9 +1123,9 @@ export const translations = {
         <li>Platform usage statistics</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">3. DATA USAGE PURPOSES</h3>
+      <h3 class="text-xl font-semibold mb-2">4. DATA USAGE PURPOSES</h3>
       
-      <h4 class="text-lg font-semibold mb-2">3.1 Service Provision</h4>
+      <h4 class="text-lg font-semibold mb-2">4.1 Service Provision</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Matching lost and found devices (serial number based)</li>
         <li>User account management</li>
@@ -1126,7 +1133,7 @@ export const translations = {
         <li>Sending notifications</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.2 Payment and Escrow Operations</h4>
+      <h4 class="text-lg font-semibold mb-2">4.2 Payment and Escrow Operations</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Secure payment processing</li>
         <li>Operating escrow system</li>
@@ -1134,10 +1141,10 @@ export const translations = {
         <li>Maintaining financial records</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.3 AI-Powered Recommendations</h4>
+      <h4 class="text-lg font-semibold mb-2">4.3 AI-Powered Recommendations</h4>
       <p class="mb-4">This feature is optional</p>
 
-      <h4 class="text-lg font-semibold mb-2">3.4 Security</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Security</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Fraud prevention</li>
         <li>Identity verification</li>
@@ -1145,16 +1152,16 @@ export const translations = {
         <li>Security breach detection</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.5 Legal Compliance</h4>
+      <h4 class="text-lg font-semibold mb-2">4.5 Legal Compliance</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Compliance with KVKK and GDPR requirements</li>
         <li>Tax legislation obligations (10-year record keeping)</li>
         <li>Court decisions and legal processes</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">4. DATA SHARING</h3>
+      <h3 class="text-xl font-semibold mb-2">5. DATA SHARING</h3>
       
-      <h4 class="text-lg font-semibold mb-2">4.1 Service Providers</h4>
+      <h4 class="text-lg font-semibold mb-2">5.1 Service Providers</h4>
       <p class="mb-2"><strong>Supabase (Backend Infrastructure):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Database, authentication, file storage</li>
@@ -1205,9 +1212,9 @@ export const translations = {
         <li>KVKK Institution requests</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">5. DATA SECURITY AND RETENTION</h3>
+      <h3 class="text-xl font-semibold mb-2">6. DATA SECURITY AND RETENTION</h3>
       
-      <h4 class="text-lg font-semibold mb-2">5.1 Security Measures</h4>
+      <h4 class="text-lg font-semibold mb-2">6.1 Security Measures</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>SSL/TLS encryption (HTTPS)</li>
         <li>Password hashing (bcrypt)</li>
@@ -1218,7 +1225,7 @@ export const translations = {
         <li>Regular security audits</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">5.2 Retention Periods</h4>
+      <h4 class="text-lg font-semibold mb-2">6.2 Retention Periods</h4>
       <p class="mb-2"><strong>Active Accounts:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Retained as long as your account is active</li>
@@ -1238,9 +1245,9 @@ export const translations = {
         <li>Audit logs: 5 years</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">6. USER RIGHTS (KVKK & GDPR)</h3>
+      <h3 class="text-xl font-semibold mb-2">7. USER RIGHTS (KVKK & GDPR)</h3>
       
-      <h4 class="text-lg font-semibold mb-2">6.1 Your Rights</h4>
+      <h4 class="text-lg font-semibold mb-2">7.1 Your Rights</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>✅ <strong>Right to Information:</strong> Learn whether your data is being processed</li>
         <li>✅ <strong>Right of Access:</strong> Obtain a copy of your data</li>
@@ -1268,10 +1275,10 @@ export const translations = {
         <li>Relevant country's Data Protection Authority</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">7. CHILDREN'S PRIVACY</h3>
+      <h3 class="text-xl font-semibold mb-2">8. CHILDREN'S PRIVACY</h3>
       <p class="mb-4">The platform is not intended for users under 18. We do not knowingly collect data from persons under 18.</p>
 
-      <h3 class="text-xl font-semibold mb-2">8. COOKIES</h3>
+      <h3 class="text-xl font-semibold mb-2">9. COOKIES</h3>
       <p class="mb-2"><strong>Cookies We Use:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Session management (mandatory)</li>
@@ -1280,7 +1287,7 @@ export const translations = {
       </ul>
       <p class="mb-4">You can manage cookies from your browser settings.</p>
 
-      <h3 class="text-xl font-semibold mb-2">9. INTERNATIONAL DATA TRANSFER</h3>
+      <h3 class="text-xl font-semibold mb-2">10. INTERNATIONAL DATA TRANSFER</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Supabase:</strong> USA/EU data centers (GDPR compliant, SCC)</li>
         <li><strong>Payment Provider:</strong> International</li>
@@ -1288,7 +1295,7 @@ export const translations = {
       </ul>
       <p class="mb-4">All transfers are made in accordance with KVKK and GDPR provisions.</p>
 
-      <h3 class="text-xl font-semibold mb-2">10. CHANGES AND UPDATES</h3>
+      <h3 class="text-xl font-semibold mb-2">11. CHANGES AND UPDATES</h3>
       <p class="mb-2">We may update this Privacy Policy from time to time. When important changes are made:</p>
       <ul class="list-disc pl-6 mb-4">
         <li>We publish announcements on the website</li>
@@ -1297,7 +1304,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Updates take effect on the date they are published.</p>
 
-      <h3 class="text-xl font-semibold mb-2">11. CONTACT</h3>
+      <h3 class="text-xl font-semibold mb-2">12. CONTACT</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>General:</strong> info@ifoundanapple.com</li>
         <li><strong>Privacy:</strong> privacy@ifoundanapple.com</li>
@@ -2369,9 +2376,16 @@ export const translations = {
       <p class="mb-4"><strong>Web:</strong> https://ifoundanapple.com</p>
       <p class="mb-4">Bu politika, KVKK ve GDPR uyarınca hazırlanmıştır.</p>
 
-      <h3 class="text-xl font-semibold mb-2">2. TOPLANAN KİŞİSEL VERİLER</h3>
+      <h3 class="text-xl font-semibold mb-2">2. HOSTING VE DOMAIN BİLGİLERİ</h3>
+      <p class="mb-4"><strong>Domain Sahibi:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Hosting Sağlayıcısı:</strong> Hetzner</p>
+      <p class="mb-4"><strong>SSL Sertifikası:</strong> Aktif (HTTPS)</p>
+      <p class="mb-4"><strong>Domain Doğrulama:</strong> Sahibi olduğumuz domainimizde barındırılmaktadır</p>
+      <p class="mb-4"><strong>ÖNEMLİ:</strong> Bu gizlilik politikası, Google Sites, Facebook, Instagram, Twitter gibi üçüncü taraf platformlarda değil, sahibi olduğumuz domainimizde barındırılmaktadır.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. TOPLANAN KİŞİSEL VERİLER</h3>
       
-      <h4 class="text-lg font-semibold mb-2">2.1 Kayıt ve Kimlik Doğrulama</h4>
+      <h4 class="text-lg font-semibold mb-2">3.1 Kayıt ve Kimlik Doğrulama</h4>
       <p class="mb-2"><strong>E-posta ile Kayıt:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Ad, soyad</li>
@@ -2387,7 +2401,7 @@ export const translations = {
         <li>Şifre oluşturmanıza gerek yoktur</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.2 Cihaz Bilgileri</h4>
+      <h4 class="text-lg font-semibold mb-2">3.2 Cihaz Bilgileri</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Cihaz modeli (iPhone 15 Pro, MacBook Air vb.)</li>
         <li>Seri numarası</li>
@@ -2396,7 +2410,7 @@ export const translations = {
         <li>Fatura/sahiplik belgesi (görsel - silinebilir şekilde)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.3 Ödeme ve Finansal Bilgiler</h4>
+      <h4 class="text-lg font-semibold mb-2">3.3 Ödeme ve Finansal Bilgiler</h4>
       <p class="mb-2"><strong>Ödeme İşlemleri:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Kredi/banka kartı bilgileri güvenli ödeme sağlayıcısı tarafından işlenir (PCI-DSS uyumlu)</li>
@@ -2410,14 +2424,14 @@ export const translations = {
         <li>Hesap sahibi adı</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.4 Profil ve İletişim Bilgileri</h4>
+      <h4 class="text-lg font-semibold mb-2">3.4 Profil ve İletişim Bilgileri</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>TC Kimlik Numarası (isteğe bağlı, yüksek tutarlı işlemler için)</li>
         <li>Telefon numarası</li>
         <li>Teslimat adresi (kargo için)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.5 Otomatik Toplanan Veriler</h4>
+      <h4 class="text-lg font-semibold mb-2">3.5 Otomatik Toplanan Veriler</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>IP adresi</li>
         <li>Tarayıcı ve cihaz bilgileri</li>
@@ -2425,9 +2439,9 @@ export const translations = {
         <li>Platform kullanım istatistikleri</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">3. VERİLERİN KULLANIM AMAÇLARI</h3>
+      <h3 class="text-xl font-semibold mb-2">4. VERİLERİN KULLANIM AMAÇLARI</h3>
       
-      <h4 class="text-lg font-semibold mb-2">3.1 Hizmet Sunumu</h4>
+      <h4 class="text-lg font-semibold mb-2">4.1 Hizmet Sunumu</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Kayıp ve bulunan cihazları eşleştirme (seri numarası bazlı)</li>
         <li>Kullanıcı hesap yönetimi</li>
@@ -2435,7 +2449,7 @@ export const translations = {
         <li>Bildirim gönderme</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.2 Ödeme ve Escrow İşlemleri</h4>
+      <h4 class="text-lg font-semibold mb-2">4.2 Ödeme ve Escrow İşlemleri</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Güvenli ödeme işleme</li>
         <li>Escrow (emanet) sistemini işletme</li>
@@ -2443,10 +2457,10 @@ export const translations = {
         <li>Mali kayıtların tutulması</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.3 AI Destekli Öneriler</h4>
+      <h4 class="text-lg font-semibold mb-2">4.3 AI Destekli Öneriler</h4>
       <p class="mb-4">Bu özellik isteğe bağlıdır</p>
 
-      <h4 class="text-lg font-semibold mb-2">3.4 Güvenlik</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Güvenlik</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Dolandırıcılık önleme</li>
         <li>Kimlik doğrulama</li>
@@ -2454,16 +2468,16 @@ export const translations = {
         <li>Güvenlik ihlali tespiti</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.5 Yasal Uyumluluk</h4>
+      <h4 class="text-lg font-semibold mb-2">4.5 Yasal Uyumluluk</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>KVKK ve GDPR gerekliliklerine uyum</li>
         <li>Vergi mevzuatı yükümlülükleri (10 yıl kayıt tutma)</li>
         <li>Mahkeme kararları ve yasal süreçler</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">4. VERİLERİN PAYLAŞIMI</h3>
+      <h3 class="text-xl font-semibold mb-2">5. VERİLERİN PAYLAŞIMI</h3>
       
-      <h4 class="text-lg font-semibold mb-2">4.1 Hizmet Sağlayıcılar</h4>
+      <h4 class="text-lg font-semibold mb-2">5.1 Hizmet Sağlayıcılar</h4>
       <p class="mb-2"><strong>Supabase (Backend Altyapısı):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Veritabanı, kimlik doğrulama, dosya depolama</li>
@@ -2496,7 +2510,7 @@ export const translations = {
         <li>Gerçek kimlikler gizli tutulur</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.2 Kullanıcılar Arası Paylaşım</h4>
+      <h4 class="text-lg font-semibold mb-2">5.2 Kullanıcılar Arası Paylaşım</h4>
       <p class="mb-4"><strong>ÖNEMLİ:</strong> Kimliğiniz, e-postanız ve telefon numaranız asla diğer kullanıcılarla paylaşılmaz.</p>
       
       <p class="mb-2"><strong>Eşleşme Sonrası:</strong></p>
@@ -2506,7 +2520,7 @@ export const translations = {
         <li>Kargo için sadece teslimat adresi paylaşılır (ad-soyad ve adres)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.3 Yasal Zorunluluk</h4>
+      <h4 class="text-lg font-semibold mb-2">5.3 Yasal Zorunluluk</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Mahkeme kararı veya celp</li>
         <li>Kolluk kuvvetleri talepleri</li>
@@ -2514,9 +2528,9 @@ export const translations = {
         <li>KVKK Kurumu talepleri</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">5. VERİ GÜVENLİĞİ VE SAKLAMA</h3>
+      <h3 class="text-xl font-semibold mb-2">6. VERİ GÜVENLİĞİ VE SAKLAMA</h3>
       
-      <h4 class="text-lg font-semibold mb-2">5.1 Güvenlik Önlemleri</h4>
+      <h4 class="text-lg font-semibold mb-2">6.1 Güvenlik Önlemleri</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>SSL/TLS şifreleme (HTTPS)</li>
         <li>Şifre hash'leme (bcrypt)</li>
@@ -2527,7 +2541,7 @@ export const translations = {
         <li>Düzenli güvenlik denetimleri</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">5.2 Saklama Süreleri</h4>
+      <h4 class="text-lg font-semibold mb-2">6.2 Saklama Süreleri</h4>
       <p class="mb-2"><strong>Aktif Hesaplar:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Hesabınız aktif olduğu sürece saklanır</li>
@@ -2547,9 +2561,9 @@ export const translations = {
         <li>Audit loglar: 5 yıl</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">6. KULLANICI HAKLARI (KVKK & GDPR)</h3>
+      <h3 class="text-xl font-semibold mb-2">7. KULLANICI HAKLARI (KVKK & GDPR)</h3>
       
-      <h4 class="text-lg font-semibold mb-2">6.1 Haklarınız</h4>
+      <h4 class="text-lg font-semibold mb-2">7.1 Haklarınız</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>✅ <strong>Bilgi Talep Etme:</strong> Verilerinizin işlenip işlenmediğini öğrenme</li>
         <li>✅ <strong>Erişim Hakkı:</strong> Verilerinizin bir kopyasını alma</li>
@@ -2559,14 +2573,14 @@ export const translations = {
         <li>✅ <strong>Veri Taşınabilirliği:</strong> Verilerinizi başka bir platforma aktarma</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.2 Başvuru Yöntemi</h4>
+      <h4 class="text-lg font-semibold mb-2">7.2 Başvuru Yöntemi</h4>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>E-posta:</strong> privacy@ifoundanapple.com</li>
         <li><strong>Konu:</strong> KVKK/GDPR Başvurusu</li>
         <li><strong>Yanıt Süresi:</strong> 30 gün (en geç)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.3 Şikayet Hakkı</h4>
+      <h4 class="text-lg font-semibold mb-2">7.3 Şikayet Hakkı</h4>
       <p class="mb-2"><strong>Türkiye:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Kişisel Verileri Koruma Kurumu - https://www.kvkk.gov.tr</li>
@@ -2577,10 +2591,10 @@ export const translations = {
         <li>İlgili ülkenin Veri Koruma Otoritesi</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">7. ÇOCUKLARIN GİZLİLİĞİ</h3>
+      <h3 class="text-xl font-semibold mb-2">8. ÇOCUKLARIN GİZLİLİĞİ</h3>
       <p class="mb-4">Platform 18 yaş altı kullanıcılara yönelik değildir. 18 yaş altı kişilerden bilerek veri toplamıyoruz.</p>
 
-      <h3 class="text-xl font-semibold mb-2">8. ÇEREZLER</h3>
+      <h3 class="text-xl font-semibold mb-2">9. ÇEREZLER</h3>
       <p class="mb-2"><strong>Kullandığımız Çerezler:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Oturum yönetimi (zorunlu)</li>
@@ -2589,7 +2603,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Çerezleri tarayıcı ayarlarınızdan yönetebilirsiniz.</p>
 
-      <h3 class="text-xl font-semibold mb-2">9. ULUSLARARASI VERİ TRANSFERİ</h3>
+      <h3 class="text-xl font-semibold mb-2">10. ULUSLARARASI VERİ TRANSFERİ</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Supabase:</strong> ABD/AB veri merkezleri (GDPR uyumlu, SCC)</li>
         <li><strong>Ödeme Sağlayıcısı:</strong> Uluslararası</li>
@@ -2597,7 +2611,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Tüm transferler KVKK ve GDPR hükümlerine uygun yapılır.</p>
 
-      <h3 class="text-xl font-semibold mb-2">10. DEĞİŞİKLİKLER VE GÜNCELLEMELER</h3>
+      <h3 class="text-xl font-semibold mb-2">11. DEĞİŞİKLİKLER VE GÜNCELLEMELER</h3>
       <p class="mb-2">Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Önemli değişiklikler yapıldığında:</p>
       <ul class="list-disc pl-6 mb-4">
         <li>Web sitesinde duyuru yayınlarız</li>
@@ -2606,7 +2620,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Güncellemeler yayınlandığı tarihte yürürlüğe girer.</p>
 
-      <h3 class="text-xl font-semibold mb-2">11. İLETİŞİM</h3>
+      <h3 class="text-xl font-semibold mb-2">12. İLETİŞİM</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Genel:</strong> info@ifoundanapple.com</li>
         <li><strong>Gizlilik:</strong> privacy@ifoundanapple.com</li>
@@ -2899,9 +2913,16 @@ export const translations = {
       <p class="mb-4"><strong>Web :</strong> https://ifoundanapple.com</p>
       <p class="mb-4">Cette politique est préparée conformément à la KVKK et au RGPD.</p>
 
-      <h3 class="text-xl font-semibold mb-2">2. DONNÉES PERSONNELLES COLLECTÉES</h3>
+      <h3 class="text-xl font-semibold mb-2">2. INFORMATIONS D'HÉBERGEMENT ET DE DOMAINE</h3>
+      <p class="mb-4"><strong>Propriétaire du domaine :</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Fournisseur d'hébergement :</strong> Hetzner</p>
+      <p class="mb-4"><strong>Certificat SSL :</strong> Actif (HTTPS)</p>
+      <p class="mb-4"><strong>Vérification du domaine :</strong> Hébergé sur notre domaine propriétaire</p>
+      <p class="mb-4"><strong>IMPORTANT :</strong> Cette politique de confidentialité est hébergée sur notre domaine propriétaire, et non sur des plateformes tierces telles que Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. DONNÉES PERSONNELLES COLLECTÉES</h3>
       
-      <h4 class="text-lg font-semibold mb-2">2.1 Inscription et Authentification</h4>
+      <h4 class="text-lg font-semibold mb-2">3.1 Inscription et Authentification</h4>
       <p class="mb-2"><strong>Inscription par E-mail :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Prénom, nom de famille</li>
@@ -2917,7 +2938,7 @@ export const translations = {
         <li>Aucun besoin de créer un mot de passe</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.2 Informations sur l'Appareil</h4>
+      <h4 class="text-lg font-semibold mb-2">3.2 Informations sur l'Appareil</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Modèle d'appareil (iPhone 15 Pro, MacBook Air, etc.)</li>
         <li>Numéro de série</li>
@@ -2926,7 +2947,7 @@ export const translations = {
         <li>Document de facture/propriété (visuel - peut être supprimé)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.3 Informations de Paiement et Financières</h4>
+      <h4 class="text-lg font-semibold mb-2">3.3 Informations de Paiement et Financières</h4>
       <p class="mb-2"><strong>Transactions de Paiement :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Informations de carte de crédit/bancaire traitées par un fournisseur de paiement sécurisé (conforme PCI-DSS)</li>
@@ -2940,14 +2961,14 @@ export const translations = {
         <li>Nom du titulaire du compte</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.4 Informations de Profil et de Contact</h4>
+      <h4 class="text-lg font-semibold mb-2">3.4 Informations de Profil et de Contact</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Numéro d'identité national (optionnel, pour les transactions de haute valeur)</li>
         <li>Numéro de téléphone</li>
         <li>Adresse de livraison (pour le fret)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.5 Données Collectées Automatiquement</h4>
+      <h4 class="text-lg font-semibold mb-2">3.5 Données Collectées Automatiquement</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Adresse IP</li>
         <li>Informations sur le navigateur et l'appareil</li>
@@ -2955,9 +2976,9 @@ export const translations = {
         <li>Statistiques d'utilisation de la plateforme</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">3. OBJECTIFS D'UTILISATION DES DONNÉES</h3>
+      <h3 class="text-xl font-semibold mb-2">4. OBJECTIFS D'UTILISATION DES DONNÉES</h3>
       
-      <h4 class="text-lg font-semibold mb-2">3.1 Fourniture de Services</h4>
+      <h4 class="text-lg font-semibold mb-2">4.1 Fourniture de Services</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Correspondance des appareils perdus et trouvés (basée sur le numéro de série)</li>
         <li>Gestion des comptes utilisateurs</li>
@@ -2965,7 +2986,7 @@ export const translations = {
         <li>Envoi de notifications</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.2 Opérations de Paiement et d'Escrow</h4>
+      <h4 class="text-lg font-semibold mb-2">4.2 Opérations de Paiement et d'Escrow</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Traitement sécurisé des paiements</li>
         <li>Fonctionnement du système d'escrow</li>
@@ -2973,10 +2994,10 @@ export const translations = {
         <li>Maintien des enregistrements financiers</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.3 Recommandations Assistées par IA</h4>
+      <h4 class="text-lg font-semibold mb-2">4.3 Recommandations Assistées par IA</h4>
       <p class="mb-4">Cette fonctionnalité est optionnelle</p>
 
-      <h4 class="text-lg font-semibold mb-2">3.4 Sécurité</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Sécurité</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Prévention de la fraude</li>
         <li>Vérification d'identité</li>
@@ -2984,16 +3005,16 @@ export const translations = {
         <li>Détection des violations de sécurité</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.5 Conformité Légale</h4>
+      <h4 class="text-lg font-semibold mb-2">4.5 Conformité Légale</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Conformité aux exigences KVKK et RGPD</li>
         <li>Obligations de la législation fiscale (conservation des enregistrements pendant 10 ans)</li>
         <li>Décisions judiciaires et processus légaux</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">4. PARTAGE DES DONNÉES</h3>
+      <h3 class="text-xl font-semibold mb-2">5. PARTAGE DES DONNÉES</h3>
       
-      <h4 class="text-lg font-semibold mb-2">4.1 Fournisseurs de Services</h4>
+      <h4 class="text-lg font-semibold mb-2">5.1 Fournisseurs de Services</h4>
       <p class="mb-2"><strong>Supabase (Infrastructure Backend) :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Base de données, authentification, stockage de fichiers</li>
@@ -3026,7 +3047,7 @@ export const translations = {
         <li>Les identités réelles sont gardées confidentielles</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.2 Partage Entre Utilisateurs</h4>
+      <h4 class="text-lg font-semibold mb-2">5.2 Partage Entre Utilisateurs</h4>
       <p class="mb-4"><strong>IMPORTANT :</strong> Votre identité, e-mail et numéro de téléphone ne sont jamais partagés avec d'autres utilisateurs.</p>
       
       <p class="mb-2"><strong>Après Correspondance :</strong></p>
@@ -3036,7 +3057,7 @@ export const translations = {
         <li>Seule l'adresse de livraison est partagée pour le fret (nom-prénom et adresse)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.3 Obligation Légale</h4>
+      <h4 class="text-lg font-semibold mb-2">5.3 Obligation Légale</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Ordre du tribunal ou assignation</li>
         <li>Demandes des forces de l'ordre</li>
@@ -3044,9 +3065,9 @@ export const translations = {
         <li>Demandes de l'Institution KVKK</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">5. SÉCURITÉ ET CONSERVATION DES DONNÉES</h3>
+      <h3 class="text-xl font-semibold mb-2">6. SÉCURITÉ ET CONSERVATION DES DONNÉES</h3>
       
-      <h4 class="text-lg font-semibold mb-2">5.1 Mesures de Sécurité</h4>
+      <h4 class="text-lg font-semibold mb-2">6.1 Mesures de Sécurité</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Chiffrement SSL/TLS (HTTPS)</li>
         <li>Hachage des mots de passe (bcrypt)</li>
@@ -3057,7 +3078,7 @@ export const translations = {
         <li>Audits de sécurité réguliers</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">5.2 Périodes de Conservation</h4>
+      <h4 class="text-lg font-semibold mb-2">6.2 Périodes de Conservation</h4>
       <p class="mb-2"><strong>Comptes Actifs :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Conservés tant que votre compte est actif</li>
@@ -3077,9 +3098,9 @@ export const translations = {
         <li>Journaux d'audit : 5 ans</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">6. DROITS DES UTILISATEURS (KVKK & RGPD)</h3>
+      <h3 class="text-xl font-semibold mb-2">7. DROITS DES UTILISATEURS (KVKK & RGPD)</h3>
       
-      <h4 class="text-lg font-semibold mb-2">6.1 Vos Droits</h4>
+      <h4 class="text-lg font-semibold mb-2">7.1 Vos Droits</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>✅ <strong>Droit à l'Information :</strong> Savoir si vos données sont traitées</li>
         <li>✅ <strong>Droit d'Accès :</strong> Obtenir une copie de vos données</li>
@@ -3089,14 +3110,14 @@ export const translations = {
         <li>✅ <strong>Portabilité des Données :</strong> Transférer vos données vers une autre plateforme</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.2 Méthode de Demande</h4>
+      <h4 class="text-lg font-semibold mb-2">7.2 Méthode de Demande</h4>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>E-mail :</strong> privacy@ifoundanapple.com</li>
         <li><strong>Sujet :</strong> Demande KVKK/RGPD</li>
         <li><strong>Délai de Réponse :</strong> 30 jours (maximum)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.3 Droit de Plainte</h4>
+      <h4 class="text-lg font-semibold mb-2">7.3 Droit de Plainte</h4>
       <p class="mb-2"><strong>Turquie :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Autorité de Protection des Données Personnelles - https://www.kvkk.gov.tr</li>
@@ -3107,10 +3128,10 @@ export const translations = {
         <li>Autorité de Protection des Données du pays concerné</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">7. CONFIDENTIALITÉ DES ENFANTS</h3>
+      <h3 class="text-xl font-semibold mb-2">8. CONFIDENTIALITÉ DES ENFANTS</h3>
       <p class="mb-4">La plateforme n'est pas destinée aux utilisateurs de moins de 18 ans. Nous ne collectons pas sciemment de données auprès de personnes de moins de 18 ans.</p>
 
-      <h3 class="text-xl font-semibold mb-2">8. COOKIES</h3>
+      <h3 class="text-xl font-semibold mb-2">9. COOKIES</h3>
       <p class="mb-2"><strong>Cookies que Nous Utilisons :</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Gestion de session (obligatoire)</li>
@@ -3119,7 +3140,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Vous pouvez gérer les cookies depuis les paramètres de votre navigateur.</p>
 
-      <h3 class="text-xl font-semibold mb-2">9. TRANSFERT INTERNATIONAL DE DONNÉES</h3>
+      <h3 class="text-xl font-semibold mb-2">10. TRANSFERT INTERNATIONAL DE DONNÉES</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Supabase :</strong> Centres de données États-Unis/UE (conforme RGPD, SCC)</li>
         <li><strong>Fournisseur de Paiement :</strong> International</li>
@@ -3127,7 +3148,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Tous les transferts sont effectués conformément aux dispositions KVKK et RGPD.</p>
 
-      <h3 class="text-xl font-semibold mb-2">10. CHANGEMENTS ET MISES À JOUR</h3>
+      <h3 class="text-xl font-semibold mb-2">11. CHANGEMENTS ET MISES À JOUR</h3>
       <p class="mb-2">Nous pouvons mettre à jour cette Politique de Confidentialité de temps à autre. Lorsque des changements importants sont apportés :</p>
       <ul class="list-disc pl-6 mb-4">
         <li>Nous publions des annonces sur le site web</li>
@@ -3136,7 +3157,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Les mises à jour prennent effet à la date de leur publication.</p>
 
-      <h3 class="text-xl font-semibold mb-2">11. CONTACT</h3>
+      <h3 class="text-xl font-semibold mb-2">12. CONTACT</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Général :</strong> info@ifoundanapple.com</li>
         <li><strong>Confidentialité :</strong> privacy@ifoundanapple.com</li>
@@ -3429,9 +3450,16 @@ export const translations = {
       <p class="mb-4"><strong>ウェブ：</strong> https://ifoundanapple.com</p>
       <p class="mb-4">このポリシーは、KVKKおよびGDPRに従って作成されています。</p>
 
-      <h3 class="text-xl font-semibold mb-2">2. 収集される個人データ</h3>
+      <h3 class="text-xl font-semibold mb-2">2. ホスティングおよびドメイン情報</h3>
+      <p class="mb-4"><strong>ドメイン所有者：</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>ホスティングプロバイダー：</strong> Hetzner</p>
+      <p class="mb-4"><strong>SSL証明書：</strong> アクティブ（HTTPS）</p>
+      <p class="mb-4"><strong>ドメイン検証：</strong> 当社が所有するドメインでホスティングされています</p>
+      <p class="mb-4"><strong>重要：</strong> このプライバシーポリシーは、Google Sites、Facebook、Instagram、Twitterなどの第三者プラットフォームではなく、当社が所有するドメインでホスティングされています。</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. 収集される個人データ</h3>
       
-      <h4 class="text-lg font-semibold mb-2">2.1 登録と認証</h4>
+      <h4 class="text-lg font-semibold mb-2">3.1 登録と認証</h4>
       <p class="mb-2"><strong>メール登録：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>名前、姓</li>
@@ -3447,7 +3475,7 @@ export const translations = {
         <li>パスワードを作成する必要はありません</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.2 デバイス情報</h4>
+      <h4 class="text-lg font-semibold mb-2">3.2 デバイス情報</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>デバイスモデル（iPhone 15 Pro、MacBook Airなど）</li>
         <li>シリアル番号</li>
@@ -3456,7 +3484,7 @@ export const translations = {
         <li>請求書/所有権書類（視覚的 - 削除可能）</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.3 支払いと金融情報</h4>
+      <h4 class="text-lg font-semibold mb-2">3.3 支払いと金融情報</h4>
       <p class="mb-2"><strong>支払い取引：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>クレジット/銀行カード情報は安全な支払いプロバイダーによって処理されます（PCI-DSS準拠）</li>
@@ -3470,14 +3498,14 @@ export const translations = {
         <li>口座名義人</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.4 プロフィールと連絡先情報</h4>
+      <h4 class="text-lg font-semibold mb-2">3.4 プロフィールと連絡先情報</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>国民ID番号（オプション、高額取引用）</li>
         <li>電話番号</li>
         <li>配送先住所（貨物用）</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.5 自動収集データ</h4>
+      <h4 class="text-lg font-semibold mb-2">3.5 自動収集データ</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>IPアドレス</li>
         <li>ブラウザとデバイス情報</li>
@@ -3485,9 +3513,9 @@ export const translations = {
         <li>プラットフォーム使用統計</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">3. データの使用目的</h3>
+      <h3 class="text-xl font-semibold mb-2">4. データの使用目的</h3>
       
-      <h4 class="text-lg font-semibold mb-2">3.1 サービス提供</h4>
+      <h4 class="text-lg font-semibold mb-2">4.1 サービス提供</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>紛失・発見デバイスのマッチング（シリアル番号ベース）</li>
         <li>ユーザーアカウント管理</li>
@@ -3495,7 +3523,7 @@ export const translations = {
         <li>通知の送信</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.2 支払いとエスクロー操作</h4>
+      <h4 class="text-lg font-semibold mb-2">4.2 支払いとエスクロー操作</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>安全な支払い処理</li>
         <li>エスクローシステムの運営</li>
@@ -3503,10 +3531,10 @@ export const translations = {
         <li>金融記録の維持</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.3 AI支援推奨</h4>
+      <h4 class="text-lg font-semibold mb-2">4.3 AI支援推奨</h4>
       <p class="mb-4">この機能はオプションです</p>
 
-      <h4 class="text-lg font-semibold mb-2">3.4 セキュリティ</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 セキュリティ</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>詐欺防止</li>
         <li>身元確認</li>
@@ -3514,16 +3542,16 @@ export const translations = {
         <li>セキュリティ侵害の検出</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.5 法的コンプライアンス</h4>
+      <h4 class="text-lg font-semibold mb-2">4.5 法的コンプライアンス</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>KVKKおよびGDPR要件への準拠</li>
         <li>税務法規の義務（10年間の記録保持）</li>
         <li>裁判所の決定と法的プロセス</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">4. データの共有</h3>
+      <h3 class="text-xl font-semibold mb-2">5. データの共有</h3>
       
-      <h4 class="text-lg font-semibold mb-2">4.1 サービスプロバイダー</h4>
+      <h4 class="text-lg font-semibold mb-2">5.1 サービスプロバイダー</h4>
       <p class="mb-2"><strong>Supabase（バックエンドインフラ）：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>データベース、認証、ファイルストレージ</li>
@@ -3556,7 +3584,7 @@ export const translations = {
         <li>実際の身元は機密保持されます</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.2 ユーザー間共有</h4>
+      <h4 class="text-lg font-semibold mb-2">5.2 ユーザー間共有</h4>
       <p class="mb-4"><strong>重要：</strong> あなたの身元、メール、電話番号は他のユーザーと共有されることはありません。</p>
       
       <p class="mb-2"><strong>マッチング後：</strong></p>
@@ -3566,7 +3594,7 @@ export const translations = {
         <li>貨物には配送先住所のみが共有されます（名前と住所）</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.3 法的義務</h4>
+      <h4 class="text-lg font-semibold mb-2">5.3 法的義務</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>裁判所命令または召喚状</li>
         <li>法執行機関の要求</li>
@@ -3574,9 +3602,9 @@ export const translations = {
         <li>KVKK機関の要求</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">5. データセキュリティと保存</h3>
+      <h3 class="text-xl font-semibold mb-2">6. データセキュリティと保存</h3>
       
-      <h4 class="text-lg font-semibold mb-2">5.1 セキュリティ対策</h4>
+      <h4 class="text-lg font-semibold mb-2">6.1 セキュリティ対策</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>SSL/TLS暗号化（HTTPS）</li>
         <li>パスワードハッシュ化（bcrypt）</li>
@@ -3587,7 +3615,7 @@ export const translations = {
         <li>定期的なセキュリティ監査</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">5.2 保存期間</h4>
+      <h4 class="text-lg font-semibold mb-2">6.2 保存期間</h4>
       <p class="mb-2"><strong>アクティブアカウント：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>アカウントがアクティブな間は保存されます</li>
@@ -3607,9 +3635,9 @@ export const translations = {
         <li>監査ログ：5年</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">6. ユーザーの権利（KVKK & GDPR）</h3>
+      <h3 class="text-xl font-semibold mb-2">7. ユーザーの権利（KVKK & GDPR）</h3>
       
-      <h4 class="text-lg font-semibold mb-2">6.1 あなたの権利</h4>
+      <h4 class="text-lg font-semibold mb-2">7.1 あなたの権利</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>✅ <strong>情報権：</strong> あなたのデータが処理されているかどうかを知る</li>
         <li>✅ <strong>アクセス権：</strong> あなたのデータのコピーを取得する</li>
@@ -3619,14 +3647,14 @@ export const translations = {
         <li>✅ <strong>データポータビリティ：</strong> あなたのデータを別のプラットフォームに転送する</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.2 申請方法</h4>
+      <h4 class="text-lg font-semibold mb-2">7.2 申請方法</h4>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>メール：</strong> privacy@ifoundanapple.com</li>
         <li><strong>件名：</strong> KVKK/GDPR申請</li>
         <li><strong>回答時間：</strong> 30日（最大）</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.3 苦情権</h4>
+      <h4 class="text-lg font-semibold mb-2">7.3 苦情権</h4>
       <p class="mb-2"><strong>トルコ：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>個人データ保護機関 - https://www.kvkk.gov.tr</li>
@@ -3637,10 +3665,10 @@ export const translations = {
         <li>関連国のデータ保護機関</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">7. 子供のプライバシー</h3>
+      <h3 class="text-xl font-semibold mb-2">8. 子供のプライバシー</h3>
       <p class="mb-4">このプラットフォームは18歳未満のユーザー向けではありません。18歳未満の人から意図的にデータを収集することはありません。</p>
 
-      <h3 class="text-xl font-semibold mb-2">8. クッキー</h3>
+      <h3 class="text-xl font-semibold mb-2">9. クッキー</h3>
       <p class="mb-2"><strong>使用するクッキー：</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>セッション管理（必須）</li>
@@ -3649,7 +3677,7 @@ export const translations = {
       </ul>
       <p class="mb-4">ブラウザの設定からクッキーを管理できます。</p>
 
-      <h3 class="text-xl font-semibold mb-2">9. 国際データ転送</h3>
+      <h3 class="text-xl font-semibold mb-2">10. 国際データ転送</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Supabase：</strong> 米国/EUデータセンター（GDPR準拠、SCC）</li>
         <li><strong>支払いプロバイダー：</strong> 国際</li>
@@ -3657,7 +3685,7 @@ export const translations = {
       </ul>
       <p class="mb-4">すべての転送はKVKKおよびGDPRの規定に従って行われます。</p>
 
-      <h3 class="text-xl font-semibold mb-2">10. 変更と更新</h3>
+      <h3 class="text-xl font-semibold mb-2">11. 変更と更新</h3>
       <p class="mb-2">このプライバシーポリシーを随時更新する場合があります。重要な変更が行われる場合：</p>
       <ul class="list-disc pl-6 mb-4">
         <li>ウェブサイトでお知らせを公開します</li>
@@ -3666,7 +3694,7 @@ export const translations = {
       </ul>
       <p class="mb-4">更新は公開日から有効になります。</p>
 
-      <h3 class="text-xl font-semibold mb-2">11. お問い合わせ</h3>
+      <h3 class="text-xl font-semibold mb-2">12. お問い合わせ</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>一般：</strong> info@ifoundanapple.com</li>
         <li><strong>プライバシー：</strong> privacy@ifoundanapple.com</li>
@@ -3959,9 +3987,16 @@ export const translations = {
       <p class="mb-4"><strong>Web:</strong> https://ifoundanapple.com</p>
       <p class="mb-4">Esta política está preparada de acuerdo con KVKK y GDPR.</p>
 
-      <h3 class="text-xl font-semibold mb-2">2. DATOS PERSONALES RECOPILADOS</h3>
+      <h3 class="text-xl font-semibold mb-2">2. INFORMACIÓN DE HOSTING Y DOMINIO</h3>
+      <p class="mb-4"><strong>Propietario del Dominio:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Proveedor de Hosting:</strong> Hetzner</p>
+      <p class="mb-4"><strong>Certificado SSL:</strong> Activo (HTTPS)</p>
+      <p class="mb-4"><strong>Verificación del Dominio:</strong> Alojado en nuestro dominio propio</p>
+      <p class="mb-4"><strong>IMPORTANTE:</strong> Esta política de privacidad está alojada en nuestro dominio propio, no en plataformas de terceros como Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. DATOS PERSONALES RECOPILADOS</h3>
       
-      <h4 class="text-lg font-semibold mb-2">2.1 Registro y Autenticación</h4>
+      <h4 class="text-lg font-semibold mb-2">3.1 Registro y Autenticación</h4>
       <p class="mb-2"><strong>Registro por Correo Electrónico:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Nombre, apellido</li>
@@ -3977,7 +4012,7 @@ export const translations = {
         <li>No es necesario crear una contraseña</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.2 Información del Dispositivo</h4>
+      <h4 class="text-lg font-semibold mb-2">3.2 Información del Dispositivo</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Modelo del dispositivo (iPhone 15 Pro, MacBook Air, etc.)</li>
         <li>Número de serie</li>
@@ -3986,7 +4021,7 @@ export const translations = {
         <li>Documento de factura/propiedad (visual - puede ser eliminado)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.3 Información de Pago y Financiera</h4>
+      <h4 class="text-lg font-semibold mb-2">3.3 Información de Pago y Financiera</h4>
       <p class="mb-2"><strong>Transacciones de Pago:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Información de tarjeta de crédito/bancaria procesada por proveedor de pago seguro (cumple PCI-DSS)</li>
@@ -4000,14 +4035,14 @@ export const translations = {
         <li>Nombre del titular de la cuenta</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.4 Información de Perfil y Contacto</h4>
+      <h4 class="text-lg font-semibold mb-2">3.4 Información de Perfil y Contacto</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Número de identidad nacional (opcional, para transacciones de alto valor)</li>
         <li>Número de teléfono</li>
         <li>Dirección de entrega (para carga)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">2.5 Datos Recopilados Automáticamente</h4>
+      <h4 class="text-lg font-semibold mb-2">3.5 Datos Recopilados Automáticamente</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Dirección IP</li>
         <li>Información del navegador y dispositivo</li>
@@ -4015,9 +4050,9 @@ export const translations = {
         <li>Estadísticas de uso de la plataforma</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">3. PROPÓSITOS DE USO DE DATOS</h3>
+      <h3 class="text-xl font-semibold mb-2">4. PROPÓSITOS DE USO DE DATOS</h3>
       
-      <h4 class="text-lg font-semibold mb-2">3.1 Prestación de Servicios</h4>
+      <h4 class="text-lg font-semibold mb-2">4.1 Prestación de Servicios</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Emparejamiento de dispositivos perdidos y encontrados (basado en número de serie)</li>
         <li>Gestión de cuentas de usuario</li>
@@ -4025,7 +4060,7 @@ export const translations = {
         <li>Envío de notificaciones</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.2 Operaciones de Pago y Escrow</h4>
+      <h4 class="text-lg font-semibold mb-2">4.2 Operaciones de Pago y Escrow</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Procesamiento seguro de pagos</li>
         <li>Operación del sistema de escrow</li>
@@ -4033,10 +4068,10 @@ export const translations = {
         <li>Mantenimiento de registros financieros</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.3 Recomendaciones Asistidas por IA</h4>
+      <h4 class="text-lg font-semibold mb-2">4.3 Recomendaciones Asistidas por IA</h4>
       <p class="mb-4">Esta característica es opcional</p>
 
-      <h4 class="text-lg font-semibold mb-2">3.4 Seguridad</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Seguridad</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Prevención de fraude</li>
         <li>Verificación de identidad</li>
@@ -4044,16 +4079,16 @@ export const translations = {
         <li>Detección de violaciones de seguridad</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">3.5 Cumplimiento Legal</h4>
+      <h4 class="text-lg font-semibold mb-2">4.5 Cumplimiento Legal</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Cumplimiento de requisitos KVKK y GDPR</li>
         <li>Obligaciones de legislación fiscal (mantenimiento de registros por 10 años)</li>
         <li>Decisiones judiciales y procesos legales</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">4. COMPARTIR DATOS</h3>
+      <h3 class="text-xl font-semibold mb-2">5. COMPARTIR DATOS</h3>
       
-      <h4 class="text-lg font-semibold mb-2">4.1 Proveedores de Servicios</h4>
+      <h4 class="text-lg font-semibold mb-2">5.1 Proveedores de Servicios</h4>
       <p class="mb-2"><strong>Supabase (Infraestructura Backend):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Base de datos, autenticación, almacenamiento de archivos</li>
@@ -4086,7 +4121,7 @@ export const translations = {
         <li>Las identidades reales se mantienen confidenciales</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.2 Compartir Entre Usuarios</h4>
+      <h4 class="text-lg font-semibold mb-2">5.2 Compartir Entre Usuarios</h4>
       <p class="mb-4"><strong>IMPORTANTE:</strong> Su identidad, correo electrónico y número de teléfono nunca se comparten con otros usuarios.</p>
       
       <p class="mb-2"><strong>Después del Emparejamiento:</strong></p>
@@ -4096,7 +4131,7 @@ export const translations = {
         <li>Solo se comparte la dirección de entrega para carga (nombre-apellido y dirección)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.3 Obligación Legal</h4>
+      <h4 class="text-lg font-semibold mb-2">5.3 Obligación Legal</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Orden judicial o citación</li>
         <li>Solicitudes de fuerzas del orden</li>
@@ -4104,9 +4139,9 @@ export const translations = {
         <li>Solicitudes de la Institución KVKK</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">5. SEGURIDAD Y RETENCIÓN DE DATOS</h3>
+      <h3 class="text-xl font-semibold mb-2">6. SEGURIDAD Y RETENCIÓN DE DATOS</h3>
       
-      <h4 class="text-lg font-semibold mb-2">5.1 Medidas de Seguridad</h4>
+      <h4 class="text-lg font-semibold mb-2">6.1 Medidas de Seguridad</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Cifrado SSL/TLS (HTTPS)</li>
         <li>Hash de contraseñas (bcrypt)</li>
@@ -4117,7 +4152,7 @@ export const translations = {
         <li>Auditorías de seguridad regulares</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">5.2 Períodos de Retención</h4>
+      <h4 class="text-lg font-semibold mb-2">6.2 Períodos de Retención</h4>
       <p class="mb-2"><strong>Cuentas Activas:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Se mantienen mientras su cuenta esté activa</li>
@@ -4137,9 +4172,9 @@ export const translations = {
         <li>Registros de auditoría: 5 años</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">6. DERECHOS DEL USUARIO (KVKK & GDPR)</h3>
+      <h3 class="text-xl font-semibold mb-2">7. DERECHOS DEL USUARIO (KVKK & GDPR)</h3>
       
-      <h4 class="text-lg font-semibold mb-2">6.1 Sus Derechos</h4>
+      <h4 class="text-lg font-semibold mb-2">7.1 Sus Derechos</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>✅ <strong>Derecho a la Información:</strong> Saber si sus datos están siendo procesados</li>
         <li>✅ <strong>Derecho de Acceso:</strong> Obtener una copia de sus datos</li>
@@ -4149,14 +4184,14 @@ export const translations = {
         <li>✅ <strong>Portabilidad de Datos:</strong> Transferir sus datos a otra plataforma</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.2 Método de Solicitud</h4>
+      <h4 class="text-lg font-semibold mb-2">7.2 Método de Solicitud</h4>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Correo electrónico:</strong> privacy@ifoundanapple.com</li>
         <li><strong>Asunto:</strong> Solicitud KVKK/GDPR</li>
         <li><strong>Tiempo de respuesta:</strong> 30 días (máximo)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">6.3 Derecho a Quejarse</h4>
+      <h4 class="text-lg font-semibold mb-2">7.3 Derecho a Quejarse</h4>
       <p class="mb-2"><strong>Turquía:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Autoridad de Protección de Datos Personales - https://www.kvkk.gov.tr</li>
@@ -4167,10 +4202,10 @@ export const translations = {
         <li>Autoridad de Protección de Datos del país relevante</li>
       </ul>
 
-      <h3 class="text-xl font-semibold mb-2">7. PRIVACIDAD DE NIÑOS</h3>
+      <h3 class="text-xl font-semibold mb-2">8. PRIVACIDAD DE NIÑOS</h3>
       <p class="mb-4">La plataforma no está dirigida a usuarios menores de 18 años. No recopilamos datos de personas menores de 18 años a sabiendas.</p>
 
-      <h3 class="text-xl font-semibold mb-2">8. COOKIES</h3>
+      <h3 class="text-xl font-semibold mb-2">9. COOKIES</h3>
       <p class="mb-2"><strong>Cookies que Utilizamos:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Gestión de sesión (obligatorio)</li>
@@ -4179,7 +4214,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Puede gestionar las cookies desde la configuración de su navegador.</p>
 
-      <h3 class="text-xl font-semibold mb-2">9. TRANSFERENCIA INTERNACIONAL DE DATOS</h3>
+      <h3 class="text-xl font-semibold mb-2">10. TRANSFERENCIA INTERNACIONAL DE DATOS</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>Supabase:</strong> Centros de datos EE.UU./UE (cumple GDPR, SCC)</li>
         <li><strong>Proveedor de Pago:</strong> Internacional</li>
@@ -4187,7 +4222,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Todas las transferencias se realizan de acuerdo con las disposiciones KVKK y GDPR.</p>
 
-      <h3 class="text-xl font-semibold mb-2">10. CAMBIOS Y ACTUALIZACIONES</h3>
+      <h3 class="text-xl font-semibold mb-2">11. CAMBIOS Y ACTUALIZACIONES</h3>
       <p class="mb-2">Podemos actualizar esta Política de Privacidad de vez en cuando. Cuando se realicen cambios importantes:</p>
       <ul class="list-disc pl-6 mb-4">
         <li>Publicamos anuncios en el sitio web</li>
@@ -4196,7 +4231,7 @@ export const translations = {
       </ul>
       <p class="mb-4">Las actualizaciones entran en vigor en la fecha de su publicación.</p>
 
-      <h3 class="text-xl font-semibold mb-2">11. CONTACTO</h3>
+      <h3 class="text-xl font-semibold mb-2">12. CONTACTO</h3>
       <ul class="list-disc pl-6 mb-4">
         <li><strong>General:</strong> info@ifoundanapple.com</li>
         <li><strong>Privacidad:</strong> privacy@ifoundanapple.com</li>

@@ -4,6 +4,22 @@ Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar. Lütfen
 
 ---
 
+## TAM SÜREÇ ADIMLARI
+
+1.  Cihaz kaybeden kayıt yapıyor. 
+2.  Cihazı bulan kayıt yapıyor
+3.  Cihaz eşleşiyor
+4.  Cihazı kaybeden ödemesini yapıyor.
+5.  Ödeme alınıp sistemnde bekletiliyor.
+6.  Ödeme alındıktan sonra kargo firması ile teslim-takip numarası üretiliyor. 
+7.  Cihazı bulan kargo firmasına teslim-takip numarası ile cihazı teslim ediyor. (kargo firmasının ekranında kimlik bilgileri gizli)
+8.  Kargo firması cihazı sahibine teslim ediliyor
+9.  Cihazın sahibi cihaz eline geçince onaylıyor
+10. Sistemde bekletilen para para serbest bırakılarak ödeme altyapıcının işlem ücreti + kargo firması ücreti + bulan kişinin hediye Ücreti + iFoundAnApple servis ücreti ödeniyor. 
+11. İşlem tamamlanıyor.
+
+
+
 ## 🔴 CİHAZ SAHİBİ (DEVICE OWNER) - KAYIP CİHAZ SÜRECİ
 
 ### **Adım 1: Kayıt ve Giriş**

@@ -19,6 +19,8 @@
 
 iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri güvenli ve anonim bir şekilde bir araya getiren modern bir web platformudur. Platform, cihazların seri numaraları üzerinden otomatik eşleştirme yapar ve ödül sürecini güvenli bir emanet (escrow) sistemi ile yönetir.
 
+Bu repository' nin sadece frontend olduğu unutulmamalıdır. Aşağıdaki özellikler bütün projeyi kapsamaktadır. 
+
 ### ✨ Temel Özellikler
 - 🔐 **Güvenli Kimlik Doğrulama**: Supabase Auth ile güvenli giriş/kayıt sistemi
 - 🎯 **Otomatik Eşleştirme**: Cihaz modeli ve seri numarasına göre akıllı eşleştirme
