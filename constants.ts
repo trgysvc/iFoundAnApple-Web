@@ -1074,16 +1074,22 @@ export const translations = {
       <ul class="list-disc pl-6 mb-4">
         <li>First name, last name</li>
         <li>Email address</li>
-        <li>Password (stored encrypted)</li>
+        <li>Password (stored encrypted with bcrypt)</li>
         <li>Date of birth</li>
       </ul>
       
       <p class="mb-2"><strong>OAuth Login (Google/Apple):</strong></p>
+      <p class="mb-2">When you sign in with Google or Apple, we collect the following user data:</p>
       <ul class="list-disc pl-6 mb-4">
-        <li>Basic profile information from OAuth provider</li>
-        <li>Name, surname, email</li>
+        <li><strong>Google User Data:</strong> Name, Email, Profile Picture (optional)</li>
+        <li><strong>Purpose:</strong> Account creation and authentication ONLY</li>
+        <li><strong>Data Protection:</strong> AES-256-GCM encryption at rest</li>
+        <li><strong>Data Storage:</strong> Encrypted in our secure database (Supabase)</li>
+        <li><strong>Data Sharing:</strong> Only with service providers for platform functionality (see Section 5.1)</li>
+        <li><strong>Data Retention:</strong> Active account lifetime, deleted within 30 days after account deletion</li>
         <li>No need to create a password</li>
       </ul>
+      <p class="mb-4"><strong>IMPORTANT:</strong> We use Google user data ONLY for providing platform functionality. We DO NOT use it for advertising, selling to third parties, or any other purpose.</p>
 
       <h4 class="text-lg font-semibold mb-2">3.2 Device Information</h4>
       <ul class="list-disc pl-6 mb-4">
@@ -1142,9 +1148,31 @@ export const translations = {
       </ul>
 
       <h4 class="text-lg font-semibold mb-2">4.3 AI-Powered Recommendations</h4>
-      <p class="mb-4">This feature is optional</p>
+      <p class="mb-4">This feature is optional. We use device model information only for AI recommendations. Personal identity data is never shared.</p>
 
-      <h4 class="text-lg font-semibold mb-2">4.4 Security</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Data Usage Limitations</h4>
+      <p class="mb-2"><strong>Google User Data and Personal Data Usage:</strong></p>
+      <p class="mb-2">We use your Google user data and personal information ONLY for:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Providing platform functionality (authentication, account management)</li>
+        <li>✅ Processing transactions and payments</li>
+        <li>✅ Organizing device delivery</li>
+        <li>✅ Sending important service notifications</li>
+        <li>✅ Improving user experience</li>
+        <li>✅ Security and fraud prevention</li>
+      </ul>
+      <p class="mb-2"><strong>We DO NOT use your data for:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Targeted advertising or marketing</li>
+        <li>❌ Selling to data brokers or information resellers</li>
+        <li>❌ Determining credit-worthiness or lending purposes</li>
+        <li>❌ User advertisements or personalized advertising</li>
+        <li>❌ Training AI models unrelated to our service</li>
+        <li>❌ Creating databases for other purposes</li>
+        <li>❌ Any other purpose beyond providing or improving platform functionality</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.5 Security</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Fraud prevention</li>
         <li>Identity verification</li>
@@ -1152,7 +1180,7 @@ export const translations = {
         <li>Security breach detection</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.5 Legal Compliance</h4>
+      <h4 class="text-lg font-semibold mb-2">4.6 Legal Compliance</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Compliance with KVKK and GDPR requirements</li>
         <li>Tax legislation obligations (10-year record keeping)</li>
@@ -1167,6 +1195,7 @@ export const translations = {
         <li>Database, authentication, file storage</li>
         <li>SOC 2 Type II, GDPR compliant</li>
         <li>Data location: USA/EU</li>
+        <li><strong>Google User Data Shared:</strong> Name, Email (encrypted)</li>
       </ul>
       
       <p class="mb-2"><strong>Payment Provider:</strong></p>
@@ -1174,16 +1203,19 @@ export const translations = {
         <li>Payment processing, 3D Secure, escrow</li>
         <li>PCI-DSS Level 1 certified</li>
         <li>Turkey-based</li>
+        <li><strong>Google User Data Shared:</strong> Email (for transaction receipts only)</li>
       </ul>
       
       <p class="mb-2"><strong>Google/Apple (OAuth Authentication):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Third-party login (optional)</li>
+        <li>Used for authentication only</li>
       </ul>
       
       <p class="mb-2"><strong>Google Gemini (AI Recommendations):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Only device model information is shared</li>
+        <li>No Google user data (name, email) is shared</li>
         <li>No personal identity information is shared</li>
       </ul>
       
@@ -1191,10 +1223,10 @@ export const translations = {
       <ul class="list-disc pl-6 mb-4">
         <li>Delivery address and phone</li>
         <li>Anonymous sender/recipient codes (FND-XXX, OWN-XXX)</li>
-        <li>Real identities are kept confidential</li>
+        <li>Real identities (name, email) are kept confidential</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.2 Inter-User Sharing</h4>
+      <h4 class="text-lg font-semibold mb-2">5.2 Inter-User Sharing</h4>
       <p class="mb-4"><strong>IMPORTANT:</strong> Your identity, email, and phone number are never shared with other users.</p>
       
       <p class="mb-2"><strong>After Matching:</strong></p>
@@ -1204,7 +1236,7 @@ export const translations = {
         <li>Only delivery address is shared for cargo (name-surname and address)</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.3 Legal Obligation</h4>
+      <h4 class="text-lg font-semibold mb-2">5.3 Legal Obligation</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Court order or subpoena</li>
         <li>Law enforcement requests</li>
@@ -1216,16 +1248,35 @@ export const translations = {
       
       <h4 class="text-lg font-semibold mb-2">6.1 Security Measures</h4>
       <ul class="list-disc pl-6 mb-4">
-        <li>SSL/TLS encryption (HTTPS)</li>
+        <li>SSL/TLS encryption (HTTPS) - TLS 1.3</li>
         <li>Password hashing (bcrypt)</li>
-        <li>Database encryption</li>
+        <li><strong>Database encryption at rest (AES-256-GCM)</strong></li>
+        <li><strong>Application-level encryption for sensitive data:</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>Turkish National ID (TC Kimlik No)</li>
+          <li>IBAN numbers</li>
+          <li>Phone numbers</li>
+          <li>Physical addresses</li>
+          <li>Google user data (name, email)</li>
+        </ul>
         <li>Row Level Security (RLS) policies</li>
+        <li>OAuth 2.0 secure authentication tokens</li>
         <li>3D Secure payment verification</li>
         <li>Two-factor authentication (2FA) support</li>
-        <li>Regular security audits</li>
+        <li>Regular security audits and vulnerability assessments</li>
+        <li>Access control logs and monitoring</li>
       </ul>
 
       <h4 class="text-lg font-semibold mb-2">6.2 Retention Periods</h4>
+      
+      <p class="mb-2"><strong>Google User Data Retention:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Active accounts:</strong> Retained while your account is active</li>
+        <li><strong>Deleted accounts:</strong> Google user data (name, email) removed within 30 days</li>
+        <li><strong>Financial data:</strong> 10 years (legal requirement - Tax Law)</li>
+        <li><strong>You can request deletion:</strong> Email us at privacy@ifoundanapple.com</li>
+      </ul>
+      
       <p class="mb-2"><strong>Active Accounts:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Retained as long as your account is active</li>
@@ -2395,11 +2446,17 @@ export const translations = {
       </ul>
       
       <p class="mb-2"><strong>OAuth ile Giriş (Google/Apple):</strong></p>
+      <p class="mb-2">Google veya Apple ile giriş yaptığınızda, aşağıdaki kullanıcı verilerini topluyoruz:</p>
       <ul class="list-disc pl-6 mb-4">
-        <li>OAuth sağlayıcısından alınan temel profil bilgileri</li>
-        <li>Ad, soyad, e-posta</li>
+        <li><strong>Google Kullanıcı Verileri:</strong> Ad, E-posta, Profil Resmi (isteğe bağlı)</li>
+        <li><strong>Amaç:</strong> Sadece hesap oluşturma ve kimlik doğrulama</li>
+        <li><strong>Veri Koruması:</strong> AES-256-GCM şifreleme</li>
+        <li><strong>Veri Saklama:</strong> Güvenli veritabanımızda şifreli (Supabase)</li>
+        <li><strong>Veri Paylaşımı:</strong> Sadece platform işlevselliği için hizmet sağlayıcılarla (Bölüm 5.1'e bakın)</li>
+        <li><strong>Veri Saklama Süresi:</strong> Aktif hesap süresi boyunca, hesap silindikten 30 gün sonra silinir</li>
         <li>Şifre oluşturmanıza gerek yoktur</li>
       </ul>
+      <p class="mb-4"><strong>ÖNEMLİ:</strong> Google kullanıcı verilerinizi SADECE platform işlevselliğini sağlamak için kullanırız. Reklam, üçüncü taraflara satış veya başka amaçlar için kullanmayız.</p>
 
       <h4 class="text-lg font-semibold mb-2">3.2 Cihaz Bilgileri</h4>
       <ul class="list-disc pl-6 mb-4">
@@ -2458,9 +2515,31 @@ export const translations = {
       </ul>
 
       <h4 class="text-lg font-semibold mb-2">4.3 AI Destekli Öneriler</h4>
-      <p class="mb-4">Bu özellik isteğe bağlıdır</p>
+      <p class="mb-4">Bu özellik isteğe bağlıdır. AI önerileri için yalnızca cihaz modeli bilgisi kullanılır. Kişisel kimlik verileri paylaşılmaz.</p>
 
-      <h4 class="text-lg font-semibold mb-2">4.4 Güvenlik</h4>
+      <h4 class="text-lg font-semibold mb-2">4.4 Veri Kullanım Kısıtlamaları</h4>
+      <p class="mb-2"><strong>Google Kullanıcı Verileri ve Kişisel Veri Kullanımı:</strong></p>
+      <p class="mb-2">Verilerinizi SADECE şu amaçlarla kullanırız:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Platform işlevselliğini sağlama (kimlik doğrulama, hesap yönetimi)</li>
+        <li>✅ İşlemleri ve ödemeleri işleme</li>
+        <li>✅ Cihaz teslimatını organize etme</li>
+        <li>✅ Önemli hizmet bildirimleri gönderme</li>
+        <li>✅ Kullanıcı deneyimini iyileştirme</li>
+        <li>✅ Güvenlik ve dolandırıcılık önleme</li>
+      </ul>
+      <p class="mb-2"><strong>Verilerinizi ŞUNLAR İÇİN KULLANMAYIZ:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Hedefli reklam veya pazarlama</li>
+        <li>❌ Veri broker'larına veya bilgi satıcılarına satış</li>
+        <li>❌ Kredi uygunluğu belirleme veya kredi amaçları</li>
+        <li>❌ Kullanıcı reklamları veya kişiselleştirilmiş reklam</li>
+        <li>❌ Hizmetimizle ilgisiz AI modeli eğitimi</li>
+        <li>❌ Diğer amaçlar için veritabanı oluşturma</li>
+        <li>❌ Platform işlevselliğini sağlama veya iyileştirme dışındaki herhangi bir amaç</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.5 Güvenlik</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>Dolandırıcılık önleme</li>
         <li>Kimlik doğrulama</li>
@@ -2468,7 +2547,7 @@ export const translations = {
         <li>Güvenlik ihlali tespiti</li>
       </ul>
 
-      <h4 class="text-lg font-semibold mb-2">4.5 Yasal Uyumluluk</h4>
+      <h4 class="text-lg font-semibold mb-2">4.6 Yasal Uyumluluk</h4>
       <ul class="list-disc pl-6 mb-4">
         <li>KVKK ve GDPR gerekliliklerine uyum</li>
         <li>Vergi mevzuatı yükümlülükleri (10 yıl kayıt tutma)</li>
@@ -2483,6 +2562,7 @@ export const translations = {
         <li>Veritabanı, kimlik doğrulama, dosya depolama</li>
         <li>SOC 2 Type II, GDPR uyumlu</li>
         <li>Veri konumu: ABD/AB</li>
+        <li><strong>Paylaşılan Google Verileri:</strong> Ad, E-posta (şifreli)</li>
       </ul>
       
       <p class="mb-2"><strong>Ödeme Sağlayıcısı:</strong></p>
@@ -2490,16 +2570,19 @@ export const translations = {
         <li>Ödeme işleme, 3D Secure, escrow</li>
         <li>PCI-DSS Level 1 sertifikalı</li>
         <li>Türkiye merkezli</li>
+        <li><strong>Paylaşılan Google Verileri:</strong> E-posta (sadece işlem makbuzları için)</li>
       </ul>
       
       <p class="mb-2"><strong>Google/Apple (OAuth Kimlik Doğrulama):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Üçüncü taraf giriş (isteğe bağlı)</li>
+        <li>Sadece kimlik doğrulama için kullanılır</li>
       </ul>
       
       <p class="mb-2"><strong>Google Gemini (AI Önerileri):</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Sadece cihaz modeli bilgisi paylaşılır</li>
+        <li>Google kullanıcı verileri (ad, e-posta) paylaşılmaz</li>
         <li>Kişisel kimlik bilgisi paylaşılmaz</li>
       </ul>
       
@@ -2507,7 +2590,7 @@ export const translations = {
       <ul class="list-disc pl-6 mb-4">
         <li>Teslimat adresi ve telefon</li>
         <li>Anonim gönderici/alıcı kodları (FND-XXX, OWN-XXX)</li>
-        <li>Gerçek kimlikler gizli tutulur</li>
+        <li>Gerçek kimlikler (ad, e-posta) gizli tutulur</li>
       </ul>
 
       <h4 class="text-lg font-semibold mb-2">5.2 Kullanıcılar Arası Paylaşım</h4>
@@ -2532,16 +2615,35 @@ export const translations = {
       
       <h4 class="text-lg font-semibold mb-2">6.1 Güvenlik Önlemleri</h4>
       <ul class="list-disc pl-6 mb-4">
-        <li>SSL/TLS şifreleme (HTTPS)</li>
+        <li>SSL/TLS şifreleme (HTTPS) - TLS 1.3</li>
         <li>Şifre hash'leme (bcrypt)</li>
-        <li>Veritabanı şifreleme</li>
+        <li><strong>Veritabanı şifreleme (AES-256-GCM)</strong></li>
+        <li><strong>Uygulama seviyesi hassas veri şifrelemesi:</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>TC Kimlik Numarası</li>
+          <li>IBAN numaraları</li>
+          <li>Telefon numaraları</li>
+          <li>Fiziksel adresler</li>
+          <li>Google kullanıcı verileri (ad, e-posta)</li>
+        </ul>
         <li>Row Level Security (RLS) politikaları</li>
+        <li>OAuth 2.0 güvenli kimlik doğrulama token'ları</li>
         <li>3D Secure ödeme doğrulama</li>
         <li>İki faktörlü kimlik doğrulama (2FA) desteği</li>
-        <li>Düzenli güvenlik denetimleri</li>
+        <li>Düzenli güvenlik denetimleri ve güvenlik açığı değerlendirmeleri</li>
+        <li>Erişim kontrol logları ve izleme</li>
       </ul>
 
       <h4 class="text-lg font-semibold mb-2">6.2 Saklama Süreleri</h4>
+      
+      <p class="mb-2"><strong>Google Kullanıcı Verileri Saklama:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Aktif hesaplar:</strong> Hesabınız aktif olduğu sürece saklanır</li>
+        <li><strong>Silinen hesaplar:</strong> Google kullanıcı verileri (ad, e-posta) 30 gün içinde kaldırılır</li>
+        <li><strong>Mali veriler:</strong> 10 yıl (yasal gereklilik - Vergi Yasası)</li>
+        <li><strong>Silme talebi:</strong> Bizimle privacy@ifoundanapple.com adresinden iletişime geçebilirsiniz</li>
+      </ul>
+      
       <p class="mb-2"><strong>Aktif Hesaplar:</strong></p>
       <ul class="list-disc pl-6 mb-4">
         <li>Hesabınız aktif olduğu sürece saklanır</li>
