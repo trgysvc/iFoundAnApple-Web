@@ -22,23 +22,23 @@ Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi
 
 ```typescript
 export enum DeviceStatus {
-  LOST = "lost",                    // Cihaz sahibi kayıp bildirimi
-  REPORTED = "reported",            // Bulan kişi buldu bildirimi  
-  MATCHED = "matched",              // Cihaz eşleşiyor
-  PAYMENT_PENDING = "payment_pending", // Cihazı kaybeden ödemesini yapıyor
+  LOST = "lost",            // Cihaz sahibi kayıp bildirimi
+  REPORTED = "reported",    // Bulan kişi buldu bildirimi  
+  MATCHED = "matched",      // Cihaz eşleşiyor
+  PAYMENT_PENDING = "payment_pending",   // Cihazı kaybeden ödemesini yapıyor
   PAYMENT_COMPLETED = "payment_completed", // Ödeme emanet sisteminde bekletiliyor
   CARGO_SHIPPED = "cargo_shipped",   // Cihazı bulan kargo firmasına kod ile teslim ediyor
   DELIVERED = "delivered",           // Kargo firması cihazı sahibine teslim ediyor
   CONFIRMED = "confirmed",           // Cihazın sahibi cihaz eline geçince onaylıyor
   COMPLETED = "completed",           // İşlem tamamlanıyor
-  DISPUTED = "disputed",	     // İptal-iade bölümü
+  DISPUTED = "disputed",	           // İptal-iade bölümü
    // --- Yeni Eklenen İstisnai Durumlar ---
   CANCELLED = "cancelled",       // İşlem, kargoya verilmeden taraflardan biri veya sistem tarafından iptal edildi
   RETURNED = "returned",         // Cihaz, alıcıya teslim edilemediği için göndericiye iade sürecinde/edildi
   FAILED_DELIVERY = "failed_delivery" // Kargo firması teslimatı denedi ancak başarısız oldu (adres yanlış, alıcı yok vb.)
 }
 ```
-## 📦 KARGO STATUS ENUM ##
+## 📦 **KARGO STATUS ENUM**
 
 export enum CargoStatus {
   PENDING = "pending",          // Kargo kodu üretildi, bulan kişinin kargoya teslim etmesi bekleniyor
@@ -60,7 +60,7 @@ devices - Cihaz kayıtları (LOST/FOUND, DeviceStatus durumunu içerir)
 payments - Ödeme işlemleri
 escrow_accounts - Escrow hesapları
 financial_transactions - Mali işlemler
-<span style="color:blue">shipments</span> - <span style="color:blue">Kargo gönderi kayıtları. Bizim ürettiğimiz teslim kodunu, kargo firmasının takip numarasını, kargo şirketini ve CargoStatus ENUM'u ile kargonun detaylı durumunu içerir.</span>
+cargo_shipments  -  Kargo gönderi kayıtları. Bizim ürettiğimiz teslim kodunu, kargo firmasının takip numarasını, kargo şirketini ve CargoStatus ENUM'u ile kargonun detaylı durumunu içerir.
 notifications - Bildirimler
 userprofile - Kullanıcı profilleri
 device_models - Cihaz modelleri ve fiyatlandırma
@@ -69,14 +69,12 @@ audit_logs - Denetim kayıtları
 invoice_logs - Fatura yükleme ve doğrulama logları
 
 Süreç Tabloları :
-<span style="color:red">[KALDIRILDI - Sorumlulukları shipments tablosuna devredildi]</span> <del>cargo_codes</del>
 delivery_confirmations - Teslimat onay sistemi
 final_payment_distributions - Son ödeme dağıtım sistemi
 payment_transfers - Ödeme transfer kayıtları
 
 View/Summary Tabloları:
 payment_summaries - Ödeme özetleri
-shipment_tracking - Kargo takibi (<span style="color:blue">Artık shipments tablosu üzerinden çalışır</span>)
 user_escrow_history - Kullanıcı escrow geçmişi
 user_transaction_history - Kullanıcı işlem geçmişi
 financial_audit_trail - Mali denetim izi

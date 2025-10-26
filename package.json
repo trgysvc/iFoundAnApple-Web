@@ -7,9 +7,10 @@
     "dev": "vite",
     "server": "node server.cjs",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
-    "build": "vite build",
+    "build": "npm run generate-sitemap && vite build",
     "preview": "vite preview",
-    "start": "node server.cjs"
+    "start": "node server.cjs",
+    "generate-sitemap": "node scripts/sitemap-generator.js"
   },
   "dependencies": {
     "@google/genai": "latest",
