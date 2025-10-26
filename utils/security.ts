@@ -45,16 +45,32 @@ export const validators = {
   tcKimlik: (tcNo: string): boolean => {
     // Remove spaces and validate format
     const cleaned = tcNo.replace(/\s/g, '');
+    
+    // Must be exactly 11 digits
     if (!/^\d{11}$/.test(cleaned)) return false;
+    
+    // First digit cannot be 0
+    if (cleaned[0] === '0') return false;
     
     // TC Kimlik algorithm validation
     const digits = cleaned.split('').map(Number);
-    const sum1 = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-    const sum2 = digits[1] + digits[3] + digits[5] + digits[7];
-    const check1 = (sum1 * 7 - sum2) % 10;
-    const check2 = (sum1 + sum2 + digits[9]) % 10;
     
-    return check1 === digits[9] && check2 === digits[10];
+    // İlk 9 hanenin tek haneleri (1.,3.,5.,7.,9. haneler) - indices: 0,2,4,6,8
+    // İlk 9 hanenin çift haneleri (2.,4.,6.,8. haneler) - indices: 1,3,5,7
+    const sumOfOddPositions = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+    const sumOfEvenPositions = digits[1] + digits[3] + digits[5] + digits[7];
+    
+    // 10. hane kontrolü: (tek hanelerin toplamı * 7 - çift hanelerin toplamı) % 10
+    const checkDigit1 = (sumOfOddPositions * 7 - sumOfEvenPositions) % 10;
+    // Negatif olabilir, düzelt
+    const correctedCheck1 = checkDigit1 < 0 ? checkDigit1 + 10 : checkDigit1;
+    
+    // 11. hane kontrolü: (ilk 10 hanenin toplamı) % 10
+    const sumOfFirst10 = sumOfOddPositions + sumOfEvenPositions + digits[9];
+    const checkDigit2 = sumOfFirst10 % 10;
+    
+    // Validate check digits
+    return correctedCheck1 === digits[9] && checkDigit2 === digits[10];
   },
   
   iban: (iban: string): boolean => {

@@ -16,6 +16,7 @@ import {
 import { translations } from "../constants.ts";
 import { secureLogger } from "../utils/security.ts";
 import { supabase } from "../utils/supabaseClient.ts";
+import { encryptUserProfile, decryptUserProfile } from "../utils/encryptionManager.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
 type Language = "en" | "tr" | "fr" | "ja" | "es";
@@ -1546,6 +1547,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return null;
       }
 
+      // Decrypt sensitive fields if data exists
+      if (data) {
+        console.log("fetchUserProfile: Decrypting sensitive data");
+        const decryptedData = await decryptUserProfile(data);
+        console.log("fetchUserProfile: Profile data fetched and decrypted");
+        return decryptedData;
+      }
+
       console.log("fetchUserProfile: Profile data fetched:", data);
       return data;
     } catch (error) {
@@ -1604,20 +1613,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log("updateUserProfile: Auth user updated successfully");
 
-      // Step 2: Update or insert profile data in userProfile table
+      // Step 2: Encrypt sensitive data before saving
+      const profileDataToEncrypt = {
+        user_id: currentUser.id,
+        first_name: profileData.firstName || null,
+        last_name: profileData.lastName || null,
+        date_of_birth: profileData.dateOfBirth || null,
+        tc_kimlik_no: profileData.tcKimlikNo || null,
+        phone_number: profileData.phoneNumber || null,
+        address: profileData.address || null,
+        iban: profileData.iban || null,
+        bank_info: profileData.iban || null, // IBAN'ı bank_info'ya da kaydet (geriye uyumluluk)
+        updated_at: new Date().toISOString(),
+      };
+
+      const encryptedProfileData = await encryptUserProfile(profileDataToEncrypt);
+      console.log("updateUserProfile: Sensitive data encrypted");
+
+      // Step 3: Update or insert profile data in userProfile table
       const { error: profileError } = await supabase.from("userprofile").upsert(
-        {
-          user_id: currentUser.id,
-          first_name: profileData.firstName || null,
-          last_name: profileData.lastName || null,
-          date_of_birth: profileData.dateOfBirth || null,
-          tc_kimlik_no: profileData.tcKimlikNo || null,
-          phone_number: profileData.phoneNumber || null,
-          address: profileData.address || null,
-          iban: profileData.iban || null,
-          bank_info: profileData.iban || null, // IBAN'ı bank_info'ya da kaydet (geriye uyumluluk)
-          updated_at: new Date().toISOString(),
-        },
+        encryptedProfileData,
         {
           onConflict: "user_id",
         }

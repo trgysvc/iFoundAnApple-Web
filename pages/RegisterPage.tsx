@@ -167,6 +167,10 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
 
+        <p className="text-xs text-brand-gray-500 text-center mb-4 px-4">
+          Hızlı bir şekilde hesap oluşturmak ve sizinle anonim olarak iletişim kurulmasını sağlamak için aşağıdaki güvenli giriş seçeneklerini kullanın.
+        </p>
+
         <div className="space-y-4">
           <Button
             onClick={() => handleSocialLogin("google")}

@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider, useAppContext } from "./contexts/AppContext";
 import { UserRole } from "./types";
@@ -225,9 +225,9 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AppProvider>
-          <HashRouter>
+          <BrowserRouter>
             <AppContent />
-          </HashRouter>
+          </BrowserRouter>
         </AppProvider>
       </QueryClientProvider>
     </ErrorBoundary>

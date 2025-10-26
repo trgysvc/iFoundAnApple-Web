@@ -28,6 +28,7 @@ const ProfilePage: React.FC = () => {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [tcKimlikError, setTcKimlikError] = useState<string | null>(null);
 
   // Generate day, month, year options
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
@@ -420,15 +421,42 @@ const ProfilePage: React.FC = () => {
                   </p>
                 </div>
 
-                <Input
-                  label={t("tcKimlikNo")}
-                  id="tcKimlikNo"
-                  type="text"
-                  value={tcKimlikNo}
-                  onChange={(e) => setTcKimlikNo(e.target.value)}
-                  placeholder="12345678901"
-                  maxLength={11}
-                />
+                <div className="space-y-2">
+                  <Input
+                    label={t("tcKimlikNo")}
+                    id="tcKimlikNo"
+                    type="text"
+                    value={tcKimlikNo}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, ''); // Sadece rakam
+                      setTcKimlikNo(value);
+                      
+                      // Real-time validation
+                      if (value && value.length === 11) {
+                        const isValid = validators.tcKimlik(value);
+                        setTcKimlikError(isValid ? null : "Geçersiz TC Kimlik Numarası");
+                      } else if (value) {
+                        setTcKimlikError("TC Kimlik Numarası 11 haneli olmalıdır");
+                      } else {
+                        setTcKimlikError(null);
+                      }
+                    }}
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                  {tcKimlikError && (
+                    <p className="text-sm text-red-600 flex items-center">
+                      <Hash className="w-4 h-4 mr-1" />
+                      {tcKimlikError}
+                    </p>
+                  )}
+                  {tcKimlikNo && tcKimlikNo.length === 11 && !tcKimlikError && (
+                    <p className="text-sm text-green-600 flex items-center">
+                      <Shield className="w-4 h-4 mr-1" />
+                      Geçerli TC Kimlik Numarası
+                    </p>
+                  )}
+                </div>
 
                 <Input
                   label={t("phoneNumber")}
