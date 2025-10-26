@@ -1,11 +1,10 @@
 User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://ifoundanapple.com/sitemap.xml
-
-# Crawl-delay
-Crawl-delay: 1
+Allow: /login
+Allow: /register
+Allow: /privacy
+Allow: /terms
+Allow: /contact
+Allow: /faq
 
 # Disallow sensitive areas
 Disallow: /admin/
@@ -15,43 +14,23 @@ Disallow: /profile/
 Disallow: /payment/
 Disallow: /escrow/
 Disallow: /dispute/
-
-# Allow important pages
-Allow: /
-Allow: /privacy
-Allow: /terms
-Allow: /contact
-Allow: /faq
+Disallow: /user/
+Disallow: /device/
+Disallow: /match/
+Disallow: /transaction/
 
 # Block specific file types
-Disallow: *.json
-Disallow: *.log
-Disallow: *.sql
-Disallow: *.env
+Disallow: /*.json$
+Disallow: /*.log$
+Disallow: /*.sql$
+Disallow: /*.env$
 
-# Block development files
+# Block development and system files
 Disallow: /src/
 Disallow: /node_modules/
 Disallow: /dist/
 Disallow: /.git/
 Disallow: /.vscode/
 
-# Allow static assets
-Allow: /icons/
-Allow: /images/
-Allow: /css/
-Allow: /js/
-Allow: /fonts/
-
-# Block user-specific content
-Disallow: /user/
-Disallow: /device/
-Disallow: /match/
-Disallow: /transaction/
-
-# Allow search engines to index main content
-Allow: /home
-Allow: /about
-Allow: /how-it-works
-Allow: /pricing
-Allow: /help
+# Sitemap
+Sitemap: https://ifoundanapple.com/sitemap.xml
