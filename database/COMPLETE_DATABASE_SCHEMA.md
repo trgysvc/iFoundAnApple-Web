@@ -185,6 +185,8 @@ Kayıp/bulunan cihazları tutan ana tablo.
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 | lost_date | date | YES | null | Date when device was lost (YYYY-MM-DD) |
 | lost_location | text | YES | null | Location where device was lost |
+| found_date | date | YES | null | Date when device was found (YYYY-MM-DD) |
+| found_location | text | YES | null | Location where device was found |
 | cargo_code_id | uuid | YES | null | Cargo code ID (FK) |
 | delivery_confirmed_at | timestamp with time zone | YES | null | Delivery confirmed timestamp |
 | final_payment_distributed_at | timestamp with time zone | YES | null | Final payment distributed timestamp |

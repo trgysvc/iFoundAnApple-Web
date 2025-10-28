@@ -809,12 +809,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       description: deviceData.description,
       rewardAmount: deviceData.rewardAmount,
       // marketValue field doesn't exist in database schema, removing
-      invoice_url: deviceData.invoice_url,
+      invoice_url: deviceData.invoice_url, // For lost devices: invoice URL, for found devices: photo URLs (comma-separated)
       userId: currentUser.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
       exchangeConfirmedBy: null, // UUID array - start with null, will be populated later
-      lost_date: deviceData.lost_date, // Add lost date for lost devices
-      lost_location: deviceData.lost_location, // Add lost location for lost devices
+      lost_date: isLost ? deviceData.lost_date : null, // Add lost date for lost devices, null for found
+      lost_location: isLost ? deviceData.lost_location : null, // Add lost location for lost devices, null for found
+      found_date: !isLost ? deviceData.found_date : null, // Add found date for found devices, null for lost
+      found_location: !isLost ? deviceData.found_location : null, // Add found location for found devices, null for lost
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
@@ -874,6 +876,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
               serialNumber: newDevice.serialNumber,
               lost_date: newDevice.lost_date,
               lost_location: newDevice.lost_location,
+              found_date: newDevice.found_date,
+              found_location: newDevice.found_location,
+              invoice_url: newDevice.invoice_url, // For lost: invoice, for found: photos
             },
           });
           console.log("Audit log created for device registration");

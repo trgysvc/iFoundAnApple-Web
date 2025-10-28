@@ -126,17 +126,20 @@ export const uploadFileToStorage = async (
  * Upload invoice document for a device
  * @param file - Invoice file to upload
  * @param userId - User ID who owns the device
+ * @param deviceModel - Optional device model for filename
+ * @param folder - Optional folder path within bucket (default: 'invoices')
  * @returns Upload result with URL or error
  */
 export const uploadInvoiceDocument = async (
   file: File,
   userId: string,
-  deviceModel?: string
+  deviceModel?: string,
+  folder?: string
 ): Promise<FileUploadResult> => {
   return uploadFileToStorage(
     file,
     "device-documents",
-    "invoices",
+    folder || "invoices",
     userId,
     deviceModel
   );
