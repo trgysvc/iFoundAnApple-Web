@@ -1589,7 +1589,7 @@ export const translations = {
     finderNetPayment: "Bulan Kişiye Net Ödeme",
     afterServiceFeeDeduction: "Hizmet bedeli düşüldükten sonra",
     securePaymentSystem: "Güvenli Emanet (Escrow) Sistemi",
-    escrowSystemDesc: "Ödemeniz güvenli escrow hesabımızda tutulur ve cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. Iyzico güvencesiyle %3,43 kesinti hariç iptal ve iade hakkınız saklıdır.",
+    escrowSystemDesc: "Ödemeniz güvenli escrow hesabımızda tutulur ve cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. Ödeme altyapısı güvencesiyle iptal ve iade hakkınız saklıdır.",
     // Payment Method Selector translations
     paymentMethod: "Ödeme Yöntemi",
     securePaymentOptions: "Güvenli ödeme seçenekleri",

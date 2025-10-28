@@ -168,9 +168,9 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
       // Ödeme durumuna göre yönlendirme
       if (result.success) {
         if (result.status === 'completed') {
-          // Ödeme başarıyla tamamlandı
+          // Ödeme başarıyla tamamlandı - DeviceDetailPage'e yönlendir
           showNotification(t("paymentInitiated"), "success");
-          navigate(`/payment/success?paymentId=${result.paymentId}`);
+          navigate(`/device/${finalDeviceId}`);
         } else if (result.status === 'processing' && result.redirectUrl) {
           // 3D Secure veya ödeme sayfasına yönlendir
           console.log('[PAYMENT] 3D Secure/Ödeme sayfasına yönlendiriliyor:', result.redirectUrl);
@@ -337,7 +337,7 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                   ) : device ? (
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Kaybedilen Zaman:</span>
+                        <span className="text-sm text-gray-600">Kayıp Tarihi:</span>
                         <span className="font-medium text-sm">
                           {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
                             day: '2-digit',
@@ -359,7 +359,7 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                       
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Cihaz Seri Numarası:</span>
-                        <span className="font-mono text-xs">{device.serialNumber}</span>
+                        <span className="font-mono text-xs">Gizli bilgi</span>
                       </div>
                       
                       <div className="flex justify-between">
@@ -401,7 +401,7 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                       <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <h4 className="text-base font-bold text-gray-800">
-                      ifoundanapple'da ödeme sürecin tamamen güvenliğinizi düşünerek tasarlandı.
+                      iFoundAnApple'da ödeme sürecin tamamen güvenliğinizi düşünerek tasarlandı.
                     </h4>
                   </div>
 
@@ -421,12 +421,13 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                     <div>
                       <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
                         <span className="text-green-600 mr-2">✓</span>
-                        Iyzico Güvencesiyle:
+                        Ödeme Altyapısı Güvencesiyle:
                       </h5>
                       <p className="leading-relaxed ml-6">
-                        Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli ödeme sistemlerinden Iyzico güvencesi 
-                        altındadır. Kart bilgileriniz ve ödeme detaylarınız Iyzico'nun yüksek güvenlik standartları ile 
-                        korunmaktadır.
+                        Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli 
+                        ödeme sistemlerinden PAYNET güvencesi altındadır. Kart 
+                        bilgileriniz ve ödeme detaylarınız PAYNET'in yüksek 
+                        güvenlik standartları ile korunmaktadır.
                       </p>
                     </div>
 
@@ -447,14 +448,13 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                         Şeffaf İade Politikası:
                       </h5>
                       <p className="leading-relaxed ml-6">
-                        İşlem iptali talep etmeniz halinde, ödeme sağlayıcı firmamız Iyzico'nun uyguladığı %3,43'lük 
-                        hizmet bedeli hariç, ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
+                        İşlem iptali talep etmeniz halinde, ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-blue-200">
                       <p className="leading-relaxed text-center italic font-medium text-gray-800">
-                        ifoundanapple olarak amacımız, kayıp eşyaların güvenli, şeffaf ve sorunsuz bir şekilde 
+                        iFoundAnApple olarak amacımız, kayıp eşyaların güvenli, şeffaf ve sorunsuz bir şekilde 
                         sahipleriyle buluşmasını sağlamaktır. Ödemenizi güvenle tamamlayabilirsiniz.
                       </p>
                     </div>

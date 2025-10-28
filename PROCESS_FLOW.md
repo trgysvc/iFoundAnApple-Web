@@ -427,7 +427,7 @@ Durum:  Kayıtlı XXX seri numaralı YYY cihazı için eşleşme bulundu. Ödeme
 Dashboard → Cihaz Detay → "Ödeme Yap" → Ödeme Sayfası
 ```
 **İşlem Mantığı:**
-  - Buton: "Ödeme Yap" - Bu butona tıklayınca match-payment sayfasına gidiyor
+  - Buton: "Ödemeyi Güvenle Yap" - Bu butona tıklayınca match-payment sayfasına gidiyor
 ---
 
 #### **Sayfa Yapısı: İki Adımlı Ödeme Süreci**
@@ -453,7 +453,7 @@ iPhone 17 Pro Max
 **Detaylı Fiyatlandırma Listesi:**
 ```
 ✓ Bulan Kişiye Ödül
-  Dürüst bulucu ödülü             ₺XXX
+  Cihazı bulan kişiye ödenecek    ₺XXX
 
 ✓ Kargo Ücreti
   Hızlı karşılaştırma             ₺YYY
@@ -494,8 +494,8 @@ Ek Detaylar:         Belirtilmemiş
 
 **Alt Bilgilendirme Paneli - Güvenlik Garantileri:**
 ```
-✓ iFoundAnApple'da ödeme sürecin tamamen 
-    güvenliğinizi düşünerek tasarlandı.
+✓   iFoundAnApple'da ödeme sürecin tamamen 
+      güvenliğinizi düşünerek tasarlandı.
 
 🔒 Güvenli Emanet (Escrow) Sistemi:
     Ödemeniz, doğrudan cihaz sahibine veya bulan kişiye iletilmez. 
@@ -504,10 +504,10 @@ Ek Detaylar:         Belirtilmemiş
     ulaşmadan ve takas işlemini onaylamadan hiçbir ödeme 
     karşı tarafa aktarılmaz.
 
-✓ Ödeme Altyapısı Güvencesiyle:
+✓  Ödeme Altyapısı Güvencesiyle:
     Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli 
-    ödeme sistemlerinden Iyzico güvencesi altındadır. Kart 
-    bilgileriniz ve ödeme detaylarınız [XXXXX]'nun yüksek 
+    ödeme sistemlerinden PAYNET güvencesi altındadır. Kart 
+    bilgileriniz ve ödeme detaylarınız PAYNET'in yüksek 
     güvenlik standartları ile korunmaktadır.
 
 ⚖️ İptal Hakkınız Saklıdır:
@@ -516,7 +516,7 @@ Ek Detaylar:         Belirtilmemiş
     ödemeyi iptal etme hakkınız bulunmaktadır.
 
 ↩️ Şeffaf İade Politikası:
-    Takas süreci başlamadan işlem iptali talep etmeniz halinde, 
+    İşlem iptali talep etmeniz halinde, 
     ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
 ```
 
