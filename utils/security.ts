@@ -74,10 +74,37 @@ export const validators = {
   },
   
   iban: (iban: string): boolean => {
-    // Turkish IBAN validation
+    // Turkish IBAN validation with Mod 97 checksum algorithm
     const cleaned = iban.replace(/\s/g, '').toUpperCase();
+    
+    // Format kontrolü: TR ile başlayan 26 haneli
     const ibanRegex = /^TR\d{24}$/;
-    return ibanRegex.test(cleaned);
+    if (!ibanRegex.test(cleaned)) return false;
+    
+    // Mod 97 checksum algoritması
+    // 1. İlk 4 karakteri (TR00) sona taşı
+    const rearranged = cleaned.slice(4) + cleaned.slice(0, 4);
+    
+    // 2. Harfleri sayıya çevir (A=10, B=11, ..., Z=35)
+    let numeric = '';
+    for (let i = 0; i < rearranged.length; i++) {
+      const char = rearranged[i];
+      if (/\d/.test(char)) {
+        numeric += char;
+      } else {
+        // A=10, B=11, ..., Z=35
+        numeric += (char.charCodeAt(0) - 55).toString();
+      }
+    }
+    
+    // 3. Mod 97 hesapla (büyük sayılar için mod işlemi)
+    let remainder = BigInt(0);
+    for (let i = 0; i < numeric.length; i++) {
+      remainder = (remainder * BigInt(10) + BigInt(numeric[i])) % BigInt(97);
+    }
+    
+    // 4. Kalan 1 olmalı
+    return remainder === BigInt(1);
   },
   
   phoneNumber: (phone: string): boolean => {

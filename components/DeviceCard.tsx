@@ -9,13 +9,15 @@ interface DeviceCardProps {
 }
 
 const statusConfigMap = {
-  [DeviceStatus.LOST]: { color: 'bg-red-100 text-red-800', icon: <AlertTriangle className="w-4 h-4" /> },
-  [DeviceStatus.REPORTED]: { color: 'bg-blue-100 text-blue-800', icon: <Smartphone className="w-4 h-4" /> },
-  [DeviceStatus.MATCHED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Clock className="w-4 h-4" /> },
+  [DeviceStatus.LOST]: { color: 'bg-yellow-100 text-yellow-800', icon: <AlertTriangle className="w-4 h-4" /> },
+  [DeviceStatus.REPORTED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Smartphone className="w-4 h-4" /> },
+  [DeviceStatus.MATCHED]: { color: 'bg-green-100 text-green-800', icon: <Clock className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: <CreditCard className="w-4 h-4" /> },
-  [DeviceStatus.PAYMENT_COMPLETE]: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
-  ['payment_completed']: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
-  [DeviceStatus.EXCHANGE_PENDING]: { color: 'bg-purple-100 text-purple-800', icon: <Package className="w-4 h-4" /> },
+  [DeviceStatus.PAYMENT_COMPLETED]: { color: 'bg-blue-100 text-blue-800', icon: <Package className="w-4 h-4" /> },
+  [DeviceStatus.CARGO_SHIPPED]: { color: 'bg-blue-100 text-blue-800', icon: <Package className="w-4 h-4" /> },
+  [DeviceStatus.DELIVERED]: { color: 'bg-purple-100 text-purple-800', icon: <Package className="w-4 h-4" /> },
+  [DeviceStatus.CONFIRMED]: { color: 'bg-yellow-100 text-yellow-800', icon: <CheckCircle className="w-4 h-4" /> },
+  [DeviceStatus.EXCHANGE_PENDING]: { color: 'bg-blue-100 text-blue-800', icon: <Package className="w-4 h-4" /> },
   [DeviceStatus.COMPLETED]: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
 };
 
@@ -26,14 +28,16 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
 
   const getStatusText = (status: DeviceStatus | string): string => {
       switch (status) {
-          case DeviceStatus.LOST: return t('Lost');
-          case DeviceStatus.REPORTED: return t('Reported');
-          case DeviceStatus.MATCHED: return t('Matched');
-          case DeviceStatus.PAYMENT_PENDING: return t('PaymentPending');
-          case DeviceStatus.PAYMENT_COMPLETE: return t('PaymentComplete');
-          case 'payment_completed': return 'Ödeme Alındı, Kargo Bekleniyor';
-          case DeviceStatus.EXCHANGE_PENDING: return t('ExchangePending');
-          case DeviceStatus.COMPLETED: return t('Completed');
+          case DeviceStatus.LOST: return 'Eşleşme Bekleniyor';
+          case DeviceStatus.REPORTED: return 'Eşleşme Bekleniyor';
+          case DeviceStatus.MATCHED: return 'Eşleşti! Cihaz sahibi ödemesi bekleniyor.';
+          case DeviceStatus.PAYMENT_PENDING: return 'Eşleşti! Cihaz sahibi ödemesi bekleniyor.';
+          case DeviceStatus.PAYMENT_COMPLETED: return 'Ödeme alındı! Kargo bekleniyor.';
+          case DeviceStatus.CARGO_SHIPPED: return 'Cihaz kargo firmasına teslim edildi.';
+          case DeviceStatus.DELIVERED: return 'Teslimat Tamamlandı! Onay Bekleniyor.';
+          case DeviceStatus.CONFIRMED: return 'Onay Bekleniyor';
+          case DeviceStatus.EXCHANGE_PENDING: return 'Cihaz kargo firmasına teslim edildi.';
+          case DeviceStatus.COMPLETED: return 'İşlem Tamamlandı';
           default: return status;
       }
   }

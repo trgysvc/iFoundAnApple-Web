@@ -813,6 +813,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       userId: currentUser.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
       exchangeConfirmedBy: null, // UUID array - start with null, will be populated later
+      lost_date: deviceData.lost_date, // Add lost date for lost devices
+      lost_location: deviceData.lost_location, // Add lost location for lost devices
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
@@ -854,6 +856,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             "addDevice: Could not retrieve new device data after insertion."
           );
           return true; // Still consider it a success as the device was added
+        }
+
+        // Create audit log entry for device registration
+        try {
+          await supabase.from("audit_logs").insert({
+            event_type: 'device_registration',
+            event_category: 'device',
+            event_action: 'create',
+            event_severity: 'info',
+            user_id: currentUser.id,
+            resource_type: 'device',
+            resource_id: newDevice.id,
+            event_description: isLost ? 'Lost device registered' : 'Found device reported',
+            event_data: {
+              model: newDevice.model,
+              serialNumber: newDevice.serialNumber,
+              lost_date: newDevice.lost_date,
+              lost_location: newDevice.lost_location,
+            },
+          });
+          console.log("Audit log created for device registration");
+        } catch (auditError) {
+          console.error("Error creating audit log:", auditError);
+          // Don't fail the whole operation if audit log fails
         }
 
         // Check for a match with existing devices in Supabase
@@ -973,15 +999,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             foundDevice
           );
 
-          // Update statuses in Supabase
+          // Update statuses in Supabase - BOTH devices should be MATCHED
           await supabase
             .from("devices")
-            .update({ status: DeviceStatus.PAYMENT_PENDING })
+            .update({ status: DeviceStatus.MATCHED, updated_at: new Date().toISOString() })
             .eq("id", lostDevice.id);
           await supabase
             .from("devices")
-            .update({ status: DeviceStatus.MATCHED })
+            .update({ status: DeviceStatus.MATCHED, updated_at: new Date().toISOString() })
             .eq("id", foundDevice.id);
+
+          // Create audit log entries for device matching
+          try {
+            // Audit log for lost device owner
+            await supabase.from("audit_logs").insert({
+              event_type: 'device_matching',
+              event_category: 'device',
+              event_action: 'match',
+              event_severity: 'info',
+              user_id: lostDevice.userId,
+              resource_type: 'device',
+              resource_id: lostDevice.id,
+              event_description: 'Device matched with finder',
+              event_data: {
+                matched_at: new Date().toISOString(),
+                finder_user_id: foundDevice.userId,
+                match_type: 'serial_number_and_model',
+              },
+            });
+
+            // Audit log for found device finder
+            await supabase.from("audit_logs").insert({
+              event_type: 'device_matching',
+              event_category: 'device',
+              event_action: 'match',
+              event_severity: 'info',
+              user_id: foundDevice.userId,
+              resource_type: 'device',
+              resource_id: foundDevice.id,
+              event_description: 'Device matched with owner',
+              event_data: {
+                matched_at: new Date().toISOString(),
+                owner_user_id: lostDevice.userId,
+                match_type: 'serial_number_and_model',
+              },
+            });
+
+            console.log("Audit logs created for device matching");
+          } catch (auditError) {
+            console.error("Error creating audit logs:", auditError);
+            // Don't fail the whole operation if audit log fails
+          }
 
           // Send notifications
           console.log(

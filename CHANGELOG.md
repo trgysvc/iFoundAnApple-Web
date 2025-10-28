@@ -2,6 +2,33 @@
 
 Bu proje, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatını takip eder ve bu projedeki önemli değişiklikleri belgeler.
 
+## [2.3.0] - İyzico Payment Gateway Entegrasyonu
+
+### Eklendi
+- **İyzico Sandbox API Entegrasyonu**: Gerçek ödeme gateway entegrasyonu tamamlandı
+- **Backend API Server**: Express.js ile İyzico SDK entegrasyonu (port 3001)
+- **Test Modu**: İyzico Sandbox API ile tam test ortamı
+- **Payment Flow**: Baştan sona ödeme akışı çalışıyor
+- **Database Sync**: Payment, Escrow ve Device status senkronize
+- **Device Status Tracking**: Ödeme sonrası otomatik durum güncelleme
+- **Payment Success Page**: Detaylı durum bilgisi ve takip sistemi
+- **Error Handling**: Güvenli hata yönetimi ve kullanıcı bildirimleri
+- **UUID Compatibility**: İyzico payment ID'leri ile database UUID uyumu
+- **CSP Security**: Content Security Policy güncellemeleri
+- **Coolify Ready**: Production deployment hazır
+- **Docker Multi-stage Build**: Optimize edilmiş container image
+- **Full Documentation**: Deployment ve setup rehberleri
+
+### Değiştirildi
+- **Backend Infrastructure**: Express.js server eklendi, API endpoints oluşturuldu
+- **Payment Gateway**: Simüle edilmiş ödeme akışı yerine İyzico entegrasyonu
+- **Deployment Strategy**: Production-ready Docker ve Coolify konfigürasyonu
+
+### İyileştirildi
+- **Güvenlik**: CSP headers ve secure payment flow
+- **Performans**: Multi-stage Docker build ile optimize edilmiş container
+- **Dokümantasyon**: Comprehensive deployment ve setup guides
+
 ## [2.2.0] - Ödeme Logic Düzeltmeleri ve Sistem İyileştirmeleri
 
 ### Düzeltildi
@@ -19,6 +46,26 @@ Bu proje, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatını t
 - **Kod Kalitesi**: Linting hataları düzeltildi
 - **Kullanıcı Deneyimi**: Doğru kullanıcı perspektifine göre uygun ekranlar gösterilmesi
 - **Sistem Kararlılığı**: Test kodlarının kaldırılması ile production-ready kod
+
+## [2.1.0] - Çeviri ve Profil Güncellemeleri
+
+### Eklendi
+- **Genişletilmiş Çeviri Sistemi**: 200+ çeviri anahtarı ile kapsamlı dil desteği
+- **5 Dil Tam Desteği**: EN, TR, FR, JA, ES dillerinde eksiksiz çeviriler
+- **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN alanları
+- **Akıllı Form Validasyonları**: Kapsamlı form kontrolleri ve hata mesajları
+- **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
+
+### Değiştirildi
+- **Çeviri Sistemi**: Tamamen yenilenen ve genişletilmiş çeviri yapısı
+- **Profil Menüsü**: Yenilenen UI/UX ile daha kullanıcı dostu profil yönetimi
+- **Dil Seçici**: İyileştirilmiş dil seçim deneyimi
+- **Karışık Çeviri Düzeltmeleri**: Tüm dillerde tutarlı terminoloji
+
+### İyileştirildi
+- **Uluslararasılaşma**: 200+ çeviri anahtarı ile profesyonel dil desteği
+- **Kullanıcı Profili**: Tam kapsamlı profil bilgisi yönetimi
+- **Form Güvenliği**: Gelişmiş validasyon ve hata yönetimi
 
 ## [2.0.0] - Geliştirici Dokümantasyonu
 
