@@ -7,7 +7,6 @@ import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
 import { getSecureConfig } from "./security.ts";
 import { createClient } from "@supabase/supabase-js";
-import { supabase as defaultSupabase } from "./supabaseClient.ts";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -55,32 +54,30 @@ export interface EscrowReleaseRequest {
 export interface EscrowReleaseResponse {
   success: boolean;
   transactionId?: string;
-  status: "released" | "failed";
+  status: "pending" | "released" | "failed";
   errorMessage?: string;
   netPayoutAmount?: number;
 }
 
 /**
  * Iyzico Payment Gateway Configuration
+ * Note: These configs are used internally by the payment functions
  */
-const IYZICO_CONFIG = {
-  // Bu değerler environment'dan gelecek
-  API_KEY: process.env.IYZICO_API_KEY || "",
-  SECRET_KEY: process.env.IYZICO_SECRET_KEY || "",
-  BASE_URL: process.env.IYZICO_BASE_URL || "https://sandbox-api.iyzipay.com", // Production: https://api.iyzipay.com
-  CALLBACK_URL:
-    process.env.IYZICO_CALLBACK_URL ||
-    "https://ifoundanapple.com/payment/callback",
-};
+// const IYZICO_CONFIG = {
+//   API_KEY: import.meta.env.VITE_IYZICO_API_KEY || "",
+//   SECRET_KEY: import.meta.env.VITE_IYZICO_SECRET_KEY || "",
+//   BASE_URL: import.meta.env.VITE_IYZICO_BASE_URL || "https://sandbox-api.iyzipay.com",
+//   CALLBACK_URL: import.meta.env.VITE_IYZICO_WEBHOOK_URL || "https://ifoundanapple.com/payment/callback",
+// };
 
 /**
  * Stripe Payment Gateway Configuration (Alternatif)
  */
-const STRIPE_CONFIG = {
-  PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || "",
-  SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
-  WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
-};
+// const STRIPE_CONFIG = {
+//   PUBLISHABLE_KEY: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "",
+//   SECRET_KEY: import.meta.env.VITE_STRIPE_SECRET_KEY || "",
+//   WEBHOOK_SECRET: import.meta.env.VITE_STRIPE_WEBHOOK_SECRET || "",
+// };
 
 /**
  * Güvenli ödeme başlatma (Escrow sistemi ile)
@@ -262,41 +259,6 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
 };
 
 /**
- * Test Modu ile ödeme işleme (Gerçek API çağrısı yapmaz)
- */
-const processTestPayment = async (
-  request: PaymentRequest
-): Promise<PaymentResponse> => {
-  console.log("[TEST] Test modu ödeme işlemi başlatılıyor...", {
-    deviceId: request.deviceId,
-    amount: request.feeBreakdown.totalAmount,
-    payer: request.payerInfo.email,
-  });
-
-  // Test modu için sadece simülasyon (her zaman başarılı)
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  console.log("[TEST] ✅ Test modu - Her zaman başarılı");
-  
-  const result = {
-    success: true,
-    paymentId: crypto.randomUUID(),
-    providerPaymentId: `test_${crypto.randomUUID()}`,
-    providerTransactionId: `test_tx_${crypto.randomUUID()}`,
-    status: "completed",
-    providerResponse: {
-      status: "success",
-      testMode: true,
-      amount: request.feeBreakdown.totalAmount,
-      message: "Test modu - gerçek ödeme yapılmadı",
-    },
-  };
-  
-  console.log("[TEST] Ödeme sonucu döndürülüyor:", result);
-  return result;
-};
-
-/**
  * Iyzico ile ödeme işleme (Checkout Form - Güvenli)
  */
 const processIyzicoPayment = async (
@@ -311,7 +273,6 @@ const processIyzicoPayment = async (
   try {
     // Tutar hesaplama (İyzico için string formatında)
     const totalAmount = parseFloat(request.feeBreakdown.totalAmount.toFixed(2));
-    const priceStr = totalAmount.toFixed(2);
     
     // Checkout form için istek hazırla
     const checkoutRequest = {
@@ -519,7 +480,7 @@ export const refundPayment = async (
 ): Promise<PaymentResponse> => {
   try {
     console.log(
-      `[REFUND] Ödeme iadesi başlatılıyor - ID: ${paymentId}, Reason: ${reason}`
+      `[REFUND] Ödeme iadesi başlatılıyor - ID: ${paymentId}, Provider: ${provider}, Reason: ${reason}`
     );
 
     // Bu fonksiyon Supabase Edge Function'da implement edilecek
