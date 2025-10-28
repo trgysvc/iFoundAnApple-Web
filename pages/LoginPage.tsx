@@ -79,6 +79,14 @@ const LoginPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <div className="flex justify-end mb-4">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-brand-blue hover:underline"
+            >
+              {t("forgotPassword")}
+            </Link>
+          </div>
           <Button type="submit" className="w-full" size="lg">
             {t("login")}
           </Button>

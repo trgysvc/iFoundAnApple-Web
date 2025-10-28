@@ -33,6 +33,7 @@ interface AppContextType {
     pass: string
   ) => Promise<boolean>;
   signInWithOAuth: (provider: "google" | "apple") => Promise<void>;
+  resetPassword: (email: string) => Promise<boolean>;
   devices: Device[];
   addDevice: (
     device: Omit<Device, "id" | "userId" | "status">,
@@ -702,6 +703,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error(`Error signing in with ${provider}:`, error.message);
     }
     // Supabase will handle the redirect, so no need for explicit setCurrentUser here
+  };
+
+  const resetPassword = async (email: string): Promise<boolean> => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) {
+      console.error("Error sending password reset email:", error.message);
+      return false;
+    }
+    return true;
   };
 
   const register = async (
@@ -1683,6 +1695,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     logout,
     register,
     signInWithOAuth,
+    resetPassword,
     devices,
     addDevice,
     getUserDevices,

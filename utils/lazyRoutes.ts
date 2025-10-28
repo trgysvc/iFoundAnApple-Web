@@ -4,6 +4,8 @@ import { lazy } from 'react';
 export const HomePage = lazy(() => import('../pages/HomePage'));
 export const LoginPage = lazy(() => import('../pages/LoginPage'));
 export const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+export const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
+export const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 
 // Static/Info pages - Low priority
 export const FAQPage = lazy(() => import('../pages/FAQPage'));

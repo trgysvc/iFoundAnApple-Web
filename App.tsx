@@ -11,6 +11,8 @@ import {
   HomePage,
   LoginPage,
   RegisterPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
   DashboardPage,
   AddDevicePage,
   PaymentFlowPage,
@@ -98,6 +100,16 @@ const AppContent: React.FC = () => {
           <Route path="/register" element={
             <LazyRouteWrapper>
               <RegisterPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/forgot-password" element={
+            <LazyRouteWrapper>
+              <ForgotPasswordPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/reset-password" element={
+            <LazyRouteWrapper>
+              <ResetPasswordPage />
             </LazyRouteWrapper>
           } />
           
