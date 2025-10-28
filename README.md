@@ -24,13 +24,13 @@ Bu repository' nin sadece frontend olduğu unutulmamalıdır. Aşağıdaki özel
 ### ✨ Temel Özellikler
 - 🔐 **Güvenli Kimlik Doğrulama**: Supabase Auth ile güvenli giriş/kayıt sistemi
 - 🎯 **Otomatik Eşleştirme**: Cihaz modeli ve seri numarasına göre akıllı eşleştirme
-- 💰 **Güvenli Emanet Sistemi**: Ödemenin güvenli bir şekilde tutulması
-- 🤖 **AI Destekli Öneriler**: Google Gemini ile akıllı ödül ve açıklama önerileri
+- 💰 **Güvenli Emanet Sistemi**: Ödemenin güvenli bir şekilde tutulması [backend]
+- 🤖 **AI Destekli Öneriler**: Google Gemini ile akıllı açıklama önerileri
 - 🌍 **Çoklu Dil Desteği**: 5 farklı dilde tam destek (EN, TR, FR, JA, ES)
-- 👤 **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN bilgileri
+- 👤 **Gelişmiş Profil Yönetimi**: Şifrelenmiş TC Kimlik, telefon, adres ve IBAN bilgileri
 - 📱 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - 🔔 **Gerçek Zamanlı Bildirimler**: Anlık güncellemeler ve bildirimler
-- 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi
+- 👨‍💼 **Yönetici Paneli**: Kapsamlı sistem yönetimi [Backend]
 - 🎨 **Modern UI/UX**: Apple tasarım dilinden ilham alan kullanıcı arayüzü
 - 🔄 **Otomatik Çeviri Sistemi**: Dinamik dil değiştirme ve tutarlı çeviriler
 
@@ -46,28 +46,14 @@ Bu repository' nin sadece frontend olduğu unutulmamalıdır. Aşağıdaki özel
 - **Lucide React 0.525.0** - Modern ikonlar
 - **Vite 6.2.0** - Hızlı build tool ve dev server
 
-### Backend & Database
+### Database
 - **Supabase 2.55.0** - Backend-as-a-Service
   - PostgreSQL veritabanı (cloud-hosted)
   - Real-time subscriptions
   - Authentication & Authorization
   - Row Level Security (RLS)
-  - Edge Functions (serverless)
-- **Express.js** - Backend API Server
-  - İyzico payment gateway entegrasyonu
-  - RESTful API endpoints
   - CORS desteği
 
-### Payment & Financial
-- **İyzico 2.0.64** - Türkiye'nin güvenilir ödeme altyapısı
-  - Sandbox/Production ortam desteği
-  - 3D Secure entegrasyonu
-  - Webhook ve callback sistemi
-  - PCI DSS uyumlu
-- **Escrow System** - Güvenli ödeme tutma sistemi
-  - Çift taraflı onay mekanizması
-  - Otomatik ödeme serbest bırakma
-  - İade ve geri ödeme desteği
 
 ### AI & APIs
 - **Google Gemini API** - AI destekli öneriler (@google/genai latest)
@@ -118,28 +104,13 @@ Bu repository' nin sadece frontend olduğu unutulmamalıdır. Aşağıdaki özel
    # Google Gemini AI
    GEMINI_API_KEY=your_google_gemini_api_key
    
-   # İyzico Payment Gateway (Sandbox/Test)
-   VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-   VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-   VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
-   VITE_IYZICO_CALLBACK_URL=http://localhost:5173
-   ```
    
    **Not**: 
-   - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
    - Anon key, Supabase dashboard'tan alınır (public key)
    - Gemini API key, Google AI Studio'dan alınır
-   - İyzico credentials yukarıdaki sandbox değerleridir (test için)
-   - Production için gerçek İyzico credentials kullanın
    - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
 
-4. **Backend server'ı başlatın (İyzico için gerekli):**
-    ```bash
-   # Terminal 1 - Backend Server
-   node server.cjs
-   ```
-
-5. **Geliştirme sunucusunu başlatın:**
+4. **Geliştirme sunucusunu başlatın:**
     ```bash
    # Terminal 2 - Frontend
    npm run dev
@@ -148,7 +119,7 @@ Bu repository' nin sadece frontend olduğu unutulmamalıdır. Aşağıdaki özel
    npm run dev:full
    ```
 
-6. **Tarayıcınızda açın:**
+5. **Tarayıcınızda açın:**
    ```
    Frontend: http://localhost:5173
    Backend API: http://localhost:3001
@@ -164,10 +135,6 @@ iFoundAnApple-Web/
 │   ├── calculate-fees.ts   # Ücret hesaplama API
 │   ├── process-payment.ts  # Ödeme işleme API
 │   ├── release-escrow.ts   # Escrow serbest bırakma
-│   ├── iyzico-payment.ts   # İyzico ödeme endpoint
-│   └── 📁 webhooks/        # Webhook handlers
-│       ├── iyzico-callback.ts      # İyzico webhook
-│       └── iyzico-3d-callback.ts   # 3D Secure callback
 ├── 📁 components/          # Yeniden kullanılabilir UI bileşenleri
 │   ├── 📁 ui/             # Temel UI elemanları
 │   │   ├── Button.tsx     # Özelleştirilebilir buton bileşeni
@@ -208,24 +175,16 @@ iFoundAnApple-Web/
 │   ├── security.ts        # Güvenlik fonksiyonları
 │   └── auditLogger.ts     # Audit log sistemi
 ├── 📁 database/           # Database migration scripts
-│   ├── 01_create_device_models_table.sql
-│   ├── 02_create_payments_table.sql
-│   ├── 03_create_cargo_shipments_table.sql
-│   ├── 04_create_financial_transactions_table.sql
-│   ├── 05_create_escrow_accounts_table.sql
-│   └── 06_create_audit_logs_table.sql
+
 ├── 📁 public/             # Statik dosyalar
 │   └── 📁 icons/          # SVG ikonları
-├── server.cjs             # Express backend server (İyzico için)
+├── server.cjs             # Express backend server
 ├── App.tsx                # Ana uygulama bileşeni
 ├── constants.ts           # Çeviriler ve sabitler
 ├── index.tsx              # Uygulama giriş noktası
 ├── types.ts               # TypeScript tip tanımları
 ├── vite.config.ts         # Vite konfigürasyonu
 ├── README.md              # Bu dosya
-├── USER_GUIDE.md          # Kullanıcı rehberi
-├── TESTING.md             # Test dokümantasyonu
-├── COOLIFY_SETUP.md       # Coolify deployment rehberi
 └── CHANGELOG.md           # Sürüm geçmişi
 ```
 
@@ -282,21 +241,6 @@ iFoundAnApple-Web/
   - Telefon: Geçerli format kontrolü
 - **Otomatik Kaydetme**: Değişikliklerin güvenli saklanması
 - **Hata Yönetimi**: Kullanıcı dostu hata mesajları
-
-### Veritabanı Entegrasyonu
-```sql
--- Profil güncellemeleri için kullanılan tablo yapısı
-ALTER TABLE userProfile 
-ADD COLUMN tc_kimlik_no VARCHAR(11),
-ADD COLUMN phone_number VARCHAR(20),
-ADD COLUMN address TEXT,
-ADD COLUMN iban VARCHAR(34);
-
--- İndeksler ve performans optimizasyonu
-CREATE INDEX idx_userprofile_user_id ON userProfile(user_id);
-CREATE INDEX idx_userprofile_iban ON userProfile(iban);
-```
-
 ---
 
 ## 🚀 Deployment & DevOps
@@ -332,23 +276,14 @@ VITE_SUPABASE_ANON_KEY=your_production_anon_key
 # Google Gemini AI
 GEMINI_API_KEY=your_google_gemini_api_key
 
-# İyzico Payment Gateway (Production)
-VITE_IYZICO_API_KEY=your_production_api_key
-VITE_IYZICO_SECRET_KEY=your_production_secret_key
-VITE_IYZICO_BASE_URL=https://api.iyzipay.com
-VITE_IYZICO_CALLBACK_URL=https://yourdomain.com
-
 # Development (.env.local)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_development_anon_key
 GEMINI_API_KEY=your_google_gemini_api_key
-VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
-```
 
-### Coolify Deployment
-Detaylı Coolify deployment rehberi için [COOLIFY_SETUP.md](COOLIFY_SETUP.md) dosyasına bakın.
+# Encryption Key for Sensitive Data (TC, IBAN, Address, Phone)
+VITE_ENCRYPTION_KEY=
+```
 
 **Hızlı Başlangıç:**
 ```bash
@@ -419,7 +354,7 @@ export default defineConfig(({ mode }) => {
 - **GitHub Discussions**: Community questions
 
 ### Professional Support
-- **Email**: support@ifoundanapple.app
+- **Email**: support@ifoundanapple.com
 - **Response Time**: 24 hours
 - **Languages**: Turkish, English
 
@@ -443,7 +378,7 @@ React App (SPA)
 └── 🤖 AI Integration (Google Gemini)
 ```
 
-### Backend Mimarisi
+### Veritabanı Mimarisi
 ```
 Supabase Backend-as-a-Service
 ├── 🗄️ PostgreSQL Database (Cloud)
@@ -465,51 +400,11 @@ Supabase Backend-as-a-Service
 
 ## 🔄 Son Güncellemeler (2025)
 
-### v2.3.0 - İyzico Payment Gateway Entegrasyonu ✅
-- ✅ **İyzico Sandbox API Entegrasyonu**: Gerçek ödeme gateway entegrasyonu tamamlandı
-- ✅ **Backend API Server**: Express.js ile İyzico SDK entegrasyonu (port 3001)
-- ✅ **Test Modu**: İyzico Sandbox API ile tam test ortamı
-- ✅ **Payment Flow**: Baştan sona ödeme akışı çalışıyor
-- ✅ **Database Sync**: Payment, Escrow ve Device status senkronize
-- ✅ **Device Status Tracking**: Ödeme sonrası otomatik durum güncelleme
-- ✅ **Payment Success Page**: Detaylı durum bilgisi ve takip sistemi
-- ✅ **Error Handling**: Güvenli hata yönetimi ve kullanıcı bildirimleri
-- ✅ **UUID Compatibility**: İyzico payment ID'leri ile database UUID uyumu
-- ✅ **CSP Security**: Content Security Policy güncellemeleri
-- ✅ **Coolify Ready**: Production deployment hazır
-- ✅ **Docker Multi-stage Build**: Optimize edilmiş container image
-- ✅ **Full Documentation**: Deployment ve setup rehberleri
-
-### v2.2.0 - Ödeme Logic Düzeltmeleri ve Sistem İyileştirmeleri
-- ✅ **Ödeme Ekranı Logic Düzeltmesi**: Cihazı bulan kişilerin ödeme ekranını görmemesi sorunu çözüldü
-- ✅ **isOriginalOwnerPerspective Logic Güncellemesi**: Doğru kullanıcı perspektifi tespiti
-- ✅ **MATCHED Status Handling**: Bulan kişiler için uygun bekleme mesajları
-- ✅ **Test Kodu Temizliği**: Geliştirme sırasında kalan test kodları kaldırıldı
-- ✅ **Debug Panel İyileştirmeleri**: Kullanıcı perspektifi bilgisi eklendi
-- ✅ **Kod Kalitesi**: Linting hataları düzeltildi ve kod temizlendi
-
-### v2.1.0 - Çeviri ve Profil Güncellemeleri
-- ✅ **Çeviri Sistemi Yenilendi**: 200+ çeviri anahtarı güncellendi
-- ✅ **5 Dil Tam Desteği**: EN, TR, FR, JA, ES dillerinde eksiksiz çeviriler
-- ✅ **Gelişmiş Profil Yönetimi**: TC Kimlik, telefon, adres ve IBAN alanları
-- ✅ **Karışık Çeviri Düzeltmeleri**: Tüm dillerde tutarlı terminoloji
-- ✅ **Form Validasyonları**: Akıllı form kontrolleri ve hata mesajları
-- ✅ **Veritabanı Şeması Güncellemeleri**: userProfile tablosu genişletildi
-- ✅ **UI/UX İyileştirmeleri**: Profil menüsü ve dil seçici yenilendi
-
-### Yaklaşan Özellikler
-- 🔄 **İyzico Production**: Gerçek ödeme sistemine geçiş
-- 🔄 **3D Secure Flow**: Gelişmiş güvenlik akışı
-- 🔄 **Webhook Integration**: Otomatik ödeme güncellemeleri
-- 🔄 **Mobil Uygulama**: React Native ile mobil versiyon
-- 🔄 **Push Notifications**: Mobil bildirimler
-
----
 
 ## 🙏 Teşekkürler
 
 - **Supabase** - Backend altyapısı için
-- **İyzico** - Güvenli ödeme altyapısı için
+- **        ** - Güvenli ödeme altyapısı için
 - **Tailwind CSS** - Harika CSS framework için
 - **React Team** - Muhteşem framework için
 - **Lucide** - Güzel ikonlar için
@@ -522,6 +417,6 @@ Supabase Backend-as-a-Service
 
 **Made with ❤️ in Turkey**
 
-[Website](https://ifoundanapple.app) • [GitHub](https://github.com/trgysvc/iFoundAnApple-Web) • [Support](mailto:support@ifoundanapple.app)
+[Website](https://ifoundanapple.com) • [GitHub](https://github.com/trgysvc/iFoundAnApple-Web) • [Support](mailto:support@ifoundanapple.com)
 
 </div>

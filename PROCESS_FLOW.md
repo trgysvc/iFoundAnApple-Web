@@ -405,7 +405,7 @@ Cihaz Rengi:
 Ek Detaylar:
 Satın Alma Kanıtı (Fatura) Dosyası:
 -"İşlem Durumu" Kartı
-Durum:  Kayıtlı XXX seri numaralı YYY cihazı eşleşme bulundu. Ödeme Bekleniyor.
+Durum:  Kayıtlı XXX seri numaralı YYY cihazı için eşleşme bulundu. Ödeme Bekleniyor.
 -"Durum Bilgisi" Kartı (2 numarası seçenek aktif turuncu renk. diğerleri pasif durumda.)
 1 Cihaz için eşleşme bekleniyor
 2 Cihazınız bulundu
@@ -418,8 +418,7 @@ Durum:  Kayıtlı XXX seri numaralı YYY cihazı eşleşme bulundu. Ödeme Bekle
     Cihazınıza kavuştuğunuz için mutluyuz.
 ---
 
-**İşlem Mantığı:**
-  - Buton: "Ödeme Yap" - Bu butona tıklayınca match-payment sayfasına gidiyor
+
   
   ---
 
@@ -427,6 +426,222 @@ Durum:  Kayıtlı XXX seri numaralı YYY cihazı eşleşme bulundu. Ödeme Bekle
 ```
 Dashboard → Cihaz Detay → "Ödeme Yap" → Ödeme Sayfası
 ```
+**İşlem Mantığı:**
+  - Buton: "Ödeme Yap" - Bu butona tıklayınca match-payment sayfasına gidiyor
+---
+
+#### **Sayfa Yapısı: İki Adımlı Ödeme Süreci**
+
+---
+
+### **📍 ADIM 1: Ücret Detayları (match-paymentPage - Detay Ekranı)**
+
+**Sayfa Başlığı:** 
+```
+Eşleşme Ödemesi
+Güvenli ödeme garantisi
+```
+
+**Sol Panel - Ücret Döküm Kartı:**
+
+**"Ücret Detayları" Kartı (Mavi-Mor Gradient Arka Plan)**
+```
+Ücret Detayları
+iPhone 17 Pro Max
+```
+
+**Detaylı Fiyatlandırma Listesi:**
+```
+✓ Bulan Kişiye Ödül
+  Dürüst bulucu ödülü             ₺XXX
+
+✓ Kargo Ücreti
+  Hızlı karşılaştırma             ₺YYY
+
+✓ Hizmet bedeli
+  Platform hizmet bedeli          ₺ZZZ
+
+✓ Ödeme komisyonu
+  Güvenli ödeme işlem ücreti      ₺KKK
+  
+─────────────────────────────────
+Toplam Ödenecek
+(Güvenli emanet ile tutulan)     ₺TTT
+```
+
+**Alt Bilgilendirme Kartları:**
+
+ **"Güvenli Emanet (Escrow) Sistemi" Kartı (Mavi)**
+```
+   Ödemeniz güvenli escrow hesabımızda tutulur ve 
+   cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. 
+   Ödeme altyapısı güvencesiyle iptal ve iade hakkınız saklıdır.
+```
+
+**Sağ Panel - Kayıp Cihaz Detayları:**
+```
+Kayıp Cihaz Detayları
+
+Kaybeden Zaman:      Belirtilmemiş
+Kayıp Lokasyon:      Belirtilmemiş
+Cihaz Modeli:        iPhone 17 Pro Max
+Cihaz Seri:          Gizli bilgi
+Cihaz Rengi:         Belirtilmemiş
+Ek Detaylar:         Belirtilmemiş
+
+[Ödemeye Geç →]  (Mavi Buton, tüm genişlik)
+```
+
+**Alt Bilgilendirme Paneli - Güvenlik Garantileri:**
+```
+✓ iFoundAnApple'da ödeme sürecin tamamen 
+    güvenliğinizi düşünerek tasarlandı.
+
+🔒 Güvenli Emanet (Escrow) Sistemi:
+    Ödemeniz, doğrudan cihaz sahibine veya bulan kişiye iletilmez. 
+    Takas süreci tamamlanana kadar güvenli 
+    emanet (escrow) hesabımızda tutulur. Cihazınız size 
+    ulaşmadan ve takas işlemini onaylamadan hiçbir ödeme 
+    karşı tarafa aktarılmaz.
+
+✓ Ödeme Altyapısı Güvencesiyle:
+    Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli 
+    ödeme sistemlerinden Iyzico güvencesi altındadır. Kart 
+    bilgileriniz ve ödeme detaylarınız [XXXXX]'nun yüksek 
+    güvenlik standartları ile korunmaktadır.
+
+⚖️ İptal Hakkınız Saklıdır:
+    Takas süreci başlamadan veya cihaz size ulaşmadan önce 
+    herhangi bir nedenle işlemden vazgeçmeniz durumunda, 
+    ödemeyi iptal etme hakkınız bulunmaktadır.
+
+↩️ Şeffaf İade Politikası:
+    Takas süreci başlamadan işlem iptali talep etmeniz halinde, 
+    ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
+```
+
+**Yasal Uyarı (Footer):**
+```
+    iFoundAnApple olarak amacımız, kayıp eşyaların güvenli, 
+    şeffaf ve sorunsuz bir şekilde sahipleriyle buluşmasını 
+    sağlamaktır. Ödemenizi güvenle tamamlayabilirsiniz.
+```
+
+---
+
+### **📍 ADIM 2: Ödeme Yöntemi (match-paymentPage - Ödeme Ekranı)**
+
+**Sayfa Başlığı:**
+```
+Eşleşme Ödemesi
+Güvenli ödeme seçenekleri
+[← Geri Dön]
+```
+
+**Sol Panel - Ödeme Yöntemleri:**
+
+**"Ödeme Yöntemi" Kartı (Yeşil-Mavi Gradient)**
+```
+Ödeme Yöntemi
+Güvenli ödeme seçenekleri
+```
+
+**Ödeme Seçenekleri:**
+
+1. **Stripe (Önerilen)**
+```
+   ○ Stripe
+     Tüm kartlarınızla güvenle ödeme
+     🔒 SSL Güvenli Ödeme
+```
+
+2. **Sert Medya (Yakın Zamanda)**
+```
+   ○ Sert Medya (Bürüm Sandozer)
+     (Eczacı test API'si ile gençle ödeme testi)
+     ⏳ Hazırda    🔧 Denemenize Hazır
+     [YAKINDA]
+```
+
+**Güvenlik Rozetleri:**
+```
+✓ Güvenilir Ödeme      ✓ PCI DSS Uyumluluğu
+✓ 256-bit SSL Şifreleme  ✓ Hızlı İşlem Onaylama
+✓ Kişisel Güvenliğiniz
+```
+
+---
+
+**Sağ Panel - Ödeme Özeti:**
+```
+Ödeme Özeti
+
+Device Model:        
+Bulan Kişiye ödül:          
+Kargo:               
+Hizmet Bedeli:       
+Ödeme Komisyonu:      
+TOPLAM:              
+
+─────────────────────────────────
+
+Ödeme Onayı
+
+☐ Kullanım Koşulları ve Gizlilik Politikası'nı okudum ve kabul 
+  ediyorum. Ödememin güvenli escrow sisteminde tutulacağını ve 
+  cihaz tarafıma teslim edildikten sonra alınacağını anlıyorum.
+
+[Ücret Detaylarına Dön]  (Gri Buton)
+
+[🔒 Güvenli Ödeme Yap (449,09 TL)]  (Mavi Buton)
+```
+
+**Alt Bilgilendirme:**
+```
+🔒 Bu ödeme SSL ile korunmaktadır. 
+Kart bilgileriniz güvenli şekilde şifrelenir ve saklanmaz.
+```
+
+---
+
+### **Ödeme Akışı Sonrası:**
+
+**Başarılı Ödeme:**
+1. Stripe/Ödeme sağlayıcı → 3D Secure doğrulama
+2. Ödeme onaylandı
+3. Yönlendirme → **DeviceDetailPage** (status: `payment_completed`)
+
+**Database Kayıtları (Ödeme Tamamlandıktan Sonra):**
+
+Mevcut database kayıtları aynen devam eder (payments, escrow_accounts, devices, financial_transactions, audit_logs, notifications, cargo_codes tabloları).
+
+---
+
+### **Kullanıcı Deneyimi Akışı:**
+```
+Cihaz Detay Sayfası (MATCHED durumu)
+      ↓
+"Ödemeyi Güvenle Yap" Butonu
+      ↓
+ADIM 1: Ücret Detayları Ekranı
+  - Fiyat döküm
+  - Güvenlik garantileri
+  - "Ödemeye Geç" butonu
+      ↓
+ADIM 2: Ödeme Yöntemi Ekranı
+  - Stripe/Kart seçimi
+  - Onay checkbox
+  - "Güvenli Ödeme Yap" butonu
+      ↓
+3D Secure Doğrulama (Stripe)
+      ↓
+Ödeme Başarılı
+      ↓
+Yönlendirme → DeviceDetailPage
+  - Status: payment_completed
+  - "Kargo Bekleniyor" mesajı
+---
+
 
 **Ödeme Detayları:**
 ```

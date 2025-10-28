@@ -43,9 +43,16 @@ export enum DeviceStatus {
   REPORTED = "reported", // Finder adds device
   MATCHED = "matched", // System finds a match
   PAYMENT_PENDING = "payment_pending", // Owner needs to pay
-  PAYMENT_COMPLETE = "payment_complete", // Owner has paid
+  PAYMENT_COMPLETED = "payment_completed", // Owner has paid
+  CARGO_SHIPPED = "cargo_shipped", // Device shipped by finder
+  DELIVERED = "delivered", // Cargo delivered to owner
+  CONFIRMED = "confirmed", // Owner confirmed receipt
   EXCHANGE_PENDING = "exchange_pending", // Physical exchange in progress
   COMPLETED = "completed", // Exchange confirmed by both
+  DISPUTED = "disputed", // Dispute case
+  CANCELLED = "cancelled", // Cancelled
+  RETURNED = "returned", // Returned to sender
+  FAILED_DELIVERY = "failed_delivery", // Delivery failed
 }
 
 export interface Device {
