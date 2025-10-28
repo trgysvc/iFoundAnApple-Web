@@ -31,9 +31,9 @@ interface FeeBreakdown {
 }
 
 const FIXED_FEES = {
-  CARGO_FEE: 25.0,
-  SERVICE_FEE_PERCENTAGE: 15,
-  GATEWAY_FEE_PERCENTAGE: 2.9,
+  CARGO_FEE: 250.0, // PROCESS_FLOW'a göre 250.00 TL
+  GATEWAY_FEE_PERCENTAGE: 3.43, // PROCESS_FLOW'a göre %3.43
+  REWARD_PERCENTAGE: 20, // PROCESS_FLOW'a göre %20
   MIN_REWARD_AMOUNT: 100,
   MAX_REWARD_AMOUNT: 5000,
 };
@@ -79,19 +79,45 @@ export async function calculateFeesAPI(
       deviceModel = modelData;
     }
 
-    // Calculate reward amount
-    let rewardAmount = customRewardAmount || deviceModel.repair_price * 0.3;
-    rewardAmount = Math.max(
-      FIXED_FEES.MIN_REWARD_AMOUNT,
-      Math.min(rewardAmount, FIXED_FEES.MAX_REWARD_AMOUNT)
-    );
+    // Database'den ifoundanapple_fee çek
+    const ifoundanappleFee = deviceModel.ifoundanapple_fee || 0;
+    
+    if (ifoundanappleFee <= 0) {
+      // Fallback: repair_price varsa onu kullan
+      const totalAmount = deviceModel.repair_price || 1000;
+      const gatewayFee = Math.round(totalAmount * 0.0343 * 100) / 100;
+      const cargoFee = FIXED_FEES.CARGO_FEE;
+      const rewardAmount = Math.round(totalAmount * 0.20 * 100) / 100;
+      const serviceFee = Math.round((totalAmount - gatewayFee - cargoFee - rewardAmount) * 100) / 100;
+      const netPayout = rewardAmount;
+      
+      return {
+        rewardAmount,
+        cargoFee,
+        serviceFee,
+        gatewayFee,
+        totalAmount,
+        netPayout,
+        originalRepairPrice: deviceModel.repair_price || 0,
+        deviceModel: deviceModel.model_name,
+        category: deviceModel.category || 'Unknown',
+      };
+    }
 
-    // Calculate fees
-    const cargoFee = FIXED_FEES.CARGO_FEE;
-    const serviceFee = rewardAmount * (FIXED_FEES.SERVICE_FEE_PERCENTAGE / 100);
-    const gatewayFee = rewardAmount * (FIXED_FEES.GATEWAY_FEE_PERCENTAGE / 100);
-    const totalAmount = rewardAmount + cargoFee + serviceFee + gatewayFee;
-    const netPayout = rewardAmount - serviceFee;
+    // PROCESS_FLOW.md formülüne göre hesaplama:
+    // totalAmount = ifoundanapple_fee (müşteriden alınacak toplam)
+    // gatewayFee = totalAmount * 0.0343 (%3.43)
+    // cargoFee = 250.00 TL (sabit)
+    // rewardAmount = totalAmount * 0.20 (%20)
+    // serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount
+    // netPayout = rewardAmount
+    
+    const totalAmount = ifoundanappleFee;
+    const gatewayFee = Math.round(totalAmount * 0.0343 * 100) / 100;
+    const cargoFee = FIXED_FEES.CARGO_FEE; // 250.00 TL
+    const rewardAmount = Math.round(totalAmount * 0.20 * 100) / 100;
+    const serviceFee = Math.round((totalAmount - gatewayFee - cargoFee - rewardAmount) * 100) / 100;
+    const netPayout = rewardAmount;
 
     const feeBreakdown: FeeBreakdown = {
       rewardAmount,

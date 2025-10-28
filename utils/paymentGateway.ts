@@ -6,6 +6,8 @@
 import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
 import { getSecureConfig } from "./security.ts";
+import { createClient } from "@supabase/supabase-js";
+import { supabase as defaultSupabase } from "./supabaseClient.ts";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -28,6 +30,7 @@ export interface PaymentRequest {
       postalCode: string;
     };
   };
+  paymentProvider?: "iyzico" | "stripe" | "test";
 }
 
 export interface PaymentResponse {
@@ -239,14 +242,14 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
       const { error: deviceError } = await supabase
         .from('devices')
         .update({
-          status: 'payment_completed'
+          status: 'PAYMENT_COMPLETED'  // Büyük harf olmalı
         })
         .eq('id', request.deviceId);
 
       if (deviceError) {
         console.error("[DATABASE] Device status güncelleme hatası:", deviceError);
       } else {
-        console.log("[DATABASE] ✅ Device status güncellendi: payment_completed");
+        console.log("[DATABASE] ✅ Device status güncellendi: PAYMENT_COMPLETED");
       }
     }
 

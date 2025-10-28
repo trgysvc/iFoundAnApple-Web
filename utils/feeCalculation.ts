@@ -35,10 +35,10 @@ export interface DeviceModelData {
 
 // Ücret yapısı - Database'den ifoundanapple_fee çekilerek hesaplanır
 export const FEE_STRUCTURE = {
-  CARGO_FEE: 150.0, // Kargo ücreti (sabit TL)
-  REWARD_PERCENTAGE: 10, // Bulan kişiye ödül (%10 of ifoundanapple_fee)
-  SERVICE_FEE_PERCENTAGE: 20, // Platform hizmet bedeli (%20 of ifoundanapple_fee)
-  GATEWAY_FEE_PERCENTAGE: 3.49, // Ödeme sağlayıcı komisyonu (%3.49 of total)
+  CARGO_FEE: 250.0, // Kargo ücreti (sabit TL) - PROCESS_FLOW'a göre 250.00 TL
+  REWARD_PERCENTAGE: 20, // Bulan kişiye ödül (%20 of totalAmount) - PROCESS_FLOW'a göre %20
+  GATEWAY_FEE_PERCENTAGE: 3.43, // Ödeme sağlayıcı komisyonu (%3.43 of totalAmount) - PROCESS_FLOW'a göre %3.43
+  // Hizmet bedeli: totalAmount - gatewayFee - cargoFee - rewardAmount (geriye kalan tutar)
 };
 
 /**
@@ -245,30 +245,19 @@ export const calculateFees = async (
       return calculateFallbackFees(model);
     }
 
-    // Yeni ücret yapısına göre hesaplama
-    const rewardAmount =
-      Math.round(
-        ifoundappleFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100
-      ) / 100;
-    const serviceFee =
-      Math.round(
-        ifoundappleFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-      ) / 100;
-    const cargoFee = FEE_STRUCTURE.CARGO_FEE;
+    // PROCESS_FLOW.md formülüne göre hesaplama:
+    // totalAmount = ifoundanapple_fee (müşteriden alınacak toplam)
+    // gatewayFee = totalAmount * 0.0343 (%3.43)
+    // cargoFee = 250.00 TL (sabit)
+    // rewardAmount = totalAmount * 0.20 (%20)
+    // serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount
+    // netPayout = rewardAmount
 
-    // Subtotal (ifoundanapple_fee + kargo)
-    const subtotal = ifoundappleFee + cargoFee;
-
-    // Gateway komisyonu (toplam üzerinden %5.5)
-    const gatewayFee =
-      Math.round(
-        subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100
-      ) / 100;
-
-    // Final toplam (ifoundanapple_fee + kargo + gateway)
-    const totalAmount = subtotal + gatewayFee;
-
-    // Bulan kişiye net ödeme (ödül)
+    const totalAmount = ifoundappleFee;
+    const gatewayFee = Math.round(totalAmount * 0.0343 * 100) / 100;
+    const cargoFee = FEE_STRUCTURE.CARGO_FEE; // 250.00 TL
+    const rewardAmount = Math.round(totalAmount * 0.20 * 100) / 100;
+    const serviceFee = Math.round((totalAmount - gatewayFee - cargoFee - rewardAmount) * 100) / 100;
     const netPayout = rewardAmount;
 
     const feeBreakdown: FeeBreakdown = {
@@ -332,20 +321,12 @@ const calculateFallbackFees = (
       defaultFee = 1000;
   }
 
-  const rewardAmount =
-    Math.round(defaultFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
-    100;
-  const serviceFee =
-    Math.round(
-      defaultFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-    ) / 100;
-  const cargoFee = FEE_STRUCTURE.CARGO_FEE;
-
-  const subtotal = defaultFee + cargoFee;
-  const gatewayFee =
-    Math.round(subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
-    100;
-  const totalAmount = subtotal + gatewayFee;
+  // PROCESS_FLOW.md formülüne göre hesaplama
+  const totalAmount = defaultFee;
+  const gatewayFee = Math.round(totalAmount * 0.0343 * 100) / 100;
+  const cargoFee = FEE_STRUCTURE.CARGO_FEE; // 250.00 TL
+  const rewardAmount = Math.round(totalAmount * 0.20 * 100) / 100;
+  const serviceFee = Math.round((totalAmount - gatewayFee - cargoFee - rewardAmount) * 100) / 100;
   const netPayout = rewardAmount;
 
   const feeBreakdown: FeeBreakdown = {
@@ -426,20 +407,12 @@ const calculateFixedFees = (
     defaultFee = 3000;
   }
 
-  const rewardAmount =
-    Math.round(defaultFee * (FEE_STRUCTURE.REWARD_PERCENTAGE / 100) * 100) /
-    100;
-  const serviceFee =
-    Math.round(
-      defaultFee * (FEE_STRUCTURE.SERVICE_FEE_PERCENTAGE / 100) * 100
-    ) / 100;
-  const cargoFee = FEE_STRUCTURE.CARGO_FEE;
-
-  const subtotal = defaultFee + cargoFee;
-  const gatewayFee =
-    Math.round(subtotal * (FEE_STRUCTURE.GATEWAY_FEE_PERCENTAGE / 100) * 100) /
-    100;
-  const totalAmount = subtotal + gatewayFee;
+  // PROCESS_FLOW.md formülüne göre hesaplama
+  const totalAmount = defaultFee;
+  const gatewayFee = Math.round(totalAmount * 0.0343 * 100) / 100;
+  const cargoFee = FEE_STRUCTURE.CARGO_FEE; // 250.00 TL
+  const rewardAmount = Math.round(totalAmount * 0.20 * 100) / 100;
+  const serviceFee = Math.round((totalAmount - gatewayFee - cargoFee - rewardAmount) * 100) / 100;
   const netPayout = rewardAmount;
 
   const feeBreakdown: FeeBreakdown = {
@@ -465,11 +438,10 @@ export const formatFeeBreakdown = (fees: FeeBreakdown): string => {
   return `
 ${fees.deviceModel} (${fees.category})
 ─────────────────────────────────────
-Onarım Ücreti: ${fees.originalRepairPrice.toFixed(2)} TL
-iFoundAnApple Ödülü: ${fees.rewardAmount.toFixed(2)} TL
+Bulan Kişiye Ödül (%20): ${fees.rewardAmount.toFixed(2)} TL
 Kargo Ücreti: ${fees.cargoFee.toFixed(2)} TL
-Hizmet Bedeli (%15): ${fees.serviceFee.toFixed(2)} TL
-Ödeme Komisyonu (%2.9): ${fees.gatewayFee.toFixed(2)} TL
+Hizmet Bedeli: ${fees.serviceFee.toFixed(2)} TL
+Ödeme Komisyonu (%3.43): ${fees.gatewayFee.toFixed(2)} TL
 ─────────────────────────────────────
 TOPLAM ÖDEMENİZ: ${fees.totalAmount.toFixed(2)} TL
 
