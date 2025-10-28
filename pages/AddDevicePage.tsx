@@ -33,6 +33,12 @@ const AddDevicePage: React.FC = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [lostDate, setLostDate] = useState(""); // YYYY-MM-DD format
   const [lostLocation, setLostLocation] = useState("");
+  const [foundDate, setFoundDate] = useState(""); // YYYY-MM-DD format for found devices
+  const [foundLocation, setFoundLocation] = useState(""); // For found devices
+  const [devicePhotoFile, setDevicePhotoFile] = useState<File | null>(null); // For found device photos
+  const [uploadedDevicePhotoUrl, setUploadedDevicePhotoUrl] = useState<string | null>(null); // For found device photos
+  const [isUploadingDevicePhoto, setIsUploadingDevicePhoto] = useState(false); // For found device photos
+  const [isDraggingDevicePhoto, setIsDraggingDevicePhoto] = useState(false); // For drag state
   const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -159,6 +165,122 @@ const AddDevicePage: React.FC = () => {
     }
   };
 
+  const handleDevicePhotoFileProcess = async (files: File[]) => {
+    console.log("handleDevicePhotoFileProcess called");
+    console.log("Files to process:", files.length, files);
+    
+    // Limit to 2 files
+    if (files.length > 2) {
+      setError("Maksimum 2 fotoğraf yükleyebilirsiniz (ön ve arka)");
+      return;
+    }
+    
+    setIsUploadingDevicePhoto(true);
+    setError("");
+    
+    try {
+      const uploadedUrls: string[] = [];
+      const baseTimestamp = Date.now();
+      
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        console.log("Processing file:", file.name, file.size);
+        const securityValidation = await performCompleteFileValidation(file);
+        
+        if (!securityValidation.valid) {
+          console.error("File validation failed:", securityValidation.error);
+          setError(securityValidation.error || "File validation failed");
+          setIsUploadingDevicePhoto(false);
+          return;
+        }
+
+        // Upload device photo to device-pics bucket
+        if (currentUser) {
+          console.log("Uploading to device-pics bucket for user:", currentUser.id);
+          // Add index to timestamp to ensure unique filename even if uploaded at the same millisecond
+          const uniqueTimestamp = baseTimestamp + index;
+          const filePath = `${currentUser.id}/${uniqueTimestamp}_${file.name}`;
+          console.log("Upload path:", filePath);
+          
+          const result = await supabase.storage
+            .from('device-pics')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+          
+          console.log("Upload result:", result);
+          
+          if (result.error) {
+            console.error("Upload error:", result.error);
+            setError(result.error.message || "Failed to upload device photo. Please try again.");
+            setIsUploadingDevicePhoto(false);
+            return;
+          }
+          
+          if (result.data) {
+            console.log("Upload successful, path:", result.data.path);
+            uploadedUrls.push(result.data.path);
+            
+            secureLogger.info("Device photo uploaded successfully", {
+              userId: currentUser.id,
+              fileSize: file.size,
+              filePath: result.data.path,
+            });
+          }
+        }
+      }
+      
+        // Store all uploaded URLs as comma-separated string
+        if (uploadedUrls.length > 0) {
+          console.log("All uploads successful, URLs:", uploadedUrls);
+          // Join multiple photo URLs with comma separator
+          setUploadedDevicePhotoUrl(uploadedUrls.join(','));
+          // Store the first file for display
+          setDevicePhotoFile(files[0]);
+        } else {
+          console.log("No files uploaded successfully");
+        }
+    } catch (error) {
+      console.error("Device photo upload error:", error);
+      secureLogger.error("Device photo upload error", error);
+      setError("Failed to upload device photo. Please try again.");
+      setDevicePhotoFile(null);
+    } finally {
+      setIsUploadingDevicePhoto(false);
+    }
+  };
+
+  const handleDevicePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      handleDevicePhotoFileProcess(files);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDevicePhoto(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDevicePhoto(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDevicePhoto(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files);
+      handleDevicePhotoFileProcess(files);
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,6 +291,7 @@ const AddDevicePage: React.FC = () => {
     const sanitizedColor = sanitizers.text(color);
     const sanitizedDescription = sanitizers.text(description);
     const sanitizedLostLocation = sanitizers.text(lostLocation);
+    const sanitizedFoundLocation = sanitizers.text(foundLocation);
 
     if (!sanitizedModel || !sanitizedSerialNumber || !sanitizedColor) {
       setError("Please fill in all required fields.");
@@ -187,6 +310,18 @@ const AddDevicePage: React.FC = () => {
       }
     }
 
+    // For found devices, validate found date and location
+    if (!isLostReport) {
+      if (!foundDate) {
+        setError("Please select the date when the device was found.");
+        return;
+      }
+      if (!sanitizedFoundLocation) {
+        setError("Please enter where the device was found.");
+        return;
+      }
+    }
+
     if (!validators.serialNumber(sanitizedSerialNumber)) {
       setError("Please enter a valid serial number (8-12 characters, letters and numbers only).");
       return;
@@ -200,9 +335,11 @@ const AddDevicePage: React.FC = () => {
       description: sanitizedDescription,
       rewardAmount,
       marketValue,
-      invoice_url: uploadedFileUrl || undefined, // Use Supabase Storage URL
+      invoice_url: isLostReport ? (uploadedFileUrl || undefined) : (uploadedDevicePhotoUrl || undefined), // Invoice for lost, photos for found
       lost_date: isLostReport ? lostDate : undefined,
       lost_location: isLostReport ? sanitizedLostLocation : undefined,
+      found_date: !isLostReport ? foundDate : undefined,
+      found_location: !isLostReport ? sanitizedFoundLocation : undefined,
     };
 
     console.log(
@@ -426,6 +563,118 @@ const AddDevicePage: React.FC = () => {
             </>
           )}
 
+          {/* Found Date, Location and Photo - Only for found devices */}
+          {!isLostReport && (
+            <>
+              <div>
+                <label
+                  htmlFor="foundDate"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Bulunma Tarihi
+                </label>
+                <input
+                  id="foundDate"
+                  type="date"
+                  value={foundDate}
+                  onChange={(e) => setFoundDate(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]} // Cannot be in the future
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazın bulunduğu tarihi seçin
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="foundLocation"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Bulunma Yeri
+                </label>
+                <input
+                  id="foundLocation"
+                  type="text"
+                  value={foundLocation}
+                  onChange={(e) => setFoundLocation(e.target.value)}
+                  placeholder="Örn: Kadıköy, İstanbul - Bağdat Caddesi"
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazın bulunduğu yeri detaylı olarak belirtin
+                </p>
+              </div>
+
+              {/* Device Photo Upload for Found Device */}
+              <div>
+                <label
+                  htmlFor="device-photo-upload"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Cihaz Fotoğrafı (Ön ve Arka)
+                </label>
+                <div 
+                  className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md ${
+                    isDraggingDevicePhoto 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-300'
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="space-y-1 text-center">
+                    {uploadedDevicePhotoUrl ? (
+                      <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
+                    ) : (
+                      <Upload className="mx-auto h-12 w-12 text-brand-gray-400" />
+                    )}
+                    <div className="flex text-sm text-brand-gray-600">
+                      <label
+                        htmlFor="device-photo-file-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-blue px-1"
+                      >
+                        <span>
+                          {isUploadingDevicePhoto ? 'Uploading...' : 
+                           uploadedDevicePhotoUrl ? 'Photo uploaded successfully' : 
+                           'Upload a file'}
+                        </span>
+                        <input
+                          id="device-photo-file-upload"
+                          name="device-photo-file-upload"
+                          type="file"
+                          className="sr-only"
+                          onChange={handleDevicePhotoFileChange}
+                          accept="image/*"
+                          multiple
+                          disabled={isUploadingDevicePhoto}
+                        />
+                      </label>
+                    </div>
+                    {devicePhotoFile ? (
+                      <div className="space-y-1">
+                        <p className="text-xs text-brand-gray-700 font-semibold">
+                          {devicePhotoFile.name}
+                        </p>
+                        {uploadedDevicePhotoUrl && (
+                          <p className="text-xs text-green-600">
+                            ✓ Saved to secure storage
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-brand-gray-500">
+                        PNG, JPG, WebP up to 10MB, maksimum 2 fotoğraf (ön ve arka)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           <div>
             <label

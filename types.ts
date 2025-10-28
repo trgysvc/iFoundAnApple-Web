@@ -61,7 +61,7 @@ export interface Device {
   model: string;
   serialNumber: string; // Maps to serialnumber in DB
   color: string;
-  invoice_url?: string; // URL to invoice file in Supabase Storage
+  invoice_url?: string; // URL to file in Supabase Storage: invoice for lost devices, device photos (comma-separated) for found devices
   invoiceDataUrl?: string; // Legacy field - will be removed after migration
   description?: string;
   status: DeviceStatus;
@@ -70,6 +70,8 @@ export interface Device {
   exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed (maps to exchangeconfirmedby in DB)
   lost_date?: string; // Date when the device was lost (YYYY-MM-DD format)
   lost_location?: string; // Location where the device was lost (free text description)
+  found_date?: string; // Date when the device was found (YYYY-MM-DD format)
+  found_location?: string; // Location where the device was found (free text description)
 }
 
 export interface AppNotification {

@@ -1158,7 +1158,7 @@ Kimlik Doğrulama: Güvenlik ve yasal sebeplerle, özellikle ödeme alacak (bula
 
 ### **Adım 2: Bulunan Cihaz Ekleme**
 ```
-Dashboard → "Cihaz Ekle" → "Buldum" Seçeneği
+Dashboard → "Bulunan Cihaz Bildir
 ```
 
 **Girilen Bilgiler:**
@@ -1203,22 +1203,67 @@ Durum:  Kayıtlı XXX seri numaralı YYY cihaz için eşleşme bekleniyor.
     Kargo firması cihazı sahibine teslim etti. Onay bekleniyor. 
 5 İşlem Tamamlandı
     Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
+
+🎁
+ÇOK TEŞEKKÜR EDERİZ!
+iFoundAnApple olarak, dürüstlüğünüzü ve yardımseverliğinizi yürekten takdir eder, bu nazik davranışınız için teşekkür ederiz!
+
+Değerli eşyaların sahiplerine ulaşması için şeffaf ve güvenilir bir platform sunmaya özen gösteriyoruz. Senin gibi insanların varlığı, dünyayı daha iyi bir yer yapıyor.
+
+Bulduğunuz cihaz sahibine teslim edildiğinde, gösterdiğiniz çaba ve örnek davranış karşılığında küçük bir hediye almanızı sağlıyoruz.
+
+💡 Önemli: Cihaz eşleşmesi gerçekleştiği zaman lütfen kimlik ve IBAN bilgilerinizin doğruluğunu profil sayfasından kontrol ediniz.
 ---
 
-**Database:**
-```typescript
-devices {
-  id: UUID
-  user_id: UUID  // Bulan kişinin ID'si
-  model: string
-  serial_number: string
-  status: "REPORTED"
-  device_type: "found"
-  found_date: date
-  found_location: string
-  description: text
-  created_at: timestamp
-}
+
+**Database Kayıtları:**
+
+**1. `devices` tablosuna kayıt:**
+```sql
+INSERT INTO devices (
+  id,                    -- gen_random_uuid()
+  "userId",             -- Bulan kişinin ID'si (auth.users.id)
+  model,                -- Cihaz modeli (text)
+  "serialNumber",       -- Seri numarası (text)
+  status,               -- 'REPORTED' (text)
+  color,                -- Cihaz rengi (text, nullable)
+  description,          -- Açıklama (text, nullable)
+  "exchangeConfirmedBy", -- Onaylayanlar array (uuid[], default '{}')
+  created_at,           -- now()
+  updated_at,           -- now()
+  found_date,           -- Bulunma tarihi (date, nullable)
+  found_location,       -- Bulunma yeri (text, nullable)
+  device_photo_url      -- Bulunan cihaz fotoğrafı URL'si (text, nullable)
+);
+```
+
+**2. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'device_registration'
+  event_category,       -- 'device'
+  event_action,         -- 'create'
+  event_severity,       -- 'info'
+  user_id,              -- Bulan kişinin ID'si
+  resource_type,        -- 'device'
+  resource_id,          -- Oluşturulan device ID'si
+  event_description,    -- 'Found device reported'
+  event_data,           -- JSON: {model, serialNumber, found_date, found_location}
+  created_at            -- now()
+);
+```
+
+**3. `notifications` tablosuna kayıt:**
+```sql
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Bulan kişinin ID'si
+  message_key,          -- 'device_report_confirmation'
+  type,                 -- 'info'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 ### **Adım 3: Eşleşme Bulundu**
@@ -1236,7 +1281,7 @@ devices {
 ```
 
 **Dashboard'da Görünen:**
-- Mesaj: Eşleşme Bulundu! Ödeme Bekleniyor.
+- Mesaj: Eşleşme Bulundu! Cihaz Sahibi Ödemesi Bekleniyor.
 
 **DeviceDetailPage (Cihaz Detay Sayfası):**
 ```
