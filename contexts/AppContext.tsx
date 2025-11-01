@@ -19,7 +19,7 @@ import { supabase } from "../utils/supabaseClient.ts";
 import { encryptUserProfile, decryptUserProfile } from "../utils/encryptionManager.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
-type Language = "en" | "tr" | "fr" | "ja" | "es";
+type Language = "en" | "tr" | "fr" | "ja" | "es" | "ru";
 
 interface AppContextType {
   language: Language;
@@ -179,6 +179,8 @@ const getDefaultLanguage = (): Language => {
     'fr': 'fr',      // French
     'fr-fr': 'fr',
     'fr-ca': 'fr',
+    'ru': 'ru',      // Russian
+    'ru-ru': 'ru',
   };
 
   // Check if browser language is in supported auto languages

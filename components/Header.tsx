@@ -318,6 +318,7 @@ const Header: React.FC = () => {
                                   | "fr"
                                   | "ja"
                                   | "es"
+                                  | "ru"
                               )
                             }
                             value={language}
@@ -328,6 +329,7 @@ const Header: React.FC = () => {
                             <option value="fr">🇫🇷 Français</option>
                             <option value="ja">🇯🇵 日本語</option>
                             <option value="es">🇪🇸 Español</option>
+                            <option value="ru">🇷🇺 Русский</option>
                           </select>
                           <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                             <svg
