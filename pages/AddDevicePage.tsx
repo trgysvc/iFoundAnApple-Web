@@ -26,8 +26,8 @@ const AddDevicePage: React.FC = () => {
   const [serialNumber, setSerialNumber] = useState("");
   const [color, setColor] = useState("");
   const [description, setDescription] = useState("");
-  const [rewardAmount, setRewardAmount] = useState<number | undefined>();
-  const [marketValue, setMarketValue] = useState<number | undefined>();
+  const [rewardAmount] = useState<number | undefined>();
+  const [marketValue] = useState<number | undefined>();
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
@@ -39,7 +39,6 @@ const AddDevicePage: React.FC = () => {
   const [uploadedDevicePhotoUrl, setUploadedDevicePhotoUrl] = useState<string | null>(null); // For found device photos
   const [isUploadingDevicePhoto, setIsUploadingDevicePhoto] = useState(false); // For found device photos
   const [isDraggingDevicePhoto, setIsDraggingDevicePhoto] = useState(false); // For drag state
-  const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
@@ -92,15 +91,6 @@ const AddDevicePage: React.FC = () => {
   }, [model, availableColors, color]);
 
   const title = isLostReport ? t("addLostDevice") : t("reportFoundDevice");
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -169,11 +159,11 @@ const AddDevicePage: React.FC = () => {
     console.log("handleDevicePhotoFileProcess called");
     console.log("Files to process:", files.length, files);
     
-    // Limit to 2 files
-    if (files.length > 2) {
-      setError("Maksimum 2 fotoğraf yükleyebilirsiniz (ön ve arka)");
-      return;
-    }
+      // Limit to 2 files
+      if (files.length > 2) {
+        setError(t("maxPhotosError"));
+        return;
+      }
     
     setIsUploadingDevicePhoto(true);
     setError("");
@@ -433,8 +423,7 @@ const AddDevicePage: React.FC = () => {
               >
                 {deviceModels.length === 0 && (
                   <option value="">{t("noModelsAvailable")}</option>
-                )}{" "}
-                // Add this translation key
+                )}
                 {deviceModels.map((deviceModel) => (
                   <option key={deviceModel} value={deviceModel}>
                     {deviceModel}
@@ -476,9 +465,9 @@ const AddDevicePage: React.FC = () => {
                       }`}
                     >
                       <span>
-                        {isUploadingFile ? 'Uploading...' : 
-                         uploadedFileUrl ? 'File uploaded successfully' : 
-                         'Upload a file'}
+                        {isUploadingFile ? t("uploadingFile") : 
+                         uploadedFileUrl ? t("fileUploadedSuccess") : 
+                         t("uploadFile")}
                       </span>
                       <input
                         id="invoice-upload"
@@ -499,13 +488,13 @@ const AddDevicePage: React.FC = () => {
                       </p>
                       {uploadedFileUrl && (
                         <p className="text-xs text-green-600">
-                          ✓ Saved to secure storage
+                          {t("savedToSecureStorage")}
                         </p>
                       )}
                     </div>
                   ) : (
                     <p className="text-xs text-brand-gray-500">
-                      PNG, JPG, WebP, PDF up to 10MB
+                      {t("fileFormatsInvoice")}
                     </p>
                   )}
                 </div>
@@ -524,7 +513,7 @@ const AddDevicePage: React.FC = () => {
                   htmlFor="lostDate"
                   className="block text-sm font-medium text-brand-gray-600 mb-1"
                 >
-                  Kayıp Tarihi
+                  {t("lostDate")}
                 </label>
                 <input
                   id="lostDate"
@@ -536,7 +525,7 @@ const AddDevicePage: React.FC = () => {
                   required
                 />
                 <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın kaybolduğu tarihi seçin
+                  {t("lostDateHelper")}
                 </p>
               </div>
 
@@ -545,7 +534,7 @@ const AddDevicePage: React.FC = () => {
                   htmlFor="lostLocation"
                   className="block text-sm font-medium text-brand-gray-600 mb-1"
                 >
-                  Kayıp Yeri
+                  {t("lostLocation")}
                 </label>
                 <input
                   id="lostLocation"
@@ -557,7 +546,7 @@ const AddDevicePage: React.FC = () => {
                   required
                 />
                 <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın kaybolduğu yeri detaylı olarak belirtin
+                  {t("lostLocationHelper")}
                 </p>
               </div>
             </>
@@ -571,7 +560,7 @@ const AddDevicePage: React.FC = () => {
                   htmlFor="foundDate"
                   className="block text-sm font-medium text-brand-gray-600 mb-1"
                 >
-                  Bulunma Tarihi
+                  {t("foundDate")}
                 </label>
                 <input
                   id="foundDate"
@@ -583,7 +572,7 @@ const AddDevicePage: React.FC = () => {
                   required
                 />
                 <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın bulunduğu tarihi seçin
+                  {t("foundDateHelper")}
                 </p>
               </div>
 
@@ -592,7 +581,7 @@ const AddDevicePage: React.FC = () => {
                   htmlFor="foundLocation"
                   className="block text-sm font-medium text-brand-gray-600 mb-1"
                 >
-                  Bulunma Yeri
+                  {t("foundLocation")}
                 </label>
                 <input
                   id="foundLocation"
@@ -604,7 +593,7 @@ const AddDevicePage: React.FC = () => {
                   required
                 />
                 <p className="mt-1 text-xs text-brand-gray-500">
-                  Cihazın bulunduğu yeri detaylı olarak belirtin
+                  {t("foundLocationHelper")}
                 </p>
               </div>
 
@@ -614,7 +603,7 @@ const AddDevicePage: React.FC = () => {
                   htmlFor="device-photo-upload"
                   className="block text-sm font-medium text-brand-gray-600 mb-1"
                 >
-                  Cihaz Fotoğrafı (Ön ve Arka)
+                  {t("devicePhoto")}
                 </label>
                 <div 
                   className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md ${
@@ -638,9 +627,9 @@ const AddDevicePage: React.FC = () => {
                         className="relative cursor-pointer bg-white rounded-md font-medium hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-blue px-1"
                       >
                         <span>
-                          {isUploadingDevicePhoto ? 'Uploading...' : 
-                           uploadedDevicePhotoUrl ? 'Photo uploaded successfully' : 
-                           'Upload a file'}
+                          {isUploadingDevicePhoto ? t("uploadingFile") : 
+                           uploadedDevicePhotoUrl ? t("photoUploadedSuccess") : 
+                           t("uploadFile")}
                         </span>
                         <input
                           id="device-photo-file-upload"
@@ -661,13 +650,13 @@ const AddDevicePage: React.FC = () => {
                         </p>
                         {uploadedDevicePhotoUrl && (
                           <p className="text-xs text-green-600">
-                            ✓ Saved to secure storage
+                            {t("savedToSecureStorage")}
                           </p>
                         )}
                       </div>
                     ) : (
                       <p className="text-xs text-brand-gray-500">
-                        PNG, JPG, WebP up to 10MB, maksimum 2 fotoğraf (ön ve arka)
+                        {t("devicePhotoHelper")}
                       </p>
                     )}
                   </div>
@@ -828,7 +817,7 @@ const AddDevicePage: React.FC = () => {
                 className="flex-1"
                 onClick={() => navigate('/dashboard')}
               >
-                Cihazlarım Listesine Geri Dön
+                {t("backToDeviceList")}
               </Button>
               
               <Button 
