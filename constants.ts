@@ -148,6 +148,36 @@ export const translations = {
     loadingDeviceModels: "Loading device models...",
     noModelsAvailable: "No models available",
     selectModelFirst: "Select a device model first",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "Welcome to iFoundAnApple!",
+    lostDeviceInfoSubtitle: "Important Information About Lost Device Registration and Exchange Process:",
+    lostDeviceInfoFree: "Device Registration is Free:",
+    lostDeviceInfoFreeDesc: "No fees will be charged for your lost or found device registrations. Our aim is to facilitate the safe and easy reunion of devices with their owners.",
+    lostDeviceInfoPayment: "Payment Only When Exchange Begins:",
+    lostDeviceInfoPaymentDesc: "Payment will only be requested after your lost device is found, if you initiate the exchange process. This means you will not make any payment until your device reaches you.",
+    lostDeviceInfoFees: "Fee Details:",
+    lostDeviceInfoFeesDesc: "The fee to be requested is determined at a certain and fair rate based on your device's market value, so as not to put you in a difficult situation. This fee covers the following items:",
+    lostDeviceInfoFeeItem1: "iFoundAnApple Service Fee",
+    lostDeviceInfoFeeItem2: "Payment Provider Fee (For secure payment infrastructure)",
+    lostDeviceInfoFeeItem3: "Cargo Fee (For secure delivery of your device)",
+    lostDeviceInfoFeeItem4: "Reward for the Person Who Found Your Device (For their kind efforts)",
+    lostDeviceInfoCancel: "Cancellation and Refund Conditions:",
+    lostDeviceInfoCancelDesc: "If you request a transaction cancellation during the exchange process, the entire fee you paid will be refunded to you.",
+    lostDeviceInfoFooter: "As iFoundAnApple, we strive to provide transparent and reliable service for you to recover your valuable items.",
+    lostDeviceCheckboxText: "Please check the box below to continue with device registration:",
+    foundDeviceInfoTitle: "Welcome to iFoundAnApple!",
+    foundDeviceInfoSubtitle: "Important Information About Found Device Registration and Reward Process:",
+    foundDeviceInfoFree: "Device Registration is Free:",
+    foundDeviceInfoFreeDesc: "No fee will be charged for registering the device you found on the iFoundAnApple platform. Your civil and honorable behavior is of immeasurable value to us. Our aim is to facilitate the safe and easy delivery of the valuable item you found to its owner.",
+    foundDeviceInfoReward: "Reward and Service Fees:",
+    foundDeviceInfoRewardDesc: "When a match is made with a lost device and the exchange process is initiated, iFoundAnApple will collect a fee from the device owner for the services we provide. Part of this fee will be transferred to you as a reward determined to appreciate your kind behavior. The other part will cover items such as service fee, payment provider fee and cargo fee.",
+    foundDeviceInfoRewardAmount: "Determination of Reward:",
+    foundDeviceInfoRewardAmountDesc: "The reward reserved for you is determined at a certain and fair rate based on the market value of the found device. In this way, we ensure that you receive a small gift in return for your effort and exemplary behavior.",
+    foundDeviceInfoSecurity: "Process Security:",
+    foundDeviceInfoSecurityDesc: "iFoundAnApple provides a secure exchange process that will ensure the device reaches its owner safely and you receive your reward in full. You will be informed and supported throughout the entire process.",
+    foundDeviceInfoFooter: "As iFoundAnApple, we sincerely appreciate your honesty and helpfulness, and strive to provide a transparent and reliable platform for valuable items to reach their owners. The presence of people like you makes the world a better place.",
+    foundDeviceCheckboxText: "Please check the box below to register the device you found:",
+    agreeToTermsText: "I have read and accept the above terms and conditions.",
     // Payment related
     paymentSummary: "Payment Summary",
     paymentSummarySubtitle: "Get your device back with secure payment",
@@ -1505,6 +1535,36 @@ export const translations = {
     loadingDeviceModels: "Cihaz modelleri yükleniyor...",
     noModelsAvailable: "Hiç model yok",
     selectModelFirst: "Önce bir cihaz modeli seçin",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "iFoundAnApple'a Hoş Geldin!",
+    lostDeviceInfoSubtitle: "Kayıp Cihaz Kayıt ve Takas Süreci Hakkında Önemli Bilgiler:",
+    lostDeviceInfoFree: "Cihaz Kaydı Ücretsizdir:",
+    lostDeviceInfoFreeDesc: "Kayıp veya bulunan cihaz kayıtlarınız için sizden hiçbir ücret talep edilmeyecektir. Amacımız, cihazların sahipleriyle güvenli ve kolay bir şekilde yeniden buluşmasına aracılık etmektir.",
+    lostDeviceInfoPayment: "Ödeme Sadece Takas Başladığında:",
+    lostDeviceInfoPaymentDesc: "Ödeme, yalnızca kayıp cihazınızın bulunmasının ardından, sizin tarafınızdan takas sürecinin başlatılması durumunda talep edilecektir. Bu, cihazınız size ulaşmadan herhangi bir ödeme yapmayacağınız anlamına gelir.",
+    lostDeviceInfoFees: "Ücretlendirme Detayları:",
+    lostDeviceInfoFeesDesc: "Talep edilecek ücret, sizleri zor durumda bırakmamak adına, cihazınızın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenmektedir. Bu ücret aşağıdaki kalemleri kapsamaktadır:",
+    lostDeviceInfoFeeItem1: "iFoundAnApple Hizmet Bedeli",
+    lostDeviceInfoFeeItem2: "Ödeme Sağlayıcı Bedeli (Güvenli ödeme altyapısı için)",
+    lostDeviceInfoFeeItem3: "Kargo Bedeli (Cihazınızın size güvenle ulaştırılması için)",
+    lostDeviceInfoFeeItem4: "Cihazınızı Bulan Kişinin Ödülü (Nazik çabaları için)",
+    lostDeviceInfoCancel: "İptal ve İade Koşulları:",
+    lostDeviceInfoCancelDesc: "Takas sürecinde işlem iptali talep etmeniz halinde, ödediğiniz tüm ücret tarafınıza iade edilecektir.",
+    lostDeviceInfoFooter: "iFoundAnApple olarak, değerli eşyalarınıza kavuşmanız için şeffaf ve güvenilir bir hizmet sunmaya özen gösteriyoruz.",
+    lostDeviceCheckboxText: "Cihaz kaydına devam etmek için lütfen aşağıdaki kutucuğu işaretleyiniz:",
+    foundDeviceInfoTitle: "iFoundAnApple'a Hoş Geldin!",
+    foundDeviceInfoSubtitle: "Bulunan Cihaz İçin Kayıt ve Ödül Süreci Hakkında Önemli Bilgiler:",
+    foundDeviceInfoFree: "Cihaz Kaydı Ücretsizdir:",
+    foundDeviceInfoFreeDesc: "Bulduğunuz cihazı iFoundAnApple platformuna kaydetmek için sizden hiçbir ücret talep edilmeyecektir. Sizin bu medeni ve onurlu davranışınız, bizim için paha biçilemez bir değer taşıyor. Amacımız, bulduğunuz değerli eşyanın sahibine güvenli ve kolay bir şekilde ulaşmasına aracılık etmektir.",
+    foundDeviceInfoReward: "Ödül ve Hizmet Bedelleri:",
+    foundDeviceInfoRewardDesc: "Kayıp cihaz ile eşleşme sağlandığında ve takas süreci başlatıldığında, iFoundAnApple olarak sunduğumuz hizmetler için cihazın sahibinden bir bedel tahsil edilecektir. Bu bedelin bir kısmı, sizin bu nazik davranışınızı takdir etmek amacıyla belirlenmiş bir ödül olarak tarafınıza iletilecektir. Diğer kısmı ise hizmet bedeli, ödeme sağlayıcı bedeli ve kargo bedeli gibi kalemleri karşılayacaktır.",
+    foundDeviceInfoRewardAmount: "Ödülün Belirlenmesi:",
+    foundDeviceInfoRewardAmountDesc: "Sizin için ayrılan ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenmektedir. Bu sayede, gösterdiğiniz çabanın ve örnek davranışın karşılığında küçük bir hediye almanızı sağlıyoruz.",
+    foundDeviceInfoSecurity: "Sürecin Güvenliği:",
+    foundDeviceInfoSecurityDesc: "iFoundAnApple, cihazın güvenli bir şekilde sahibine ulaşmasını ve sizin ödülünüzü eksiksiz almanızı sağlayacak güvenli bir takas süreci sunmakta. Tüm süreç boyunca bilgilendirilecek ve destekleneceksiniz.",
+    foundDeviceInfoFooter: "iFoundAnApple olarak, dürüstlüğünüzü ve yardımseverliğinizi yürekten takdir ediyor, değerli eşyaların sahiplerine ulaşması için şeffaf ve güvenilir bir platform sunmaya özen gösteriyoruz. Sizin gibi insanların varlığı, dünyayı daha iyi bir yer yapıyor.",
+    foundDeviceCheckboxText: "Bulduğunuz cihazı kaydetmek için lütfen aşağıdaki kutucuğu işaretleyiniz:",
+    agreeToTermsText: "Yukarıdaki şartları okudum ve kabul ediyorum.",
     // Payment related
     paymentSummary: "Ödeme Özeti",
     paymentSummarySubtitle: "Güvenli ödeme ile cihazınızı geri alın",
@@ -2872,6 +2932,36 @@ export const translations = {
     loadingDeviceModels: "Chargement des modèles d'appareils...",
     noModelsAvailable: "Aucun modèle disponible",
     selectModelFirst: "Sélectionnez d'abord un modèle d'appareil",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "Bienvenue sur iFoundAnApple !",
+    lostDeviceInfoSubtitle: "Informations importantes sur l'enregistrement et le processus d'échange d'appareil perdu :",
+    lostDeviceInfoFree: "L'enregistrement de l'appareil est gratuit :",
+    lostDeviceInfoFreeDesc: "Aucun frais ne sera facturé pour vos enregistrements d'appareils perdus ou trouvés. Notre objectif est de faciliter la réunion sécurisée et facile des appareils avec leurs propriétaires.",
+    lostDeviceInfoPayment: "Paiement uniquement lorsque l'échange commence :",
+    lostDeviceInfoPaymentDesc: "Le paiement ne sera demandé qu'après que votre appareil perdu ait été trouvé, si vous initiez le processus d'échange. Cela signifie que vous ne ferez aucun paiement tant que votre appareil ne vous aura pas atteint.",
+    lostDeviceInfoFees: "Détails des frais :",
+    lostDeviceInfoFeesDesc: "Le montant demandé est déterminé à un taux déterminé et équitable basé sur la valeur marchande de votre appareil, afin de ne pas vous mettre dans une situation difficile. Ce montant couvre les éléments suivants :",
+    lostDeviceInfoFeeItem1: "Frais de service iFoundAnApple",
+    lostDeviceInfoFeeItem2: "Frais du fournisseur de paiement (Pour une infrastructure de paiement sécurisée)",
+    lostDeviceInfoFeeItem3: "Frais d'expédition (Pour la livraison sécurisée de votre appareil)",
+    lostDeviceInfoFeeItem4: "Récompense pour la personne qui a trouvé votre appareil (Pour ses efforts bienveillants)",
+    lostDeviceInfoCancel: "Conditions d'annulation et de remboursement :",
+    lostDeviceInfoCancelDesc: "Si vous demandez une annulation de transaction pendant le processus d'échange, l'intégralité des frais que vous avez payés vous sera remboursée.",
+    lostDeviceInfoFooter: "En tant qu'iFoundAnApple, nous nous efforçons de fournir un service transparent et fiable pour que vous récupériez vos objets de valeur.",
+    lostDeviceCheckboxText: "Veuillez cocher la case ci-dessous pour continuer l'enregistrement de l'appareil :",
+    foundDeviceInfoTitle: "Bienvenue sur iFoundAnApple !",
+    foundDeviceInfoSubtitle: "Informations importantes sur l'enregistrement et le processus de récompense d'appareil trouvé :",
+    foundDeviceInfoFree: "L'enregistrement de l'appareil est gratuit :",
+    foundDeviceInfoFreeDesc: "Aucun frais ne sera facturé pour enregistrer l'appareil que vous avez trouvé sur la plateforme iFoundAnApple. Votre comportement civil et honorable a une valeur inestimable pour nous. Notre objectif est de faciliter la livraison sécurisée et facile de l'objet de valeur que vous avez trouvé à son propriétaire.",
+    foundDeviceInfoReward: "Récompense et frais de service :",
+    foundDeviceInfoRewardDesc: "Lorsqu'une correspondance est établie avec un appareil perdu et que le processus d'échange est initié, iFoundAnApple percevra des frais auprès du propriétaire de l'appareil pour les services que nous fournissons. Une partie de ce montant vous sera transférée en tant que récompense déterminée pour apprécier votre comportement bienveillant. L'autre partie couvrira des éléments tels que les frais de service, les frais du fournisseur de paiement et les frais d'expédition.",
+    foundDeviceInfoRewardAmount: "Détermination de la récompense :",
+    foundDeviceInfoRewardAmountDesc: "La récompense réservée pour vous est déterminée à un taux déterminé et équitable basé sur la valeur marchande de l'appareil trouvé. De cette façon, nous nous assurons que vous receviez un petit cadeau en retour de vos efforts et de votre comportement exemplaire.",
+    foundDeviceInfoSecurity: "Sécurité du processus :",
+    foundDeviceInfoSecurityDesc: "iFoundAnApple fournit un processus d'échange sécurisé qui garantira que l'appareil atteigne son propriétaire en toute sécurité et que vous receviez votre récompense intégralement. Vous serez informé et soutenu tout au long du processus.",
+    foundDeviceInfoFooter: "En tant qu'iFoundAnApple, nous apprécions sincèrement votre honnêteté et votre serviabilité, et nous nous efforçons de fournir une plateforme transparente et fiable pour que les objets de valeur atteignent leurs propriétaires. La présence de personnes comme vous rend le monde meilleur.",
+    foundDeviceCheckboxText: "Veuillez cocher la case ci-dessous pour enregistrer l'appareil que vous avez trouvé :",
+    agreeToTermsText: "J'ai lu et j'accepte les termes et conditions ci-dessus.",
     // Payment related
     paymentSummary: "Résumé du paiement",
     paymentSummarySubtitle: "Récupérez votre appareil avec un paiement sécurisé",
@@ -3409,6 +3499,36 @@ export const translations = {
     loadingDeviceModels: "デバイスモデルを読み込み中...",
     noModelsAvailable: "利用可能なモデルはありません",
     selectModelFirst: "最初にデバイスモデルを選択してください",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "iFoundAnAppleへようこそ！",
+    lostDeviceInfoSubtitle: "紛失デバイスの登録と交換プロセスに関する重要な情報：",
+    lostDeviceInfoFree: "デバイス登録は無料です：",
+    lostDeviceInfoFreeDesc: "紛失または発見されたデバイスの登録に対して料金は請求されません。私たちの目的は、デバイスが所有者と安全かつ簡単に再会できるよう支援することです。",
+    lostDeviceInfoPayment: "交換が開始された場合のみ支払い：",
+    lostDeviceInfoPaymentDesc: "支払いは、紛失したデバイスが見つかった後、あなたが交換プロセスを開始した場合にのみ要求されます。これは、デバイスがあなたに届くまで支払いを行わないことを意味します。",
+    lostDeviceInfoFees: "料金の詳細：",
+    lostDeviceInfoFeesDesc: "請求される料金は、困難な状況に陥らないよう、デバイスの市場価値に基づいて特定の公正なレートで決定されます。この料金には以下の項目が含まれます：",
+    lostDeviceInfoFeeItem1: "iFoundAnAppleサービス料",
+    lostDeviceInfoFeeItem2: "決済プロバイダー料金（安全な決済インフラのため）",
+    lostDeviceInfoFeeItem3: "配送料（デバイスの安全な配達のため）",
+    lostDeviceInfoFeeItem4: "デバイスを発見した人の報酬（親切な努力のため）",
+    lostDeviceInfoCancel: "キャンセルと返金条件：",
+    lostDeviceInfoCancelDesc: "交換プロセス中に取引のキャンセルを要求した場合、支払った全額が返金されます。",
+    lostDeviceInfoFooter: "iFoundAnAppleとして、貴重なアイテムを取り戻すための透明で信頼できるサービスを提供するよう努めています。",
+    lostDeviceCheckboxText: "デバイス登録を続行するには、以下のチェックボックスをチェックしてください：",
+    foundDeviceInfoTitle: "iFoundAnAppleへようこそ！",
+    foundDeviceInfoSubtitle: "発見されたデバイスの登録と報酬プロセスに関する重要な情報：",
+    foundDeviceInfoFree: "デバイス登録は無料です：",
+    foundDeviceInfoFreeDesc: "発見したデバイスをiFoundAnAppleプラットフォームに登録するための料金は請求されません。あなたの礼儀正しく名誉ある行動は、私たちにとって計り知れない価値があります。私たちの目的は、あなたが発見した貴重なアイテムが安全かつ簡単に所有者に届くよう支援することです。",
+    foundDeviceInfoReward: "報酬とサービス料：",
+    foundDeviceInfoRewardDesc: "紛失デバイスとのマッチングが成立し、交換プロセスが開始された場合、iFoundAnAppleは提供するサービスに対してデバイス所有者から料金を徴収します。この料金の一部は、あなたの親切な行動を評価するために決定された報酬としてあなたに送金されます。残りの部分は、サービス料、決済プロバイダー料金、配送料などの項目をカバーします。",
+    foundDeviceInfoRewardAmount: "報酬の決定：",
+    foundDeviceInfoRewardAmountDesc: "あなたのために確保された報酬は、発見されたデバイスの市場価値に基づいて特定の公正なレートで決定されます。このようにして、あなたの努力と模範的な行動に対して小さなギフトを受け取ることができるようになります。",
+    foundDeviceInfoSecurity: "プロセスのセキュリティ：",
+    foundDeviceInfoSecurityDesc: "iFoundAnAppleは、デバイスが安全に所有者に届き、あなたが報酬を完全に受け取れるよう、安全な交換プロセスを提供します。プロセス全体を通じて情報提供とサポートを受けます。",
+    foundDeviceInfoFooter: "iFoundAnAppleとして、あなたの誠実さと親切さを心から評価し、貴重なアイテムが所有者に届くための透明で信頼できるプラットフォームを提供するよう努めています。あなたのような人々の存在が世界をより良い場所にしています。",
+    foundDeviceCheckboxText: "発見したデバイスを登録するには、以下のチェックボックスをチェックしてください：",
+    agreeToTermsText: "上記の利用規約を読み、同意しました。",
     // Payment related
     paymentSummary: "支払い概要",
     paymentSummarySubtitle: "安全な支払いでデバイスを取り戻しましょう",
@@ -3946,6 +4066,36 @@ export const translations = {
     loadingDeviceModels: "Cargando modelos de dispositivos...",
     noModelsAvailable: "No hay modelos disponibles",
     selectModelFirst: "Selecciona primero un modelo de dispositivo",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "¡Bienvenido a iFoundAnApple!",
+    lostDeviceInfoSubtitle: "Información Importante sobre el Registro de Dispositivo Perdido y el Proceso de Intercambio:",
+    lostDeviceInfoFree: "El Registro del Dispositivo es Gratuito:",
+    lostDeviceInfoFreeDesc: "No se le cobrará ninguna tarifa por sus registros de dispositivos perdidos o encontrados. Nuestro objetivo es facilitar la reunión segura y fácil de los dispositivos con sus propietarios.",
+    lostDeviceInfoPayment: "Pago Solo Cuando Comienza el Intercambio:",
+    lostDeviceInfoPaymentDesc: "El pago solo se solicitará después de que se encuentre su dispositivo perdido, si usted inicia el proceso de intercambio. Esto significa que no realizará ningún pago hasta que su dispositivo llegue a usted.",
+    lostDeviceInfoFees: "Detalles de las Tarifas:",
+    lostDeviceInfoFeesDesc: "La tarifa a solicitar se determina a una tasa determinada y justa basada en el valor de mercado de su dispositivo, para no ponerlo en una situación difícil. Esta tarifa cubre los siguientes elementos:",
+    lostDeviceInfoFeeItem1: "Tarifa de Servicio iFoundAnApple",
+    lostDeviceInfoFeeItem2: "Tarifa del Proveedor de Pago (Para infraestructura de pago segura)",
+    lostDeviceInfoFeeItem3: "Tarifa de Carga (Para la entrega segura de su dispositivo)",
+    lostDeviceInfoFeeItem4: "Recompensa para la Persona que Encontró su Dispositivo (Por sus amables esfuerzos)",
+    lostDeviceInfoCancel: "Condiciones de Cancelación y Reembolso:",
+    lostDeviceInfoCancelDesc: "Si solicita la cancelación de una transacción durante el proceso de intercambio, toda la tarifa que pagó le será reembolsada.",
+    lostDeviceInfoFooter: "Como iFoundAnApple, nos esforzamos por proporcionar un servicio transparente y confiable para que recupere sus artículos valiosos.",
+    lostDeviceCheckboxText: "Por favor, marque la casilla a continuación para continuar con el registro del dispositivo:",
+    foundDeviceInfoTitle: "¡Bienvenido a iFoundAnApple!",
+    foundDeviceInfoSubtitle: "Información Importante sobre el Registro de Dispositivo Encontrado y el Proceso de Recompensa:",
+    foundDeviceInfoFree: "El Registro del Dispositivo es Gratuito:",
+    foundDeviceInfoFreeDesc: "No se le cobrará ninguna tarifa por registrar el dispositivo que encontró en la plataforma iFoundAnApple. Su comportamiento civil y honorable tiene un valor incalculable para nosotros. Nuestro objetivo es facilitar la entrega segura y fácil del artículo valioso que encontró a su propietario.",
+    foundDeviceInfoReward: "Recompensa y Tarifas de Servicio:",
+    foundDeviceInfoRewardDesc: "Cuando se establece una coincidencia con un dispositivo perdido y se inicia el proceso de intercambio, iFoundAnApple cobrará una tarifa al propietario del dispositivo por los servicios que proporcionamos. Parte de esta tarifa se le transferirá como una recompensa determinada para apreciar su comportamiento amable. La otra parte cubrirá elementos como la tarifa de servicio, la tarifa del proveedor de pago y la tarifa de carga.",
+    foundDeviceInfoRewardAmount: "Determinación de la Recompensa:",
+    foundDeviceInfoRewardAmountDesc: "La recompensa reservada para usted se determina a una tasa determinada y justa basada en el valor de mercado del dispositivo encontrado. De esta manera, nos aseguramos de que reciba un pequeño regalo a cambio de su esfuerzo y comportamiento ejemplar.",
+    foundDeviceInfoSecurity: "Seguridad del Proceso:",
+    foundDeviceInfoSecurityDesc: "iFoundAnApple proporciona un proceso de intercambio seguro que garantizará que el dispositivo llegue a su propietario de manera segura y que usted reciba su recompensa en su totalidad. Será informado y apoyado durante todo el proceso.",
+    foundDeviceInfoFooter: "Como iFoundAnApple, apreciamos sinceramente su honestidad y amabilidad, y nos esforzamos por proporcionar una plataforma transparente y confiable para que los artículos valiosos lleguen a sus propietarios. La presencia de personas como usted hace del mundo un lugar mejor.",
+    foundDeviceCheckboxText: "Por favor, marque la casilla a continuación para registrar el dispositivo que encontró:",
+    agreeToTermsText: "He leído y acepto los términos y condiciones anteriores.",
     // Payment related
     paymentSummary: "Resumen de Pago",
     paymentSummarySubtitle: "Recupera tu dispositivo con pago seguro",
@@ -4505,6 +4655,36 @@ export const translations = {
     loadingDeviceModels: "Загрузка моделей устройств...",
     noModelsAvailable: "Нет доступных моделей",
     selectModelFirst: "Сначала выберите модель устройства",
+    // Add Device Page Information Texts
+    lostDeviceInfoTitle: "Добро пожаловать в iFoundAnApple!",
+    lostDeviceInfoSubtitle: "Важная информация о регистрации потерянного устройства и процессе обмена:",
+    lostDeviceInfoFree: "Регистрация устройства бесплатна:",
+    lostDeviceInfoFreeDesc: "С вас не будет взиматься плата за регистрацию потерянных или найденных устройств. Наша цель — облегчить безопасное и легкое воссоединение устройств с их владельцами.",
+    lostDeviceInfoPayment: "Платеж только когда начинается обмен:",
+    lostDeviceInfoPaymentDesc: "Платеж будет запрошен только после того, как ваше потерянное устройство будет найдено, если вы инициируете процесс обмена. Это означает, что вы не будете производить никаких платежей до тех пор, пока ваше устройство не дойдет до вас.",
+    lostDeviceInfoFees: "Детали комиссии:",
+    lostDeviceInfoFeesDesc: "Запрашиваемая комиссия определяется по определенной и справедливой ставке на основе рыночной стоимости вашего устройства, чтобы не поставить вас в затруднительное положение. Эта комиссия покрывает следующие пункты:",
+    lostDeviceInfoFeeItem1: "Комиссия за услуги iFoundAnApple",
+    lostDeviceInfoFeeItem2: "Комиссия провайдера платежей (За безопасную платежную инфраструктуру)",
+    lostDeviceInfoFeeItem3: "Комиссия за доставку (За безопасную доставку вашего устройства)",
+    lostDeviceInfoFeeItem4: "Вознаграждение для человека, который нашел ваше устройство (За их добрые усилия)",
+    lostDeviceInfoCancel: "Условия отмены и возврата:",
+    lostDeviceInfoCancelDesc: "Если вы запросите отмену транзакции в процессе обмена, вся уплаченная вами комиссия будет возвращена вам.",
+    lostDeviceInfoFooter: "Как iFoundAnApple, мы стремимся предоставлять прозрачный и надежный сервис для восстановления ваших ценных предметов.",
+    lostDeviceCheckboxText: "Пожалуйста, установите флажок ниже, чтобы продолжить регистрацию устройства:",
+    foundDeviceInfoTitle: "Добро пожаловать в iFoundAnApple!",
+    foundDeviceInfoSubtitle: "Важная информация о регистрации найденного устройства и процессе вознаграждения:",
+    foundDeviceInfoFree: "Регистрация устройства бесплатна:",
+    foundDeviceInfoFreeDesc: "С вас не будет взиматься плата за регистрацию найденного вами устройства на платформе iFoundAnApple. Ваше цивилизованное и достойное поведение имеет неоценимую ценность для нас. Наша цель — облегчить безопасную и легкую доставку найденного вами ценного предмета его владельцу.",
+    foundDeviceInfoReward: "Вознаграждение и комиссии за услуги:",
+    foundDeviceInfoRewardDesc: "Когда найдено совпадение с потерянным устройством и инициирован процесс обмена, iFoundAnApple взимает плату с владельца устройства за предоставляемые нами услуги. Часть этой платы будет переведена вам в качестве вознаграждения, определенного для признания вашего доброго поведения. Другая часть покроет такие пункты, как комиссия за услуги, комиссия провайдера платежей и комиссия за доставку.",
+    foundDeviceInfoRewardAmount: "Определение вознаграждения:",
+    foundDeviceInfoRewardAmountDesc: "Вознаграждение, зарезервированное для вас, определяется по определенной и справедливой ставке на основе рыночной стоимости найденного устройства. Таким образом, мы обеспечиваем, чтобы вы получили небольшой подарок в знак признания ваших усилий и примерного поведения.",
+    foundDeviceInfoSecurity: "Безопасность процесса:",
+    foundDeviceInfoSecurityDesc: "iFoundAnApple предоставляет безопасный процесс обмена, который обеспечит безопасное получение устройства его владельцем и полное получение вами вознаграждения. Вас будут информировать и поддерживать на протяжении всего процесса.",
+    foundDeviceInfoFooter: "Как iFoundAnApple, мы искренне ценим вашу честность и готовность помочь, и стремимся предоставить прозрачную и надежную платформу для доставки ценных предметов их владельцам. Присутствие таких людей, как вы, делает мир лучше.",
+    foundDeviceCheckboxText: "Пожалуйста, установите флажок ниже, чтобы зарегистрировать найденное вами устройство:",
+    agreeToTermsText: "Я прочитал и принимаю вышеуказанные условия.",
     // Payment related
     paymentSummary: "Сводка платежа",
     paymentSummarySubtitle: "Получите свое устройство обратно с безопасной оплатой",
@@ -4682,18 +4862,581 @@ export const translations = {
       q6: "Каковы комиссии?",
       a6: "Общие комиссии распределяются следующим образом;\n\nКомиссия безопасного платежного провайдера + Комиссия грузовой компании + Вознаграждение нашедшего + Комиссия сервиса.\n\nЭто помогает нам покрывать операционные расходы, поддерживать платформу и обеспечивать безопасную среду для всех.",
     },
-    termsContent: `<h2 class="text-2xl font-bold mb-4">УСЛОВИЯ ОБСЛУЖИВАНИЯ</h2>
+    termsContent: `
+      <h2 class="text-2xl font-bold mb-4">УСЛОВИЯ ОБСЛУЖИВАНИЯ</h2>
       <p class="mb-4"><strong>Последнее обновление:</strong> 14 октября 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. ОБЛАСТЬ ДЕЙСТВИЯ ДОГОВОРА</h3>
       <p class="mb-4">Эти условия регулируют правовые отношения между платформой iFoundAnApple и пользователями.</p>
+      
+      <p class="mb-4"><strong>Владелец платформы:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Контакты:</strong> support@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Законодательство:</strong> Законы Республики Турция</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.1 Значение принятия</h4>
+      <p class="mb-4">Регистрируясь на платформе, создавая аккаунт или используя услуги, вы считаетесь принявшим эти Условия.</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.2 Право на изменение</h4>
+      <p class="mb-4">Мы можем изменить эти Условия с уведомлением за 7 дней. Изменения:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Сообщаются по электронной почте</li>
+        <li>Объявляются на веб-сайте</li>
+        <li>Отправляются как уведомления в приложении</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">2. УСЛУГИ ПЛАТФОРМЫ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">2.1 Услуги, которые мы предоставляем</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Регистрация потерянного устройства: Регистрация устройств Apple в системе</li>
+        <li>✅ Уведомление о найденном устройстве: Сообщение об устройствах, которые вы нашли</li>
+        <li>✅ Автоматическое сопоставление: Сопоставление на основе серийного номера</li>
+        <li>✅ Анонимная система: Ваша идентификационная информация сохраняется конфиденциальной</li>
+        <li>✅ Безопасный платеж: Безопасный платеж, соответствующий PCI-DSS</li>
+        <li>✅ Система эскроу: Деньги хранятся в безопасности</li>
+        <li>✅ Организация груза: Выбор грузовой компании и отслеживание</li>
+        <li>✅ Система уведомлений: Обновления в реальном времени</li>
+        <li>✅ Предложения на основе ИИ: Предложения по вознаграждению с помощью Google Gemini</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">2.2 Услуги, которые мы не предоставляем</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Доставка груза: Мы не предоставляем грузовые услуги</li>
+        <li>❌ Физические встречи: Мы физически не сводим стороны вместе</li>
+        <li>❌ Ремонт устройства: Мы не предоставляем техническую поддержку</li>
+        <li>❌ Юридическое представительство: Мы не предоставляем юридические услуги</li>
+        <li>❌ Гарантия: Состояние или функциональность устройства не гарантируются</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">3. РЕГИСТРАЦИЯ И УПРАВЛЕНИЕ АККАУНТОМ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Требования к регистрации</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Должны быть 18 лет или старше</li>
+        <li>Требуется действительный адрес электронной почты</li>
+        <li>Должны предоставить точную информацию</li>
+        <li>Должны проживать в Турции или странах ЕС</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Методы регистрации</h4>
+      <p class="mb-2"><strong>Регистрация по электронной почте:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Требуется имя, фамилия, электронная почта, дата рождения и пароль</li>
+        <li>Верификация электронной почты обязательна</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Регистрация OAuth (Google / Apple):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Аутентификация личности третьей стороной</li>
+        <li>Подчиняется условиям поставщика OAuth</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Безопасность аккаунта</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Храните свой пароль сильным и не делитесь им</li>
+        <li>Не делитесь информацией об аккаунте с кем-либо</li>
+        <li>Немедленно сообщайте о подозрительной активности</li>
+        <li>Каждый пользователь может открыть только 1 аккаунт</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. ОТВЕТСТВЕННОСТЬ ВЛАДЕЛЬЦА УСТРОЙСТВА</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Законное владение</h4>
+      <p class="mb-2">При добавлении потерянного устройства:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы заявляете, что являетесь законным владельцем устройства</li>
+        <li>Вы должны иметь возможность предоставить документы о праве собственности (счет, сертификат гарантии)</li>
+        <li>Вы обязуетесь, что не сообщаете о краденом или поддельном устройстве</li>
+      </ul>
+      <p class="mb-4"><strong>Важно:</strong> Регистрация устройства полностью бесплатна. Платеж запрашивается только когда ваше устройство найдено и начинается процесс обмена.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Предоставление точной информации</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы должны правильно ввести модель устройства, серийный номер и характеристики</li>
+        <li>Вы должны правдиво сообщить о состоянии устройства</li>
+        <li>Вы должны указать дату и место потери как можно точнее</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Обязательство по оплате</h4>
+      <p class="mb-2">Когда происходит совпадение:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы обязуетесь заплатить определенную сумму вознаграждения</li>
+        <li>Вы должны произвести платеж в течение 48 часов</li>
+        <li>Комиссии включают следующие пункты:
+          <ul class="list-disc pl-6 mt-2">
+            <li>Комиссия за услуги iFoundAnApple</li>
+            <li>Комиссия поставщика платежей (Стоимость безопасной платежной инфраструктуры)</li>
+            <li>Грузовая плата (Чтобы ваше устройство безопасно дошло до вас)</li>
+            <li>Вознаграждение тому, кто нашел устройство (В знак признательности за их добрый вклад)</li>
+          </ul>
+        </li>
+        <li>Вы не можете отменить после того, как платеж произведен (кроме уважительных причин)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. ОТВЕТСТВЕННОСТЬ ТОГО, КТО НАШЕЛ УСТРОЙСТВО</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Честное обнаружение</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы заявляете, что нашли устройство в соответствии с законом</li>
+        <li>Вы обязуетесь, что не украли устройство и не приобрели его незаконным путем</li>
+        <li>Вы соглашаетесь доставить найденное устройство неповрежденным и полным</li>
+      </ul>
+      <p class="mb-4"><strong>Важно:</strong> Регистрация найденного устройства полностью бесплатна. Это гражданское и достойное поведение бесценно для нас.</p>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Предоставление точной информации</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы должны правильно ввести информацию об устройстве</li>
+        <li>Вы должны правдиво сообщить дату и место находки</li>
+        <li>Вы должны быть прозрачны относительно состояния устройства</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 Отправка груза</h4>
+      <p class="mb-2">После завершения платежа:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Вы должны доставить устройство в грузовую компанию в течение 5 рабочих дней</li>
+        <li>Вы должны выбрать грузовую компанию и ввести номер отслеживания в систему</li>
+        <li>Вы должны отправить устройство в оригинальном состоянии, неповрежденным</li>
+        <li>Вы обязуетесь не вмешиваться в устройство (взлом пароля, замена деталей)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. ПЛАТЕЖИ, КОМИССИИ И СИСТЕМА ЭСКРОУ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Система вознаграждений</h4>
+      <p class="mb-2"><strong>Определение вознаграждения:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Владелец устройства свободно определяет сумму вознаграждения</li>
+        <li>Минимум: 500 TL, Максимум: 50,000 TL</li>
+        <li>Может использоваться система предложений ИИ (опционально, Google Gemini)</li>
+        <li>Вознаграждение должно быть разумным процентом рыночной стоимости устройства</li>
+      </ul>
+      
+      <h4 class="text-lg font-semibold mb-2">6.2 Комиссии за услуги</h4>
+      <p class="mb-2"><strong>Комиссии для владельца устройства (формула v5.0):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Валовая сумма:</strong> Общая сумма, полученная от клиента (включая комиссию Iyzico)</li>
+        <li><strong>Комиссия Iyzico:</strong> 3.43% от валовой суммы (автоматически вычитается)</li>
+        <li><strong>Чистая сумма:</strong> Сумма, оставшаяся после вычета комиссии Iyzico</li>
+        <li><strong>Грузовая плата:</strong> 250 TL (фиксированная)</li>
+        <li><strong>Вознаграждение нашедшему:</strong> 20% от чистой суммы</li>
+        <li><strong>Комиссия за услуги:</strong> Чистая сумма - груз - вознаграждение (остаток)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.3 Система эскроу</h4>
+      <p class="mb-2"><strong>Как это работает (v5.0):</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>Происходит совпадение</li>
+        <li>Владелец устройства платит валовую сумму (в течение 48 часов)</li>
+        <li>Комиссия Iyzico (3.43%) автоматически вычитается</li>
+        <li>Чистая сумма безопасно хранится на счете эскроу (статус: "held")</li>
+        <li>Нашедший отправляет груз (в течение 5 рабочих дней)</li>
+        <li>Владелец устройства получает груз и нажимает кнопку "Я получил, подтверждаю"</li>
+        <li>Чистая сумма распределяется следующим образом:
+          <ul class="list-disc pl-6 mt-2">
+            <li>Грузовая плата (250 TL) → Грузовая компания</li>
+            <li>Вознаграждение нашедшему (20%) → IBAN нашедшего</li>
+            <li>Комиссия за услуги (остаток) → Платформа</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h4 class="text-lg font-semibold mb-2">6.4 Политика отмены и возврата</h4>
+      <p class="mb-2"><strong>Право на отмену:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>У вас нет права на отзыв после того, как платеж произведен (потому что услуга началась)</li>
+        <li>Отмена возможна по взаимному согласию до отправки груза</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Условия возврата:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Если нашедший не отправляет груз в течение 5 рабочих дней: Полный возврат</li>
+        <li>Если доставленное устройство отличается: Полный возврат + штраф нашедшему</li>
+        <li>Отмена из-за технических проблем: Полный возврат</li>
+        <li>Отмена по взаимному согласию: Полный возврат</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. ПРОЦЕСС ГРУЗА И ДОСТАВКА</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Роль платформы</h4>
+      <p class="mb-4"><strong>Важно:</strong> Платформа не является стороной доставки груза. Груз полностью обрабатывается грузовыми компаниями.</p>
+      
+      <h4 class="text-lg font-semibold mb-2">7.2 Грузовые компании</h4>
+      <p class="mb-2"><strong>Поддерживаемые грузовые компании:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Aras Cargo</li>
+        <li>MNG Cargo</li>
+        <li>Yurtiçi Cargo</li>
+        <li>PTT Cargo</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. АНОНИМНОСТЬ И КОНФИДЕНЦИАЛЬНОСТЬ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">8.1 Конфиденциальность личности</h4>
+      <p class="mb-2"><strong>До совпадения:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Никакая информация о пользователе не передается</li>
+        <li>Полностью анонимная система</li>
+      </ul>
+      
+      <p class="mb-2"><strong>После совпадения:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Личность:</strong> Остается СКРЫТОЙ</li>
+        <li><strong>Email:</strong> Остается СКРЫТЫМ</li>
+        <li><strong>Телефон:</strong> Передается только грузовой компании для доставки</li>
+        <li><strong>Адрес:</strong> Передается только грузовой компании для доставки</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">9. ОТВЕТСТВЕННОСТЬ И ОГРАНИЧЕНИЯ ПЛАТФОРМЫ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">9.1 Наша ответственность</h4>
+      <p class="mb-2"><strong>За услуги, которые мы предоставляем:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Поддерживать инфраструктуру платформы в рабочем состоянии</li>
+        <li>Обеспечивать безопасность данных</li>
+        <li>Безопасно управлять платежной системой</li>
+        <li>Правильно управлять эскроу</li>
+        <li>Предоставлять поддержку клиентам</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.2 Ограничения ответственности</h4>
+      <p class="mb-4"><strong>Платформа НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ за:</strong></p>
+      
+      <p class="mb-2"><strong>Устройство и доставка:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Фактическое состояние доставленного устройства</li>
+        <li>Функциональность устройства</li>
+        <li>Физические повреждения или недостающие части</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">10. ЗАПРЕЩЕННЫЕ ДЕЙСТВИЯ</h3>
+      <p class="mb-2">Следующие действия строго запрещены:</p>
+      
+      <p class="mb-2"><strong>❌ Мошенничество:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Предоставление ложной информации</li>
+        <li>Сообщение о краденом устройстве</li>
+        <li>Присвоение чужого устройства</li>
+        <li>Поддельный серийный номер</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">11. ПРИОСТАНОВКА И ЗАВЕРШЕНИЕ АККАУНТА</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">11.1 Закрытие платформой</h4>
+      <p class="mb-2"><strong>Причины немедленного закрытия:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Мошенничество или ложная информация</li>
+        <li>Сообщение о краденом устройстве</li>
+        <li>Поддельная личность</li>
+        <li>Платежное мошенничество</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">12. ФОРС-МАЖОР</h3>
+      <p class="mb-2">В следующих случаях форс-мажора платформа не может быть привлечена к ответственности за свои обязательства:</p>
+      
+      <p class="mb-2"><strong>Стихийные бедствия:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Землетрясение, наводнение, пожар, шторм</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Технические проблемы:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Перебои в работе интернет-инфраструктуры (проблемы с ISP)</li>
+        <li>Отключение электроэнергии</li>
+        <li>Перебои у поставщика серверов (Supabase)</li>
+        <li>Перебои платежных систем</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">13. РАЗРЕШЕНИЕ СПОРОВ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">13.1 Связь и поддержка</h4>
+      <p class="mb-2"><strong>Первый шаг - Наша команда поддержки:</strong></p>
+      <p class="mb-2">Если вы столкнулись с какой-либо проблемой, сначала свяжитесь с нашей командой поддержки:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Email:</strong> support@ifoundanapple.com</li>
+        <li><strong>Время ответа:</strong> 24-48 часов</li>
+        <li><strong>Время решения:</strong> 5 рабочих дней (в среднем)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">13.2 Применимое право</h4>
+      <p class="mb-4">Настоящее Соглашение подчиняется законам Республики Турция.</p>
+
+      <h3 class="text-xl font-semibold mb-2">14. ПРАВА ИНТЕЛЛЕКТУАЛЬНОЙ СОБСТВЕННОСТИ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">14.1 Права платформы</h4>
+      <p class="mb-4">Весь контент, дизайн, логотип, программный код, алгоритмы на платформе находятся под авторским правом iFoundAnApple.</p>
+
+      <h3 class="text-xl font-semibold mb-2">15. РАЗНОЕ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">15.1 Целостность соглашения</h4>
+      <p class="mb-4">Эти Условия составляют полное соглашение между сторонами.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.2 Частичная недействительность</h4>
+      <p class="mb-4">Если какое-либо положение Условий признано недействительным, остальные положения остаются в силе.</p>
+
+      <h3 class="text-xl font-semibold mb-2">16. КОНТАКТНАЯ ИНФОРМАЦИЯ</h3>
+      <p class="mb-2"><strong>iFoundAnApple</strong></p>
+      
+      <p class="mb-2"><strong>Общая поддержка:</strong></p>
+      <p class="mb-4"><strong>Email:</strong> info@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Юридические вопросы:</strong></p>
+      <p class="mb-4"><strong>Email:</strong> legal@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Безопасность:</strong></p>
+      <p class="mb-4"><strong>Email:</strong> security@ifoundanapple.com</p>
+
+      <h3 class="text-xl font-semibold mb-2">17. ПРИНЯТИЕ И УТВЕРЖДЕНИЕ</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Я прочитал, понял и принимаю эти Условия обслуживания.</li>
+        <li>✅ Я заявляю, что мне больше 18 лет и я обладаю правоспособностью.</li>
+        <li>✅ Используя платформу, я соглашаюсь соблюдать эти Условия и Политику конфиденциальности.</li>
+        <li>✅ Я разрешаю отправку уведомлений по электронной почте, SMS и в приложении.</li>
+      </ul>
+
       <div class="bg-gray-100 p-4 rounded mt-6">
-        <p><strong>© 2025 iFoundAnApple - Версия 2.0</strong></p>
-      </div>`,
-    privacyContent: `<h2 class="text-2xl font-bold mb-4">ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</h2>
+        <p><strong>Последнее обновление:</strong> 14 октября 2025</p>
+        <p><strong>Версия:</strong> 2.0</p>
+        <p><strong>Применимость:</strong> Турция и Европейский Союз</p>
+        <p><strong>© 2025 iFoundAnApple. Все права защищены.</strong></p>
+      </div>
+    `,
+    privacyContent: `
+      <h2 class="text-2xl font-bold mb-4">ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</h2>
       <p class="mb-4"><strong>Последнее обновление:</strong> 14 октября 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. КОНТРОЛЛЕР ДАННЫХ</h3>
+      <p class="mb-4"><strong>iFoundAnApple</strong></p>
+      <p class="mb-4"><strong>Email:</strong> privacy@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Веб:</strong> https://ifoundanapple.com</p>
       <p class="mb-4">Эта политика подготовлена в соответствии с KVKK и GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">2. ИНФОРМАЦИЯ О ХОСТИНГЕ И ДОМЕНЕ</h3>
+      <p class="mb-4"><strong>Владелец домена:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Провайдер хостинга:</strong> Hetzner</p>
+      <p class="mb-4"><strong>SSL сертификат:</strong> Активен (HTTPS)</p>
+      <p class="mb-4"><strong>Проверка домена:</strong> Размещено на нашем собственном домене</p>
+      <p class="mb-4"><strong>ВАЖНО:</strong> Эта политика конфиденциальности размещена на нашем собственном домене, а не на сторонних платформах, таких как Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. СОБИРАЕМЫЕ ПЕРСОНАЛЬНЫЕ ДАННЫЕ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Регистрация и аутентификация</h4>
+      <p class="mb-2"><strong>Регистрация по электронной почте:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Имя, фамилия</li>
+        <li>Адрес электронной почты</li>
+        <li>Пароль (хранится в зашифрованном виде)</li>
+        <li>Дата рождения</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Вход через OAuth (Google/Apple):</strong></p>
+      <p class="mb-2">При входе через Google или Apple мы собираем следующие пользовательские данные:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Данные пользователя Google:</strong> Имя, Email, Фото профиля (опционально)</li>
+        <li><strong>Цель:</strong> Только создание аккаунта и аутентификация</li>
+        <li><strong>Защита данных:</strong> Шифрование AES-256-GCM</li>
+        <li><strong>Хранение данных:</strong> В зашифрованном виде в нашей безопасной базе данных (Supabase)</li>
+        <li><strong>Период хранения:</strong> Пока аккаунт активен, удаляется через 30 дней после удаления аккаунта</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Информация об устройстве</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Модель устройства (iPhone 15 Pro, MacBook Air и т.д.)</li>
+        <li>Серийный номер</li>
+        <li>Цвет и описание устройства</li>
+        <li>Дата и место потери/нахождения</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Платежная и финансовая информация</h4>
+      <p class="mb-2"><strong>Платежные операции:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Информация о кредитной/банковской карте обрабатывается безопасным платежным провайдером (соответствует PCI-DSS)</li>
+        <li>Данные вашей карты не хранятся на наших серверах</li>
+        <li>История транзакций и суммы регистрируются</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Банковская информация:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Номер IBAN (для перевода вознаграждения)</li>
+        <li>Имя владельца счета</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 Профиль и контактная информация</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Номер удостоверения личности (опционально, для высоких сумм транзакций)</li>
+        <li>Номер телефона</li>
+        <li>Адрес доставки (для груза)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. ЦЕЛИ ИСПОЛЬЗОВАНИЯ ДАННЫХ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Предоставление услуг</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Сопоставление потерянных и найденных устройств (на основе серийного номера)</li>
+        <li>Управление пользовательскими аккаунтами</li>
+        <li>Организация и отслеживание груза</li>
+        <li>Отправка уведомлений</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Платежные операции и эскроу</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Безопасная обработка платежей</li>
+        <li>Работа системы эскроу (депозита)</li>
+        <li>Перевод вознаграждений на IBAN</li>
+        <li>Ведение финансовых записей</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Предложения на основе ИИ</h4>
+      <p class="mb-4">Эта функция опциональна. Для предложений ИИ используется только информация о модели устройства. Персональные идентификационные данные не передаются.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 Ограничения использования данных</h4>
+      <p class="mb-2"><strong>Мы используем ваши данные ТОЛЬКО для следующих целей:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Обеспечение функциональности платформы (аутентификация, управление аккаунтом)</li>
+        <li>✅ Обработка транзакций и платежей</li>
+        <li>✅ Организация доставки устройств</li>
+        <li>✅ Отправка важных уведомлений об услугах</li>
+        <li>✅ Улучшение пользовательского опыта</li>
+        <li>✅ Безопасность и предотвращение мошенничества</li>
+      </ul>
+      <p class="mb-2"><strong>Мы НЕ используем ваши данные для:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Таргетированная реклама или маркетинг</li>
+        <li>❌ Продажа брокерам данных или торговцам информацией</li>
+        <li>❌ Определение кредитоспособности или кредитные цели</li>
+        <li>❌ Пользовательская реклама или персонализированная реклама</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. ПЕРЕДАЧА ДАННЫХ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Поставщики услуг</h4>
+      <p class="mb-2"><strong>Supabase (Backend инфраструктура):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>База данных, аутентификация, хранение файлов</li>
+        <li>Соответствует SOC 2 Type II, GDPR</li>
+        <li>Местоположение данных: США/ЕС</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Платежный провайдер:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Обработка платежей, 3D Secure, эскроу</li>
+        <li>Сертифицирован PCI-DSS Level 1</li>
+        <li>Базируется в Турции</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Обмен между пользователями</h4>
+      <p class="mb-4"><strong>ВАЖНО:</strong> Ваша личность, электронная почта и номер телефона никогда не передаются другим пользователям.</p>
+      
+      <p class="mb-2"><strong>После совпадения:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Личность противоположной стороны остается анонимной</li>
+        <li>Отправляется только уведомление "Найдено совпадение"</li>
+        <li>Для груза передается только адрес доставки (имя-фамилия и адрес)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. БЕЗОПАСНОСТЬ И ХРАНЕНИЕ ДАННЫХ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Меры безопасности</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Шифрование SSL/TLS (HTTPS) - TLS 1.3</li>
+        <li>Хеширование паролей (bcrypt)</li>
+        <li><strong>Шифрование базы данных (AES-256-GCM)</strong></li>
+        <li><strong>Шифрование чувствительных данных на уровне приложения:</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>Номер удостоверения личности</li>
+          <li>Номера IBAN</li>
+          <li>Номера телефонов</li>
+          <li>Физические адреса</li>
+          <li>Данные пользователя Google (имя, email)</li>
+        </ul>
+        <li>Политики Row Level Security (RLS)</li>
+        <li>Безопасные токены аутентификации OAuth 2.0</li>
+        <li>Верификация платежей 3D Secure</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 Периоды хранения</h4>
+      
+      <p class="mb-2"><strong>Активные аккаунты:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Хранятся пока ваш аккаунт активен</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Закрытые аккаунты:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Удаляются в течение 30 дней после закрытия аккаунта</li>
+        <li>Финансовые записи хранятся 10 лет (юридическое требование)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. ПРАВА ПОЛЬЗОВАТЕЛЕЙ (KVKK & GDPR)</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Ваши права</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ <strong>Право на информацию:</strong> Узнать, обрабатываются ли ваши данные</li>
+        <li>✅ <strong>Право доступа:</strong> Получить копию ваших данных</li>
+        <li>✅ <strong>Право на исправление:</strong> Исправить неточную информацию</li>
+        <li>✅ <strong>Право на удаление:</strong> Удалить ваши данные (право на забвение)</li>
+        <li>✅ <strong>Право на возражение:</strong> Возразить против обработки данных</li>
+        <li>✅ <strong>Портативность данных:</strong> Перенести ваши данные на другую платформу</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 Способ обращения</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Email:</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Тема:</strong> Запрос KVKK/GDPR</li>
+        <li><strong>Время ответа:</strong> 30 дней (максимум)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 Право на жалобу</h4>
+      <p class="mb-2"><strong>Турция:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Управление по защите персональных данных - https://www.kvkk.gov.tr</li>
+      </ul>
+      
+      <p class="mb-2"><strong>ЕС:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Соответствующий орган по защите данных страны</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. КОНФИДЕНЦИАЛЬНОСТЬ ДЕТЕЙ</h3>
+      <p class="mb-4">Платформа не предназначена для пользователей младше 18 лет. Мы не собираем данные от лиц младше 18 лет сознательно.</p>
+
+      <h3 class="text-xl font-semibold mb-2">9. КУКИ</h3>
+      <p class="mb-2"><strong>Используемые куки:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Управление сессией (обязательно)</li>
+        <li>Языковые предпочтения (функциональные)</li>
+        <li>Безопасность (обязательно)</li>
+      </ul>
+      <p class="mb-4">Вы можете управлять куки через настройки вашего браузера.</p>
+
+      <h3 class="text-xl font-semibold mb-2">10. МЕЖДУНАРОДНАЯ ПЕРЕДАЧА ДАННЫХ</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Supabase:</strong> Центры данных США/ЕС (соответствует GDPR, SCC)</li>
+        <li><strong>Платежный провайдер:</strong> Международный</li>
+        <li><strong>Google:</strong> Глобальный (для OAuth и ИИ)</li>
+      </ul>
+      <p class="mb-4">Все передачи осуществляются в соответствии с положениями KVKK и GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">11. ИЗМЕНЕНИЯ И ОБНОВЛЕНИЯ</h3>
+      <p class="mb-2">Мы можем время от времени обновлять эту Политику конфиденциальности. При внесении важных изменений:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Мы публикуем объявление на веб-сайте</li>
+        <li>Отправляем уведомление по электронной почте</li>
+        <li>Изменяется дата "Последнее обновление"</li>
+      </ul>
+      <p class="mb-4">Обновления вступают в силу с даты публикации.</p>
+
+      <h3 class="text-xl font-semibold mb-2">12. КОНТАКТЫ</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Общие:</strong> info@ifoundanapple.com</li>
+        <li><strong>Конфиденциальность:</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Безопасность:</strong> security@ifoundanapple.com</li>
+      </ul>
+
       <div class="bg-gray-100 p-4 rounded mt-6">
-        <p><strong>© 2025 iFoundAnApple - Версия 2.0</strong></p>
-      </div>`,
+        <p><strong>Последнее обновление:</strong> 14 октября 2025</p>
+        <p><strong>Версия:</strong> 2.0</p>
+        <p><strong>© 2025 iFoundAnApple. Все права защищены.</strong></p>
+      </div>
+    `,
   },
 };
 
