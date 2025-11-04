@@ -207,6 +207,33 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
 
     console.log("[DATABASE] Payment kaydı oluşturuldu:", paymentData);
 
+    // 1.5. Audit log: Payment initiated
+    try {
+      await supabase.from("audit_logs").insert({
+        event_type: 'payment_initiated',
+        event_category: 'payment',
+        event_action: 'create',
+        event_severity: 'info',
+        user_id: request.payerId,
+        resource_type: 'payment',
+        resource_id: paymentResult.paymentId,
+        event_description: 'Payment initiated for device',
+        event_data: {
+          total_amount: request.feeBreakdown.totalAmount,
+          reward_amount: request.feeBreakdown.rewardAmount,
+          cargo_fee: request.feeBreakdown.cargoFee,
+          gateway_fee: request.feeBreakdown.gatewayFee,
+          service_fee: request.feeBreakdown.serviceFee,
+          payment_provider: request.paymentProvider || 'test',
+          device_id: request.deviceId,
+        },
+      });
+      console.log("[DATABASE] Audit log created for payment initiation");
+    } catch (auditError) {
+      console.error("[DATABASE] Error creating payment audit log:", auditError);
+      // Don't fail the whole operation if audit log fails
+    }
+
     // 2. Escrow kaydını oluştur
     const { data: escrowData, error: escrowError } = await supabase
       .from('escrow_accounts')
@@ -239,14 +266,38 @@ const savePaymentToDatabase = async (request: PaymentRequest, paymentResult: Pay
       const { error: deviceError } = await supabase
         .from('devices')
         .update({
-          status: 'PAYMENT_COMPLETED'  // Büyük harf olmalı
+          status: 'payment_completed'
         })
         .eq('id', request.deviceId);
 
       if (deviceError) {
         console.error("[DATABASE] Device status güncelleme hatası:", deviceError);
       } else {
-        console.log("[DATABASE] ✅ Device status güncellendi: PAYMENT_COMPLETED");
+        console.log("[DATABASE] ✅ Device status güncellendi: payment_completed");
+      }
+
+      // 3.5. Audit log: Payment completed
+      try {
+        await supabase.from("audit_logs").insert({
+          event_type: 'payment_completed',
+          event_category: 'payment',
+          event_action: 'complete',
+          event_severity: 'info',
+          user_id: request.payerId,
+          resource_type: 'payment',
+          resource_id: paymentResult.paymentId,
+          event_description: 'Payment completed successfully',
+          event_data: {
+            total_amount: request.feeBreakdown.totalAmount,
+            payment_provider: request.paymentProvider || 'test',
+            device_id: request.deviceId,
+            completed_at: new Date().toISOString(),
+          },
+        });
+        console.log("[DATABASE] Audit log created for payment completion");
+      } catch (auditError) {
+        console.error("[DATABASE] Error creating payment completed audit log:", auditError);
+        // Don't fail the whole operation if audit log fails
       }
     }
 

@@ -24,6 +24,8 @@ export const translations = {
       transactionCompletedFinder: "Success! The reward for {model} is on its way.",
       deviceLostConfirmation: "Your lost device ({model}) has been successfully added.",
       deviceReportedConfirmation: "Your found device ({model}) has been successfully reported.",
+      packageDeliveredConfirm: "Your device has been delivered. Please check and confirm.",
+      autoConfirmReminder: "If you don't confirm within 48 hours, the system will automatically confirm.",
     },
     // Home Page
     heroTitle: "Lost your Apple device? Find it securely.",
@@ -1462,6 +1464,8 @@ export const translations = {
       transactionCompletedFinder: "Başarılı! {model} için ödülünüz yola çıktı.",
       deviceLostConfirmation: "Kayıp cihazınız ({model}) başarıyla eklendi.",
       deviceReportedConfirmation: "Bulunan cihazınız ({model}) başarıyla bildirildi.",
+      packageDeliveredConfirm: "Cihazınız teslim edildi. Lütfen kontrol edip onaylayın.",
+      autoConfirmReminder: "48 saat içinde onaylamazsanız, sistem otomatik olarak onaylayacaktır.",
     },
     // Home Page
     heroTitle: "Apple cihazınızı mı kaybettiniz? Güvenle bulun.",
@@ -2899,6 +2903,8 @@ export const translations = {
       transactionCompletedFinder: "Succès ! La récompense pour {model} est en route.",
       deviceLostConfirmation: "Votre appareil perdu ({model}) a été ajouté avec succès.",
       deviceReportedConfirmation: "Votre appareil trouvé ({model}) a été signalé avec succès.",
+      packageDeliveredConfirm: "Votre appareil a été livré. Veuillez vérifier et confirmer.",
+      autoConfirmReminder: "Si vous ne confirmez pas dans les 48 heures, le système confirmera automatiquement.",
     },
     // Home Page
     heroTitle: "Vous avez perdu votre appareil Apple ? Retrouvez-le en toute sécurité.",
@@ -3484,6 +3490,8 @@ export const translations = {
       transactionCompletedFinder: "成功！{model}の報酬が送金中です。",
       deviceLostConfirmation: "紛失したデバイス({model})が正常に追加されました。",
       deviceReportedConfirmation: "発見されたデバイス({model})が正常に報告されました。",
+      packageDeliveredConfirm: "デバイスが配信されました。確認して確認してください。",
+      autoConfirmReminder: "48時間以内に確認しない場合、システムが自動的に確認します。",
     },
     // Home Page
     heroTitle: "Appleデバイスを紛失しましたか？安全に見つけましょう。",
@@ -4069,6 +4077,8 @@ export const translations = {
       transactionCompletedFinder: "¡Éxito! La recompensa por {model} está en camino.",
       deviceLostConfirmation: "Tu dispositivo perdido ({model}) ha sido añadido con éxito.",
       deviceReportedConfirmation: "Tu dispositivo encontrado ({model}) ha sido reportado con éxito.",
+      packageDeliveredConfirm: "Tu dispositivo ha sido entregado. Por favor, verifica y confirma.",
+      autoConfirmReminder: "Si no confirmas dentro de 48 horas, el sistema confirmará automáticamente.",
     },
     // Home Page
     heroTitle: "¿Perdiste tu dispositivo Apple? Encuéntralo de forma segura.",
@@ -4654,6 +4664,8 @@ export const translations = {
       transactionCompletedFinder: "Успех! Вознаграждение за {model} в пути.",
       deviceLostConfirmation: "Ваше потерянное устройство ({model}) успешно добавлено.",
       deviceReportedConfirmation: "Ваше найденное устройство ({model}) успешно зарегистрировано.",
+      packageDeliveredConfirm: "Ваше устройство доставлено. Пожалуйста, проверьте и подтвердите.",
+      autoConfirmReminder: "Если вы не подтвердите в течение 48 часов, система автоматически подтвердит.",
     },
     // Home Page
     heroTitle: "Потеряли устройство Apple? Найдите его безопасно.",

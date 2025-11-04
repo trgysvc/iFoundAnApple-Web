@@ -207,6 +207,36 @@ export const createCargoShipment = async (
 
     console.log("Cargo shipment created:", data);
 
+    // Audit log: Cargo shipment created
+    try {
+      const { error: auditError } = await supabase
+        .from("audit_logs")
+        .insert({
+          event_type: 'cargo_shipment_created',
+          event_category: 'cargo',
+          event_action: 'create',
+          event_severity: 'info',
+          user_id: request.senderUserId,
+          resource_type: 'cargo_shipment',
+          resource_id: data.id,
+          event_description: 'Device shipped by finder',
+          event_data: {
+            tracking_number: data.tracking_number || null,
+            cargo_company: request.cargoCompany,
+            device_id: request.deviceId,
+            shipment_id: data.id,
+          },
+        });
+      if (auditError) {
+        console.error("Error creating cargo shipment audit log:", auditError);
+      } else {
+        console.log("Audit log created for cargo shipment");
+      }
+    } catch (auditError) {
+      console.error("Error in cargo shipment audit log:", auditError);
+      // Don't fail the whole operation if audit log fails
+    }
+
     // TODO: Integrate with actual cargo company API to create label
     // This would involve calling the cargo company's API to:
     // 1. Create shipping label
@@ -311,6 +341,41 @@ export const updateShipmentStatus = async (
       return false;
     }
 
+    // Audit log for status changes
+    if (status === "delivered") {
+      try {
+        // Get shipment data to find user_id
+        const { data: shipmentData } = await supabase
+          .from("cargo_shipments")
+          .select("receiver_user_id, device_id, tracking_number, cargo_company")
+          .eq("id", shipmentId)
+          .single();
+
+        if (shipmentData) {
+          await supabase.from("audit_logs").insert({
+            event_type: 'cargo_delivered',
+            event_category: 'cargo',
+            event_action: 'deliver',
+            event_severity: 'info',
+            user_id: null, // System event from cargo API
+            resource_type: 'cargo_shipment',
+            resource_id: shipmentId,
+            event_description: 'Package delivered by cargo company',
+            event_data: {
+              tracking_number: shipmentData.tracking_number,
+              delivered_at: new Date().toISOString(),
+              device_id: shipmentData.device_id,
+              cargo_company: shipmentData.cargo_company,
+            },
+          });
+          console.log("Audit log created for cargo delivery");
+        }
+      } catch (auditError) {
+        console.error("Error creating cargo delivered audit log:", auditError);
+        // Don't fail the whole operation if audit log fails
+      }
+    }
+
     return true;
   } catch (error) {
     console.error("Error in updateShipmentStatus:", error);
@@ -320,13 +385,14 @@ export const updateShipmentStatus = async (
 
 /**
  * Confirm delivery by receiver
+ * This function implements the complete delivery confirmation process as described in PROCESS_FLOW.md Step 9
  */
 export const confirmDelivery = async (
   shipmentId: string,
   userId: string,
   signature?: string,
   photos?: string[]
-): Promise<boolean> => {
+): Promise<{ success: boolean; error?: string; deliveryConfirmationId?: string }> => {
   try {
     const config = getSecureConfig();
     const supabase = (await import("@supabase/supabase-js")).createClient(
@@ -334,27 +400,180 @@ export const confirmDelivery = async (
       config.supabaseAnonKey
     );
 
-    const { error } = await supabase
+    // 1. Get shipment data to retrieve device_id and payment_id
+    const { data: shipmentData, error: shipmentFetchError } = await supabase
+      .from("cargo_shipments")
+      .select("device_id, payment_id, receiver_user_id")
+      .eq("id", shipmentId)
+      .eq("receiver_user_id", userId) // Ensure only receiver can confirm
+      .single();
+
+    if (shipmentFetchError || !shipmentData) {
+      console.error("Error fetching shipment data:", shipmentFetchError);
+      return { success: false, error: "Shipment not found or unauthorized" };
+    }
+
+    const { device_id, payment_id } = shipmentData;
+
+    // 2. Create delivery_confirmations record
+    const { data: confirmationData, error: confirmationError } = await supabase
+      .from("delivery_confirmations")
+      .insert({
+        device_id: device_id,
+        payment_id: payment_id,
+        cargo_shipment_id: shipmentId,
+        confirmed_by: userId,
+        confirmation_type: "device_received",
+        confirmation_data: {
+          serial_number_verified: true,
+          condition: "good",
+          signature: signature || null,
+          photos: photos || [],
+        },
+        confirmed_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (confirmationError || !confirmationData) {
+      console.error("Error creating delivery confirmation:", confirmationError);
+      return { success: false, error: "Failed to create delivery confirmation" };
+    }
+
+    const deliveryConfirmationId = confirmationData.id;
+
+    // 3. Update cargo_shipments table
+    const { error: cargoUpdateError } = await supabase
       .from("cargo_shipments")
       .update({
         delivery_confirmed_by_receiver: true,
         delivery_confirmation_date: new Date().toISOString(),
+        delivery_confirmation_id: deliveryConfirmationId,
         delivery_signature: signature,
         delivery_photos: photos,
-        status: "delivered",
+        cargo_status: "confirmed", // Kargo durumu: onaylandı
+        status: "delivered", // Teslim kodu durumu: teslim edildi
+        updated_at: new Date().toISOString(),
       })
       .eq("id", shipmentId)
-      .eq("receiver_user_id", userId); // Ensure only receiver can confirm
+      .eq("receiver_user_id", userId);
 
-    if (error) {
-      console.error("Error confirming delivery:", error);
-      return false;
+    if (cargoUpdateError) {
+      console.error("Error updating cargo_shipments:", cargoUpdateError);
+      return { success: false, error: "Failed to update cargo shipment" };
     }
 
-    return true;
+    // 4. Update devices.status to 'completed'
+    const { error: deviceUpdateError } = await supabase
+      .from("devices")
+      .update({
+        status: "completed",
+        delivery_confirmed_at: new Date().toISOString(),
+        final_payment_distributed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", device_id);
+
+    if (deviceUpdateError) {
+      console.error("Error updating device status:", deviceUpdateError);
+      // Continue even if device update fails, as escrow release is more critical
+    }
+
+    // 5. Release escrow via releaseEscrowAPI
+    try {
+      const { releaseEscrowAPI } = await import("../api/release-escrow.ts");
+      const releaseResult = await releaseEscrowAPI({
+        deviceId: device_id,
+        paymentId: payment_id,
+        releaseReason: "Device received and confirmed by owner",
+        confirmationType: "device_received",
+        confirmedBy: userId,
+        additionalNotes: "Delivery confirmed via cargo system",
+      });
+
+      if (!releaseResult.success) {
+        console.error("Error releasing escrow:", releaseResult.errorMessage);
+        // Don't fail the whole operation, but log the error
+        // The escrow can be released manually later if needed
+      }
+    } catch (escrowError) {
+      console.error("Error calling releaseEscrowAPI:", escrowError);
+      // Continue even if escrow release fails, as the confirmation record is already created
+    }
+
+    // 6. Create audit log
+    try {
+      await supabase.from("audit_logs").insert({
+        event_type: "escrow_released",
+        event_category: "financial",
+        event_action: "release",
+        event_severity: "info",
+        user_id: userId,
+        resource_type: "escrow",
+        resource_id: shipmentId,
+        event_description: "Escrow released after device confirmation",
+        event_data: {
+          payment_id: payment_id,
+          device_id: device_id,
+          delivery_confirmation_id: deliveryConfirmationId,
+          confirmed_at: new Date().toISOString(),
+        },
+      });
+    } catch (auditError) {
+      console.error("Error creating audit log:", auditError);
+      // Don't fail the whole operation if audit log fails
+    }
+
+    // 7. Create notifications
+    try {
+      // Get shipment data to find sender_user_id (finder)
+      const { data: shipmentForFinder } = await supabase
+        .from("cargo_shipments")
+        .select("sender_user_id")
+        .eq("id", shipmentId)
+        .single();
+
+      if (shipmentForFinder && shipmentForFinder.sender_user_id) {
+        // Notification to finder (reward released)
+        await supabase.from("notifications").insert({
+          user_id: shipmentForFinder.sender_user_id,
+          message_key: "reward_released",
+          link: `/device/${device_id}`,
+          is_read: false,
+          created_at: new Date().toISOString(),
+        });
+      }
+
+      // Notification to owner (transaction completed)
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        message_key: "transactionCompletedOwner",
+        link: `/device/${device_id}`,
+        is_read: false,
+        created_at: new Date().toISOString(),
+      });
+    } catch (notificationError) {
+      console.error("Error creating notifications:", notificationError);
+      // Don't fail the whole operation if notifications fail
+    }
+
+    console.log("Delivery confirmation completed successfully:", {
+      shipmentId,
+      deliveryConfirmationId,
+      deviceId: device_id,
+      paymentId: payment_id,
+    });
+
+    return {
+      success: true,
+      deliveryConfirmationId: deliveryConfirmationId,
+    };
   } catch (error) {
     console.error("Error in confirmDelivery:", error);
-    return false;
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
 };
 

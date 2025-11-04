@@ -72,6 +72,7 @@ export interface Device {
   lost_location?: string; // Location where the device was lost (free text description)
   found_date?: string; // Date when the device was found (YYYY-MM-DD format)
   found_location?: string; // Location where the device was found (free text description)
+  device_role?: 'owner' | 'finder'; // Explicit role: 'owner' (who lost the device) or 'finder' (who found the device)
 }
 
 export interface AppNotification {

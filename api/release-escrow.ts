@@ -181,17 +181,44 @@ export async function releaseEscrowAPI(request: EscrowReleaseRequest): Promise<E
       console.error('[RELEASE_ESCROW] Failed to update payment status:', paymentUpdateError);
     }
 
-    // Update device status
+    // Update device status to 'completed' (if not already completed)
+    // Note: This should be 'completed' when called from delivery confirmation
     const { error: deviceUpdateError } = await supabaseClient
       .from('devices')
       .update({
-        status: 'payment_completed',
+        status: confirmationType === 'device_received' ? 'completed' : 'payment_completed',
         updated_at: new Date().toISOString(),
       })
       .eq('id', escrowRecord.device_id);
 
     if (deviceUpdateError) {
       console.error('[RELEASE_ESCROW] Failed to update device status:', deviceUpdateError);
+    }
+
+    // Audit log: Escrow released
+    try {
+      await supabaseClient.from("audit_logs").insert({
+        event_type: 'escrow_released',
+        event_category: 'financial',
+        event_action: 'release',
+        event_severity: 'info',
+        user_id: confirmedBy,
+        resource_type: 'escrow',
+        resource_id: escrowRecord.id,
+        event_description: 'Escrow released after device confirmation',
+        event_data: {
+          payment_id: paymentData.id,
+          device_id: escrowRecord.device_id,
+          net_payout: netPayoutAmount,
+          released_at: new Date().toISOString(),
+          confirmation_type: confirmationType,
+          release_reason: releaseReason,
+        },
+      });
+      console.log('[RELEASE_ESCROW] Audit log created for escrow release');
+    } catch (auditError) {
+      console.error('[RELEASE_ESCROW] Error creating escrow release audit log:', auditError);
+      // Don't fail the whole operation if audit log fails
     }
 
     const response: EscrowReleaseResponse = {

@@ -1,6 +1,7 @@
 # iFoundAnApple - Tam Süreç Akışı
 
 Bu dosya, platformun tüm süreç akışını detaylı olarak açıklar ve hangi bilginin hangi tabloya yazılacağını gösterir. Lütfen eksik veya yanlış kısımları düzeltin.
+
 ---
 
 ## TAM SÜREÇ ADIMLARI
@@ -30,6 +31,7 @@ export enum DeviceStatus {
   CARGO_SHIPPED = "cargo_shipped",   // Cihazı bulan kargo firmasına kod ile teslim ediyor
   DELIVERED = "delivered",           // Kargo firması cihazı sahibine teslim ediyor
   CONFIRMED = "confirmed",           // Cihazın sahibi cihaz eline geçince onaylıyor
+  EXCHANGE_PENDING = "exchange_pending", // Fiziksel takas sürecinde
   COMPLETED = "completed",           // İşlem tamamlanıyor
   DISPUTED = "disputed",	           // İptal-iade bölümü
    // --- Yeni Eklenen İstisnai Durumlar ---
@@ -40,17 +42,42 @@ export enum DeviceStatus {
 ```
 ## 📦 **KARGO STATUS ENUM**
 
-export enum CargoStatus {
-  PENDING = "pending",          // Kargo kodu üretildi, bulan kişinin kargoya teslim etmesi bekleniyor
-  PICKED_UP = "picked_up",      // Bulan kişi cihazı kargo firmasına teslim etti
-  IN_TRANSIT = "in_transit",    // Cihaz kargo firması ile yolda, sahibine doğru gidiyor
-  DELIVERED = "delivered",      // Kargo firması cihazı sahibinin adresine teslim etti, sahibinin onayı bekleniyor
-  CONFIRMED = "confirmed"       // Cihaz sahibi teslim aldığını sistem üzerinden onayladı
-    // --- Yeni Eklenen İstisnai Durumlar ---
-  FAILED_DELIVERY = "failed_delivery", // Teslimat denendi, başarısız
-  RETURNED = "returned",             // Göndericiye iade ediliyor/edildi
-  CANCELLED = "cancelled"              // Kargo işlemi iptal edildi
-}
+```typescript
+export type CargoStatus =
+  | "created"           // Kargo kaydı oluşturuldu
+  | "label_printed"     // Kargo etiketi yazdırıldı
+  | "picked_up"         // Bulan kişi cihazı kargo firmasına teslim etti
+  | "in_transit"        // Cihaz kargo firması ile yolda, sahibine doğru gidiyor
+  | "out_for_delivery"  // Teslimata çıktı
+  | "delivered"         // Kargo firması cihazı sahibinin adresine teslim etti, sahibinin onayı bekleniyor
+  | "failed_delivery"   // Teslimat denendi, başarısız
+  | "returned"          // Göndericiye iade ediliyor/edildi
+  | "cancelled";        // Kargo işlemi iptal edildi
+```
+
+**Not:** `cargo_shipments` tablosunda iki farklı status sütunu bulunur:
+
+1. **`status` sütunu:** Teslim kodunun durumunu takip eder (constraint gereği: 'active', 'used', 'expired')
+   - "active" - Teslim kodu aktif, kullanıma hazır
+   - "used" - Teslim kodu kullanıldı (kargo firmasına teslim edildi)
+   - "expired" - Teslim kodu süresi doldu
+
+2. **`cargo_status` sütunu:** Kargo sürecinin detaylı durumunu takip eder (CargoStatus enum ile uyumlu):
+   - "pending" - Kargo kaydı oluşturuldu, teslim kodu üretildi, bulan kişinin kargoya teslim etmesi bekleniyor
+- "picked_up" - Bulan kişi cihazı kargo firmasına teslim etti
+- "in_transit" - Cihaz kargo firması ile yolda
+   - "delivered" - Kargo firması cihazı sahibine teslim etti, sahibinin onayı bekleniyor
+   - "confirmed" - Cihaz sahibi teslim aldığını onayladı (delivery_confirmed_by_receiver = true olduğunda)
+- "failed_delivery" - Teslimat başarısız
+- "returned" - Göndericiye iade edildi
+- "cancelled" - İptal edildi
+
+**Önemli:** 
+- `cargo_shipments` tablosunda `code` sütunu bulunur (teslim kodu) ve bu kod **kargo firmasının API'si tarafından üretilir**.
+- Ödeme tamamlandıktan sonra sistem kargo firmasının API'sine gönderi bilgilerini gönderir.
+- Kargo firması API'si gönderi kaydı oluşturur ve teslim kodunu (`code`) üretir, API yanıtında döndürür.
+- Sistem bu kodu `cargo_shipments.code` sütununa yazar ve bulan kişiye gösterir.
+- Ayrıca `cargo_status` sütunu da bulunur ve kargo sürecinin detaylı durumunu takip eder.
 
 
 ## 📊 VERİTABANI TABLOLARI VE SÜREÇ İLİŞKİSİ
@@ -232,11 +259,11 @@ INSERT INTO devices (
   "userId",             -- Cihaz sahibinin ID'si (auth.users.id)
   model,                -- Cihaz modeli (text)
   "serialNumber",       -- Seri numarası (text)
-  status,               -- 'LOST' (text)
+  status,               -- 'lost' (text)
   color,                -- Cihaz rengi (text, nullable)
   description,          -- Açıklama (text, nullable)
   "rewardAmount",       -- Ödül miktarı (numeric, nullable)
-  "invoiceDataUrl",     -- Fatura URL'si (text, nullable)
+  "invoice_url",        -- Fatura URL'si (text, nullable) - Kayıp cihaz için fatura, bulunan cihaz için fotoğraf URL'leri (virgülle ayrılmış)
   "exchangeConfirmedBy", -- Onaylayanlar array (uuid[], default '{}')
   created_at,           -- now()
   updated_at,           -- now()
@@ -257,7 +284,7 @@ INSERT INTO audit_logs (
   resource_type,        -- 'device'
   resource_id,          -- Oluşturulan device ID'si
   event_description,    -- 'Lost device registered'
-  event_data,           -- JSON: {model, serialNumber, lost_date, lost_location}
+  event_data,           -- JSON: {model, serialNumber, lost_date, lost_location, found_date, found_location, invoice_url}
   created_at            -- now()
 );
 ```
@@ -332,7 +359,7 @@ Sistem → Eşleşme buldu → Status: MATCHED
 ```sql
 UPDATE devices 
 SET 
-  status = 'MATCHED',
+  status = 'matched',
   updated_at = now()
 WHERE id = [device_id];
 ```
@@ -360,20 +387,22 @@ INSERT INTO audit_logs (
 INSERT INTO notifications (
   id,                    -- gen_random_uuid()
   user_id,              -- Cihaz sahibinin ID'si
-  message_key,          -- 'device_matched_owner'
-  type,                 -- 'success'
+  message_key,          -- 'matchFoundOwner'
+  link,                 -- '/device/[device_id]'
   is_read,              -- false
-  created_at            -- now()
+  created_at,           -- now()
+  replacements          -- JSON: {model: device_model}
 );
 
 -- Bulan kişiye bildirim
 INSERT INTO notifications (
   id,                    -- gen_random_uuid()
   user_id,              -- Bulan kişinin ID'si
-  message_key,          -- 'device_matched_finder'
-  type,                 -- 'success'
+  message_key,          -- 'matchFoundFinder'
+  link,                 -- '/device/[device_id]'
   is_read,              -- false
-  created_at            -- now()
+  created_at,           -- now()
+  replacements          -- JSON: {model: device_model}
 );
 ```
 
@@ -613,7 +642,7 @@ Kart bilgileriniz güvenli şekilde şifrelenir ve saklanmaz.
 
 **Database Kayıtları (Ödeme Tamamlandıktan Sonra):**
 
-Mevcut database kayıtları aynen devam eder (payments, escrow_accounts, devices, financial_transactions, audit_logs, notifications, cargo_codes tabloları).
+Mevcut database kayıtları aynen devam eder (payments, escrow_accounts, devices, financial_transactions, audit_logs, notifications, cargo_shipments tabloları).
 
 ---
 
@@ -718,7 +747,7 @@ INSERT INTO escrow_accounts (
 ```sql
 UPDATE devices 
 SET 
-  status = 'PAYMENT_PENDING',
+  status = 'payment_pending',
   updated_at = now()
 WHERE id = [device_id];
 ```
@@ -742,19 +771,13 @@ INSERT INTO audit_logs (
 
 **5. `notifications` tablosuna kayıt:**
 ```sql
-INSERT INTO notifications (
-  id,                    -- gen_random_uuid()
-  user_id,              -- Cihaz sahibinin ID'si
-  message_key,          -- 'payment_initiated'
-  type,                 -- 'info'
-  is_read,              -- false
-  created_at            -- now()
-);
+-- NOT: Ödeme başlatıldığında bildirim gönderilmez, sadece ödeme tamamlandığında gönderilir
+-- Bu adımda notification kaydı oluşturulmaz
 ```
 
-### **Adım 6: Ödeme Tamamlandı - Kargo Bekleme**
+### **Adım 6: Ödeme Tamamlandı - Kargo Kodu Oluşturma ve Kargo Bekleme**
 ```
-Status: payment_completed → Bulan kişi cihazı kargolayacak
+Status: payment_completed → Kargo firması API'sine gönderi bilgileri gönderilir → Cargo kodu alınır → Bulan kişi cihazı kargolayacak
 ```
 
 **Dashboard'da Görünen:**
@@ -834,12 +857,69 @@ WHERE payment_id = [payment_id];
 
 **3. `devices` tablosunda güncelleme:**
 ```sql
+-- Ödeme webhook/callback geldiğinde:
 UPDATE devices 
 SET 
   status = 'payment_completed',
   updated_at = now()
 WHERE id = [device_id];
 ```
+
+**Not:** Bu güncelleme ödeme sağlayıcısından (iyzico/stripe) webhook/callback geldiğinde otomatik olarak yapılır. `api/webhooks/iyzico-callback.ts` veya `api/webhooks/iyzico-3d-callback.ts` dosyaları bu işlemi gerçekleştirir.
+
+**4. Kargo Firması API Çağrısı ve `cargo_shipments` Kaydı:**
+```sql
+-- Ödeme tamamlandıktan sonra sistem otomatik olarak kargo firmasının API'sine istek gönderir:
+-- POST /api/cargo/create-shipment
+-- Request Body:
+-- {
+--   "device_id": "...",
+--   "payment_id": "...",
+--   "cargo_company": "aras",
+--   "sender_info": { ... },
+--   "receiver_info": { ... },
+--   ...
+-- }
+--
+-- Kargo firması API yanıtı:
+-- {
+--   "code": "ABC12345",              // Kargo firması tarafından üretilen teslim kodu
+--   "tracking_number": "123456789",   // Takip numarası (opsiyonel, bazı firmalar şubede üretir)
+--   "estimated_delivery": "2025-01-15",
+--   ...
+-- }
+--
+-- Sistem, API yanıtından gelen bilgileri cargo_shipments tablosuna kaydeder:
+INSERT INTO cargo_shipments (
+  id,
+  device_id,
+  payment_id,
+  cargo_company,
+  code,                        -- Kargo firması API'sinden dönen teslim kodu
+  tracking_number,             -- Kargo firması API'sinden dönen takip numarası (opsiyonel)
+  cargo_service_type,
+  estimated_delivery_days,
+  sender_anonymous_id,
+  receiver_anonymous_id,
+  sender_user_id,
+  receiver_user_id,
+  sender_address_encrypted,
+  receiver_address_encrypted,
+  status,                      -- 'active'
+  cargo_status,                -- 'pending'
+  cargo_fee,
+  declared_value,
+  generated_by,                -- Bulan kişinin user ID'si
+  expires_at,                  -- Kargo firması API'sinden dönen veya 7 gün sonra
+  created_at,
+  updated_at
+) VALUES (...);
+```
+
+**Önemli Not:** 
+- Teslim kodu (`code`) **kargo firmasının API'si tarafından üretilir**, sistem tarafından değil.
+- Kargo firması API'sine gönderi oluşturma isteği gönderilirken, bulan kişinin ve cihaz sahibinin adres bilgileri şifrelenmiş halde gönderilir (kimlik bilgileri gizli kalır).
+- API yanıtında dönen `code` değeri bulan kişiye gösterilir ve bulan kişi bu kod ile kargo firmasına gidip cihazı teslim edecektir.
 
 **4. `financial_transactions` tablosuna kayıt:**
 ```sql
@@ -899,48 +979,128 @@ INSERT INTO notifications (
 );
 ```
 
-**7. `cargo_codes` tablosuna kayıt :**
+**7. `cargo_shipments` tablosuna kayıt (Kargo firması API'si ile oluşturulur):**
 ```sql
--- Kargo kodu oluştur (tek kayıt - seri numarası bazlı)
-INSERT INTO cargo_codes (
-  id,                    -- gen_random_uuid()
-  device_id,            -- Cihaz ID'si (sahibi için)
-  payment_id,           -- Payment ID'si
-  code,                 -- Kargo takip numarası (test: ABC123456)
-  generated_by,         -- Bulan kişi ID'si
-  cargo_company,        -- Kargo firması (test: Aras Kargo)
-  status,               -- 'active'
-  cargo_status,         -- 'pending', 'picked_up', 'in_transit', 'delivered', 'confirmed' (v5.1)
-  expires_at,           -- 7 gün sonra
-  created_at,           -- now()
-  updated_at            -- now()
+-- Kargo firması API'sine gönderi bilgileri gönderildiğinde, API cargo_code döndürür
+-- Bu kod cargo_shipments tablosuna yazılır
+INSERT INTO cargo_shipments (
+  id,                          -- gen_random_uuid()
+  device_id,                   -- Cihaz ID'si (owner'ın device ID'si)
+  payment_id,                  -- Payment ID'si
+  cargo_company,               -- Kargo firması (örn: 'aras', 'yurtici', 'mng', 'ptt')
+  code,                        -- Kargo firması API'sinden dönen teslim kodu (kargo firması tarafından üretilir)
+  cargo_service_type,          -- 'standard' veya 'express'
+  estimated_delivery_days,     -- Tahmini teslimat günü (örn: 2)
+  sender_anonymous_id,         -- Bulan kişi için anonim ID (örn: 'FND123456')
+  receiver_anonymous_id,       -- Cihaz sahibi için anonim ID (örn: 'OWN789012')
+  sender_user_id,              -- Bulan kişinin user ID'si
+  receiver_user_id,            -- Cihaz sahibinin user ID'si
+  sender_address_encrypted,    -- Bulan kişinin adresi (şifrelenmiş)
+  receiver_address_encrypted,  -- Cihaz sahibinin adresi (şifrelenmiş)
+  status,                      -- 'active' (teslim kodu aktif, kargoya teslim bekleniyor)
+  cargo_status,                -- 'pending' (kargo durumu: bekleniyor)
+  cargo_fee,                   -- Kargo ücreti (örn: 250.00)
+  declared_value,              -- Bildirilen değer (örn: 1000.00)
+  generated_by,                 -- Bulan kişinin user ID'si (kargo firması API çağrısını yapan kullanıcı)
+  expires_at,                  -- Kargo firması API'sinden dönen veya 7 gün sonra (kodun son kullanma tarihi)
+  created_at,                  -- now()
+  updated_at                   -- now()
 );
 ```
 
+**Önemli:** 
+- `code` (teslim kodu) **kargo firmasının API'si tarafından üretilir** ve API yanıtında döner.
+- Sistem, kargo firması API'sine gönderi bilgilerini (sender/receiver adresleri, cihaz bilgileri vb.) gönderir.
+- Kargo firması API'si cargo_code üretir ve bu kod `cargo_shipments.code` sütununa yazılır.
+- Bu kod bulan kişiye gösterilir ve bulan kişi bu kod ile kargo firmasına gidip cihazı teslim edecektir.
+- `cargo_status` sütunu kargo sürecinin detaylı durumunu takip eder.
+
 ### **Adım 7: Kargo Gönderildi**
 ```
-Bulan kişi kargo takip/teslim numarası ile kargo firmasına teslim etti. → Status: CARGO_SHIPPED (?)
+Bulan kişi teslim kodu ile kargo firmasına teslim etti → Kargo API'si tracking_number döndürdü → Status: cargo_shipped
 ```
 
-**Database:**
-```typescript
-cargo_shipments {
-  id: UUID
-  device_id: UUID
-  payment_id: UUID
-  sender_user_id: UUID  // Bulan kişi
-  receiver_user_id: UUID  // Cihaz sahibi
-  tracking_number: string
-  carrier: string  // "aras", "yurtici", "mng", "ptt"
-  shipped_at: timestamp
-  estimated_delivery: timestamp
-  delivered_at: timestamp
-  status: string
-}
+**Süreç Analizi:**
+1. Ödeme tamamlandıktan sonra, sistem kargo firmasının API'sine gönderi bilgilerini gönderir
+2. Kargo firması API'si gönderi bilgilerini işler ve:
+   - `code` (teslim kodu) üretir
+   - `tracking_number` (takip numarası) üretir (opsiyonel, bazı kargo firmaları hemen üretmeyebilir)
+   - Bu bilgileri API yanıtında döndürür
+3. Sistem, API yanıtından gelen `code` ve `tracking_number` değerlerini `cargo_shipments` tablosuna kaydeder
+4. Bulan kişi `cargo_shipments.code` (teslim kodu) ile kargo firmasına gider ve cihazı teslim eder
+5. Kargo firması şubesinde işlem tamamlandığında, kargo firması API'si bizim sistemimize webhook gönderir
+6. Webhook'ta `tracking_number` (eğer henüz yoksa) ve kargo durumu güncellemesi gelir
+7. Sistem otomatik olarak `cargo_shipments` kaydını günceller:
+   - `cargo_shipments.status` → 'used' olur (kod kullanıldı)
+   - `cargo_shipments.cargo_status` → 'picked_up' olur
+   - `cargo_shipments.used_at` → now() olur
+   - `cargo_shipments.picked_up_at` → now() olur
+   - `cargo_shipments.tracking_number` → Kargo firmasından gelen takip numarası (güncellenir veya eklenir)
+8. `devices.status` → 'cargo_shipped' olur
 
-devices {
-  status: "CARGO_SHIPPED" (?)
-}
+**Database Güncellemeleri:**
+
+**1. `cargo_shipments` tablosunda güncelleme (Kargo API'si tarafından otomatik yapılır):**
+```sql
+-- Kargo firması API'sinden tracking_number geldiğinde
+UPDATE cargo_shipments 
+SET 
+  tracking_number = [kargo_firmasından_gelen_takip_numarası],
+  status = 'used',                    -- Teslim kodu kullanıldı
+  cargo_status = 'picked_up',         -- Kargo alındı
+  used_at = now(),                    -- Kod kullanıldı tarihi
+  picked_up_at = now(),                -- Kargo alındı tarihi
+  updated_at = now()
+WHERE device_id = [device_id] AND code = [teslim_kodu];
+```
+
+**2. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'cargo_shipped',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**4. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'cargo_shipment_created'
+  event_category,       -- 'cargo'
+  event_action,         -- 'create'
+  event_severity,       -- 'info'
+  user_id,              -- Bulan kişinin ID'si
+  resource_type,        -- 'cargo_shipment'
+  resource_id,          -- cargo_shipments.id
+  event_description,    -- 'Device shipped by finder'
+  event_data,           -- JSON: {tracking_number, cargo_company, device_id}
+  created_at            -- now()
+);
+```
+
+**4. `notifications` tablosuna kayıtlar:**
+```sql
+-- Cihaz sahibine bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'package_shipped'
+  link,                 -- '/device/[device_id]'
+  is_read,              -- false
+  created_at            -- now()
+);
+
+-- Bulan kişiye bildirim
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Bulan kişinin ID'si
+  message_key,          -- 'package_shipped'
+  link,                 -- '/device/[device_id]'
+  is_read,              -- false
+  created_at            -- now()
+);
 ```
 
 **Dashboard'da Görünen:**
@@ -994,12 +1154,64 @@ Escrow Tutarı:
 
 ### **Adım 8: Kargo Teslim Alındı**
 ```
-Cihaz sahibi kargosunu aldı → Manuel onay bekliyor
+Kargo firması API'si "teslim edildi" bildirimi gönderir → devices.status: 'delivered' → Kullanıcıdan manuel onay bekleniyor
 ```
 Süreç Analizi: Bu adım, kargo firması API'sinden "teslim edildi" bilgisi geldiğinde tetiklenir. Bu anda sistemin durumu değişir ve kullanıcıdan bir eylem beklenir.
-Durum Güncellemesi:
-shipments.cargo_status -> 'delivered'
-devices.status -> 'delivered'
+
+**Durum Güncellemeleri:**
+- `cargo_shipments.cargo_status` → 'delivered'
+- `cargo_shipments.delivered_at` → now()
+- `devices.status` → 'delivered'
+
+**Database Güncellemeleri:**
+
+**1. `cargo_shipments` tablosunda güncelleme:**
+```sql
+UPDATE cargo_shipments 
+SET 
+  cargo_status = 'delivered',    -- Kargo durumu: teslim edildi
+  delivered_at = now(),
+  updated_at = now()
+WHERE device_id = [device_id];
+```
+
+**2. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'delivered',
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**3. `notifications` tablosuna kayıt:**
+```sql
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'package_delivered_confirm' (NOT: Bu anahtar constants.ts'de yok, eklenmesi gerekir)
+  link,                 -- '/device/[device_id]'
+  is_read,              -- false
+  created_at            -- now()
+);
+```
+
+**5. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'cargo_delivered'
+  event_category,       -- 'cargo'
+  event_action,         -- 'deliver'
+  event_severity,       -- 'info'
+  user_id,              -- Sistem (null) veya kargo API webhook'u
+  resource_type,        -- 'cargo_shipment'
+  resource_id,          -- cargo_shipments.id
+  event_description,    -- 'Package delivered by cargo company'
+  event_data,           -- JSON: {tracking_number, delivered_at, device_id}
+  created_at            -- now()
+);
+```
 ---
 
 **Dashboard'da Görünen:**
@@ -1050,50 +1262,144 @@ Escrow Tutarı:
 
 ### **Adım 9: Onay Verme**
 ```
-Cihaz sahibi → "Onayla" → Escrow serbest bırakılıyor ve ödemeler yapılıyor. 
+Cihaz sahibi → "Onayla" butonu → delivery_confirmations kaydı → Escrow serbest bırakılıyor ve ödemeler yapılıyor → devices.status: 'completed'
 ```
 Süreç Analizi: Kullanıcı "Onayla" butonuna bastığında, sürecin en kritik otomasyonu tetiklenir: paranın serbest bırakılması ve dağıtımı.
-Durum Güncellemesi:
-Kullanıcı onayıyla devices.status -> 'confirmed' olur.
-Bu durum değişikliği, escrow'u serbest bırakan (escrow_accounts.status -> 'released') ve ödeme dağıtımını başlatan bir tetikleyici (trigger/function) görevi görmelidir.
-Tüm finansal işlemler (final_payment_distributions) başarıyla tamamlandıktan sonra, işlemin nihai durumu olan devices.status -> 'completed' olarak güncellenir.
----
 
-**Database:**
-```typescript
-escrow_accounts {
-  status: "held" → "released"
-  released_at: timestamp
-  confirmations: [
-    {
-      user_id: UUID
-      confirmation_type: "device_received"
-      timestamp: timestamp
-    },
-    {
-      user_id: UUID
-      confirmation_type: "exchange_confirmed"
-      timestamp: timestamp
-    }
-  ]
-}
+**Durum Güncellemesi:**
+1. Kullanıcı onayıyla `delivery_confirmations` kaydı oluşturulur
+2. `cargo_shipments.delivery_confirmed_by_receiver` → true
+3. `cargo_shipments.delivery_confirmation_date` → now()
+4. `cargo_shipments.delivery_confirmation_id` → delivery_confirmations.id
+5. `devices.status` → 'confirmed' (geçici)
+6. `escrow_accounts.status` → 'released'
+7. `financial_transactions` kaydı oluşturulur (ödeme transferi)
+8. `devices.status` → 'completed' (final)
+9. `payments.status` → 'completed'
 
-financial_transactions {
-  id: UUID
-  payment_id: UUID
-  device_id: UUID
-  from_user_id: UUID  // Platform/Escrow
-  to_user_id: UUID  // Bulan kişi
-  transaction_type: "escrow_release"
-  amount: decimal  // Net payout
-  status: "completed"
-  completed_at: timestamp
-}
+**Database Güncellemeleri:**
 
-devices { 
-status: "CONFIRMED" 
-} 
+**1. `delivery_confirmations` tablosuna kayıt:**
+```sql
+INSERT INTO delivery_confirmations (
+  id,                    -- gen_random_uuid()
+  device_id,            -- Device ID'si
+  payment_id,           -- Payment ID'si
+  cargo_shipment_id,    -- cargo_shipments.id
+  confirmed_by,         -- Cihaz sahibinin user ID'si
+  confirmation_type,    -- 'device_received'
+  confirmation_data,    -- JSON: {serial_number_verified: true, condition: 'good'}
+  confirmed_at,         -- now()
+  created_at            -- now()
+);
 ```
+
+**2. `cargo_shipments` tablosunda güncelleme:**
+```sql
+UPDATE cargo_shipments 
+SET 
+  delivery_confirmed_by_receiver = true,
+  delivery_confirmation_date = now(),
+  delivery_confirmation_id = [delivery_confirmations.id],
+  cargo_status = 'confirmed',          -- Kargo durumu: onaylandı
+  updated_at = now()
+WHERE device_id = [device_id];
+```
+
+**3. `escrow_accounts` tablosunda güncelleme:**
+```sql
+UPDATE escrow_accounts 
+SET 
+  status = 'released',
+  released_at = now(),
+  release_reason = 'Device received and confirmed by owner',
+  released_by = [cihaz_sahibi_user_id],
+  updated_at = now()
+WHERE payment_id = [payment_id] AND status = 'held';
+```
+
+**4. `financial_transactions` tablosuna kayıt:**
+```sql
+INSERT INTO financial_transactions (
+  id,                    -- gen_random_uuid()
+  escrow_id,            -- escrow_accounts.id
+  payment_id,           -- Payment ID'si
+  device_id,            -- Device ID'si
+  transaction_type,     -- 'escrow_release'
+  amount,               -- Net payout tutarı (reward_amount)
+  currency,             -- 'TRY'
+  status,               -- 'completed'
+  description,          -- 'Escrow release: Device received and confirmed'
+  from_user_id,         -- NULL (Platform/Escrow hesabı)
+  to_user_id,          -- Bulan kişinin user ID'si
+  confirmed_by,        -- Cihaz sahibinin user ID'si
+  confirmation_type,    -- 'device_received'
+  completed_at,         -- now()
+  created_at            -- now()
+);
+```
+
+**5. `payments` tablosunda güncelleme:**
+```sql
+UPDATE payments 
+SET 
+  status = 'completed',
+  completed_at = now(),
+  updated_at = now()
+WHERE id = [payment_id];
+```
+
+**6. `devices` tablosunda güncelleme:**
+```sql
+UPDATE devices 
+SET 
+  status = 'completed',
+  delivery_confirmed_at = now(),
+  final_payment_distributed_at = now(),
+  updated_at = now()
+WHERE id = [device_id];
+```
+
+**7. `notifications` tablosuna kayıtlar:**
+```sql
+-- Bulan kişiye bildirim (ödül serbest bırakıldı)
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Bulan kişinin ID'si
+  message_key,          -- 'reward_released'
+  link,                 -- '/device/[device_id]'
+  is_read,              -- false
+  created_at            -- now()
+);
+
+-- Cihaz sahibine bildirim (işlem tamamlandı)
+INSERT INTO notifications (
+  id,                    -- gen_random_uuid()
+  user_id,              -- Cihaz sahibinin ID'si
+  message_key,          -- 'transactionCompletedOwner'
+  link,                 -- '/device/[device_id]'
+  is_read,              -- false
+  created_at            -- now()
+);
+```
+
+**8. `audit_logs` tablosuna kayıt:**
+```sql
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'escrow_released'
+  event_category,       -- 'financial'
+  event_action,         -- 'release'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'escrow'
+  resource_id,          -- escrow_accounts.id
+  event_description,    -- 'Escrow released after device confirmation'
+  event_data,           -- JSON: {payment_id, device_id, net_payout, released_at}
+  created_at            -- now()
+);
+```
+---
 
 
 **DeviceDetailPage (Cihaz Detay Sayfası):**
@@ -1225,7 +1531,7 @@ INSERT INTO devices (
   "userId",             -- Bulan kişinin ID'si (auth.users.id)
   model,                -- Cihaz modeli (text)
   "serialNumber",       -- Seri numarası (text)
-  status,               -- 'REPORTED' (text)
+  status,               -- 'reported' (text)
   color,                -- Cihaz rengi (text, nullable)
   description,          -- Açıklama (text, nullable)
   "exchangeConfirmedBy", -- Onaylayanlar array (uuid[], default '{}')
@@ -1233,7 +1539,7 @@ INSERT INTO devices (
   updated_at,           -- now()
   found_date,           -- Bulunma tarihi (date, nullable)
   found_location,       -- Bulunma yeri (text, nullable)
-  device_photo_url      -- Bulunan cihaz fotoğrafı URL'si (text, nullable)
+  "invoice_url"         -- Bulunan cihaz fotoğrafı URL'leri (text, nullable) - Virgülle ayrılmış fotoğraf URL'leri (önceki ve arka)
 );
 ```
 
@@ -1249,7 +1555,7 @@ INSERT INTO audit_logs (
   resource_type,        -- 'device'
   resource_id,          -- Oluşturulan device ID'si
   event_description,    -- 'Found device reported'
-  event_data,           -- JSON: {model, serialNumber, found_date, found_location}
+  event_data,           -- JSON: {model, serialNumber, found_date, found_location, invoice_url}
   created_at            -- now()
 );
 ```
@@ -1259,10 +1565,11 @@ INSERT INTO audit_logs (
 INSERT INTO notifications (
   id,                    -- gen_random_uuid()
   user_id,              -- Bulan kişinin ID'si
-  message_key,          -- 'device_report_confirmation'
-  type,                 -- 'info'
+  message_key,          -- 'deviceReportedConfirmation'
+  link,                 -- '/device/[device_id]'
   is_read,              -- false
-  created_at            -- now()
+  created_at,           -- now()
+  replacements          -- JSON: {model: device_model}
 );
 ```
 
@@ -1369,7 +1676,7 @@ Durum:  Kayıtlı XXX seri numaralı YYY cihaz için ödeme tamamlandı.
 2 Eşleşme bulundu
     Cihazın sahibinin ödeme yapması bekleniyor.
 3 Cihazın Kargo Firmasına Teslim Edilmesi
-    Kargo firmasına vereceğiniz **Teslim Kodunuz: [TESLİM_KODU]
+    Kargo firmasına vereceğiniz **Teslim Kodunuz:** `cargo_shipments.code` değeri gösterilecek (kargo firması API'si tarafından üretilen kod)
 4 Cihaz Sahibi Teslim Aldığında
     Kargo firması cihazı sahibine teslim edecek. Onay bekleniyor. 
 5 İşlem Tamamlandı
@@ -1402,7 +1709,7 @@ Kargo Firması API → "Kargo Bilgilerini Gir" → Form
 
 ### **Adım 8: Kargo Yolda**
 ```
-Status: CARGO_SHIPPED → Teslimat bekleniyor
+Status: cargo_shipped → Teslimat bekleniyor
 ```
 
 **Dashboard'da Görünen:**
@@ -1465,7 +1772,7 @@ Kargo firması cihazı sahibine teslim etti. Onay bekleniyor.
 ```
 Cihaz sahibi onayladı → Escrow released → Para transfer
 ```
-Status: COMPLETED → Ödül transfer edildi
+Status: completed → Ödül transfer edildi
 ---
 
 **Dashboard'da Görünen:**
@@ -1617,16 +1924,75 @@ Para transfer edildi	                      Bulan kişi	        reward_transferre
   netPayout = rewardAmount
 
 ### **10. Escrow Release Conditions**
-- Hangi koşullar sağlanmalı?
-Escrow'u serbest bırakacak iki temel koşul vardır:
-Manuel Onay: Cihaz sahibinin "Onayla" butonuna basması.
-Otomatik Onay: Kargonun teslim edilmesinden itibaren "otomatik onay süresi" (48 saat) kadar beklemek ve bu sürede bir itiraz gelmemesi.
+Escrow'u serbest bırakacak koşullar:
+
+**A. Manuel Onay:**
+- Cihaz sahibinin "Onayla" butonuna basması
+- `delivery_confirmations` kaydı oluşturulması
+- `confirmation_type` = 'device_received'
+
+**B. Otomatik Onay:**
+- Kargonun teslim edilmesinden (`cargo_shipments.delivered_at`) itibaren 48 saat geçmesi
+- Bu süre içinde kullanıcıdan itiraz gelmemesi (`devices.status` != 'disputed')
+- Sistem otomatik olarak `delivery_confirmations` kaydı oluşturur
+- `confirmation_type` = 'timeout_release'
+
+**C. Admin Manuel Serbest Bırakma:**
+- Admin panelinden manuel olarak escrow serbest bırakılabilir
+- `confirmation_type` = 'manual_release'
+- Sadece admin kullanıcılar bu işlemi yapabilir
+
+**Release API Çağrısı:**
+```typescript
+await releaseEscrowAPI({
+  paymentId: string,
+  deviceId: string,
+  releaseReason: string,
+  confirmationType: 'device_received' | 'timeout_release' | 'manual_release',
+  confirmedBy: string, // User ID
+  additionalNotes?: string
+});
+```
 
 ### **11. Eşleşme Mantığı**
-- Model ve Seri Numarasına göre
-- Bulan veya Kayıp cihaz kaydı aynı model ve seri numarası olamaz. 
-- sistem ikinci kayda izin vermez
-Evet. Bunu garanti altına almak için devices tablosunda (model, "serialNumber") sütunları üzerinde bir veritabanı seviyesinde UNIQUE kısıtlaması (constraint) oluşturulmalıdır.
+
+**Eşleştirme Kriterleri:**
+- Aynı `model` (büyük/küçük harf duyarsız)
+- Aynı `serialNumber` (büyük/küçük harf duyarsız)
+- Farklı `userId` (aynı kullanıcı kendi cihazı ile eşleşemez)
+- Biri `status = 'lost'`, diğeri `status = 'reported'` olmalı
+
+**Güvenlik Kısıtlamaları:**
+- Aynı kullanıcı, aynı model ve seri numaralı cihazı hem kayıp hem bulunan olarak kaydedemez (uygulama seviyesinde kontrol)
+- Veritabanı seviyesinde `UNIQUE` constraint önerilmez çünkü aynı cihaz hem kayıp hem bulunan olarak kaydedilebilir (farklı kullanıcılar tarafından)
+- Sistem, eşleşme bulunduğunda her iki cihazın `status`'unu `'matched'` olarak günceller
+
+**Eşleştirme Kodu (AppContext.tsx - addDevice fonksiyonu):**
+```typescript
+// Yeni cihaz LOST ise, REPORTED olanı ara
+if (newDevice.status === DeviceStatus.LOST) {
+  const { data: matchedData } = await supabase
+    .from("devices")
+    .select("*")
+    .eq("status", DeviceStatus.REPORTED)
+    .eq("serialNumber", newDevice.serialNumber)
+    .eq("model", newDevice.model)
+    .neq("userId", newDevice.userId)
+    .maybeSingle();
+}
+
+// Yeni cihaz REPORTED ise, LOST olanı ara
+if (newDevice.status === DeviceStatus.REPORTED) {
+  const { data: matchedData } = await supabase
+    .from("devices")
+    .select("*")
+    .eq("status", DeviceStatus.LOST)
+    .eq("serialNumber", newDevice.serialNumber)
+    .eq("model", newDevice.model)
+    .neq("userId", newDevice.userId)
+    .maybeSingle();
+}
+```
 
 
 ### **12. Admin Paneli**
@@ -1656,7 +2022,7 @@ Cihaz Ekle (Kaybettim)                                                  		Cihaz 
                                          	  ↓
 payment_completed ←────────────────── Escrow'da Tutuluyor ─────────────────→ payment_completed
       ↓                                		  ↓                              	         ↓
- Kargo Bekleniyor                 	   Teslim Kodu Oluştur                 		  Teslim Kodu Alındı
+ Kargo Bekleniyor                 	   Kargo Firması API → Teslim Kodu Oluştur → Teslim Kodu Alındı
       ↓                                   	   ↓                            	         ↓
       └───────────────────────   Kargoya Verilmesini Bekle   ────────────────→ Cihazı Kargola
                               		  (Kargo API'si dinleniyor)                 	         ↓

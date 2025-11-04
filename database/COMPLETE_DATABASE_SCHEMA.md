@@ -663,9 +663,22 @@ Kullanıcı profil bilgilerini tutan tablo.
 - **Super admins can manage all admin permissions**: Super admins can manage all admin permissions
 
 ### **audit_logs**
-- **Admins can view all audit logs**: Authenticated users can view all audit logs
-- **System can insert audit logs**: Authenticated users can insert audit logs
-- **Users can view own audit logs**: Users can view their own non-sensitive audit logs (excluding error/critical severity)
+- **RLS Enabled**: ✅ Row Level Security aktif
+- **Admins can view all audit logs**: Admin rolüne sahip kullanıcılar tüm audit logları görebilir
+- **Users can view own audit logs**: Kullanıcılar sadece kendi işlemlerini görebilir (sensitive olmayan, error/critical hariç)
+- **System can insert audit logs**: Authenticated kullanıcılar audit log ekleyebilir (sadece kendi user_id'si veya null ile)
+- **No UPDATE policy**: Audit loglar değiştirilemez (immutable)
+- **No DELETE policy**: Audit loglar silinemez (data retention için)
+
+**Detaylı RLS Politikaları:**
+```sql
+-- SELECT: Admin'ler tüm logları görebilir, kullanıcılar sadece kendi non-sensitive loglarını
+-- INSERT: Authenticated kullanıcılar ekleyebilir (user_id = auth.uid() OR user_id IS NULL)
+-- UPDATE: YOK (audit loglar immutable)
+-- DELETE: YOK (audit loglar silinemez)
+```
+
+**Not:** RLS politikaları `database/audit_logs_rls_policies.sql` dosyasında detaylı olarak tanımlanmıştır.
 
 ### **cargo_codes**
 - **Admins can view all cargo codes**: Admins can view all cargo codes

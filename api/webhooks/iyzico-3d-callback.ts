@@ -97,6 +97,31 @@ export async function handleIyzicoCallback(request: Request): Promise<Response> 
             console.error('[IYZICO_CALLBACK] Failed to update escrow:', escrowError);
           }
 
+          // Audit log: Payment completed
+          try {
+            await supabaseClient.from("audit_logs").insert({
+              event_type: 'payment_completed',
+              event_category: 'payment',
+              event_action: 'complete',
+              event_severity: 'info',
+              user_id: paymentRecord.payer_id,
+              resource_type: 'payment',
+              resource_id: params.conversationId,
+              event_description: 'Payment completed successfully via 3D Secure callback',
+              event_data: {
+                total_amount: paymentRecord.total_amount,
+                payment_provider: paymentRecord.payment_provider,
+                device_id: paymentRecord.device_id,
+                provider_payment_id: params.paymentId,
+                completed_at: new Date().toISOString(),
+              },
+            });
+            console.log('[IYZICO_CALLBACK] Audit log created for payment completion');
+          } catch (auditError) {
+            console.error('[IYZICO_CALLBACK] Error creating payment completed audit log:', auditError);
+            // Don't fail the whole operation if audit log fails
+          }
+
           // Device durumunu güncelle
           const { error: deviceError } = await supabaseClient
             .from('devices')

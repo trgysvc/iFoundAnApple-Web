@@ -637,9 +637,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     if (error) {
       secureLogger.error("Login error:", error);
+      // Audit log: Failed login
+      try {
+        await supabase.from("audit_logs").insert({
+          event_type: 'login_failed',
+          event_category: 'security',
+          event_action: 'authenticate',
+          event_severity: 'warning',
+          user_id: null,
+          resource_type: 'user',
+          event_description: `Failed login attempt for email: ${email}`,
+          event_data: {
+            email: email,
+            error_message: error.message,
+            error_code: error.status,
+          },
+        });
+      } catch (auditError) {
+        console.error("Error creating failed login audit log:", auditError);
+      }
       return false;
     }
     if (data.user) {
+      // Audit log: Successful login
+      try {
+        await supabase.from("audit_logs").insert({
+          event_type: 'login_success',
+          event_category: 'security',
+          event_action: 'authenticate',
+          event_severity: 'info',
+          user_id: data.user.id,
+          resource_type: 'user',
+          event_description: 'User logged in successfully',
+          event_data: {
+            email: email,
+            user_id: data.user.id,
+          },
+        });
+      } catch (auditError) {
+        console.error("Error creating login audit log:", auditError);
+      }
       const parsedNames = parseOAuthUserName(data.user.user_metadata);
       const fullName = data.user.user_metadata.full_name || 
                       `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
@@ -673,6 +710,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     console.log("logout: Starting logout process...");
 
     try {
+      const userId = currentUser?.id;
+
       // Clear local state first
       setCurrentUser(null);
       setDevices([]);
@@ -685,6 +724,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         throw error;
       } else {
         console.log("logout: Successfully signed out from Supabase");
+        
+        // Audit log: Logout
+        if (userId) {
+          try {
+            await supabase.from("audit_logs").insert({
+              event_type: 'logout',
+              event_category: 'security',
+              event_action: 'authenticate',
+              event_severity: 'info',
+              user_id: userId,
+              resource_type: 'user',
+              event_description: 'User logged out successfully',
+              event_data: {
+                user_id: userId,
+              },
+            });
+          } catch (auditError) {
+            console.error("Error creating logout audit log:", auditError);
+          }
+        }
       }
 
       console.log("logout: Logout completed successfully");
@@ -819,6 +878,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       lost_location: isLost ? deviceData.lost_location : null, // Add lost location for lost devices, null for found
       found_date: !isLost ? deviceData.found_date : null, // Add found date for found devices, null for lost
       found_location: !isLost ? deviceData.found_location : null, // Add found location for found devices, null for lost
+      device_role: isLost ? 'owner' : 'finder', // Explicitly set device role: owner (who lost it) or finder (who found it)
     };
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
@@ -1124,7 +1184,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (e) {
       console.error("Unhandled error adding device:", e);
-      console.error("Error stack:", e.stack);
+      if (e instanceof Error) {
+        console.error("Error stack:", e.stack);
+      }
       return false;
     }
   };
@@ -1579,7 +1641,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Error checking for existing matches:", error);
     }
-  }, [currentUser, addNotification]);
+  }, [userId, addNotification]);
 
   // Create user profile in userProfile table
   const createUserProfile = async (
@@ -1735,7 +1797,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log("updateUserProfile: Profile table updated successfully");
 
-      // Step 3: Update local state
+      // Step 3: Audit log: Profile updated
+      try {
+        await supabase.from("audit_logs").insert({
+          event_type: 'profile_updated',
+          event_category: 'user',
+          event_action: 'update',
+          event_severity: 'info',
+          user_id: currentUser.id,
+          resource_type: 'user_profile',
+          resource_id: currentUser.id,
+          event_description: 'User profile updated',
+          event_data: {
+            updated_fields: Object.keys(profileData),
+            has_date_of_birth: !!profileData.dateOfBirth,
+            has_tc_kimlik: !!profileData.tcKimlikNo,
+            has_phone: !!profileData.phoneNumber,
+            has_address: !!profileData.address,
+            has_iban: !!profileData.iban,
+          },
+        });
+        console.log("Audit log created for profile update");
+      } catch (auditError) {
+        console.error("Error creating profile update audit log:", auditError);
+        // Don't fail the whole operation if audit log fails
+      }
+
+      // Step 4: Update local state
       setCurrentUser((prev) =>
         prev
           ? {
