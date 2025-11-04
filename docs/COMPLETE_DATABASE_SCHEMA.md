@@ -2,8 +2,8 @@
 
 Bu dosya Supabase'deki tüm tabloların yapısını ve RLS politikalarını içerir. Güncellemeler burada yapılır ve revize edilir.
 
-**Son Güncelleme:** 24 Ekim 2025, Cuma - 14:30  
-**Versiyon:** 2.0
+**Son Güncelleme:** 4 Kasım 2025, Pazartesi - 14:30  
+**Versiyon:** 2.1
 
 ---
 
@@ -190,6 +190,7 @@ Kayıp/bulunan cihazları tutan ana tablo.
 | cargo_code_id | uuid | YES | null | Cargo code ID (FK) |
 | delivery_confirmed_at | timestamp with time zone | YES | null | Delivery confirmed timestamp |
 | final_payment_distributed_at | timestamp with time zone | YES | null | Final payment distributed timestamp |
+| device_role | character varying(10) | YES | null | Device role: 'owner' (who lost the device) or 'finder' (who found the device) |
 
 ### 9. **escrow_accounts**
 Escrow hesaplarını tutan tablo.
@@ -334,6 +335,9 @@ Finansal işlemleri tutan tablo.
 | credit_account | character varying(50) | YES | null | Credit account |
 | created_by | uuid | YES | null | Created by (FK) |
 | approved_by | uuid | YES | null | Approved by (FK) |
+| escrow_id | uuid | YES | null | Escrow account ID (FK) |
+| confirmed_by | uuid | YES | null | Confirmed by user ID (FK) |
+| confirmation_type | character varying(50) | YES | null | Confirmation type (e.g., 'device_received', 'timeout_release', 'manual_release') |
 | updated_at | timestamp with time zone | YES | now() | Updated timestamp |
 
 ### 13. **invoice_logs**
@@ -804,6 +808,8 @@ Kullanıcı profil bilgilerini tutan tablo.
 - `payment_id` → `payments.id`
 - `from_user_id` → `auth.users.id`
 - `to_user_id` → `auth.users.id`
+- `escrow_id` → `escrow_accounts.id`
+- `confirmed_by` → `auth.users.id`
 
 ### **invoice_logs**
 - `user_id` → `auth.users.id`
@@ -854,6 +860,12 @@ Kullanıcı profil bilgilerini tutan tablo.
 9. **Enhanced Tracking**: Kargo takibi ve teslimat onayları için gelişmiş sistem eklendi.
 
 10. **Financial Audit**: Finansal işlemler için detaylı audit trail sistemi eklendi.
+
+11. **device_role Column**: `devices` tablosuna `device_role` kolonu eklendi. Bu kolon, cihaz kaydının sahibi mi (owner) yoksa bulan kişi mi (finder) olduğunu açıkça belirtir. Bu sayede UI rendering'de status değişse bile doğru ekran gösterilir.
+
+12. **Financial Transactions Escrow Fields**: `financial_transactions` tablosuna `escrow_id`, `confirmed_by`, ve `confirmation_type` kolonları eklendi. Bu kolonlar escrow release işlemlerini takip etmek için kullanılır.
+
+13. **Transaction Type Constraint**: `financial_transactions.transaction_type` CHECK constraint'i güncellendi ve `escrow_release` değeri eklendi.
 
 ---
 

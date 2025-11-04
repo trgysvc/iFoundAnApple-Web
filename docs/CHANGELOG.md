@@ -2,6 +2,50 @@
 
 Bu proje, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatını takip eder ve bu projedeki önemli değişiklikleri belgeler.
 
+## [2.5.0] - device_role Kolonu ve Status Test Yol Haritası
+
+### Eklendi
+- **device_role Column**: `devices` tablosuna `device_role` kolonu eklendi. Bu kolon, cihaz kaydının sahibi mi ('owner') yoksa bulan kişi mi ('finder') olduğunu açıkça belirtir
+- **Financial Transactions Escrow Fields**: `financial_transactions` tablosuna `escrow_id`, `confirmed_by`, ve `confirmation_type` kolonları eklendi. Bu kolonlar escrow release işlemlerini takip etmek için kullanılır
+- **Transaction Type Constraint Update**: `financial_transactions.transaction_type` CHECK constraint'i güncellendi ve `escrow_release` değeri eklendi
+- **Migration Scripts**: 
+  - `database/migrations/add_device_role_column.sql` - device_role kolonu için migration
+  - `database/migrations/add_escrow_fields_to_financial_transactions.sql` - escrow alanları için migration
+  - `database/migrations/add_escrow_release_to_transaction_type.sql` - transaction_type constraint güncellemesi
+  - `database/migrations/manual_fix_transaction_type_constraint.sql` - manuel constraint düzeltme script'i
+- **STATUS_TEST_YOL_HARITASI.md**: Kapsamlı status test yol haritası dokümantasyonu eklendi. Bu dokümantasyon, Supabase'de status değiştirerek tüm sürecin test edilmesi için adım adım rehber içerir
+- **PROJECT_DESIGN_DOCUMENTATION.md**: Kapsamlı proje tasarım dokümantasyonu eklendi
+- **PROCESS_FLOW_EKSIKLER_RAPORU.md**: Süreç akışı eksikleri raporu eklendi
+
+### Değiştirildi
+- **DeviceDetailPage.tsx**: `device_role` kolonu kullanılarak owner/finder ayrımı yapılıyor. Status değişse bile doğru ekran gösterilir
+- **AppContext.tsx**: `addDevice` fonksiyonu güncellendi. Yeni cihaz kaydı oluşturulurken `device_role` otomatik olarak set ediliyor ('owner' veya 'finder')
+- **isOriginalOwnerPerspective Logic**: `DeviceDetailPage.tsx` içindeki `isOriginalOwnerPerspective` mantığı güncellendi. Artık öncelik sırası:
+  1. `device_role` kolonu (en güvenilir)
+  2. `lost_date`/`found_date` kontrolü (fallback)
+  3. Status kontrolü (son çare)
+- **UI Rendering**: Her status için owner ve finder ekranları ayrı ayrı implement edildi:
+  - PAYMENT_COMPLETED: Owner ve finder için ayrı ekranlar
+  - CARGO_SHIPPED: Owner ve finder için ayrı ekranlar (Satın Alma Kanıtı, formatlanmış tutarlar eklendi)
+  - DELIVERED: Owner ve finder için ayrı ekranlar (Durum Bilgisi, Ödeme Detayları, Escrow Durumu eklendi)
+  - COMPLETED: Owner ve finder için ayrı ekranlar
+- **Payment Amount Display**: Ödeme tutarları ve escrow tutarları `Intl.NumberFormat` ile Türk Lirası formatında gösteriliyor
+- **ADIM 6 SQL Queries**: STATUS_TEST_YOL_HARITASI.md içindeki ADIM 6 SQL sorguları düzeltildi ve sadeleştirildi
+
+### İyileştirildi
+- **UI Consistency**: Status değişse bile doğru ekran gösterilmesi garantilendi
+- **Code Maintainability**: `device_role` kolonu ile daha net ve bakımı kolay kod yapısı
+- **Testing**: Kapsamlı status test yol haritası ile sistem testi kolaylaştırıldı
+- **Documentation**: Tüm değişiklikler için detaylı dokümantasyon eklendi
+- **Database Schema**: Veritabanı şeması güncellendi ve dokümante edildi
+
+### Düzeltildi
+- **PAYMENT_COMPLETED Screen**: Cihaz sahibi için doğru ekran gösterilmesi sorunu çözüldü
+- **CARGO_SHIPPED Screen**: Satın Alma Kanıtı (Fatura) Dosyası ve formatlanmış tutarlar eklendi
+- **DELIVERED Screen**: Durum Bilgisi, Ödeme Detayları ve Escrow Durumu kartları eklendi
+- **ADIM 6 SQL Errors**: Constraint hataları ve syntax hataları düzeltildi
+- **Financial Transactions Constraint**: `escrow_release` transaction_type değeri için CHECK constraint hatası çözüldü
+
 ## [2.4.0] - Backend Ödeme Altyapısının Frontend'e Taşınması
 
 ### Kaldırıldı

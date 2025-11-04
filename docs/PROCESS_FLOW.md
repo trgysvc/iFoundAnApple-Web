@@ -268,7 +268,8 @@ INSERT INTO devices (
   created_at,           -- now()
   updated_at,           -- now()
   lost_date,            -- Kayıp tarihi (date, nullable)
-  lost_location         -- Kayıp yeri (text, nullable)
+  lost_location,        -- Kayıp yeri (text, nullable)
+  device_role           -- 'owner' (cihaz sahibi)
 );
 ```
 
@@ -1539,7 +1540,8 @@ INSERT INTO devices (
   updated_at,           -- now()
   found_date,           -- Bulunma tarihi (date, nullable)
   found_location,       -- Bulunma yeri (text, nullable)
-  "invoice_url"         -- Bulunan cihaz fotoğrafı URL'leri (text, nullable) - Virgülle ayrılmış fotoğraf URL'leri (önceki ve arka)
+  "invoice_url",        -- Bulunan cihaz fotoğrafı URL'leri (text, nullable) - Virgülle ayrılmış fotoğraf URL'leri (önceki ve arka)
+  device_role           -- 'finder' (cihazı bulan kişi)
 );
 ```
 
