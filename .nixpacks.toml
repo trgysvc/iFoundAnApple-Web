@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["NODE_ENV=development npm ci"]
+cmds = ["npm ci --include=dev"]
 
 [phases.build]
 cmds = ["npm run build"]
@@ -12,6 +12,7 @@ cmd = "NODE_ENV=production node server.cjs"
 
 [variables]
 NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "false"
 PORT = "3000"
 
 
