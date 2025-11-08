@@ -759,7 +759,7 @@ app.post('/api/iyzico-callback', async (req, res) => {
 
 // Production'da tüm route'ları index.html'e yönlendir (SPA için)
 if (isProduction) {
-  app.get('*', (req, res) => {
+  app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
