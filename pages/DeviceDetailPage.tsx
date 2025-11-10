@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext.tsx";
-import { Device, DeviceStatus, UserRole } from "../types.ts";
+import { Device, DeviceStatus } from "../types.ts";
 import Container from "../components/ui/Container.tsx";
 import Button from "../components/ui/Button.tsx";
 import NotFoundPage from "./NotFoundPage.tsx";
@@ -9,11 +9,9 @@ import { getSecureInvoiceUrl, getSecureFileUrl } from "../utils/fileUpload.ts";
 import { supabase as supabaseClient } from "../utils/supabaseClient.ts";
 import {
   ArrowLeft,
-  ShieldCheck,
   Hourglass,
   ArrowRightLeft,
   PartyPopper,
-  Wallet,
   Info,
   Paperclip,
   Check,
@@ -41,7 +39,6 @@ const DeviceDetailPage: React.FC = () => {
   const {
     currentUser,
     getDeviceById,
-    makePayment,
     confirmExchange,
     t,
     notifications,
@@ -50,7 +47,6 @@ const DeviceDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [device, setDevice] = useState<Device | undefined | null>(undefined);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [secureInvoiceUrl, setSecureInvoiceUrl] = useState<string | null>(null);
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
   const [secureFinderPhotoUrls, setSecureFinderPhotoUrls] = useState<string[]>(
@@ -91,7 +87,7 @@ const DeviceDetailPage: React.FC = () => {
         setSecureInvoiceUrl(null);
 
         // Eğer cihazın ödemesi tamamlandıysa, PaymentSuccessPage'e yönlendir
-        if (foundDevice && foundDevice.status === 'payment_completed') {
+        if (foundDevice && foundDevice.status === DeviceStatus.PAYMENT_COMPLETE) {
           console.log("DeviceDetailPage: Ödeme tamamlanmış, PaymentSuccessPage'e yönlendiriliyor");
           
           // Payment ID'yi bul
@@ -356,36 +352,6 @@ const DeviceDetailPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Ödül Bilgisi */}
-                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200 p-6 mb-6">
-                  <div className="text-center mb-3">
-                    <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center">
-                      <span className="text-2xl mr-2">🎁</span>
-                      Ödül Bilgisi
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3 text-sm text-gray-700">
-                    <p className="leading-relaxed">
-                      <strong>Harika bir haber!</strong> Eşleşme bulundu ve süreç başladı. Cihaz sahibi ödeme yaptıktan 
-                      ve takas tamamlandıktan sonra, ödülün hesabına aktarılacaktır.
-                    </p>
-                    
-                    {device.rewardAmount && (
-                      <div className="bg-white rounded-lg p-4 text-center border-2 border-green-300">
-                        <p className="text-gray-600 text-xs mb-1">Tahmini Ödül Tutarı</p>
-                        <p className="text-2xl font-bold text-green-600">
-                          {device.rewardAmount.toFixed(2)} TL
-                        </p>
-                      </div>
-                    )}
-                    
-                    <p className="leading-relaxed text-gray-600 italic">
-                      💡 IBAN bilgilerini profil sayfandan ekleyebilir veya güncelleyebilirsin.
-                    </p>
-                  </div>
-                </div>
-
                 {/* Action Buttons */}
                 <div className="flex space-x-4">
                   <Button 
@@ -532,9 +498,8 @@ const DeviceDetailPage: React.FC = () => {
                           onClick={() => handlePayment(device.id)}
                           variant="primary" 
                           className="ml-4"
-                          disabled={isProcessingPayment}
                         >
-                          {isProcessingPayment ? 'İşleniyor...' : 'Ödemeyi Güvenle Yap'}
+                          Ödemeyi Güvenle Yap
                         </Button>
                       </div>
                     </div>
@@ -743,9 +708,15 @@ const DeviceDetailPage: React.FC = () => {
                             onClick={() => handlePayment(device.id)}
                             variant="primary" 
                             className="ml-4"
-                            disabled={isProcessingPayment}
                           >
-                            {isProcessingPayment ? 'İşleniyor...' : 'Ödemeyi Güvenle Yap'}
+                            Ödemeyi Güvenle Yap
+                          </Button>
+                          <Button 
+                            onClick={() => handlePayment(device.id)}
+                            variant="primary" 
+                            className="ml-4"
+                          >
+                            Ödemeyi Güvenle Yap
                           </Button>
                         </div>
                       </div>
@@ -938,36 +909,6 @@ const DeviceDetailPage: React.FC = () => {
                         <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
                       </div>
                     </div>
-                  </div>
-                </div>
-
-                {/* Ödül Bilgisi */}
-                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200 p-6 mb-6">
-                  <div className="text-center mb-3">
-                    <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center">
-                      <span className="text-2xl mr-2">🎁</span>
-                      Ödül Bilgisi
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3 text-sm text-gray-700">
-                    <p className="leading-relaxed">
-                      <strong>Harika bir haber!</strong> Eşleşme bulundu ve süreç başladı. Cihaz sahibi ödeme yaptıktan 
-                      ve takas tamamlandıktan sonra, ödülün hesabına aktarılacaktır.
-                    </p>
-                    
-                    {device.rewardAmount && (
-                      <div className="bg-white rounded-lg p-4 text-center border-2 border-green-300">
-                        <p className="text-gray-600 text-xs mb-1">Tahmini Ödül Tutarı</p>
-                        <p className="text-2xl font-bold text-green-600">
-                          {device.rewardAmount.toFixed(2)} TL
-                        </p>
-                      </div>
-                    )}
-                    
-                    <p className="leading-relaxed text-gray-600 italic">
-                      💡 IBAN bilgilerini profil sayfandan ekleyebilir veya güncelleyebilirsin.
-                    </p>
                   </div>
                 </div>
 
