@@ -79,6 +79,9 @@ export type CargoStatus =
 - Sistem bu kodu `cargo_shipments.code` sütununa yazar ve bulan kişiye gösterir.
 - Ayrıca `cargo_status` sütunu da bulunur ve kargo sürecinin detaylı durumunu takip eder.
 
+**Önemli:** 
+- **UI / Mobil Geliştirme Notu:** Cihaz sahibi (owner) ile cihazı bulan (finder) kullanıcı arayüzlerini ayırırken `status` alanına göre değil `devices.device_role` sütununa göre ayrımı yapın. Bir kullanıcı aynı anda her iki rolü de üstlenebileceği için, doğru ekran akışlarını seçmek için mutlaka `devices.device_role` sütununu (`'owner' | 'finder'`) temel alın. tüm süreç ekranlarında ve iOS gibi sonraki uygulamalarda da bu sütun, dinamik rol ayrımı için ana referans olmalıdır.
+
 
 ## 📊 VERİTABANI TABLOLARI VE SÜREÇ İLİŞKİSİ
 
@@ -243,11 +246,13 @@ Dashboard → "Cihaz Ekle" → "Kaybettim" Seçeneği
 ```
 
 **Girilen Bilgiler:**
-- Cihaz Modeli: Dropdown'dan seçim (iPhone 15 Pro Max, vb.)
 - Seri Numarası: Manuel giriş (12 haneli)
+- Cihaz Modeli: Dropdown'dan seçim (iPhone 15 Pro Max, vb.)
+- Renk: Dropdown'dan seçim 
+- Satın Alma Kanıtı (Fatura) : Dosya Ekleme (isteğe bağlı)
 - Kayıp Tarihi: Tarih seçici
 - Kayıp Yeri: Serbest metin
-- Açıklama: Opsiyonel
+- Ek detaylar (isteğe bağlı): Opsiyonel
 
 
 **Database Kayıtları:**
@@ -1469,17 +1474,18 @@ Dashboard → "Bulunan Cihaz Bildir
 ```
 
 **Girilen Bilgiler:**
-- Seri Numarası: Manuel giriş
-- Renk: Dropdown
-- Cihaz Modeli: Dropdown
-- Bulunma Tarihi: Tarih seçici
-- Bulunma Yeri: Serbest metin
+- Seri Numarası: Manuel giriş [zorunlu alan]
+- Renk: Dropdown [zorunlu alan]
+- Cihaz Modeli: Dropdown [zorunlu alan]
+- Bulunma Tarihi: Tarih seçici [zorunlu alan]
+- Bulunma Yeri: Serbest metin [zorunlu alan]
 - Ek Detaylar: Opsiyonel
-- Bulunan Cihazın Fotoğrafı: "Dosya Ekle Butonu" (Ön ve Arka İki Fotoğraf Kaydı)
+- Bulunan Cihazın Fotoğrafı: "Dosya Ekle Butonu" (Ön ve Arka İki Fotoğraf Kaydı) [zorunlu alan]
 
 **Dashboard'da Görünen:**
-- Mesaj: Buldunan cihazın sistem kaydı gerçekleşti.
-- Durum: ?
+- Cihaz kartı: "Bulunan Cihaz için Eşleşme Bekleniyor"
+- Durum rengi: Turuncu/Sarı
+- Bildirim: Var mı? VAR
 
 **DeviceDetailPage (Cihaz Detay Sayfası):**
 ```

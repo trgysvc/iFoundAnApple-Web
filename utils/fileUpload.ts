@@ -82,6 +82,7 @@ export const uploadFileToStorage = async (
       .upload(fileName, file, {
         cacheControl: "3600", // 1 hour cache
         upsert: false, // Don't overwrite existing files
+        contentType: file.type || "application/octet-stream",
       });
 
     if (error) {
@@ -137,6 +138,26 @@ export const uploadInvoiceDocument = async (
     file,
     "device-documents",
     "invoices",
+    userId,
+    deviceModel
+  );
+};
+
+/**
+ * Upload found device photo(s) for finder flow
+ * @param file - Photo file to upload
+ * @param userId - Finder user ID
+ * @param deviceModel - Device model (optional, used for filename)
+ */
+export const uploadFoundDevicePhoto = async (
+  file: File,
+  userId: string,
+  deviceModel?: string
+): Promise<FileUploadResult> => {
+  return uploadFileToStorage(
+    file,
+    "device-pics",
+    "found",
     userId,
     deviceModel
   );

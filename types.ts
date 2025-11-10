@@ -63,6 +63,10 @@ export interface Device {
   exchangeConfirmedBy?: string[]; // Array of user IDs who confirmed (maps to exchangeconfirmedby in DB)
   lost_date?: string; // Date when the device was lost (YYYY-MM-DD format)
   lost_location?: string; // Location where the device was lost (free text description)
+  found_date?: string; // Date when the device was found (YYYY-MM-DD format)
+  found_location?: string; // Location where the device was found
+  found_photos?: string[]; // URLs for the found device photos
+  device_role?: "owner" | "finder"; // Distinguish owner vs finder perspective
 }
 
 export interface AppNotification {

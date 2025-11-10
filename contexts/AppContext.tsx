@@ -16,9 +16,20 @@ import {
 import { translations } from "../constants.ts";
 import { secureLogger } from "../utils/security.ts";
 import { supabase } from "../utils/supabaseClient.ts";
+import { logInvoiceUpload } from "../utils/invoiceManager.ts";
 // import { useNavigate } from 'react-router-dom'; // Removed as useNavigate cannot be used in AppContext
 
 type Language = "en" | "tr" | "fr" | "ja" | "es";
+
+interface AddDeviceOptions {
+  invoiceDocument?: {
+    filePath: string;
+    originalFileName: string;
+    fileSize: number;
+    mimeType: string;
+    file?: File;
+  };
+}
 
 interface AppContextType {
   language: Language;
@@ -35,7 +46,8 @@ interface AppContextType {
   devices: Device[];
   addDevice: (
     device: Omit<Device, "id" | "userId" | "status">,
-    isLost: boolean
+    isLost: boolean,
+    options?: AddDeviceOptions
   ) => Promise<boolean>;
   getUserDevices: (userId: string) => Promise<Device[]>;
   getDeviceById: (deviceId: string) => Promise<Device | undefined>;
@@ -752,7 +764,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addDevice = async (
     deviceData: Omit<Device, "id" | "userId" | "status">,
-    isLost: boolean
+    isLost: boolean,
+    options?: AddDeviceOptions
   ): Promise<boolean> => {
     if (!currentUser) {
       console.warn("addDevice: No current user, cannot add device.");
@@ -789,18 +802,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Database uses camelCase field names - no mapping needed
-    const newDevicePayload = {
+    const deviceRole = isLost ? "owner" : "finder";
+
+    const newDevicePayload: Record<string, any> = {
       model: deviceData.model,
       serialNumber: deviceData.serialNumber,
       color: deviceData.color,
-      description: deviceData.description,
-      rewardAmount: deviceData.rewardAmount,
-      // marketValue field doesn't exist in database schema, removing
+      description: deviceData.description ?? null,
+      rewardAmount: deviceData.rewardAmount ?? null,
       invoice_url: deviceData.invoice_url,
       userId: currentUser.id,
       status: isLost ? DeviceStatus.LOST : DeviceStatus.REPORTED,
-      exchangeConfirmedBy: null, // UUID array - start with null, will be populated later
+      device_role: deviceRole,
     };
+
+    if (isLost) {
+      newDevicePayload.lost_date = deviceData.lost_date ?? null;
+      newDevicePayload.lost_location = deviceData.lost_location ?? null;
+    } else {
+      newDevicePayload.found_date = deviceData.found_date ?? null;
+      newDevicePayload.found_location = deviceData.found_location ?? null;
+    }
 
     console.log("addDevice: Payload being sent to Supabase:", newDevicePayload); // Added for debugging
 
@@ -841,6 +863,64 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             "addDevice: Could not retrieve new device data after insertion."
           );
           return true; // Still consider it a success as the device was added
+        }
+
+        try {
+          await supabase.from("audit_logs").insert([
+            {
+              event_type: "device_registration",
+              event_category: "device",
+              event_action: "create",
+              event_severity: "info",
+              user_id: currentUser.id,
+              resource_type: "device",
+              resource_id: newDevice.id,
+              event_description: isLost
+                ? "Lost device registered"
+                : "Found device reported",
+              event_data: {
+                model: newDevice.model,
+                serialNumber: newDevice.serialNumber,
+                lost_date: deviceData.lost_date,
+                lost_location: deviceData.lost_location,
+                found_date: deviceData.found_date,
+                found_location: deviceData.found_location,
+                invoice_url: deviceData.invoice_url,
+                device_role: deviceRole,
+              },
+            },
+          ]);
+        } catch (auditError) {
+          console.error("addDevice: Error logging audit event:", auditError);
+        }
+
+        if (options?.invoiceDocument?.filePath) {
+          try {
+            const { filePath, originalFileName, fileSize, mimeType, file } =
+              options.invoiceDocument;
+
+            const fileName =
+              filePath.split("/").pop() || originalFileName || filePath;
+
+            await logInvoiceUpload(
+              {
+                userId: currentUser.id,
+                deviceId: newDevice.id,
+                fileName,
+                originalFileName,
+                filePath,
+                fileSize,
+                mimeType,
+                deviceModel: newDevice.model,
+              },
+              file
+            );
+          } catch (invoiceError) {
+            console.error(
+              "addDevice: Error logging invoice upload:",
+              invoiceError
+            );
+          }
         }
 
         // Check for a match with existing devices in Supabase

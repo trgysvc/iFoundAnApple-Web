@@ -7,10 +7,9 @@ import Button from "../components/ui/Button.tsx";
 import { Upload, CheckCircle } from "lucide-react";
 import { getColorsForDevice } from '../constants';
 import { supabase } from '../utils/supabaseClient';
-import { uploadInvoiceDocument } from '../utils/fileUpload';
+import { uploadInvoiceDocument, uploadFoundDevicePhoto } from '../utils/fileUpload';
 import { secureLogger, validators, sanitizers } from '../utils/security';
 import { performCompleteFileValidation } from '../utils/fileSecurity';
-import { logInvoiceUpload } from '../utils/invoiceManager';
 
 const AddDevicePage: React.FC = () => {
   const { addDevice, t, currentUser } = useAppContext();
@@ -31,8 +30,17 @@ const AddDevicePage: React.FC = () => {
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [uploadedFileMeta, setUploadedFileMeta] = useState<{
+    originalName: string;
+    size: number;
+    type: string;
+  } | null>(null);
   const [lostDate, setLostDate] = useState(""); // YYYY-MM-DD format
   const [lostLocation, setLostLocation] = useState("");
+  const [foundDate, setFoundDate] = useState(""); // YYYY-MM-DD format
+  const [foundLocation, setFoundLocation] = useState("");
+  const [finderPhotoUrls, setFinderPhotoUrls] = useState<string[]>([]);
+  const [isUploadingFinderPhotos, setIsUploadingFinderPhotos] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // For form submission
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -85,7 +93,50 @@ const AddDevicePage: React.FC = () => {
     }
   }, [model, availableColors, color]);
 
+  const ensureSupportedMimeType = (file: File): File => {
+    if (file.type && file.type !== "application/json") {
+      return file;
+    }
+
+    const lowerCaseName = file.name.toLowerCase();
+    const typeMappings: Array<{ ext: string; mime: string }> = [
+      { ext: ".pdf", mime: "application/pdf" },
+      { ext: ".jpg", mime: "image/jpeg" },
+      { ext: ".jpeg", mime: "image/jpeg" },
+      { ext: ".png", mime: "image/png" },
+      { ext: ".webp", mime: "image/webp" },
+    ];
+
+    const matchedType = typeMappings.find((mapping) =>
+      lowerCaseName.endsWith(mapping.ext)
+    );
+
+    if (matchedType) {
+      const normalizedBlob = file.slice(0, file.size, matchedType.mime);
+      return new File([normalizedBlob], file.name, {
+        type: matchedType.mime,
+        lastModified: file.lastModified,
+      });
+    }
+
+    return file;
+  };
+
   const title = isLostReport ? t("addLostDevice") : t("reportFoundDevice");
+
+  useEffect(() => {
+    if (isLostReport) {
+      setFoundDate("");
+      setFoundLocation("");
+      setFinderPhotoUrls([]);
+    } else {
+      setInvoiceFile(null);
+      setUploadedFileUrl(null);
+      setUploadedFileMeta(null);
+      setLostDate("");
+      setLostLocation("");
+    }
+  }, [isLostReport]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -98,7 +149,8 @@ const AddDevicePage: React.FC = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+      const originalFile = e.target.files[0];
+      const file = ensureSupportedMimeType(originalFile);
       
       // Enhanced security validation
       setIsUploadingFile(true);
@@ -126,18 +178,11 @@ const AddDevicePage: React.FC = () => {
           
           if (result.success && result.url) {
             setUploadedFileUrl(result.url);
-            
-            // Log invoice upload for audit trail
-            await logInvoiceUpload({
-              userId: currentUser.id,
-              deviceId: "", // Will be set when device is created
-              fileName: result.url,
-              originalFileName: file.name,
-              filePath: result.url,
-              fileSize: file.size,
-              mimeType: file.type,
-              deviceModel: model,
-            }, file);
+            setUploadedFileMeta({
+              originalName: file.name,
+              size: file.size,
+              type: file.type,
+            });
             
             secureLogger.info("File uploaded successfully", {
               userId: currentUser.id,
@@ -147,14 +192,88 @@ const AddDevicePage: React.FC = () => {
           } else {
             setError(result.error || "Failed to upload file. Please try again.");
             setInvoiceFile(null);
+            setUploadedFileUrl(null);
+            setUploadedFileMeta(null);
           }
         }
       } catch (error) {
         secureLogger.error("File upload error", error);
         setError("Failed to upload file. Please try again.");
         setInvoiceFile(null);
+        setUploadedFileUrl(null);
+        setUploadedFileMeta(null);
       } finally {
         setIsUploadingFile(false);
+      }
+    }
+  };
+
+  const handleFinderPhotoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!currentUser) {
+      setError("Please sign in to upload device photos.");
+      return;
+    }
+
+    const inputElement = e.target as HTMLInputElement;
+    const fileList = inputElement.files ? Array.from(inputElement.files) : [];
+    inputElement.value = "";
+
+    if (fileList.length > 0) {
+      const files = fileList;
+      setIsUploadingFinderPhotos(true);
+      setError("");
+
+      try {
+        const uploadedUrls: string[] = [];
+
+        for (const original of files) {
+          const file = ensureSupportedMimeType(original);
+
+          const securityValidation = await performCompleteFileValidation(file);
+          if (!securityValidation.valid) {
+            setError(securityValidation.error || "File validation failed");
+            setIsUploadingFinderPhotos(false);
+            return;
+          }
+
+          if (
+            securityValidation.warnings &&
+            securityValidation.warnings.length > 0
+          ) {
+            console.warn(
+              "Finder photo upload security warnings:",
+              securityValidation.warnings
+            );
+          }
+
+          const result = await uploadFoundDevicePhoto(
+            file,
+            currentUser.id,
+            model
+          );
+
+          if (result.success && result.url) {
+            uploadedUrls.push(result.url);
+          } else {
+            setError(
+              result.error ||
+                "Failed to upload photo. Please try again with a valid image."
+            );
+            setIsUploadingFinderPhotos(false);
+            return;
+          }
+        }
+
+        if (uploadedUrls.length > 0) {
+          setFinderPhotoUrls((prev) => [...prev, ...uploadedUrls]);
+        }
+      } catch (uploadError) {
+        secureLogger.error("Finder photo upload error", uploadError);
+        setError("Failed to upload photo. Please try again.");
+      } finally {
+        setIsUploadingFinderPhotos(false);
       }
     }
   };
@@ -169,6 +288,7 @@ const AddDevicePage: React.FC = () => {
     const sanitizedColor = sanitizers.text(color);
     const sanitizedDescription = sanitizers.text(description);
     const sanitizedLostLocation = sanitizers.text(lostLocation);
+    const sanitizedFoundLocation = sanitizers.text(foundLocation);
 
     if (!sanitizedModel || !sanitizedSerialNumber || !sanitizedColor) {
       setError("Please fill in all required fields.");
@@ -185,6 +305,19 @@ const AddDevicePage: React.FC = () => {
         setError("Please enter where the device was lost.");
         return;
       }
+    } else {
+      if (!foundDate) {
+        setError("Please select the date when the device was found.");
+        return;
+      }
+      if (!sanitizedFoundLocation) {
+        setError("Please enter where the device was found.");
+        return;
+      }
+      if (finderPhotoUrls.length === 0) {
+        setError("Please upload at least one photo of the found device.");
+        return;
+      }
     }
 
     if (!validators.serialNumber(sanitizedSerialNumber)) {
@@ -192,7 +325,12 @@ const AddDevicePage: React.FC = () => {
       return;
     }
 
-    // Use uploaded file URL instead of Base64
+    const invoiceUrl = isLostReport
+      ? uploadedFileUrl || undefined
+      : finderPhotoUrls.length > 0
+        ? finderPhotoUrls.join(",")
+        : undefined;
+
     const deviceData = {
       model: sanitizedModel,
       serialNumber: sanitizedSerialNumber,
@@ -200,9 +338,11 @@ const AddDevicePage: React.FC = () => {
       description: sanitizedDescription,
       rewardAmount,
       marketValue,
-      invoice_url: uploadedFileUrl || undefined, // Use Supabase Storage URL
+      invoice_url: invoiceUrl, // Use Supabase Storage URL
       lost_date: isLostReport ? lostDate : undefined,
       lost_location: isLostReport ? sanitizedLostLocation : undefined,
+      found_date: !isLostReport ? foundDate : undefined,
+      found_location: !isLostReport ? sanitizedFoundLocation : undefined,
     };
 
     console.log(
@@ -212,12 +352,37 @@ const AddDevicePage: React.FC = () => {
     console.log("AddDevicePage: Device data with invoice URL:", deviceData);
     
     try {
-      const success = await addDevice(deviceData, isLostReport);
+      const success = await addDevice(
+        deviceData,
+        isLostReport,
+        uploadedFileUrl && uploadedFileMeta && isLostReport
+          ? {
+              invoiceDocument: {
+                filePath: uploadedFileUrl,
+                originalFileName: uploadedFileMeta.originalName,
+                fileSize: uploadedFileMeta.size,
+                mimeType: uploadedFileMeta.type,
+                file: invoiceFile ?? undefined,
+              },
+            }
+          : undefined
+      );
       console.log("AddDevicePage: addDevice returned:", success);
       
       if (success) {
         console.log("AddDevicePage: Success! Navigating to dashboard...");
         navigate("/dashboard");
+        if (isLostReport) {
+          setInvoiceFile(null);
+          setUploadedFileUrl(null);
+          setUploadedFileMeta(null);
+          setLostDate("");
+          setLostLocation("");
+        } else {
+          setFinderPhotoUrls([]);
+          setFoundDate("");
+          setFoundLocation("");
+        }
       } else {
         console.error("AddDevicePage: addDevice returned false");
         setError(t("failedToAddDevice"));
@@ -422,6 +587,152 @@ const AddDevicePage: React.FC = () => {
                 <p className="mt-1 text-xs text-brand-gray-500">
                   Cihazın kaybolduğu yeri detaylı olarak belirtin
                 </p>
+              </div>
+            </>
+          )}
+
+          {/* Found device details - Only for finder reports */}
+          {!isLostReport && (
+            <>
+              <div>
+                <label
+                  htmlFor="foundDate"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Bulunma Tarihi
+                </label>
+                <input
+                  id="foundDate"
+                  type="date"
+                  value={foundDate}
+                  onChange={(e) => setFoundDate(e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazı bulduğunuz tarihi seçin
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="foundLocation"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Bulunma Yeri
+                </label>
+                <input
+                  id="foundLocation"
+                  type="text"
+                  value={foundLocation}
+                  onChange={(e) => setFoundLocation(e.target.value)}
+                  placeholder="Örn: Taksim Meydanı, İstanbul"
+                  className="block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
+                  required
+                />
+                <p className="mt-1 text-xs text-brand-gray-500">
+                  Cihazı bulduğunuz yeri mümkün olduğunca detaylı belirtin
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="finder-photos-upload"
+                  className="block text-sm font-medium text-brand-gray-600 mb-1"
+                >
+                  Bulunan Cihaz Fotoğrafları
+                </label>
+                <div
+                  className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors ${
+                    finderPhotoUrls.length > 0
+                      ? "border-green-300 bg-green-50"
+                      : isUploadingFinderPhotos
+                        ? "border-blue-300 bg-blue-50"
+                        : "border-brand-gray-300"
+                  }`}
+                >
+                  <div className="space-y-1 text-center">
+                    {isUploadingFinderPhotos ? (
+                      <div className="animate-spin mx-auto h-12 w-12 text-blue-500">
+                        <Upload className="h-12 w-12" />
+                      </div>
+                    ) : finderPhotoUrls.length > 0 ? (
+                      <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+                    ) : (
+                      <Upload className="mx-auto h-12 w-12 text-brand-gray-400" />
+                    )}
+
+                    <div className="flex text-sm text-brand-gray-600">
+                      <label
+                        htmlFor="finder-photos-upload"
+                        className={`relative cursor-pointer bg-white rounded-md font-medium hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-blue px-1 ${
+                          finderPhotoUrls.length > 0
+                            ? "text-green-600"
+                            : "text-brand-blue"
+                        }`}
+                      >
+                        <span>
+                          {isUploadingFinderPhotos
+                            ? "Yükleniyor..."
+                            : finderPhotoUrls.length > 0
+                              ? "Fotoğraflar yüklendi"
+                              : "Fotoğraf yükle"}
+                        </span>
+                        <input
+                          id="finder-photos-upload"
+                          name="finder-photos-upload"
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          multiple
+                          onChange={handleFinderPhotoUpload}
+                          disabled={isUploadingFinderPhotos}
+                          required={finderPhotoUrls.length === 0}
+                        />
+                      </label>
+                    </div>
+
+                    <p className="text-xs text-brand-gray-500">
+                      Minimum 1 fotoğraf, tercihen ön ve arka olmak üzere 2 fotoğraf yükleyin.
+                      Desteklenen formatlar: JPG, PNG, WebP (max 5MB).
+                    </p>
+
+                    {finderPhotoUrls.length > 0 && (
+                      <div className="mt-3 space-y-1 text-left text-xs text-brand-gray-600">
+                        <p className="font-semibold">Yüklenen Fotoğraflar:</p>
+                        <ul className="space-y-1">
+                          {finderPhotoUrls.map((url) => {
+                            const fileName =
+                              url.split("/").slice(-1)[0] || "device_photo";
+                            return (
+                              <li
+                                key={url}
+                                className="bg-white border border-brand-gray-200 rounded-md px-3 py-2 flex items-center justify-between"
+                              >
+                                <span className="truncate mr-2">
+                                  {fileName}
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() =>
+                                    setFinderPhotoUrls((prev) =>
+                                      prev.filter((item) => item !== url)
+                                    )
+                                  }
+                                >
+                                  Kaldır
+                                </Button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </>
           )}
