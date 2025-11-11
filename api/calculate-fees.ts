@@ -31,11 +31,10 @@ interface FeeBreakdown {
 }
 
 const FIXED_FEES = {
-  CARGO_FEE: 25.0,
-  SERVICE_FEE_PERCENTAGE: 15,
-  GATEWAY_FEE_PERCENTAGE: 2.9,
-  MIN_REWARD_AMOUNT: 100,
-  MAX_REWARD_AMOUNT: 5000,
+  CARGO_FEE: 250.0,
+  REWARD_PERCENTAGE: 20,
+  GATEWAY_FEE_PERCENTAGE: 3.43,
+  MIN_TOTAL_AMOUNT: 500,
 };
 
 export async function calculateFeesAPI(
@@ -79,19 +78,31 @@ export async function calculateFeesAPI(
       deviceModel = modelData;
     }
 
-    // Calculate reward amount
-    let rewardAmount = customRewardAmount || deviceModel.repair_price * 0.3;
-    rewardAmount = Math.max(
-      FIXED_FEES.MIN_REWARD_AMOUNT,
-      Math.min(rewardAmount, FIXED_FEES.MAX_REWARD_AMOUNT)
+    const totalAmountRaw =
+      customRewardAmount && customRewardAmount > 0
+        ? customRewardAmount
+        : deviceModel.ifoundanapple_fee || deviceModel.repair_price || 0;
+
+    const totalAmount = Math.max(
+      Math.round(totalAmountRaw * 100) / 100,
+      FIXED_FEES.MIN_TOTAL_AMOUNT
     );
 
-    // Calculate fees
+    const rewardAmount =
+      Math.round(
+        totalAmount * (FIXED_FEES.REWARD_PERCENTAGE / 100) * 100
+      ) / 100;
     const cargoFee = FIXED_FEES.CARGO_FEE;
-    const serviceFee = rewardAmount * (FIXED_FEES.SERVICE_FEE_PERCENTAGE / 100);
-    const gatewayFee = rewardAmount * (FIXED_FEES.GATEWAY_FEE_PERCENTAGE / 100);
-    const totalAmount = rewardAmount + cargoFee + serviceFee + gatewayFee;
-    const netPayout = rewardAmount - serviceFee;
+    const gatewayFee =
+      Math.round(
+        totalAmount * (FIXED_FEES.GATEWAY_FEE_PERCENTAGE / 100) * 100
+      ) / 100;
+    const serviceFee = Math.max(
+      Math.round((totalAmount - rewardAmount - cargoFee - gatewayFee) * 100) /
+        100,
+      0
+    );
+    const netPayout = rewardAmount;
 
     const feeBreakdown: FeeBreakdown = {
       rewardAmount,
@@ -99,7 +110,7 @@ export async function calculateFeesAPI(
       serviceFee,
       gatewayFee,
       totalAmount,
-      netPayout,
+      netPayout: rewardAmount,
       originalRepairPrice: deviceModel.repair_price,
       deviceModel: deviceModel.model_name,
       category: deviceModel.category,

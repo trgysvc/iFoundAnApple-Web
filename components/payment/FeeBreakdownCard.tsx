@@ -140,7 +140,7 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
 
         {/* Total Amount */}
         <div className="border-t pt-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-lg font-bold text-gray-900">{t('totalPayment')}</p>
               <p className="text-sm text-gray-500">{t('paymentDue')}</p>
@@ -149,44 +149,8 @@ const FeeBreakdownCard: React.FC<FeeBreakdownCardProps> = ({
               {formatPrice(fees.totalAmount)}
             </span>
           </div>
-
-          {/* Net Payout Info */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-green-900">{t('finderNetPayment')}</p>
-                  <p className="text-xs text-green-700">{t('afterServiceFeeDeduction')}</p>
-                </div>
-              </div>
-              <span className="text-lg font-bold text-green-700">
-                {formatPrice(fees.netPayout)}
-              </span>
-            </div>
-          </div>
         </div>
 
-        {/* Security Notice */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start">
-            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-blue-900 mb-1">{t('securePaymentSystem')}</p>
-              <p className="text-xs text-blue-700 leading-relaxed">
-                {t('escrowSystemDesc')}
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

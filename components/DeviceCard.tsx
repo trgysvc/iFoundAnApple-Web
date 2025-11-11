@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Device, DeviceStatus } from '../types';
 import { useAppContext } from '../contexts/AppContext.tsx';
-import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, CreditCard, Package, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, Package, ChevronRight, ShieldCheck } from 'lucide-react';
 
 interface DeviceCardProps {
   device: Device;
@@ -12,7 +12,7 @@ const statusConfigMap = {
   [DeviceStatus.LOST]: { color: 'bg-red-100 text-red-800', icon: <AlertTriangle className="w-4 h-4" /> },
   [DeviceStatus.REPORTED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Smartphone className="w-4 h-4" /> },
   [DeviceStatus.MATCHED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Clock className="w-4 h-4" /> },
-  [DeviceStatus.PAYMENT_PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: <CreditCard className="w-4 h-4" /> },
+  [DeviceStatus.PAYMENT_PENDING]: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_COMPLETE]: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
   ['payment_completed']: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
   [DeviceStatus.EXCHANGE_PENDING]: { color: 'bg-purple-100 text-purple-800', icon: <Package className="w-4 h-4" /> },

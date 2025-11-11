@@ -53,6 +53,7 @@ const DeviceDetailPage: React.FC = () => {
     []
   );
   const [isLoadingFinderPhotos, setIsLoadingFinderPhotos] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -167,6 +168,22 @@ const DeviceDetailPage: React.FC = () => {
     }
   }, [location.pathname, notifications, markNotificationAsRead]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPreviewImage(null);
+      }
+    };
+
+    if (previewImage) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [previewImage]);
+
   console.log(
     "DeviceDetailPage: Current state - device:",
     device,
@@ -218,6 +235,238 @@ const DeviceDetailPage: React.FC = () => {
   );
 
   const renderContent = () => {
+    const renderOwnerMatchView = () => (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-2xl mx-auto py-12">
+          <div className="text-center mb-8">
+            <div className="text-green-500 text-6xl mb-4">✅</div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              Eşleşme Bulundu!
+            </h1>
+            <p className="text-lg font-semibold text-brand-blue">
+              Eşleşme bulundu, ödeme bekleniyor.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Kayıp Cihaz Detayları
+            </h2>
+
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Kayıp Tarihi:</span>
+                <span className="font-medium">
+                  {device.lost_date
+                    ? new Date(device.lost_date).toLocaleDateString("tr-TR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })
+                    : "Belirtilmemiş"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Kayıp Yeri:</span>
+                <span className="font-medium">
+                  {device.lost_location || "Belirtilmemiş"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cihaz Modeli:</span>
+                <span className="font-medium">{device.model}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                <span className="font-mono text-sm">{device.serialNumber}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cihaz Rengi:</span>
+                <span className="font-medium">{device.color}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Ek Detaylar:</span>
+                <span className="font-medium">
+                  {device.description || "Belirtilmemiş"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Satın Alma Kanıtı (Fatura) Dosyası:
+                </span>
+                {isLoadingInvoice ? (
+                  <div className="flex items-center text-gray-500">
+                    <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                    Yükleniyor...
+                  </div>
+                ) : secureInvoiceUrl || device.invoiceDataUrl ? (
+                  <a
+                    href={secureInvoiceUrl || device.invoiceDataUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 font-medium underline"
+                  >
+                    EKLENEN DOSYA LİNKİ
+                  </a>
+                ) : (
+                  <span className="text-gray-500">Dosya eklenmemiş</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              İşlem Durumu
+            </h2>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Durum:</span>
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                  Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz
+                  için eşleşme bulundu. Ödeme bekleniyor.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Durum Bilgisi
+            </h2>
+
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  1
+                </div>
+                <div className="flex-1 space-y-1">
+                  <p className="font-medium text-gray-900">
+                    Cihaz için eşleşme bekleniyor
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    Kayıtlı cihazınız uygun eşleştirme bulunana kadar sistemde
+                    bekledi.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  2
+                </div>
+                <div className="flex-1 space-y-2">
+                  <p className="font-medium text-gray-900">
+                    Cihazınız bulundu
+                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p className="text-gray-600 text-sm">
+                      Ödemenizi yapmak ve takas sürecini tamamlamak için
+                      aşağıdaki butonu kullanabilirsiniz.
+                    </p>
+                    <Button
+                      onClick={() => handlePayment(device.id)}
+                      variant="primary"
+                      className="sm:ml-4 sm:w-auto w-full"
+                    >
+                      Ödemeyi Güvenle Yap
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">
+                    Cihazınızın kargo ile teslim edilmesi bekleniyor
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    Takas süreci başladığında takip numaranız burada yer alacak.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  4
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">
+                    Cihaz teslim alındığında
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    Cihazın seri numarasını kontrol ederek teslim aldığınızı
+                    onaylayın.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  5
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">İşlem tamamlandı</p>
+                  <p className="text-gray-600 text-sm">
+                    Cihazınıza kavuştuğunuzda ödemeniz emanet hesabından otomatik
+                    olarak serbest bırakılacaktır.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => {
+                if (
+                  confirm(
+                    "Bu cihazın kaydını silmek istediğinizden emin misiniz?"
+                  )
+                ) {
+                  console.log("Delete device:", device.id);
+                }
+              }}
+            >
+              KAYDI SİL
+            </Button>
+
+            <Button
+              onClick={() => navigate("/dashboard")}
+              variant="primary"
+              className="flex-1"
+            >
+              CİHAZLARIM LİSTESİNE GERİ DÖN
+            </Button>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 text-sm">
+              Sorularınız için{" "}
+              <a
+                href="/contact"
+                className="text-blue-600 hover:text-blue-800"
+              >
+                iletişim sayfamızı
+              </a>{" "}
+              ziyaret edebilirsiniz.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+
     console.log(
       "DeviceDetailPage: renderContent called with status:",
       device.status
@@ -248,16 +497,15 @@ const DeviceDetailPage: React.FC = () => {
               <div className="max-w-2xl mx-auto py-12">
                 {/* Success Header */}
                 <div className="text-center mb-8">
-                  <div className="text-green-500 text-6xl mb-4">🎉</div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Harika Haber! Eşleşme Bulundu!
+                  <div className="text-green-500 text-6xl mb-4">✅</div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                    Eşleşme Bulundu!
                   </h1>
-                  <p className="text-gray-600">
-                    Bulduğun cihazın sahibi ile eşleşme sağlandı. Cihaz sahibinin ödeme yapması bekleniyor.
+                  <p className="text-lg font-semibold text-brand-blue">
+                    Cihaz sahibinin ödeme yapması bekleniyor.
                   </p>
                 </div>
 
-                {/* Bulunan Cihaz Detayları Card */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Bulunan Cihaz Detayları
@@ -280,8 +528,63 @@ const DeviceDetailPage: React.FC = () => {
                     </div>
                     
                     <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Tarihi:</span>
+                      <span className="font-medium">
+                        {device.found_date
+                          ? new Date(device.found_date).toLocaleDateString("tr-TR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })
+                          : "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Yeri:</span>
+                      <span className="font-medium">
+                        {device.found_location || "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
                       <span className="text-gray-600">Ek Detaylar:</span>
                       <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-gray-600">
+                        Bulunan Cihaz Fotoğrafı (Ön ve Arka):
+                      </span>
+                      <div className="mt-2 sm:mt-0 flex-1 sm:text-right">
+                        {isLoadingFinderPhotos ? (
+                          <div className="inline-flex items-center text-gray-500">
+                            <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                            Yükleniyor...
+                          </div>
+                        ) : secureFinderPhotoUrls.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+                            {secureFinderPhotoUrls.map((url, index) => (
+                              <button
+                                key={url}
+                                type="button"
+                                onClick={() => setPreviewImage(url)}
+                                className="inline-flex items-center px-3 py-1 bg-brand-blue text-white text-xs rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2"
+                              >
+                                Fotoğraf {index + 1}
+                              </button>
+                            ))}
+                          </div>
+                        ) : finderPhotoUrls.length > 0 ? (
+                          <span className="text-xs text-brand-gray-500">
+                            Fotoğraflar kaydedildi ancak görüntüleme bağlantısı oluşturulamadı.
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 text-sm">
+                            Fotoğraf eklenmemiş
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -297,7 +600,7 @@ const DeviceDetailPage: React.FC = () => {
                       <span className="text-gray-600">Durum:</span>
                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center">
                         <Hourglass className="w-4 h-4 mr-2 animate-pulse" />
-                        Cihaz sahibinin ödeme yapması bekleniyor
+                        Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz için eşleşme bulundu.
                       </span>
                     </div>
                   </div>
@@ -311,12 +614,11 @@ const DeviceDetailPage: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        ✓
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        1
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Eşleşme Bulundu</p>
-                        <p className="text-gray-600 text-sm">Cihazın sahibi ile eşleşme sağlandı</p>
+                        <p className="font-medium text-gray-900">Cihaz için eşleşme bekleniyor</p>
                       </div>
                     </div>
                     
@@ -324,9 +626,11 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                         2
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihaz Sahibinin Ödeme Yapması Bekleniyor</p>
-                        <p className="text-gray-600 text-sm">Cihaz sahibi bilgilendirildi ve ödeme yapması bekleniyor</p>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-medium text-gray-900">Eşleşme bulundu</p>
+                        <p className="text-gray-600 text-sm">
+                          Cihaz sahibinin ödeme yapması bekleniyor.
+                        </p>
                       </div>
                     </div>
                     
@@ -334,9 +638,11 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                         3
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihazın Kargo ile Gönderilmesi</p>
-                        <p className="text-gray-600 text-sm">Ödeme tamamlandığında kargo detayları paylaşılacak</p>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-medium text-gray-900">Cihazın Kargo Firmasına Teslim Edilmesi</p>
+                        <p className="text-gray-600 text-sm">
+                          Teslim/Takip için kargo numaranız: XXX
+                        </p>
                       </div>
                     </div>
                     
@@ -344,9 +650,23 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                         4
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Ödülünü Al</p>
-                        <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
+                      <div className="space-y-1">
+                        <p className="font-medium text-gray-900">Cihaz Sahibi Teslim Alındığında</p>
+                        <p className="text-gray-600 text-sm">
+                          Kargo firması cihazı sahibine teslim etti. Onay bekleniyor.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        5
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                        <p className="text-gray-600 text-sm">
+                          Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -382,207 +702,8 @@ const DeviceDetailPage: React.FC = () => {
           "DeviceDetailPage: Showing payment form for PAYMENT_PENDING"
         );
         
-        // Use the same new design as MATCHED case
-        return (
-          <div className="min-h-screen bg-gray-50">
-            <div className="max-w-2xl mx-auto py-12">
-              {/* Success Header */}
-              <div className="text-center mb-8">
-                <div className="text-green-500 text-6xl mb-4">✅</div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Eşleşme Bulundu!
-                </h1>
-                <p className="text-gray-600">
-                  Kayıp cihazınızın sisteme kaydı gerçekleşti.
-                </p>
-              </div>
-
-              {/* Kayıp Cihaz Detayları Card */}
-              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  Kayıp Cihaz Detayları
-                </h2>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Kaybedilen Zaman:</span>
-                    <span className="font-medium">
-                      {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
-                        day: '2-digit',
-                        month: '2-digit', 
-                        year: 'numeric'
-                      }) : 'Belirtilmemiş'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Kayıp Yeri:</span>
-                    <span className="font-medium">{device.lost_location || 'Belirtilmemiş'}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Cihaz Modeli:</span>
-                    <span className="font-medium">{device.model}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Cihaz Seri Numarası:</span>
-                    <span className="font-mono text-sm">{device.serialNumber}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Cihaz Rengi:</span>
-                    <span className="font-medium">{device.color}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Ek Detaylar:</span>
-                    <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Satın Alma Kanıtı (Fatura) Dosyası:</span>
-                    {isLoadingInvoice ? (
-                      <div className="flex items-center text-gray-500">
-                        <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                        Yükleniyor...
-                      </div>
-                    ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                      <a
-                        href={secureInvoiceUrl || device.invoiceDataUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 font-medium underline"
-                      >
-                        EKLENEN DOSYA LİNKİ
-                      </a>
-                    ) : (
-                      <span className="text-gray-500">Dosya eklenmemiş</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* İşlem Durumu Card */}
-              <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  İşlem Durumu
-                </h2>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Durum:</span>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                      Kayıtlı {device.model} {device.serialNumber} için eşleşme bulundu
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Durum Bilgisi */}
-              <div className="bg-yellow-50 rounded-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  Durum Bilgisi
-                </h2>
-                
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      1
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihazınız bulundu</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-gray-600 text-sm">Ödemenizi yapmak ve takas işlemini tamamlamak için</p>
-                        <Button 
-                          onClick={() => handlePayment(device.id)}
-                          variant="primary" 
-                          className="ml-4"
-                        >
-                          Ödemeyi Güvenle Yap
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      2
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
-                      <p className="text-gray-600 text-sm">Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      3
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-gray-600 text-sm">Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın</p>
-                        <Button 
-                          variant="primary" 
-                          className="ml-4"
-                          disabled
-                        >
-                          Onay
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      4
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
-                      <p className="text-gray-600 text-sm">Cihazınıza kavuştuğunuz için mutluyuz</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-4">
-                <Button 
-                  variant="secondary" 
-                  className="flex-1"
-                  onClick={() => {
-                    if (confirm('Bu cihazın kaydını silmek istediğinizden emin misiniz?')) {
-                      // TODO: Implement delete device functionality
-                      console.log('Delete device:', device.id);
-                    }
-                  }}
-                >
-                  KAYDI SİL
-                </Button>
-                
-                <Button 
-                  onClick={() => navigate('/dashboard')} 
-                  variant="primary"
-                  className="flex-1"
-                >
-                  CİHAZLARIM LİSTESİNE GERİ DÖN
-                </Button>
-              </div>
-
-              {/* Contact Info */}
-              <div className="mt-8 text-center">
-                <p className="text-gray-600 text-sm">
-                  Sorularınız için{' '}
-                  <a href="/contact" className="text-blue-600 hover:text-blue-800">
-                    iletişim sayfamızı
-                  </a>{' '}
-                  ziyaret edebilirsiniz.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
+        // Owner perspektifi için standart ekran
+        return renderOwnerMatchView();
 
       case DeviceStatus.MATCHED:
         console.log("DeviceDetailPage: MATCHED case executed");
@@ -593,213 +714,7 @@ const DeviceDetailPage: React.FC = () => {
         
         // Only show the new design for original owners (who lost the device)
         if (isOwnerPerspective) {
-          return (
-            <div className="min-h-screen bg-gray-50">
-              <div className="max-w-2xl mx-auto py-12">
-                {/* Success Header */}
-                <div className="text-center mb-8">
-                  <div className="text-green-500 text-6xl mb-4">✅</div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Eşleşme Bulundu!
-                  </h1>
-                  <p className="text-gray-600">
-                    Kayıp cihazınızın sisteme kaydı gerçekleşti.
-                  </p>
-                </div>
-
-                {/* Kayıp Cihaz Detayları Card */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Kayıp Cihaz Detayları
-                  </h2>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Kaybedilen Zaman:</span>
-                      <span className="font-medium">
-                        {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
-                          day: '2-digit',
-                          month: '2-digit', 
-                          year: 'numeric'
-                        }) : 'Belirtilmemiş'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Kayıp Yeri:</span>
-                      <span className="font-medium">{device.lost_location || 'Belirtilmemiş'}</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Cihaz Modeli:</span>
-                      <span className="font-medium">{device.model}</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Cihaz Seri Numarası:</span>
-                      <span className="font-mono text-sm">{device.serialNumber}</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Cihaz Rengi:</span>
-                      <span className="font-medium">{device.color}</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Ek Detaylar:</span>
-                      <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Satın Alma Kanıtı (Fatura) Dosyası:</span>
-                      {isLoadingInvoice ? (
-                        <div className="flex items-center text-gray-500">
-                          <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                          Yükleniyor...
-                        </div>
-                      ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                        <a
-                          href={secureInvoiceUrl || device.invoiceDataUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-medium underline"
-                        >
-                          EKLENEN DOSYA LİNKİ
-                        </a>
-                      ) : (
-                        <span className="text-gray-500">Dosya eklenmemiş</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* İşlem Durumu Card */}
-                <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    İşlem Durumu
-                  </h2>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Durum:</span>
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                        Kayıtlı {device.model} {device.serialNumber} için eşleşme bulundu
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Durum Bilgisi */}
-                <div className="bg-yellow-50 rounded-lg p-6 mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Durum Bilgisi
-                  </h2>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        1
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihazınız bulundu</p>
-                        <div className="flex items-center justify-between">
-                          <p className="text-gray-600 text-sm">Ödemenizi yapmak ve takas işlemini tamamlamak için</p>
-                          <Button 
-                            onClick={() => handlePayment(device.id)}
-                            variant="primary" 
-                            className="ml-4"
-                          >
-                            Ödemeyi Güvenle Yap
-                          </Button>
-                          <Button 
-                            onClick={() => handlePayment(device.id)}
-                            variant="primary" 
-                            className="ml-4"
-                          >
-                            Ödemeyi Güvenle Yap
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        2
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihazınızın Kargo ile Teslim Edilmesi Bekleniyor</p>
-                        <p className="text-gray-600 text-sm">Takip için kargo numaranız: <span className="font-mono font-semibold">-</span></p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        3
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihaz Teslim Alındığında</p>
-                        <div className="flex items-center justify-between">
-                          <p className="text-gray-600 text-sm">Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın</p>
-                          <Button 
-                            variant="primary" 
-                            className="ml-4"
-                            disabled
-                          >
-                            Onay
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        4
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
-                        <p className="text-gray-600 text-sm">Cihazınıza kavuştuğunuz için mutluyuz</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex space-x-4">
-                  <Button 
-                    variant="secondary" 
-                    className="flex-1"
-                    onClick={() => {
-                      if (confirm('Bu cihazın kaydını silmek istediğinizden emin misiniz?')) {
-                        // TODO: Implement delete device functionality
-                        console.log('Delete device:', device.id);
-                      }
-                    }}
-                  >
-                    KAYDI SİL
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => navigate('/dashboard')} 
-                    variant="primary"
-                    className="flex-1"
-                  >
-                    CİHAZLARIM LİSTESİNE GERİ DÖN
-                  </Button>
-                </div>
-
-                {/* Contact Info */}
-                <div className="mt-8 text-center">
-                  <p className="text-gray-600 text-sm">
-                    Sorularınız için{' '}
-                    <a href="/contact" className="text-blue-600 hover:text-blue-800">
-                      iletişim sayfamızı
-                    </a>{' '}
-                    ziyaret edebilirsiniz.
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
+          return renderOwnerMatchView();
         } else {
           console.log("DeviceDetailPage: Showing waiting message for finder");
           // Finder (who reported the device) - show detailed waiting page
@@ -808,12 +723,12 @@ const DeviceDetailPage: React.FC = () => {
               <div className="max-w-2xl mx-auto py-12">
                 {/* Success Header */}
                 <div className="text-center mb-8">
-                  <div className="text-green-500 text-6xl mb-4">🎉</div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Harika Haber! Eşleşme Bulundu!
+                  <div className="text-green-500 text-6xl mb-4">✅</div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                    Eşleşme Bulundu!
                   </h1>
-                  <p className="text-gray-600">
-                    Bulduğun cihazın sahibi ile eşleşme sağlandı. Cihaz sahibinin ödeme yapması bekleniyor.
+                  <p className="text-lg font-semibold text-brand-blue">
+                    Cihaz sahibinin ödeme yapması bekleniyor.
                   </p>
                 </div>
 
@@ -825,6 +740,26 @@ const DeviceDetailPage: React.FC = () => {
                   
                   <div className="space-y-3">
                     <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Tarihi:</span>
+                      <span className="font-medium">
+                        {device.found_date
+                          ? new Date(device.found_date).toLocaleDateString("tr-TR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })
+                          : "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Yeri:</span>
+                      <span className="font-medium">
+                        {device.found_location || "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
                       <span className="text-gray-600">Cihaz Modeli:</span>
                       <span className="font-medium">{device.model}</span>
                     </div>
@@ -842,6 +777,41 @@ const DeviceDetailPage: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Ek Detaylar:</span>
                       <span className="font-medium">{device.description || 'Belirtilmemiş'}</span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-gray-600">
+                        Bulunan Cihaz Fotoğrafı (Ön ve Arka):
+                      </span>
+                      <div className="mt-2 sm:mt-0 flex-1 sm:text-right">
+                        {isLoadingFinderPhotos ? (
+                          <div className="inline-flex items-center text-gray-500">
+                            <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                            Yükleniyor...
+                          </div>
+                        ) : secureFinderPhotoUrls.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+                            {secureFinderPhotoUrls.map((url, index) => (
+                              <button
+                                key={url}
+                                type="button"
+                                onClick={() => setPreviewImage(url)}
+                                className="inline-flex items-center px-3 py-1 bg-brand-blue text-white text-xs rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2"
+                              >
+                                Fotoğraf {index + 1}
+                              </button>
+                            ))}
+                          </div>
+                        ) : finderPhotoUrls.length > 0 ? (
+                          <span className="text-xs text-brand-gray-500">
+                            Fotoğraflar kaydedildi ancak görüntüleme bağlantısı oluşturulamadı.
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 text-sm">
+                            Fotoğraf eklenmemiş
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -857,7 +827,7 @@ const DeviceDetailPage: React.FC = () => {
                       <span className="text-gray-600">Durum:</span>
                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center">
                         <Hourglass className="w-4 h-4 mr-2 animate-pulse" />
-                        Cihaz sahibinin ödeme yapması bekleniyor
+                        Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz için eşleşme bulundu.
                       </span>
                     </div>
                   </div>
@@ -871,12 +841,11 @@ const DeviceDetailPage: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        ✓
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        1
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Eşleşme Bulundu</p>
-                        <p className="text-gray-600 text-sm">Cihazın sahibi ile eşleşme sağlandı</p>
+                        <p className="font-medium text-gray-900">Cihaz için eşleşme bekleniyor</p>
                       </div>
                     </div>
                     
@@ -884,9 +853,11 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                         2
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihaz Sahibinin Ödeme Yapması Bekleniyor</p>
-                        <p className="text-gray-600 text-sm">Cihaz sahibi bilgilendirildi ve ödeme yapması bekleniyor</p>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-medium text-gray-900">Eşleşme bulundu</p>
+                        <p className="text-gray-600 text-sm">
+                          Cihaz sahibinin ödeme yapması bekleniyor.
+                        </p>
                       </div>
                     </div>
                     
@@ -894,9 +865,9 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                         3
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 mb-1">Cihazın Kargo ile Gönderilmesi</p>
-                        <p className="text-gray-600 text-sm">Ödeme tamamlandığında kargo detayları paylaşılacak</p>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-medium text-gray-900">Cihazın Kargo Firmasına Teslim Edilmesi</p>
+                        <p className="text-gray-600 text-sm">Teslim/Takip için kargo numaranız: XXX</p>
                       </div>
                     </div>
                     
@@ -904,9 +875,23 @@ const DeviceDetailPage: React.FC = () => {
                       <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                         4
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Ödülünü Al</p>
-                        <p className="text-gray-600 text-sm">Takas tamamlandığında ödülün hesabına aktarılacak</p>
+                      <div className="space-y-1">
+                        <p className="font-medium text-gray-900">Cihaz Sahibi Teslim Alındığında</p>
+                        <p className="text-gray-600 text-sm">
+                          Kargo firması cihazı sahibine teslim etti. Onay bekleniyor.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        5
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                        <p className="text-gray-600 text-sm">
+                          Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1119,9 +1104,9 @@ const DeviceDetailPage: React.FC = () => {
                       1
                     </div>
                     <div className="flex-1 space-y-1">
-                      <p className="font-medium text-gray-900">Cihazınız için eşleşme bekleniyor</p>
+                      <p className="font-medium text-gray-900">Cihaz için eşleşme bekleniyor</p>
                       <p className="text-gray-600 text-sm">
-                        Eşleşme bulunduğunda sistem sizi bildirim ve e-posta ile haberdar edecektir.
+                        Sistemde kayıtlı kayıp cihazlarla eşleşme aranıyor. Eşleşme bulunduğunda bildirim alacaksınız.
                       </p>
                     </div>
                   </div>
@@ -1130,27 +1115,22 @@ const DeviceDetailPage: React.FC = () => {
                     <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                       2
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihazınız bulundu</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-gray-600 text-sm">
-                          Ödemenizi yapmak ve takas sürecini başlatmak için bu butonu kullanacaksınız.
-                        </p>
-                        <Button variant="primary" className="ml-4" disabled>
-                          Ödemeyi Güvenle Yap
-                        </Button>
-                      </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-medium text-gray-900">Eşleşme bulundu</p>
+                      <p className="text-gray-600 text-sm">
+                        Cihaz sahibinin ödeme yapması bekleniyor. Ödeme tamamlandığında e-posta ve bildirim alacaksınız.
+                      </p>
                     </div>
                   </div>
-
+                  
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                       3
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihazınızın kargo ile teslim edilmesi bekleniyor</p>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-medium text-gray-900">Cihazın Kargo Firmasına Teslim Edilmesi</p>
                       <p className="text-gray-600 text-sm">
-                        Kargo süreci başladığında takip numaranız burada görünecek.
+                        Teslim/Takip için kargo numaranız burada görünecek.
                       </p>
                     </div>
                   </div>
@@ -1159,16 +1139,11 @@ const DeviceDetailPage: React.FC = () => {
                     <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                       4
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">Cihaz teslim alındığında</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-gray-600 text-sm">
-                          Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın.
-                        </p>
-                        <Button variant="primary" className="ml-4" disabled>
-                          Onay
-                        </Button>
-                      </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-medium text-gray-900">Cihaz Sahibi Teslim Alındığında</p>
+                      <p className="text-gray-600 text-sm">
+                        Kargo firması cihazı sahibine teslim ettiğinde onay bekleniyor.
+                      </p>
                     </div>
                   </div>
 
@@ -1176,10 +1151,10 @@ const DeviceDetailPage: React.FC = () => {
                     <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
                       5
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">İşlem tamamlandı</p>
+                    <div className="space-y-1">
+                      <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
                       <p className="text-gray-600 text-sm">
-                        Cihazınıza kavuştuğunuzda ödemeniz emanet hesabından otomatik olarak serbest bırakılacaktır.
+                        Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
                       </p>
                     </div>
                   </div>
@@ -1305,7 +1280,9 @@ const DeviceDetailPage: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-gray-600">Cihaz Fotoğrafları:</span>
+                    <span className="text-gray-600">
+                      Bulunan Cihaz Fotoğrafı (Ön ve Arka):
+                    </span>
                     <div className="mt-2 sm:mt-0 flex-1 sm:text-right">
                       {isLoadingFinderPhotos ? (
                         <div className="inline-flex items-center text-gray-500">
@@ -1315,15 +1292,14 @@ const DeviceDetailPage: React.FC = () => {
                       ) : secureFinderPhotoUrls.length > 0 ? (
                         <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
                           {secureFinderPhotoUrls.map((url, index) => (
-                            <a
+                            <button
                               key={url}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center px-3 py-1 bg-brand-blue text-white text-xs rounded-md hover:bg-blue-600 transition-colors"
+                              type="button"
+                              onClick={() => setPreviewImage(url)}
+                              className="inline-flex items-center px-3 py-1 bg-brand-blue text-white text-xs rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2"
                             >
                               Fotoğraf {index + 1}
-                            </a>
+                            </button>
                           ))}
                         </div>
                       ) : finderPhotoUrls.length > 0 ? (
@@ -1515,20 +1491,47 @@ const DeviceDetailPage: React.FC = () => {
   };
 
   return (
-    <Container>
-      <div className="mb-6">
-        <Link
-          to="/dashboard"
-          className="inline-flex items-center text-sm font-medium text-brand-blue hover:underline"
+    <>
+      <Container>
+        <div className="mb-6">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center text-sm font-medium text-brand-blue hover:underline"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t("backToDashboard")}
+          </Link>
+        </div>
+
+        {renderContent()}
+      </Container>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={() => setPreviewImage(null)}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t("backToDashboard")}
-        </Link>
-      </div>
-
-
-      {renderContent()}
-    </Container>
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Fotoğrafı kapat"
+              className="absolute -top-4 right-0 text-white bg-black/60 rounded-full p-2 hover:bg-black focus:outline-none focus:ring-2 focus:ring-white"
+              onClick={() => setPreviewImage(null)}
+            >
+              ✕
+            </button>
+            <img
+              src={previewImage}
+              alt="Bulunan cihaz fotoğrafı"
+              className="w-full h-full object-contain rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

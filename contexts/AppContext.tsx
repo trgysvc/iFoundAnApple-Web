@@ -1050,6 +1050,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             .update({ status: DeviceStatus.MATCHED })
             .eq("id", foundDevice.id);
 
+          try {
+            await supabase.from("audit_logs").insert([
+              {
+                event_type: "device_matching",
+                event_category: "device",
+                event_action: "match",
+                event_severity: "info",
+                user_id: lostDevice.userId,
+                resource_type: "device",
+                resource_id: lostDevice.id,
+                event_description: "Device matched with finder",
+                event_data: {
+                  matched_at: new Date().toISOString(),
+                  finder_user_id: foundDevice.userId,
+                  finder_device_id: foundDevice.id,
+                  owner_device_id: lostDevice.id,
+                },
+              },
+            ]);
+            console.log("✅ device_matching audit log created");
+          } catch (auditMatchError) {
+            console.error(
+              "Failed to insert device_matching audit log:",
+              auditMatchError
+            );
+          }
+
           // Send notifications
           console.log(
             "addDevice: Calling addNotification for lost device owner.",

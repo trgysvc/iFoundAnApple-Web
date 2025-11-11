@@ -762,37 +762,38 @@ const AddDevicePage: React.FC = () => {
           {/* Kullanıcı Bilgilendirme Bölümü */}
           <div className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
             {isLostReport ? (
-              // Kayıp Cihaz İçin Bilgilendirme
               <>
                 <h3 className="text-lg font-semibold text-brand-gray-700 mb-4">
-                  ifoundanapple'a Hoş Geldin! Cihaz Kayıt ve Takas Süreci Hakkında Önemli Bilgiler:
+                  iFoundAnApple’ a Hoş Geldin!
                 </h3>
-                
+
                 <div className="space-y-4 text-sm text-brand-gray-600">
+                  <div>
+                    <p className="leading-relaxed font-semibold text-brand-gray-700">
+                      Cihaz Kayıt ve Takas Süreci Hakkında Önemli Bilgiler:
+                    </p>
+                  </div>
+
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Cihaz Kaydı Ücretsizdir:</h4>
                     <p className="leading-relaxed">
-                      Kayıp veya bulunan cihaz kayıtlarınız için sizden hiçbir ücret talep edilmeyecektir. 
-                      Amacımız, cihazların sahipleriyle güvenli ve kolay bir şekilde yeniden buluşmasına aracılık etmektir.
+                      Kayıp cihaz kayıtlarınız için sizden hiçbir ücret talep edilmeyecektir. Amacımız, cihazların sahipleriyle güvenli ve kolay bir şekilde yeniden buluşmasına aracılık etmektir.
                     </p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Ödeme Sadece Takas Başladığında:</h4>
                     <p className="leading-relaxed">
-                      Ödeme, yalnızca kayıp cihazınızın bulunmasının ardından, sizin tarafınızdan takas sürecinin 
-                      başlatılması durumunda talep edilecektir. Bu, cihazınız size ulaşmadan herhangi bir ödeme 
-                      yapmayacağınız anlamına gelir.
+                      Ödeme, yalnızca kayıp cihazınızın bulunmasının ardından, sizin tarafınızdan takas sürecinin başlatılması durumunda talep edilecektir. Bu, cihazınız size ulaşmadan herhangi bir ödeme yapmayacağınız anlamına gelir.
                     </p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Ücretlendirme Detayları:</h4>
-                    <p className="leading-relaxed mb-2">
-                      Talep edilecek ücret, sizleri zor durumda bırakmamak adına, cihazınızın piyasa değeri üzerinden 
-                      belirli ve adil bir oran dahilinde belirlenmektedir. Bu ücret aşağıdaki kalemleri kapsamaktadır:
+                    <p className="leading-relaxed">
+                      Talep edilecek ücret, sizleri zor durumda bırakmamak adına, cihazınızın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenmektedir. Bu ücret aşağıdaki kalemleri kapsamaktadır:
                     </p>
-                    <ul className="list-disc list-inside ml-4 space-y-1">
+                    <ul className="list-disc ml-6 space-y-1">
                       <li>ifoundanapple Hizmet Bedeli</li>
                       <li>Ödeme Sağlayıcı Bedeli (Güvenli ödeme altyapımızın maliyeti)</li>
                       <li>Kargo Bedeli (Cihazınızın size güvenle ulaştırılması)</li>
@@ -803,68 +804,64 @@ const AddDevicePage: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">İptal ve İade Koşulları:</h4>
                     <p className="leading-relaxed">
-                      Takas sürecinde işlem iptali talep etmeniz halinde, ödeme sağlayıcı firmanın uyguladığı 
-                      %3,43'lük kesinti hariç, ödediğiniz tüm ücret tarafınıza iade edilecektir.
+                      Takas sürecinde işlem iptali talep etmeniz halinde, ödediğiniz tüm ücret tarafınıza iade edilecektir.
                     </p>
                   </div>
 
-                  <div className="pt-2 pb-1">
-                    <p className="leading-relaxed italic text-brand-gray-700">
-                      ifoundanapple olarak, değerli eşyalarınıza kavuşmanız için şeffaf ve güvenilir bir hizmet 
-                      sunmaya özen gösteriyoriz.
+                  <div>
+                    <p className="leading-relaxed text-brand-gray-700">
+                      iFoundAnApple olarak, değerli eşyalarınıza kavuşmanız için şeffaf ve güvenilir bir hizmet sunmaya özen gösteriyoruz.
                     </p>
                   </div>
                 </div>
               </>
             ) : (
-              // Bulunan Cihaz İçin Bilgilendirme
               <>
                 <h3 className="text-lg font-semibold text-brand-gray-700 mb-4">
-                  ifoundanapple'a Hoş Geldin! Bulunan Cihaz Kayıt ve Ödül Süreci Hakkında Önemli Bilgiler:
+                  iFoundAnApple’ a Hoş Geldin!
                 </h3>
-                
+
                 <div className="space-y-4 text-sm text-brand-gray-600">
+                  <div>
+                    <p className="leading-relaxed font-semibold text-brand-gray-700">
+                      Bulunan Cihaz Kayıt ve Ödül Süreci Hakkında Önemli Bilgiler:
+                    </p>
+                  </div>
+
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Cihaz Kaydı Ücretsizdir:</h4>
                     <p className="leading-relaxed">
-                      Bulduğun cihazı ifoundanapple platformuna kaydetmek için senden hiçbir ücret talep edilmeyecektir. 
-                      Senin bu medeni ve onurlu davranışın, bizim için paha biçilemez bir değer taşıyor. Amacımız, 
-                      bulduğun değerli eşyanın sahibine güvenli ve kolay bir şekilde ulaşmasına aracılık etmektir.
+                      Bulduğunuz cihazı kaydetmeniz için sizden hiçbir ücret talep edilmeyecektir. Sizin bu medeni ve onurlu davranışınız, bizim için paha biçilemez bir değer taşıyor. Amacımız, bulduğunuz değerli eşyanın sahibine güvenli ve kolay bir şekilde ulaşmasına aracılık etmektir.
                     </p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Ödül ve Hizmet Bedelleri:</h4>
                     <p className="leading-relaxed">
-                      Kayıp cihaz ile eşleşme sağlandığında ve takas süreci başlatıldığında, ifoundanapple olarak 
-                      sunduğumuz hizmetler için cihazın sahibinden bir bedel tahsil edilecektir. Bu bedelin bir kısmı, 
-                      senin bu nazik davranışını takdir etmek amacıyla belirlenmiş bir ödül olarak tarafına iletilecektir. 
-                      Diğer kısmı ise hizmet bedeli, ödeme sağlayıcı bedeli ve kargo bedeli gibi kalemleri karşılayacaktır.
+                      Kayıp cihaz ile eşleşme sağlandığında ve takas süreci başlatıldığında, iFoundAnApple olarak sunduğumuz hizmetler için cihazın sahibinden bir bedel tahsil edilecektir. Bu bedelin bir kısmı, sizin bu nazik davranışınızı takdir etmek amacıyla belirlenmiş bir ödül olarak tarafınıza iletilecektir. Diğer kısmı ise hizmet bedeli, ödeme sağlayıcı bedeli ve kargo bedeli gibi kalemleri karşılayacaktır.
                     </p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Ödülün Belirlenmesi:</h4>
                     <p className="leading-relaxed">
-                      Senin için ayrılan ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde 
-                      belirlenmektedir. Bu sayede, gösterdiğin çabanın ve örnek davranışın karşılığında küçük bir hediye 
-                      almanı sağlıyoruz.
+                      Sizin için ayrılan ödül, bulunan cihazın piyasa değeri üzerinden belirli ve adil bir oran dahilinde belirlenmektedir. Bu sayede, gösterdiğiniz çabanın ve örnek davranışın karşılığında küçük bir hediye almanızı sağlıyoruz.
                     </p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-brand-gray-700 mb-1">Sürecin Güvenliği:</h4>
                     <p className="leading-relaxed">
-                      ifoundanapple, cihazın güvenli bir şekilde sahibine ulaşmasını ve senin ödülünü eksiksiz almanı 
-                      sağlayacak güvenli bir takas süreci sunar. Tüm süreç boyunca bilgilendirilecek ve destekleneceksin.
+                      iFoundAnApple, cihazın güvenli bir şekilde sahibine ulaşmasını ve sizin ödülünüzü eksiksiz almanızı sağlayacak güvenli bir takas süreci sunar. Tüm süreç boyunca bilgilendirilecek ve destekleneceksiniz.
                     </p>
                   </div>
 
-                  <div className="pt-2 pb-1">
-                    <p className="leading-relaxed italic text-brand-gray-700">
-                      ifoundanapple olarak, dürüstlüğünü ve yardımseverliğini yürekten takdir ediyor, değerli eşyaların 
-                      sahiplerine ulaşması için şeffaf ve güvenilir bir platform sunmaya özen gösteriyoruz. Senin gibi 
-                      insanların varlığı, dünyayı daha iyi bir yer yapıyor.
+                  <div>
+                    <p className="leading-relaxed text-brand-gray-700">
+                      iFoundAnApple olarak, dürüstlüğünüzü ve yardımseverliğinizi yürekten takdir ediyor, değerli eşyaların sahiplerine ulaşması için şeffaf ve güvenilir bir platform sunmaya özen gösteriyoruz.
+                    </p>
+                    <p className="leading-relaxed italic text-brand-gray-700 pt-1">
+                      Sizin gibi insanların varlığı, dünyayı daha iyi bir yer yapıyor.
                     </p>
                   </div>
                 </div>

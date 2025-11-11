@@ -44,6 +44,10 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
 
   const finalDeviceId = deviceId || urlDeviceId;
   const finalDeviceModel = deviceModel || urlDeviceModel;
+  const headerSubtitle =
+    step === "fees"
+      ? t("matchPaymentSubtitleFees")
+      : t("matchPaymentSubtitlePayment");
 
   // Fetch device details
   useEffect(() => {
@@ -258,7 +262,7 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
               <h1 className="text-3xl font-bold text-gray-900">
                 {t("matchPayment")}
               </h1>
-              <p className="text-gray-600 mt-1">{t("matchPaymentSubtitle")}</p>
+              <p className="text-gray-600 mt-1">{headerSubtitle}</p>
             </div>
             <button
               onClick={() => navigate(-1)}
@@ -337,39 +341,45 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                   ) : device ? (
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Kaybedilen Zaman:</span>
+                        <span className="text-sm text-gray-600">Kaybeden Zaman:</span>
                         <span className="font-medium text-sm">
-                          {device.lost_date ? new Date(device.lost_date).toLocaleDateString('tr-TR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          }) : 'Belirtilmemiş'}
+                          {device.lost_date
+                            ? new Date(device.lost_date).toLocaleDateString("tr-TR", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              })
+                            : "Belirtilmemiş"}
                         </span>
                       </div>
-                      
+
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Kayıp Yeri:</span>
-                        <span className="font-medium text-sm">{device.lost_location || 'Belirtilmemiş'}</span>
+                        <span className="text-sm text-gray-600">Kayıp Lokasyon:</span>
+                        <span className="font-medium text-sm">
+                          {device.lost_location || "Belirtilmemiş"}
+                        </span>
                       </div>
-                      
+
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Cihaz Modeli:</span>
                         <span className="font-medium text-sm">{device.model}</span>
                       </div>
-                      
+
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Cihaz Seri Numarası:</span>
-                        <span className="font-mono text-xs">{device.serialNumber}</span>
+                        <span className="text-sm text-gray-600">Cihaz Seri:</span>
+                        <span className="font-medium text-sm">{t("hiddenForSecurity")}</span>
                       </div>
-                      
+
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Cihaz Rengi:</span>
                         <span className="font-medium text-sm">{device.color}</span>
                       </div>
-                      
+
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Ek Detaylar:</span>
-                        <span className="font-medium text-sm">{device.description || 'Belirtilmemiş'}</span>
+                        <span className="font-medium text-sm">
+                          {device.description || "Belirtilmemiş"}
+                        </span>
                       </div>
                     </div>
                   ) : (
@@ -395,70 +405,13 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                 </div>
 
                 {/* Güvenli Ödeme Sistemi Açıklaması */}
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
-                  <div className="text-center mb-4">
-                    <svg className="w-12 h-12 mx-auto text-blue-600 mb-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <h4 className="text-base font-bold text-gray-800">
-                      ifoundanapple'da ödeme sürecin tamamen güvenliğinizi düşünerek tasarlandı.
-                    </h4>
-                  </div>
-
-                  <div className="space-y-4 text-sm text-gray-700">
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
-                        <span className="text-blue-600 mr-2">🔒</span>
-                        Güvenli Emanet (Escrow) Sistemi:
-                      </h5>
-                      <p className="leading-relaxed ml-6">
-                        Ödemeniz, doğrudan cihaz sahibine veya bulan kişiye iletilmez. Takas süreci tamamlanana kadar 
-                        güvenli emanet (escrow) hesabımızda tutulur. Cihazınız size ulaşmadan ve takas işlemini 
-                        onaylamadan hiçbir ödeme karşı tarafa aktarılmaz.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
-                        <span className="text-green-600 mr-2">✓</span>
-                        Iyzico Güvencesiyle:
-                      </h5>
-                      <p className="leading-relaxed ml-6">
-                        Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli ödeme sistemlerinden Iyzico güvencesi 
-                        altındadır. Kart bilgileriniz ve ödeme detaylarınız Iyzico'nun yüksek güvenlik standartları ile 
-                        korunmaktadır.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
-                        <span className="text-purple-600 mr-2">⚖️</span>
-                        İptal Hakkınız Saklıdır:
-                      </h5>
-                      <p className="leading-relaxed ml-6">
-                        Takas süreci başlamadan veya cihaz size ulaşmadan önce herhangi bir nedenle işlemden vazgeçmeniz 
-                        durumunda, ödemeyi iptal etme hakkınız bulunmaktadır.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
-                        <span className="text-orange-600 mr-2">↩️</span>
-                        Şeffaf İade Politikası:
-                      </h5>
-                      <p className="leading-relaxed ml-6">
-                        İşlem iptali talep etmeniz halinde, ödeme sağlayıcı firmamız Iyzico'nun uyguladığı %3,43'lük 
-                        hizmet bedeli hariç, ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-blue-200">
-                      <p className="leading-relaxed text-center italic font-medium text-gray-800">
-                        ifoundanapple olarak amacımız, kayıp eşyaların güvenli, şeffaf ve sorunsuz bir şekilde 
-                        sahipleriyle buluşmasını sağlamaktır. Ödemenizi güvenle tamamlayabilirsiniz.
-                      </p>
-                    </div>
-                  </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="text-base font-semibold text-blue-900 mb-3">
+                    Güvenli Emanet (Escrow) Sistemi
+                  </h4>
+                  <p className="text-sm text-blue-800 leading-relaxed">
+                    Ödemeniz güvenli escrow hesabımızda tutulur ve cihaz teslim edilip onaylanana kadar karşı tarafa aktarılmaz. Ödeme altyapısı güvencesiyle iptal ve iade hakkınız saklıdır.
+                  </p>
                 </div>
               </div>
             </div>
@@ -608,20 +561,11 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
                           {t("paymentProcessing")}
                         </div>
                       ) : (
-                        <div className="flex items-center justify-center">
-                          <svg
-                            className="w-5 h-5 mr-2"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          {t("securePayment")} ({fees.totalAmount.toFixed(2)}{" "}
-                          TL)
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="text-xl">🔒</span>
+                          <span>
+                            {t("securePayment")} ({fees.totalAmount.toFixed(2)} TL)
+                          </span>
                         </div>
                       )}
                     </button>
