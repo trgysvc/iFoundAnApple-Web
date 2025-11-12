@@ -69,6 +69,7 @@ interface AppContextType {
     address?: string;
     iban?: string;
   }) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   supabaseClient: any;
 }
 
@@ -675,6 +676,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return true;
     }
     return false;
+  };
+
+  const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/#/reset-password`,
+    });
+    
+    if (error) {
+      secureLogger.error("Password reset error:", error);
+      return { success: false, error: error.message };
+    }
+    
+    return { success: true };
   };
 
   const logout = async () => {
@@ -1789,6 +1803,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchUserProfile,
     showNotification,
     updateUserProfile,
+    resetPassword,
     supabaseClient: supabase,
   };
 
