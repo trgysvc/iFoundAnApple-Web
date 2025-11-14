@@ -39,7 +39,7 @@ interface PaymentRequest {
       postalCode: string;
     };
   };
-  paymentProvider?: 'iyzico' | 'stripe' | 'test';
+  paymentProvider?: 'paynet';
 }
 
 interface PaymentResponse {
@@ -212,78 +212,17 @@ export async function processPaymentAPI(request: PaymentRequest, existingPayment
   }
 }
 
-async function processIyzicoPayment(request: PaymentRequest, paymentId: string): Promise<PaymentResponse> {
-  try {
-    console.log('[PROCESS_PAYMENT] Iyzico payment processing started');
-    
-    // İyzico API entegrasyonu için gerekli veri formatını hazırla
-    const iyzicoPaymentData = {
-      amount: request.feeBreakdown.totalAmount,
-      currency: 'TRY',
-      conversationId: paymentId,
-      buyerInfo: {
-        id: request.payerId,
-        name: request.payerInfo.name.split(' ')[0] || 'Unknown',
-        surname: request.payerInfo.name.split(' ').slice(1).join(' ') || 'User',
-        email: request.payerInfo.email,
-        phone: request.payerInfo.phone,
-        identityNumber: '11111111111', // Mock TC Kimlik - gerçek uygulamada user profile'dan gelecek
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
-      },
-      shippingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
-      },
-      billingAddress: {
-        contactName: request.payerInfo.name,
-        city: request.payerInfo.address.city,
-        country: 'Turkey',
-        address: request.payerInfo.address.street,
-        zipCode: request.payerInfo.address.postalCode
-      },
-      basketItems: [
-        {
-          id: request.deviceId,
-          name: `${request.deviceInfo.model} Device Recovery`,
-          category1: 'Electronics',
-          category2: 'Mobile Device',
-          itemType: 'PHYSICAL',
-          price: request.feeBreakdown.totalAmount
-        }
-      ]
-    };
-
-    // İyzico API çağrısı yap
-    const { processIyzicoPayment: iyzicoProcess } = await import('../utils/iyzicoConfig');
-    const result = await iyzicoProcess(iyzicoPaymentData);
-
-    console.log('[PROCESS_PAYMENT] Iyzico payment result:', result);
-
-    return {
-      success: result.success,
-      providerPaymentId: result.paymentId,
-      status: result.status as any,
-      errorMessage: result.errorMessage,
-      redirectUrl: result.redirectUrl,
-      providerResponse: result.providerResponse
-    };
-
-  } catch (error) {
-    console.error('[PROCESS_PAYMENT] Iyzico payment error:', error);
-    return {
-      success: false,
-      providerPaymentId: `iyzico_error_${paymentId}`,
-      status: 'failed',
-      errorMessage: error instanceof Error ? error.message : 'İyzico ödeme hatası',
-      providerResponse: { error: error }
-    };
-  }
+// PAYNET payment processing is handled by backend API
+// This function is deprecated - use backend API instead
+async function processPaynetPayment(request: PaymentRequest, paymentId: string): Promise<PaymentResponse> {
+  console.log('[PROCESS_PAYMENT] PAYNET payment processing - use backend API instead');
+  return {
+    success: false,
+    providerPaymentId: `paynet_error_${paymentId}`,
+    status: 'failed',
+    errorMessage: 'This function is deprecated. Use backend API for PAYNET payments.',
+    providerResponse: { error: 'Deprecated function' }
+  };
 }
 
 async function processStripePayment(request: PaymentRequest, paymentId: string): Promise<PaymentResponse> {
@@ -320,19 +259,20 @@ export async function processPaymentLocal(request: PaymentRequest): Promise<Paym
   return paymentResult;
 }
 
-// Process payment with actual provider (Iyzico, Stripe, etc.)
+// Process payment with actual provider (PAYNET)
+// NOTE: This function is deprecated - payments should be processed via backend API
 async function processPaymentWithProvider(request: PaymentRequest): Promise<PaymentResponse> {
-  const { paymentProvider = 'test' } = request;
+  const { paymentProvider = 'paynet' } = request;
   
-  switch (paymentProvider) {
-    case 'iyzico':
-      return await processIyzicoPayment(request);
-    case 'stripe':
-      return await processStripePayment(request);
-    case 'test':
-    default:
-      return await processTestPayment(request);
+  if (paymentProvider === 'paynet') {
+    // PAYNET payments are handled by backend API
+    // This is a fallback for legacy code
+    console.warn('[PROCESS_PAYMENT] PAYNET payments should be processed via backend API');
+    return await processPaynetPayment(request, crypto.randomUUID());
   }
+  
+  // Default fallback
+  return await processTestPayment(request, crypto.randomUUID());
 }
 
 // Update payment in database after processing

@@ -4,9 +4,7 @@ import { useAppContext } from "../contexts/AppContext.tsx";
 import FeeBreakdownCard, {
   FeeBreakdown,
 } from "../components/payment/FeeBreakdownCard.tsx";
-import PaymentMethodSelector, {
-  PaymentProvider,
-} from "../components/payment/PaymentMethodSelector.tsx";
+// PaymentMethodSelector kaldırıldı - sadece PAYNET kullanılıyor
 import { calculateFeesByModelName } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
 import { supabase } from "../utils/supabaseClient.ts";
@@ -33,8 +31,6 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
   // State management
   const [step, setStep] = useState<"fees" | "payment">("fees");
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,12 +157,12 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
             postalCode: "34000",
           },
         },
-        paymentProvider: selectedPaymentMethod,
+        paymentProvider: "paynet",
       };
 
       const result = await initiatePayment(
         paymentRequest,
-        selectedPaymentMethod
+        "paynet"
       );
 
       // Ödeme durumuna göre yönlendirme
@@ -422,12 +418,35 @@ const MatchPaymentPage: React.FC<MatchPaymentPageProps> = ({
         {step === "payment" && fees && (
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Payment Method */}
+              {/* Payment Info */}
               <div>
-                <PaymentMethodSelector
-                  selectedMethod={selectedPaymentMethod}
-                  onMethodChange={setSelectedPaymentMethod}
-                />
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Ödeme Yöntemi
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl mr-4">
+                        💳
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">PAYNET</h4>
+                        <p className="text-sm text-gray-600">3D Secure ile güvenli ödeme</p>
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <svg className="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                        </svg>
+                        <div>
+                          <p className="text-sm font-semibold text-green-900 mb-1">Güvenli Ödeme</p>
+                          <p className="text-xs text-green-700">3D Secure ile korumalı, PCI DSS sertifikalı güvenli ödeme. Tüm Türk bankaları desteklenir.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Final Summary & Checkout */}

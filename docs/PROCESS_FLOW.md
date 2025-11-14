@@ -668,7 +668,7 @@ ADIM 2: Ödeme Yöntemi Ekranı
   - Onay checkbox
   - "Güvenli Ödeme Yap" butonu
       ↓
-3D Secure Doğrulama (Stripe)
+3D Secure Doğrulama (PAYNET)
       ↓
 Ödeme Başarılı
       ↓
@@ -717,7 +717,7 @@ INSERT INTO payments (
   payment_gateway_fee,   -- Gateway ücreti
   service_fee,           -- Hizmet bedeli
   net_payout,            -- Bulan kişiye gidecek net tutar
-  payment_provider,      -- 'iyzico'
+  payment_provider,      -- 'paynet'
   payment_status,        -- 'pending'
   escrow_status,         -- 'pending'
   currency,              -- 'TRY'
@@ -871,7 +871,7 @@ SET
 WHERE id = [device_id];
 ```
 
-**Not:** Bu güncelleme ödeme sağlayıcısından (iyzico/stripe) webhook/callback geldiğinde otomatik olarak yapılır. `api/webhooks/iyzico-callback.ts` veya `api/webhooks/iyzico-3d-callback.ts` dosyaları bu işlemi gerçekleştirir.
+**Not:** Bu güncelleme ödeme sağlayıcısından (PAYNET) webhook/callback geldiğinde otomatik olarak yapılır. Backend'deki `POST /v1/webhooks/paynet-callback` endpoint'i bu işlemi gerçekleştirir.
 
 **4. Kargo Firması API Çağrısı ve `cargo_shipments` Kaydı:**
 ```sql

@@ -256,7 +256,7 @@ export const translations = {
     turkeyMostTrustedPayment: "Turkey's Most Trusted Payment System",
     worldStandardSecurity: "World Standard Security",
     developmentTestMode: "Development Test Mode",
-    iyzico3DSecure: "3D Secure protected, PCI DSS certified secure payment. All Turkish banks are supported.",
+    paynet3DSecure: "3D Secure protected, PCI DSS certified secure payment. All Turkish banks are supported.",
     stripeInternational: "International standard security, protected with 256-bit SSL encryption.",
     testModeDesc: "No real money transfer. Only for development and testing purposes.",
     securityFeatures: "🔒 Security Features",
@@ -500,9 +500,9 @@ export const translations = {
       <h4 class="text-lg font-semibold mb-2">6.2 Service Fees</h4>
       <p class="mb-2"><strong>Fees for Device Owner (v5.0 Formula):</strong></p>
       <ul class="list-disc pl-6 mb-4">
-        <li><strong>Gross Amount:</strong> Total amount received from customer (including Iyzico commission)</li>
-        <li><strong>Iyzico Commission:</strong> 3.43% of gross amount (automatically deducted)</li>
-        <li><strong>Net Amount:</strong> Amount remaining after Iyzico commission deduction</li>
+        <li><strong>Gross Amount:</strong> Total amount received from customer (including PAYNET commission)</li>
+        <li><strong>PAYNET Commission:</strong> 3.43% of gross amount (automatically deducted)</li>
+        <li><strong>Net Amount:</strong> Amount remaining after PAYNET commission deduction</li>
         <li><strong>Cargo Fee:</strong> 250 TL (fixed)</li>
         <li><strong>Finder Reward:</strong> 20% of net amount</li>
         <li><strong>Service Fee:</strong> Net amount - cargo - reward (remaining)</li>
@@ -511,7 +511,7 @@ export const translations = {
       <p class="mb-2"><strong>Example Calculation (Device Owner) - v5.0:</strong></p>
       <div class="bg-gray-100 p-4 rounded mb-4">
         <p><strong>Gross Amount:</strong> 2,000 TL (total received from customer)</p>
-        <p>├── <strong>Iyzico Commission:</strong> 68.60 TL (3.43%) - Automatically deducted</p>
+        <p>├── <strong>PAYNET Commission:</strong> 68.60 TL (3.43%) - Automatically deducted</p>
         <p>└── <strong>Net Amount:</strong> 1,931.40 TL (held in escrow system)</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Cargo Fee:</strong> 250.00 TL (fixed)</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Finder Reward:</strong> 386.28 TL (20%)</p>
@@ -539,7 +539,7 @@ export const translations = {
       <ol class="list-decimal pl-6 mb-4">
         <li>Match occurs</li>
         <li>Device owner pays gross amount (within 48 hours)</li>
-        <li>Iyzico commission (3.43%) is automatically deducted</li>
+        <li>PAYNET commission (3.43%) is automatically deducted</li>
         <li>Net amount is held securely in escrow account (status: "held")</li>
         <li>Finder sends cargo (within 5 business days)</li>
         <li>Device owner receives cargo and presses "I Received, Confirm" button</li>
@@ -557,7 +557,7 @@ export const translations = {
         <li>Maximum waiting: 30 days</li>
         <li>Device owner confirmation: Net amount is released immediately</li>
         <li>If no confirmation: Automatic confirmation after 7 days</li>
-        <li>If no delivery within 30 days: Gross amount automatically refunded (Iyzico commission deducted)</li>
+        <li>If no delivery within 30 days: Gross amount automatically refunded (PAYNET commission deducted)</li>
       </ul>
 
       <p class="mb-2"><strong>Confirmation Process:</strong></p>
@@ -3036,7 +3036,7 @@ export const translations = {
     finderNetPayment: "Чистый платёж нашедшему",
     afterServiceFeeDeduction: "После удержания комиссии сервиса",
     securePaymentSystem: "Безопасная эскроу-система",
-    escrowSystemDesc: "Ваш платёж хранится на защищённом эскроу-счёте и переводится только после подтверждения доставки. С гарантией Iyzico у вас есть право отмены и возврата (за вычетом 3,43%).",
+    escrowSystemDesc: "Ваш платёж хранится на защищённом эскроу-счёте и переводится только после подтверждения доставки. С гарантией PAYNET у вас есть право отмены и возврата (за вычетом 3,43%).",
     // Payment Method Selector translations
     paymentMethod: "Способ оплаты",
     securePaymentOptions: "Безопасные варианты оплаты",
@@ -3299,7 +3299,7 @@ export const translations = {
     finderNetPayment: "Paiement Net au Trouveur",
     afterServiceFeeDeduction: "Après déduction des frais de service",
     securePaymentSystem: "Système d'Entiercement Sécurisé",
-    escrowSystemDesc: "Votre paiement est conservé dans notre compte d'entiercement sécurisé et ne sera pas transféré tant que l'appareil n'est pas livré et confirmé. Avec la garantie Iyzico, vous disposez de droits d'annulation et de remboursement hors frais de 3,43%.",
+    escrowSystemDesc: "Votre paiement est conservé dans notre compte d'entiercement sécurisé et ne sera pas transféré tant que l'appareil n'est pas livré et confirmé. Avec la garantie PAYNET, vous disposez de droits d'annulation et de remboursement hors frais de 3,43%.",
     // Payment Method Selector translations
     paymentMethod: "Méthode de Paiement",
     securePaymentOptions: "Options de paiement sécurisées",
@@ -3595,7 +3595,7 @@ export const translations = {
     finderNetPayment: "発見者への純支払い",
     afterServiceFeeDeduction: "サービス料控除後",
     securePaymentSystem: "安全なエスクローシステム",
-    escrowSystemDesc: "お支払いは安全なエスクロー口座で保管され、デバイスが配送・確認されるまで相手に送金されません。Iyzicoの保証により、3.43%の手数料を除き、キャンセルと返金の権利が保護されています。",
+    escrowSystemDesc: "お支払いは安全なエスクロー口座で保管され、デバイスが配送・確認されるまで相手に送金されません。PAYNETの保証により、3.43%の手数料を除き、キャンセルと返金の権利が保護されています。",
     // Payment Method Selector translations
     paymentMethod: "支払い方法",
     securePaymentOptions: "安全な支払いオプション",
@@ -3891,7 +3891,7 @@ export const translations = {
     finderNetPayment: "Pago Neto al Buscador",
     afterServiceFeeDeduction: "Después de la deducción de la tarifa de servicio",
     securePaymentSystem: "Sistema de Depósito Seguro (Escrow)",
-    escrowSystemDesc: "Su pago se mantiene en nuestra cuenta de depósito segura y no se transferirá hasta que el dispositivo sea entregado y confirmado. Con la garantía de Iyzico, tiene derechos de cancelación y reembolso excluyendo una tarifa del 3.43%.",
+    escrowSystemDesc: "Su pago se mantiene en nuestra cuenta de depósito segura y no se transferirá hasta que el dispositivo sea entregado y confirmado. Con la garantía de PAYNET, tiene derechos de cancelación y reembolso excluyendo una tarifa del 3.43%.",
     // Payment Method Selector translations
     paymentMethod: "Método de Pago",
     securePaymentOptions: "Opciones de pago seguras",

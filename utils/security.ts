@@ -222,13 +222,10 @@ export const getSecureConfig = () => {
   const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
   const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
-  // Iyzico Configuration
-  const iyzicoApiKey = import.meta.env.VITE_IYZICO_API_KEY;
-  const iyzicoSecretKey = import.meta.env.VITE_IYZICO_SECRET_KEY;
-  const iyzicoBaseUrl = import.meta.env.VITE_IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com';
-  const iyzicoCallbackUrl = import.meta.env.VITE_IYZICO_CALLBACK_URL;
+  // Backend API Configuration
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3000/v1';
   
-  // Stripe Configuration
+  // Stripe Configuration (optional, not currently used)
   const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
   const stripeSecretKey = import.meta.env.VITE_STRIPE_SECRET_KEY;
   const stripeWebhookSecret = import.meta.env.VITE_STRIPE_WEBHOOK_SECRET;
@@ -247,19 +244,16 @@ export const getSecureConfig = () => {
     supabaseAnonKey,
     supabaseServiceKey,
     geminiApiKey,
+    backendApiUrl,
     isDevelopment,
-    // Payment Gateway Configurations
-    iyzico: {
-      apiKey: iyzicoApiKey,
-      secretKey: iyzicoSecretKey,
-      baseUrl: iyzicoBaseUrl,
-      callbackUrl: iyzicoCallbackUrl,
-      isConfigured: !!(iyzicoApiKey && iyzicoSecretKey)
+    // Payment Gateway Configurations (PAYNET managed by backend)
+    paynet: {
+      isConfigured: true // PAYNET credentials managed by backend
     },
     stripe: {
-      publishableKey: stripePublishableKey,
-      secretKey: stripeSecretKey,
-      webhookSecret: stripeWebhookSecret,
+      publishableKey: stripePublishableKey || undefined,
+      secretKey: stripeSecretKey || undefined,
+      webhookSecret: stripeWebhookSecret || undefined,
       isConfigured: !!(stripePublishableKey && stripeSecretKey)
     }
   };

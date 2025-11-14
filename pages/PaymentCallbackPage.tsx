@@ -1,11 +1,13 @@
 /**
- * İyzico Payment Callback Page
- * İyzico 3D Secure sonrasında buraya yönlendirilir
+ * PAYNET Payment Callback Page
+ * PAYNET 3D Secure sonrasında buraya yönlendirilir
+ * URL'den session_id ve token_id parametrelerini alır ve backend'e gönderir
  */
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { completePaynet3D } from '../utils/paynetPayment';
 
 export const PaymentCallbackPage = () => {
   const [searchParams] = useSearchParams();
@@ -16,35 +18,55 @@ export const PaymentCallbackPage = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Backend'den gelen parametreleri al
-        const paymentId = searchParams.get('paymentId');
-        const deviceId = searchParams.get('device_id');
-        const amount = searchParams.get('amount');
-        const status = searchParams.get('status');
+        // PAYNET'ten gelen parametreleri al
+        const sessionId = searchParams.get('session_id');
+        const tokenId = searchParams.get('token_id');
         
-        console.log('[CALLBACK] Parametreler alındı:', { paymentId, deviceId, amount, status });
+        // Payment ID'yi localStorage'dan al
+        const paymentId = localStorage.getItem('current_payment_id');
+        
+        console.log('[CALLBACK] PAYNET parametreleri alındı:', { 
+          paymentId, 
+          hasSessionId: !!sessionId, 
+          hasTokenId: !!tokenId 
+        });
         
         if (!paymentId) {
-          throw new Error('Payment ID bulunamadı');
+          throw new Error('Payment ID bulunamadı. Lütfen ödeme sayfasından tekrar deneyin.');
         }
 
-        if (status === 'success') {
-          setStatus('success');
-          setMessage('Ödeme başarıyla tamamlandı! Yönlendiriliyorsunuz...');
+        if (!sessionId || !tokenId) {
+          throw new Error('Ödeme doğrulama bilgileri eksik. Lütfen tekrar deneyin.');
+        }
+
+        // Backend'e 3D Secure tamamlama isteği gönder
+        setMessage('3D Secure doğrulaması tamamlanıyor...');
+        
+        const result = await completePaynet3D(paymentId, sessionId, tokenId);
+        
+        if (result.success) {
+          // Payment ID'yi localStorage'dan temizle
+          localStorage.removeItem('current_payment_id');
           
-          // 1 saniye sonra success sayfasına yönlendir (React Router ile)
+          setStatus('success');
+          setMessage('Ödeme başarıyla tamamlandı! Webhook bekleniyor...');
+          
+          // 2 saniye sonra success sayfasına yönlendir
           setTimeout(() => {
             console.log('[CALLBACK] Success sayfasına yönlendiriliyor:', `/payment/success?paymentId=${paymentId}`);
-            navigate(`/payment/success?paymentId=${paymentId}&device_id=${deviceId}&amount=${amount}`);
-          }, 1000);
+            navigate(`/payment/success?paymentId=${paymentId}`);
+          }, 2000);
         } else {
-          throw new Error('Ödeme başarısız');
+          throw new Error('3D Secure tamamlanamadı');
         }
 
       } catch (error) {
         console.error('[CALLBACK] Hata:', error);
         setStatus('error');
         setMessage(error instanceof Error ? error.message : 'Ödeme doğrulanırken hata oluştu');
+        
+        // Payment ID'yi localStorage'dan temizle
+        localStorage.removeItem('current_payment_id');
         
         // 3 saniye sonra dashboard'a yönlendir
         setTimeout(() => {
