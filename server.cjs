@@ -188,7 +188,7 @@ app.get('/api/iyzico-callback', async (req, res) => {
       const frontendUrl = isProduction 
         ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
         : 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/#/payment/callback?error=token_missing`);
+      return res.redirect(`${frontendUrl}/payment/callback?error=token_missing`);
     }
 
     console.log('[SERVER] Verifying payment with token:', token.substring(0, 20) + '...');
@@ -200,7 +200,7 @@ app.get('/api/iyzico-callback', async (req, res) => {
         const frontendUrl = isProduction 
           ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
           : 'http://localhost:5173';
-        return res.redirect(`${frontendUrl}/#/payment/callback?error=verification_failed`);
+        return res.redirect(`${frontendUrl}/payment/callback?error=verification_failed`);
       }
 
       console.log('[SERVER] Payment verified:', {
@@ -420,17 +420,17 @@ app.get('/api/iyzico-callback', async (req, res) => {
           
           // Callback sayfasına yönlendir - Frontend navigate yapacak
           const finalPaymentId = paymentRecords?.[0]?.id || result.paymentId;
-          console.log('[SERVER] GET - Callback sayfasına yönlendiriliyor:', `${frontendUrl}/#/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}`);
-          return res.redirect(`${frontendUrl}/#/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}&amount=${result.paidPrice}&status=success`);
+          console.log('[SERVER] GET - Callback sayfasına yönlendiriliyor:', `${frontendUrl}/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}`);
+          return res.redirect(`${frontendUrl}/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}&amount=${result.paidPrice}&status=success`);
         } catch (err) {
           console.error('[SERVER] GET - Database güncelleme hatası:', err);
           // Hata olsa bile success'e yönlendir (ödeme başarılı)
-          return res.redirect(`${frontendUrl}/#/payment/success?payment_id=${result.paymentId}&device_id=${deviceId}&amount=${result.paidPrice}`);
+          return res.redirect(`${frontendUrl}/payment/success?payment_id=${result.paymentId}&device_id=${deviceId}&amount=${result.paidPrice}`);
         }
       } else {
         console.log('[SERVER] ❌ GET - Ödeme başarısız');
         // Başarısız - callback sayfasına hata ile yönlendir
-        return res.redirect(`${frontendUrl}/#/payment/callback?error=payment_failed&message=${encodeURIComponent(result.errorMessage || 'Payment failed')}`);
+        return res.redirect(`${frontendUrl}/payment/callback?error=payment_failed&message=${encodeURIComponent(result.errorMessage || 'Payment failed')}`);
       }
     });
   } catch (error) {
@@ -438,7 +438,7 @@ app.get('/api/iyzico-callback', async (req, res) => {
     const frontendUrl = isProduction 
       ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
       : 'http://localhost:5173';
-    return res.redirect(`${frontendUrl}/#/payment/callback?error=callback_failed`);
+    return res.redirect(`${frontendUrl}/payment/callback?error=callback_failed`);
   }
 });
 
@@ -457,7 +457,7 @@ app.post('/api/iyzico-callback', async (req, res) => {
       const frontendUrl = isProduction 
         ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
         : 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/#/payment/callback?error=token_missing`);
+      return res.redirect(`${frontendUrl}/payment/callback?error=token_missing`);
     }
 
     console.log('[SERVER] Verifying payment with token:', token.substring(0, 20) + '...');
@@ -469,7 +469,7 @@ app.post('/api/iyzico-callback', async (req, res) => {
         const frontendUrl = isProduction 
           ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
           : 'http://localhost:5173';
-        return res.redirect(`${frontendUrl}/#/payment/callback?error=verification_failed`);
+        return res.redirect(`${frontendUrl}/payment/callback?error=verification_failed`);
       }
 
       console.log('[SERVER] POST Payment verified:', {
@@ -734,17 +734,17 @@ app.post('/api/iyzico-callback', async (req, res) => {
           
           // Callback sayfasına yönlendir - Frontend navigate yapacak
           const finalPaymentId = paymentRecords?.[0]?.id || result.paymentId;
-          console.log('[SERVER] POST - Callback sayfasına yönlendiriliyor:', `${frontendUrl}/#/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}`);
-          return res.redirect(`${frontendUrl}/#/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}&amount=${result.paidPrice}&status=success`);
+          console.log('[SERVER] POST - Callback sayfasına yönlendiriliyor:', `${frontendUrl}/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}`);
+          return res.redirect(`${frontendUrl}/payment/callback?paymentId=${finalPaymentId}&device_id=${deviceId}&amount=${result.paidPrice}&status=success`);
         } catch (err) {
           console.error('[SERVER] POST - Database güncelleme hatası:', err);
           // Hata olsa bile success'e yönlendir (ödeme başarılı)
-          return res.redirect(`${frontendUrl}/#/payment/success?payment_id=${result.paymentId}&device_id=${deviceId}&amount=${result.paidPrice}`);
+          return res.redirect(`${frontendUrl}/payment/success?payment_id=${result.paymentId}&device_id=${deviceId}&amount=${result.paidPrice}`);
         }
       } else {
         console.log('[SERVER] ❌ Ödeme başarısız, error sayfasına yönlendiriliyor...');
         // Başarısız - callback sayfasına hata ile yönlendir
-        return res.redirect(`${frontendUrl}/#/payment/callback?error=payment_failed&message=${encodeURIComponent(result.errorMessage || 'Payment failed')}`);
+        return res.redirect(`${frontendUrl}/payment/callback?error=payment_failed&message=${encodeURIComponent(result.errorMessage || 'Payment failed')}`);
       }
     });
 
@@ -753,7 +753,7 @@ app.post('/api/iyzico-callback', async (req, res) => {
     const frontendUrl = isProduction 
       ? process.env.VITE_APP_URL || 'https://ifoundanapple.com'
       : 'http://localhost:5173';
-    return res.redirect(`${frontendUrl}/#/payment/callback?error=callback_failed`);
+    return res.redirect(`${frontendUrl}/payment/callback?error=callback_failed`);
   }
 });
 

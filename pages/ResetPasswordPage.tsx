@@ -26,7 +26,7 @@ const ResetPasswordPage: React.FC = () => {
 
     // Check for recovery token in URL hash
     const checkRecoveryToken = async () => {
-      // Parse hash fragment (HashRouter uses # for routing, so we need to check both)
+      // Parse hash fragment (Supabase recovery tokens come in URL hash)
       const hash = window.location.hash;
       
       // Check if there's a recovery token in the hash
