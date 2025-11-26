@@ -54,6 +54,8 @@ const DeviceDetailPage: React.FC = () => {
   );
   const [isLoadingFinderPhotos, setIsLoadingFinderPhotos] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewInvoiceUrl, setPreviewInvoiceUrl] = useState<string | null>(null);
+  const [invoiceFileType, setInvoiceFileType] = useState<'image' | 'pdf' | null>(null);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -172,17 +174,18 @@ const DeviceDetailPage: React.FC = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setPreviewImage(null);
+        setPreviewInvoiceUrl(null);
       }
     };
 
-    if (previewImage) {
+    if (previewImage || previewInvoiceUrl) {
       window.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [previewImage]);
+  }, [previewImage, previewInvoiceUrl]);
 
   console.log(
     "DeviceDetailPage: Current state - device:",
@@ -306,14 +309,21 @@ const DeviceDetailPage: React.FC = () => {
                     Yükleniyor...
                   </div>
                 ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                  <a
-                    href={secureInvoiceUrl || device.invoiceDataUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 font-medium underline"
+                  <button
+                    onClick={() => {
+                      const url = secureInvoiceUrl || device.invoiceDataUrl || null;
+                      if (url) {
+                        // Determine file type from original invoice_url path
+                        const isPdf = device?.invoice_url?.toLowerCase().endsWith('.pdf') || 
+                                    url.toLowerCase().includes('.pdf');
+                        setInvoiceFileType(isPdf ? 'pdf' : 'image');
+                        setPreviewInvoiceUrl(url);
+                      }
+                    }}
+                    className="text-blue-600 hover:text-blue-800 font-medium underline cursor-pointer"
                   >
-                    EKLENEN DOSYA LİNKİ
-                  </a>
+                    Ekli Dosyayı Gör
+                  </button>
                 ) : (
                   <span className="text-gray-500">Dosya eklenmemiş</span>
                 )}
@@ -1061,14 +1071,21 @@ const DeviceDetailPage: React.FC = () => {
                         Yükleniyor...
                       </div>
                     ) : secureInvoiceUrl || device.invoiceDataUrl ? (
-                      <a
-                        href={secureInvoiceUrl || device.invoiceDataUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 font-medium underline"
+                      <button
+                        onClick={() => {
+                          const url = secureInvoiceUrl || device.invoiceDataUrl || null;
+                          if (url) {
+                            // Determine file type from original invoice_url path
+                            const isPdf = device?.invoice_url?.toLowerCase().endsWith('.pdf') || 
+                                        url.toLowerCase().includes('.pdf');
+                            setInvoiceFileType(isPdf ? 'pdf' : 'image');
+                            setPreviewInvoiceUrl(url);
+                          }
+                        }}
+                        className="text-blue-600 hover:text-blue-800 font-medium underline cursor-pointer"
                       >
-                        EKLENEN DOSYA LİNKİ
-                      </a>
+                        Ekli Dosyayı Gör
+                      </button>
                     ) : (
                       <span className="text-gray-500">Dosya eklenmemiş</span>
                     )}
@@ -1528,6 +1545,50 @@ const DeviceDetailPage: React.FC = () => {
               alt="Bulunan cihaz fotoğrafı"
               className="w-full h-full object-contain rounded-lg"
             />
+          </div>
+        </div>
+      )}
+
+      {previewInvoiceUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={() => {
+            setPreviewInvoiceUrl(null);
+            setInvoiceFileType(null);
+          }}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full h-full"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Dosyayı kapat"
+              className="absolute -top-4 right-0 z-10 text-white bg-black/60 rounded-full p-2 hover:bg-black focus:outline-none focus:ring-2 focus:ring-white"
+              onClick={() => {
+                setPreviewInvoiceUrl(null);
+                setInvoiceFileType(null);
+              }}
+            >
+              ✕
+            </button>
+            {invoiceFileType === 'pdf' ? (
+              <iframe
+                src={previewInvoiceUrl}
+                className="w-full h-full rounded-lg bg-white"
+                title="Satın alma kanıtı dosyası"
+              />
+            ) : (
+              <img
+                src={previewInvoiceUrl}
+                alt="Satın alma kanıtı dosyası"
+                className="w-full h-full object-contain rounded-lg bg-white"
+                onError={(e) => {
+                  // If image fails to load, try as PDF
+                  setInvoiceFileType('pdf');
+                }}
+              />
+            )}
           </div>
         </div>
       )}
