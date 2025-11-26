@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
 import Container from '../components/ui/Container';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { checkPaymentStatus, createPaymentRecordsFromWebhook } from '../utils/paymentWebhookHandler';
+import { FeeBreakdown } from '../utils/feeCalculation';
+import { supabase } from '../utils/supabaseClient';
 
 interface PaymentSuccessPageProps {}
 
@@ -38,11 +41,23 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
   const [escrow, setEscrow] = useState<EscrowData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [polling, setPolling] = useState(false);
+  const [webhookReceived, setWebhookReceived] = useState(false);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingAttemptsRef = useRef(0);
+  const maxPollingAttempts = 30; // 5 dakika (10 saniye * 30)
 
   useEffect(() => {
     if (paymentId) {
       fetchPaymentData();
     }
+    
+    // Cleanup polling on unmount
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
   }, [paymentId]);
 
   const fetchPaymentData = async () => {
@@ -64,7 +79,11 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         .single();
 
       if (paymentError) {
-        throw new Error(`Payment fetch error: ${paymentError.message}`);
+        // Payment kaydı henüz oluşturulmamış (webhook gelmemiş)
+        // Polling başlat
+        console.log('[PAYMENT_SUCCESS] Payment kaydı henüz oluşturulmamış, polling başlatılıyor...');
+        startPolling();
+        return;
       }
 
       // Güvenlik kontrolü: Ödeme gerçekten başarılı mı?
@@ -78,6 +97,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
       }
 
       setPayment(paymentData);
+      setWebhookReceived(true);
 
       // Fetch escrow data
       const { data: escrowData, error: escrowError } = await supabaseClient
@@ -87,11 +107,11 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
         .single();
 
       if (escrowError) {
-        throw new Error(`Escrow fetch error: ${escrowError.message}`);
+        // Escrow henüz oluşturulmamış olabilir, kritik değil
+        console.warn('[PAYMENT_SUCCESS] Escrow kaydı bulunamadı:', escrowError.message);
+      } else {
+        setEscrow(escrowData);
       }
-
-      // Escrow verisi mevcut, status ne olursa olsun işleyelim
-      setEscrow(escrowData);
 
     } catch (err) {
       console.error('Error fetching payment data:', err);
@@ -101,7 +121,148 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
     }
   };
 
+  const startPolling = async () => {
+    if (!paymentId || !currentUser) {
+      return;
+    }
+
+    setPolling(true);
+    pollingAttemptsRef.current = 0;
+
+    const poll = async () => {
+      if (pollingAttemptsRef.current >= maxPollingAttempts) {
+        console.log('[PAYMENT_SUCCESS] Polling maksimum deneme sayısına ulaştı');
+        setPolling(false);
+        setError('Webhook gecikmesi. Lütfen birkaç dakika sonra tekrar kontrol edin.');
+        return;
+      }
+
+      pollingAttemptsRef.current += 1;
+      console.log(`[PAYMENT_SUCCESS] Polling denemesi ${pollingAttemptsRef.current}/${maxPollingAttempts}`);
+
+      try {
+        const status = await checkPaymentStatus(paymentId!);
+
+        if (status && status.webhookReceived && status.status === 'completed') {
+          // Webhook geldi, kayıtları oluştur
+          console.log('[PAYMENT_SUCCESS] Webhook geldi, kayıtlar oluşturuluyor...');
+          await createPaymentRecordsFromWebhookData();
+          
+          // Polling'i durdur ve verileri yeniden yükle
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          setPolling(false);
+          setWebhookReceived(true);
+          await fetchPaymentData();
+        }
+      } catch (error) {
+        console.error('[PAYMENT_SUCCESS] Polling hatası:', error);
+      }
+    };
+
+    // İlk kontrol
+    await poll();
+
+    // Her 10 saniyede bir kontrol et
+    pollingIntervalRef.current = setInterval(poll, 10000);
+  };
+
+  const createPaymentRecordsFromWebhookData = async () => {
+    if (!paymentId || !currentUser || !supabaseClient) {
+      return;
+    }
+
+    try {
+      // Device ID'yi localStorage'dan al
+      const deviceIdStr = localStorage.getItem('current_payment_device_id');
+      if (!deviceIdStr) {
+        console.error('[PAYMENT_SUCCESS] Device ID bulunamadı');
+        return;
+      }
+
+      // Fee breakdown'ı localStorage'dan al
+      const feeBreakdownStr = localStorage.getItem('current_payment_fee_breakdown');
+      if (!feeBreakdownStr) {
+        console.error('[PAYMENT_SUCCESS] Fee breakdown bulunamadı');
+        return;
+      }
+
+      const feeBreakdown: FeeBreakdown = JSON.parse(feeBreakdownStr);
+
+      // Device bilgilerini al
+      const { data: device, error: deviceError } = await supabaseClient
+        .from('devices')
+        .select('id, user_id, matched_device_id')
+        .eq('id', deviceIdStr)
+        .single();
+
+      if (deviceError || !device) {
+        console.error('[PAYMENT_SUCCESS] Device bulunamadı:', deviceError);
+        return;
+      }
+
+      // Matched user ID'yi bul
+      let receiverId = currentUser.id; // Varsayılan (eğer matched device yoksa)
+      if (device.matched_device_id) {
+        const { data: matchedDevice, error: matchedError } = await supabaseClient
+          .from('devices')
+          .select('user_id')
+          .eq('id', device.matched_device_id)
+          .single();
+        
+        if (!matchedError && matchedDevice) {
+          receiverId = matchedDevice.user_id;
+        }
+      }
+
+      // Webhook payload'ı oluştur
+      // NOT: Gerçek webhook payload'ı backend'den gelecek
+      // Şimdilik fee breakdown'dan webhook data'sını oluşturuyoruz
+      // Backend webhook'u işlediğinde Supabase Realtime üzerinden bildirim gönderebilir
+      // veya frontend polling yaparak payment kaydının oluşup oluşmadığını kontrol edebilir
+      const webhookData = {
+        reference_no: paymentId,
+        is_succeed: true,
+        amount: feeBreakdown.totalAmount,
+        netAmount: feeBreakdown.totalAmount - feeBreakdown.gatewayFee,
+        comission: feeBreakdown.gatewayFee,
+        authorization_code: 'AUTH_' + Date.now(), // Gerçek webhook'tan gelecek
+        order_id: 'ORDER_' + Date.now(), // Gerçek webhook'tan gelecek
+        xact_date: new Date().toISOString(),
+      };
+
+      // Payment ve escrow kayıtlarını oluştur
+      const result = await createPaymentRecordsFromWebhook({
+        paymentId: paymentId!,
+        deviceId: deviceIdStr,
+        payerId: currentUser.id,
+        receiverId: receiverId,
+        webhookData: webhookData,
+        feeBreakdown: feeBreakdown,
+      });
+
+      if (result.success) {
+        console.log('[PAYMENT_SUCCESS] ✅ Payment ve escrow kayıtları oluşturuldu');
+        // localStorage'dan temizle
+        localStorage.removeItem('current_payment_id');
+        localStorage.removeItem('current_payment_fee_breakdown');
+        localStorage.removeItem('current_payment_device_id');
+      } else {
+        console.error('[PAYMENT_SUCCESS] Kayıt oluşturma hatası:', result.error);
+      }
+    } catch (error) {
+      console.error('[PAYMENT_SUCCESS] Webhook kayıt oluşturma hatası:', error);
+    }
+  };
+
   const handleGoToDashboard = () => {
+    // Polling'i durdur
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
     navigate('/dashboard');
   };
 
@@ -109,16 +270,30 @@ const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = () => {
     // Ödeme iptal işlemi (şimdilik sadece dashboard'a yönlendir)
     // TODO: İleride gerçek iptal işlemi eklenecek
     if (confirm('Ödemeyi iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+      // Polling'i durdur
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
       navigate('/dashboard');
     }
   };
 
-  if (loading) {
+  if (loading || polling) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="large" />
-          <p className="text-gray-600 mt-4">Ödeme bilgileri yükleniyor...</p>
+          <p className="text-gray-600 mt-4">
+            {polling 
+              ? `Webhook bekleniyor... (${pollingAttemptsRef.current}/${maxPollingAttempts})`
+              : 'Ödeme bilgileri yükleniyor...'}
+          </p>
+          {polling && (
+            <p className="text-gray-500 text-sm mt-2">
+              Ödeme kayıtları oluşturuluyor, lütfen bekleyin...
+            </p>
+          )}
         </div>
       </div>
     );

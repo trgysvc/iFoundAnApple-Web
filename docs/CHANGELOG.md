@@ -2,6 +2,37 @@
 
 Bu proje, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatını takip eder ve bu projedeki önemli değişiklikleri belgeler.
 
+## [2.6.0] - Paynet Ödeme Süreci Mimari Düzeltmeleri
+
+### Değiştirildi
+- **Ödeme Başlatma Süreci:** Ödeme başlatıldığında veritabanına kayıt oluşturulmuyor. Backend sadece Paynet API ile iletişim kuruyor ve veritabanına yazmıyor.
+- **Webhook İşleme:** Tüm veritabanı kayıtları (payments, escrow_accounts) webhook geldiğinde ve ödeme başarılı olduğunda frontend/iOS tarafından oluşturuluyor.
+- **Backend Rolü:** Backend artık sadece Paynet API ile iletişim kuruyor, webhook'u alıyor ve saklıyor. Veritabanına yazma işlemleri frontend/iOS tarafından yapılıyor.
+- **Payment Success Page:** Webhook gelene kadar polling mekanizması eklendi. Webhook geldiğinde veritabanı kayıtları oluşturuluyor.
+- **Payment Callback Page:** Webhook bekleme mesajı eklendi ve PaymentSuccessPage'e yönlendirme yapılıyor.
+
+### Eklendi
+- **`utils/paymentWebhookHandler.ts`:** Webhook geldiğinde payment ve escrow kayıtlarını oluşturan merkezi fonksiyon eklendi.
+- **`getPaymentStatus` Fonksiyonu:** Backend API'den payment status kontrolü için yeni fonksiyon eklendi (`utils/paynetPayment.ts`).
+- **`getPaynetWebhookData` Fonksiyonu:** Backend'den webhook data çekme fonksiyonu eklendi (`utils/paynetPayment.ts`).
+- **Polling Mekanizması:** PaymentSuccessPage'de webhook gelene kadar polling yapılıyor (30 deneme, 10 saniye aralık).
+- **LocalStorage Yönetimi:** Device ID ve fee breakdown localStorage'da saklanıyor ve webhook geldiğinde kullanılıyor.
+- **`docs/PAYNET_PAYMENT_PROCESS.md`:** Backend ve iOS için kapsamlı ödeme süreci dokümantasyonu eklendi.
+
+### Kaldırıldı
+- **`api/process-payment.ts`:** Deprecate edildi. Bu dosya ödeme başlatıldığında veritabanına yazıyordu, artık kullanılmıyor.
+
+### İyileştirildi
+- **Güvenlik:** Ödeme tamamlanmadan veritabanına kayıt oluşturulmaması garantilendi.
+- **Veri Tutarlılığı:** Webhook geldiğinde ve ödeme başarılı olduğunda kayıtlar oluşturuluyor.
+- **Mimari:** Backend ve frontend/iOS sorumlulukları net bir şekilde ayrıldı.
+- **Dokümantasyon:** Tüm ödeme süreci dokümantasyonları güncellendi (PROCESS_FLOW.md, BACKEND_INTEGRATION.md, PROJECT_DESIGN_DOCUMENTATION.md).
+
+### Düzeltildi
+- **Ödeme Başlatma:** Ödeme başlatıldığında veritabanına kayıt oluşturulması sorunu çözüldü.
+- **Webhook İşleme:** Webhook geldiğinde frontend/iOS tarafından kayıtların oluşturulması sağlandı.
+- **Device ID ve Receiver ID:** PaymentSuccessPage'de device ID ve receiver ID bulma mekanizması düzeltildi.
+
 ## [2.5.0] - device_role Kolonu ve Status Test Yol Haritası
 
 ### Eklendi

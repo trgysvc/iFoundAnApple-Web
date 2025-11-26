@@ -584,10 +584,10 @@ export const translations = {
       
       <p class="mb-2"><strong>Refund Deduction (v5.0):</strong></p>
       <ul class="list-disc pl-6 mb-4">
-        <li>If you request transaction cancellation during the exchange process, Iyzico commission (3.43%) is refunded with deduction</li>
+        <li>If you request transaction cancellation during the exchange process, payment gateway commission (3.43%) is refunded with deduction</li>
         <li>If gross amount is paid and net amount is held in escrow: Net amount is fully refunded</li>
         <li>Cancellation must be made before cargo process begins</li>
-        <li>After cancellation: Gross amount - Iyzico commission = Refund amount</li>
+        <li>After cancellation: Gross amount - Payment gateway commission = Refund amount</li>
       </ul>
       
       <p class="mb-2"><strong>Refund Process:</strong></p>
@@ -1616,7 +1616,6 @@ export const translations = {
     turkeyMostTrustedPayment: "Türkiye'nin En Güvenilir Ödeme Sistemi",
     worldStandardSecurity: "Dünya Standartında Güvenlik",
     developmentTestMode: "Geliştirme Test Modu",
-    iyzico3DSecure: "3D Secure ile korumalı, PCI DSS sertifikalı güvenli ödeme. Tüm Türk bankaları desteklenir.",
     stripeInternational: "Uluslararası standartlarda güvenlik, 256-bit SSL şifreleme ile korunur.",
     testModeDesc: "Gerçek para transferi olmaz. Sadece geliştirme ve test amaçlıdır.",
     securityFeatures: "🔒 Güvenlik Özellikleri",
@@ -3049,7 +3048,6 @@ export const translations = {
     turkeyMostTrustedPayment: "Самая надёжная платёжная система Турции",
     worldStandardSecurity: "Мировой стандарт безопасности",
     developmentTestMode: "Тестовый режим для разработки",
-    iyzico3DSecure: "Защита 3D Secure, сертификация PCI DSS. Поддерживаются все банки Турции.",
     stripeInternational: "Международный стандарт безопасности, шифрование SSL 256-бит.",
     testModeDesc: "Без реальных транзакций. Только для разработки и теста.",
     securityFeatures: "🔒 Функции безопасности",
@@ -3312,7 +3310,6 @@ export const translations = {
     turkeyMostTrustedPayment: "Système de Paiement le Plus Fiable de Turquie",
     worldStandardSecurity: "Sécurité aux Standards Mondiaux",
     developmentTestMode: "Mode Test de Développement",
-    iyzico3DSecure: "Protégé par 3D Secure, paiement sécurisé certifié PCI DSS. Toutes les banques turques sont supportées.",
     stripeInternational: "Sécurité aux standards internationaux, protégé par chiffrement SSL 256-bit.",
     testModeDesc: "Aucun transfert d'argent réel. Uniquement à des fins de développement et de test.",
     securityFeatures: "🔒 Fonctionnalités de Sécurité",
@@ -3608,7 +3605,6 @@ export const translations = {
     turkeyMostTrustedPayment: "トルコで最も信頼できる支払いシステム",
     worldStandardSecurity: "世界標準のセキュリティ",
     developmentTestMode: "開発テストモード",
-    iyzico3DSecure: "3D Secureで保護、PCI DSS認証の安全な支払い。すべてのトルコの銀行がサポートされています。",
     stripeInternational: "国際標準のセキュリティ、256ビットSSL暗号化で保護。",
     testModeDesc: "実際の送金は行われません。開発・テスト目的のみです。",
     securityFeatures: "🔒 セキュリティ機能",
@@ -3904,7 +3900,6 @@ export const translations = {
     turkeyMostTrustedPayment: "Sistema de Pago Más Confiable de Turquía",
     worldStandardSecurity: "Seguridad de Estándar Mundial",
     developmentTestMode: "Modo de Prueba de Desarrollo",
-    iyzico3DSecure: "Protegido por 3D Secure, pago seguro certificado PCI DSS. Todos los bancos turcos son compatibles.",
     stripeInternational: "Seguridad de estándares internacionales, protegido con cifrado SSL de 256 bits.",
     testModeDesc: "No hay transferencia de dinero real. Solo para fines de desarrollo y prueba.",
     securityFeatures: "🔒 Características de Seguridad",

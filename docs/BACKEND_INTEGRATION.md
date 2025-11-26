@@ -266,13 +266,19 @@ Response:
 ```
 
 ### 3. Ödeme İşleme
+
+**ÖNEMLİ:** Backend sadece Paynet API ile iletişim kurar ve veritabanına yazmaz. Tüm veritabanı kayıtları frontend/iOS tarafından webhook geldiğinde oluşturulur.
+
+#### 3.1. Ödeme Başlatma
 ```
-POST /api/process-payment
+POST /v1/payments/process
+Headers:
+  Authorization: Bearer <JWT_TOKEN>
+
 Request Body:
 {
   deviceId: string;
-  payerId: string;
-  receiverId?: string;
+  totalAmount: number;
   feeBreakdown: {
     rewardAmount: number;
     cargoFee: number;
@@ -281,41 +287,119 @@ Request Body:
     totalAmount: number;
     netPayout: number;
   };
-  deviceInfo: {
-    model: string;
-    serialNumber: string;
-    description?: string;
+}
+
+Response:
+{
+  id: string;                    // Payment ID (backend tarafından oluşturulur)
+  deviceId: string;
+  paymentStatus: 'pending';
+  escrowStatus: 'pending';
+  totalAmount: number;
+  providerTransactionId?: string;
+  publishableKey?: string;        // Paynet publishable key
+  paymentUrl?: string;            // 3D Secure için yönlendirme URL'i
+  feeBreakdown?: {                // Frontend/iOS için saklanır
+    rewardAmount: number;
+    cargoFee: number;
+    serviceFee: number;
+    gatewayFee: number;
+    totalAmount: number;
+    netPayout: number;
   };
-  payerInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    address: {
-      street: string;
-      city: string;
-      district: string;
-      postalCode: string;
-    };
-  };
-  paymentProvider?: 'iyzico' | 'paynet' | 'stripe' | 'test';
+}
+```
+
+**Backend İşlemleri:**
+- Paynet API'ye ödeme başlatma isteği gönderilir (`is_escrow: true` parametresi ile)
+- Paynet'ten dönen `paymentUrl` ve `publishableKey` frontend'e döner
+- Backend veritabanına yazmaz, sadece Paynet ile iletişim kurar
+
+#### 3.2. 3D Secure Tamamlama
+```
+POST /v1/payments/complete-3d
+Headers:
+  Authorization: Bearer <JWT_TOKEN>
+
+Request Body:
+{
+  paymentId: string;
+  mdStatus: string;              // 3D Secure sonucu
+  // ... diğer 3D Secure parametreleri
 }
 
 Response:
 {
   success: boolean;
-  paymentId?: string;
-  escrowId?: string;
-  providerPaymentId?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'held';
+  paymentId: string;
+  paymentStatus: 'completed' | 'failed';
   errorMessage?: string;
-  redirectUrl?: string;
-  providerResponse?: any;
 }
 ```
 
-### 4. Escrow Serbest Bırakma
+**Backend İşlemleri:**
+- Paynet API'ye 3D Secure sonucu gönderilir
+- Backend veritabanına yazmaz
+
+#### 3.3. Payment Status Kontrolü
 ```
-POST /api/release-escrow
+GET /v1/payments/{paymentId}/status
+Headers:
+  Authorization: Bearer <JWT_TOKEN>
+
+Response:
+{
+  id: string;
+  deviceId: string;
+  paymentStatus: 'pending' | 'completed' | 'failed';
+  escrowStatus: 'pending' | 'held' | 'released';
+  webhookReceived: boolean;      // Webhook geldi mi?
+  totalAmount: number;
+  providerTransactionId?: string;
+}
+```
+
+**Backend İşlemleri:**
+- Backend sadece Paynet'ten gelen webhook'u kontrol eder
+- Webhook geldi mi bilgisini frontend/iOS'a döner
+- Backend veritabanına yazmaz
+
+#### 3.4. Webhook Data Çekme
+```
+GET /v1/payments/{paymentId}/webhook-data
+Headers:
+  Authorization: Bearer <JWT_TOKEN>
+
+Response:
+{
+  success: boolean;
+  webhookData?: {
+    reference_no: string;
+    is_succeed: boolean;
+    amount: number;
+    netAmount: number;
+    comission: number;
+    authorization_code: string;
+    order_id: string;
+    xact_date: string;
+  };
+  error?: string;
+}
+```
+
+**Backend İşlemleri:**
+- Backend sakladığı webhook data'yı frontend/iOS'a döner
+- Frontend/iOS bu data ile veritabanı kayıtlarını oluşturur
+
+### 4. Escrow Serbest Bırakma
+
+**ÖNEMLİ:** Backend sadece Paynet API'ye escrow release isteği gönderir. Veritabanı güncellemeleri frontend/iOS tarafından yapılır.
+
+```
+POST /v1/payments/release-escrow
+Headers:
+  Authorization: Bearer <JWT_TOKEN>
+
 Request Body:
 {
   paymentId: string;
@@ -333,6 +417,11 @@ Response:
   errorMessage?: string;
 }
 ```
+
+**Backend İşlemleri:**
+- Paynet API'ye escrow release isteği gönderilir (`POST /v1/transaction/escrow_status_update`)
+- Backend veritabanına yazmaz, sadece Paynet ile iletişim kurar
+- Frontend/iOS escrow release başarılı olduğunda veritabanını günceller
 
 ### 5. Ödeme İptal
 ```

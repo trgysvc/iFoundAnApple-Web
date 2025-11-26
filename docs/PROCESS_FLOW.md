@@ -697,89 +697,38 @@ TOPLAM: 2,000.00 TL
 ---
 
 **Ödeme Akışı:**
-1. Ödeme yöntemi seçimi (Stripe/PAYNET-ApplePay-Kredi Kartı)
-2. Kart bilgileri girişi
-3. 3D Secure doğrulama
-4. Ödeme onayı
+1. Ödeme yöntemi seçimi (PAYNET - Kredi Kartı)
+2. Frontend/iOS: Backend API'ye `POST /v1/payments/process` isteği gönderilir
+3. Backend: Paynet API'ye ödeme başlatma isteği gönderilir (escrow parametresi ile)
+4. Backend: Paynet'ten dönen `paymentUrl` ve `publishableKey` frontend'e döner
+5. Frontend/iOS: 3D Secure doğrulama ekranına yönlendirilir
+6. 3D Secure doğrulama tamamlanır
+7. Frontend/iOS: `POST /v1/payments/complete-3d` ile 3D Secure sonucu backend'e iletilir
+8. Backend: Paynet API'ye 3D Secure sonucu gönderilir
+9. Backend: Paynet webhook'u beklenir
+10. Webhook geldiğinde: Frontend/iOS tarafından veritabanı kayıtları oluşturulur
 
-**Database Kayıtları:**
+**ÖNEMLİ NOT:**
+- **Ödeme başlatıldığında veritabanına kayıt oluşturulmaz!**
+- Backend sadece Paynet API ile iletişim kurar ve webhook'u alır
+- Veritabanı kayıtları (payments, escrow_accounts) **sadece webhook geldiğinde ve ödeme başarılı olduğunda** frontend/iOS tarafından oluşturulur
+- Bu yaklaşım, ödeme tamamlanmadan veritabanına kayıt oluşturulmasını önler ve veri tutarlılığını garanti eder
 
-**1. `payments` tablosuna kayıt:**
-```sql
-INSERT INTO payments (
-  id,                    -- gen_random_uuid()
-  device_id,             -- Device ID'si
-  payer_id,              -- Cihaz sahibinin ID'si (ödemeyi yapan)
-  receiver_id,           -- Bulan kişinin ID'si (ödülü alacak)
-  total_amount,          -- Toplam ödeme tutarı
-  reward_amount,         -- Ödül miktarı
-  cargo_fee,             -- Kargo ücreti (25.00)
-  payment_gateway_fee,   -- Gateway ücreti
-  service_fee,           -- Hizmet bedeli
-  net_payout,            -- Bulan kişiye gidecek net tutar
-  payment_provider,      -- 'paynet'
-  payment_status,        -- 'pending'
-  escrow_status,         -- 'pending'
-  currency,              -- 'TRY'
-  created_at,            -- now()
-  updated_at             -- now()
-);
-```
+**Backend İşlemleri (Veritabanına Yazmaz):**
+- Backend sadece Paynet API ile iletişim kurar
+- Webhook'u alır ve frontend/iOS'a iletir
+- Payment status kontrolü için endpoint sağlar (`GET /v1/payments/{paymentId}/status`)
+- Webhook data'yı frontend/iOS'a sağlar (`GET /v1/payments/{paymentId}/webhook-data`)
 
-**2. `escrow_accounts` tablosuna kayıt:**
-```sql
-INSERT INTO escrow_accounts (
-  id,                    -- gen_random_uuid()
-  payment_id,            -- Payment ID'si
-  device_id,             -- Device ID'si
-  holder_user_id,        -- Cihaz sahibinin ID'si (parayı yatıran)
-  beneficiary_user_id,   -- Bulan kişinin ID'si (parayı alacak)
-  total_amount,          -- Toplam tutar
-  reward_amount,         -- Ödül miktarı
-  service_fee,           -- Hizmet bedeli
-  gateway_fee,           -- Gateway ücreti
-  cargo_fee,             -- Kargo ücreti
-  net_payout,            -- Net ödeme
-  status,                -- 'pending'
-  currency,              -- 'TRY'
-  release_conditions,    -- '[]' (JSON array)
-  confirmations,         -- '[]' (JSON array)
-  created_at,            -- now()
-  updated_at             -- now()
-);
-```
-
-**3. `devices` tablosunda güncelleme:**
-```sql
-UPDATE devices 
-SET 
-  status = 'payment_pending',
-  updated_at = now()
-WHERE id = [device_id];
-```
-
-**4. `audit_logs` tablosuna kayıt:**
-```sql
-INSERT INTO audit_logs (
-  id,                    -- gen_random_uuid()
-  event_type,           -- 'payment_initiated'
-  event_category,       -- 'payment'
-  event_action,         -- 'create'
-  event_severity,       -- 'info'
-  user_id,              -- Cihaz sahibinin ID'si
-  resource_type,        -- 'payment'
-  resource_id,          -- Payment ID'si
-  event_description,    -- 'Payment initiated for device'
-  event_data,           -- JSON: {total_amount, reward_amount, fees}
-  created_at            -- now()
-);
-```
-
-**5. `notifications` tablosuna kayıt:**
-```sql
--- NOT: Ödeme başlatıldığında bildirim gönderilmez, sadece ödeme tamamlandığında gönderilir
--- Bu adımda notification kaydı oluşturulmaz
-```
+**Frontend/iOS İşlemleri (Veritabanına Yazar):**
+- Ödeme başlatma isteği gönderir
+- 3D Secure sonucunu backend'e iletir
+- Webhook gelene kadar polling yapar (payment status kontrolü)
+- Webhook geldiğinde ve ödeme başarılı olduğunda:
+  - `payments` tablosuna kayıt oluşturur
+  - `escrow_accounts` tablosuna kayıt oluşturur
+  - `devices` tablosunda status günceller
+  - `audit_logs` tablosuna kayıt oluşturur
 
 ### **Adım 6: Ödeme Tamamlandı - Kargo Kodu Oluşturma ve Kargo Bekleme**
 ```
@@ -837,33 +786,73 @@ Escrow Tutarı:
 **Bildirimler:**
 - In-app: 
 ---
-**Database Güncellemeleri:**
+**Database Güncellemeleri (Frontend/iOS Tarafından Yapılır):**
 
-**1. `payments` tablosunda güncelleme:**
+**ÖNEMLİ:** Tüm veritabanı kayıtları **webhook geldiğinde ve ödeme başarılı olduğunda** frontend/iOS tarafından oluşturulur. Backend veritabanına yazmaz.
+
+**Webhook İşleme Süreci:**
+1. Backend Paynet'ten webhook alır (`POST /v1/webhooks/paynet-callback`)
+2. Backend webhook'u doğrular ve saklar
+3. Frontend/iOS polling yaparak webhook'un geldiğini kontrol eder (`GET /v1/payments/{paymentId}/status`)
+4. Webhook geldiğinde frontend/iOS webhook data'yı alır (`GET /v1/payments/{paymentId}/webhook-data`)
+5. Frontend/iOS veritabanı kayıtlarını oluşturur
+
+**1. `payments` tablosuna kayıt oluşturma (INSERT):**
 ```sql
-UPDATE payments 
-SET 
-  payment_status = 'completed',
-  escrow_status = 'held',
-  escrow_held_at = now(),
-  completed_at = now(),
-  updated_at = now()
-WHERE id = [payment_id];
+-- Webhook geldiğinde ve ödeme başarılı olduğunda:
+INSERT INTO payments (
+  id,                    -- Backend'den dönen payment ID
+  device_id,             -- Device ID'si
+  payer_id,              -- Cihaz sahibinin ID'si (ödemeyi yapan)
+  receiver_id,           -- Bulan kişinin ID'si (ödülü alacak)
+  total_amount,          -- Webhook'tan gelen amount
+  reward_amount,         -- Fee breakdown'tan
+  cargo_fee,             -- Fee breakdown'tan
+  payment_gateway_fee,   -- Webhook'tan gelen comission veya fee breakdown'tan
+  service_fee,           -- Fee breakdown'tan
+  net_payout,            -- Fee breakdown'tan
+  payment_provider,      -- 'paynet'
+  payment_status,        -- 'completed' (webhook'tan gelen is_succeed=true ise)
+  escrow_status,         -- 'held' (escrow ile ödeme yapıldığı için)
+  provider_payment_id,   -- Webhook'tan gelen order_id
+  provider_transaction_id, -- Webhook'tan gelen reference_no
+  authorization_code,    -- Webhook'tan gelen authorization_code
+  currency,              -- 'TRY'
+  completed_at,          -- Webhook'tan gelen xact_date
+  created_at,            -- now()
+  updated_at             -- now()
+);
 ```
 
-**2. `escrow_accounts` tablosunda güncelleme:**
+**2. `escrow_accounts` tablosuna kayıt oluşturma (INSERT):**
 ```sql
-UPDATE escrow_accounts 
-SET 
-  status = 'held',
-  held_at = now(),
-  updated_at = now()
-WHERE payment_id = [payment_id];
+-- Webhook geldiğinde ve ödeme başarılı olduğunda:
+INSERT INTO escrow_accounts (
+  id,                    -- gen_random_uuid()
+  payment_id,            -- Payment ID'si
+  device_id,             -- Device ID'si
+  holder_user_id,        -- Cihaz sahibinin ID'si (parayı yatıran)
+  beneficiary_user_id,   -- Bulan kişinin ID'si (parayı alacak)
+  total_amount,          -- Fee breakdown'tan
+  reward_amount,         -- Fee breakdown'tan
+  service_fee,           -- Fee breakdown'tan
+  gateway_fee,           -- Fee breakdown'tan
+  cargo_fee,             -- Fee breakdown'tan
+  net_payout,            -- Fee breakdown'tan
+  status,                -- 'held' (escrow ile ödeme yapıldığı için)
+  escrow_type,           -- 'standard'
+  auto_release_days,     -- 30
+  release_conditions,    -- JSON array: [{type: 'device_received', met: false}, ...]
+  confirmations,         -- '[]' (JSON array)
+  held_at,               -- now()
+  created_at,            -- now()
+  updated_at             -- now()
+);
 ```
 
 **3. `devices` tablosunda güncelleme:**
 ```sql
--- Ödeme webhook/callback geldiğinde:
+-- Webhook geldiğinde ve ödeme başarılı olduğunda:
 UPDATE devices 
 SET 
   status = 'payment_completed',
@@ -871,7 +860,29 @@ SET
 WHERE id = [device_id];
 ```
 
-**Not:** Bu güncelleme ödeme sağlayıcısından (PAYNET) webhook/callback geldiğinde otomatik olarak yapılır. Backend'deki `POST /v1/webhooks/paynet-callback` endpoint'i bu işlemi gerçekleştirir.
+**4. `audit_logs` tablosuna kayıt:**
+```sql
+-- Webhook geldiğinde ve ödeme başarılı olduğunda:
+INSERT INTO audit_logs (
+  id,                    -- gen_random_uuid()
+  event_type,           -- 'payment_completed'
+  event_category,       -- 'payment'
+  event_action,         -- 'complete'
+  event_severity,       -- 'info'
+  user_id,              -- Cihaz sahibinin ID'si
+  resource_type,        -- 'payment'
+  resource_id,          -- Payment ID'si
+  event_description,    -- 'Payment completed successfully via PAYNET'
+  event_data,           -- JSON: {amount, provider, authorization_code}
+  created_at            -- now()
+);
+```
+
+**Not:** 
+- Backend sadece Paynet API ile iletişim kurar ve webhook'u alır
+- Backend veritabanına yazmaz, sadece webhook data'yı frontend/iOS'a sağlar
+- Tüm veritabanı kayıtları frontend/iOS tarafından oluşturulur
+- Bu yaklaşım, ödeme tamamlanmadan veritabanına kayıt oluşturulmasını önler
 
 **4. Kargo Firması API Çağrısı ve `cargo_shipments` Kaydı:**
 ```sql

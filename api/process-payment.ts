@@ -1,6 +1,15 @@
 /**
  * Local API: Process Payment
  * Güvenli ödeme işleme ve escrow sistemi
+ * 
+ * @deprecated Bu fonksiyon kullanılmamalıdır.
+ * Ödeme işlemleri Backend API üzerinden yapılmalıdır.
+ * Webhook geldiğinde veritabanı kayıtları oluşturulmalıdır.
+ * 
+ * Bu dosya sadece referans amaçlı tutulmaktadır.
+ * Yeni ödeme akışı için:
+ * - Backend API: POST /v1/payments/process
+ * - Webhook handler: utils/paymentWebhookHandler.ts
  */
 
 import { createClient } from '@supabase/supabase-js';

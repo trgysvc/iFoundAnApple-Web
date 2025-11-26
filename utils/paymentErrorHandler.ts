@@ -1,10 +1,10 @@
 /**
- * İyzico Hata Yönetimi ve Logging Sistemi
+ * Payment Hata Yönetimi ve Logging Sistemi
  * Kapsamlı hata yakalama, loglama ve kullanıcı dostu mesajlar
  */
 
-// İyzico hata kodları ve açıklamaları
-export const IYZICO_ERROR_CODES = {
+// Genel ödeme hata kodları ve açıklamaları
+export const PAYMENT_ERROR_CODES = {
   // Genel hatalar
   '1000': 'İşlem başarılı',
   '1001': 'Bilinmeyen hata',
@@ -30,7 +30,7 @@ export const IYZICO_ERROR_CODES = {
   '3003': 'Webhook URL geçersiz',
   
   // Sistem hataları
-  '4000': 'İyzico servisi geçici olarak kullanılamıyor',
+  '4000': 'Ödeme servisi geçici olarak kullanılamıyor',
   '4001': 'Ağ bağlantı hatası',
   '4002': 'Sunucu hatası',
   '4003': 'Veritabanı hatası'
@@ -101,9 +101,9 @@ export class PaymentErrorManager {
     return error;
   }
 
-  // İyzico hata kodunu kullanıcı dostu mesaja çevir
-  translateIyzicoError(errorCode: string, originalMessage?: string): string {
-    const translatedMessage = IYZICO_ERROR_CODES[errorCode as keyof typeof IYZICO_ERROR_CODES];
+  // Ödeme hata kodunu kullanıcı dostu mesaja çevir
+  translatePaymentError(errorCode: string, originalMessage?: string): string {
+    const translatedMessage = PAYMENT_ERROR_CODES[errorCode as keyof typeof PAYMENT_ERROR_CODES];
     
     if (translatedMessage) {
       return translatedMessage;
@@ -234,10 +234,10 @@ export const createPaymentError = (
   details?: any
 ) => errorManager.createError(code, message, level, category, details);
 
-export const translateIyzicoError = (errorCode: string, originalMessage?: string) =>
-  errorManager.translateIyzicoError(errorCode, originalMessage);
+export const translatePaymentError = (errorCode: string, originalMessage?: string) =>
+  errorManager.translatePaymentError(errorCode, originalMessage);
 
-// İyzico API çağrıları için hata yakalama wrapper'ı
+// Ödeme API çağrıları için hata yakalama wrapper'ı
 export const withErrorHandling = async <T>(
   operation: () => Promise<T>,
   context: {
@@ -301,7 +301,7 @@ export const generateErrorReport = (): string => {
   const recentErrors = stats.recentErrors;
 
   return `
-İyzico Ödeme Sistemi - Hata Raporu
+Ödeme Sistemi - Hata Raporu
 =====================================
 
 Toplam Hata Sayısı: ${stats.total}

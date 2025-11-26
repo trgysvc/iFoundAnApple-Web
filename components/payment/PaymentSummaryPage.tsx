@@ -29,7 +29,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
   
   // State management
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentProvider>('iyzico');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentProvider>('paynet');
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

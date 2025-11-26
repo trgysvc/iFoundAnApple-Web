@@ -45,7 +45,7 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   >();
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
+    useState<PaymentProvider>("paynet");
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

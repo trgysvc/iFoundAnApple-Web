@@ -135,6 +135,16 @@ const processPaynetPayment = async (
     if (paynetResponse.id) {
       localStorage.setItem('current_payment_id', paynetResponse.id);
     }
+    
+    // Device ID'yi localStorage'a kaydet (webhook geldiğinde kullanılacak)
+    localStorage.setItem('current_payment_device_id', request.deviceId);
+    
+    // Fee breakdown'ı localStorage'a kaydet (webhook geldiğinde kullanılacak)
+    // Eğer response'da feeBreakdown yoksa request'ten al
+    const feeBreakdown = paynetResponse.feeBreakdown || request.feeBreakdown;
+    if (feeBreakdown) {
+      localStorage.setItem('current_payment_fee_breakdown', JSON.stringify(feeBreakdown));
+    }
 
     // Response'u PaymentResponse formatına çevir
     return {

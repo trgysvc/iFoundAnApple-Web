@@ -115,27 +115,14 @@ iFoundAnApple, kayıp Apple cihazlarının sahipleri ile onları bulan kişileri
    
    # Google Gemini AI
    GEMINI_API_KEY=your_google_gemini_api_key
-   
-   # İyzico Payment Gateway (Sandbox/Test)
-   VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-   VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-   VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
-   VITE_IYZICO_CALLBACK_URL=http://localhost:5173
    ```
    
    **Not**: 
    - Supabase URL'i `https://xyz.supabase.co` formatında olmalıdır
    - Anon key, Supabase dashboard'tan alınır (public key)
    - Gemini API key, Google AI Studio'dan alınır
-   - İyzico credentials yukarıdaki sandbox değerleridir (test için)
-   - Production için gerçek İyzico credentials kullanın
+   - PAYNET ödeme sistemi backend tarafından yönetilir, frontend'de ekstra konfigürasyon gerekmez
    - Environment dosyası `.gitignore`'da olduğundan repository'ye commit edilmez
-
-4. **Backend server'ı başlatın (İyzico için gerekli):**
-    ```bash
-   # Terminal 1 - Backend Server
-   node server.cjs
-   ```
 
 5. **Geliştirme sunucusunu başlatın:**
     ```bash
@@ -161,11 +148,7 @@ iFoundAnApple-Web/
 ├── 📁 api/                 # Backend API endpoints
 │   ├── calculate-fees.ts   # Ücret hesaplama API
 │   ├── process-payment.ts  # Ödeme işleme API
-│   ├── release-escrow.ts   # Escrow serbest bırakma
-│   ├── iyzico-payment.ts   # İyzico ödeme endpoint
-│   └── 📁 webhooks/        # Webhook handlers
-│       ├── iyzico-callback.ts      # İyzico webhook
-│       └── iyzico-3d-callback.ts   # 3D Secure callback
+│   └── release-escrow.ts   # Escrow serbest bırakma
 ├── 📁 components/          # Yeniden kullanılabilir UI bileşenleri
 │   ├── 📁 ui/             # Temel UI elemanları
 │   │   ├── Button.tsx     # Özelleştirilebilir buton bileşeni
@@ -199,8 +182,8 @@ iFoundAnApple-Web/
 │   ├── ContactPage.tsx    # İletişim sayfası
 │   └── NotFoundPage.tsx   # 404 sayfası
 ├── 📁 utils/              # Yardımcı fonksiyonlar
-│   ├── paymentGateway.ts  # Ödeme gateway entegrasyonu
-│   ├── iyzicoConfig.ts    # İyzico konfigürasyonu
+│   ├── paymentGateway.ts  # Ödeme gateway entegrasyonu (PAYNET)
+│   ├── paynetPayment.ts   # PAYNET ödeme entegrasyonu
 │   ├── feeCalculation.ts  # Ücret hesaplama
 │   ├── escrowManager.ts   # Escrow yönetimi
 │   ├── security.ts        # Güvenlik fonksiyonları
@@ -330,19 +313,13 @@ VITE_SUPABASE_ANON_KEY=your_production_anon_key
 # Google Gemini AI
 GEMINI_API_KEY=your_google_gemini_api_key
 
-# İyzico Payment Gateway (Production)
-VITE_IYZICO_API_KEY=your_production_api_key
-VITE_IYZICO_SECRET_KEY=your_production_secret_key
-VITE_IYZICO_BASE_URL=https://api.iyzipay.com
-VITE_IYZICO_CALLBACK_URL=https://yourdomain.com
+# PAYNET Payment Gateway
+# PAYNET credentials are managed by backend, no frontend configuration needed
 
 # Development (.env.local)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_development_anon_key
 GEMINI_API_KEY=your_google_gemini_api_key
-VITE_IYZICO_API_KEY=sandbox-xQUfDCNqUzFl3TeQ6TwUxk7QovYnthKL
-VITE_IYZICO_SECRET_KEY=sandbox-njCZVrXuJuKXu12mUdjUs4g9sQHy9PqR
-VITE_IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
 ```
 
 ### Coolify Deployment

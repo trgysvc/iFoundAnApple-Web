@@ -35,7 +35,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
   // State management
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<PaymentProvider>("iyzico");
+    useState<PaymentProvider>("paynet");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -363,11 +363,11 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                   <div>
                     <h5 className="font-semibold text-gray-800 mb-1 flex items-start">
                       <span className="text-green-600 mr-2">✓</span>
-                      Iyzico Güvencesiyle:
+                      PAYNET Güvencesiyle:
                     </h5>
                     <p className="leading-relaxed ml-6">
-                      Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli ödeme sistemlerinden Iyzico güvencesi 
-                      altındadır. Kart bilgileriniz ve ödeme detaylarınız Iyzico'nun yüksek güvenlik standartları ile 
+                      Tüm finansal işlemleriniz Türkiye'nin önde gelen güvenli ödeme sistemlerinden PAYNET güvencesi 
+                      altındadır. Kart bilgileriniz ve ödeme detaylarınız PAYNET'in yüksek güvenlik standartları ile 
                       korunmaktadır.
                     </p>
                   </div>
@@ -389,7 +389,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                       Şeffaf İade Politikası:
                     </h5>
                     <p className="leading-relaxed ml-6">
-                      İşlem iptali talep etmeniz halinde, ödeme sağlayıcı firmamız Iyzico'nun uyguladığı %3,43'lük 
+                      İşlem iptali talep etmeniz halinde, ödeme sağlayıcı firmamız PAYNET'in uyguladığı %3,43'lük 
                       hizmet bedeli hariç, ödediğiniz tüm ücret anında tarafınıza iade edilecektir.
                     </p>
                   </div>

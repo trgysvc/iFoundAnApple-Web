@@ -20,6 +20,7 @@ export interface PaynetPaymentResponse {
   providerTransactionId?: string;
   publishableKey?: string;
   paymentUrl?: string;
+  feeBreakdown?: FeeBreakdown; // Webhook geldiğinde kullanılacak
 }
 
 export interface PaynetComplete3DRequest {
@@ -116,6 +117,37 @@ export const completePaynet3D = async (
     }
     
     throw new Error('3D Secure tamamlanamadı. Lütfen tekrar deneyin.');
+  }
+};
+
+/**
+ * Payment status sorgulama
+ * Backend'e GET /v1/payments/{paymentId}/status isteği gönderir
+ */
+export const getPaymentStatus = async (
+  paymentId: string
+): Promise<{
+  paymentId: string;
+  status: string;
+  providerStatus?: string;
+  webhookReceived: boolean;
+}> => {
+  try {
+    console.log('[PAYNET] Payment status sorgulanıyor...', { paymentId });
+
+    const response = await apiClient.get<{
+      paymentId: string;
+      status: string;
+      providerStatus?: string;
+      webhookReceived: boolean;
+    }>(`/payments/${paymentId}/status`);
+
+    console.log('[PAYNET] Payment status:', response);
+
+    return response;
+  } catch (error) {
+    console.error('[PAYNET] Payment status sorgulama hatası:', error);
+    throw error;
   }
 };
 

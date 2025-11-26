@@ -45,13 +45,14 @@ export const PaymentCallbackPage = () => {
         const result = await completePaynet3D(paymentId, sessionId, tokenId);
         
         if (result.success) {
-          // Payment ID'yi localStorage'dan temizle
-          localStorage.removeItem('current_payment_id');
+          // Payment ID'yi localStorage'da tut (webhook bekleniyor)
+          // localStorage'dan temizleme - webhook geldiğinde kullanılacak
           
           setStatus('success');
           setMessage('Ödeme başarıyla tamamlandı! Webhook bekleniyor...');
           
           // 2 saniye sonra success sayfasına yönlendir
+          // Success sayfasında polling başlatılacak
           setTimeout(() => {
             console.log('[CALLBACK] Success sayfasına yönlendiriliyor:', `/payment/success?paymentId=${paymentId}`);
             navigate(`/payment/success?paymentId=${paymentId}`);

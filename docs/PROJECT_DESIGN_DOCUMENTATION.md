@@ -556,10 +556,12 @@ Proje, görevlerin net bir şekilde ayrıldığı, güvenliği ve ölçeklenebil
 │          merkezi işlemler                                   │
 │                                                              │
 │  API Endpoints:                                             │
-│  ├── /api/calculate-fees                                   │
-│  ├── /api/process-payment                                  │
-│  ├── /api/release-escrow                                   │
-│  └── /api/webhooks/*                                       │
+│  ├── POST /v1/payments/process                             │
+│  ├── POST /v1/payments/complete-3d                         │
+│  ├── GET /v1/payments/{paymentId}/status                  │
+│  ├── GET /v1/payments/{paymentId}/webhook-data            │
+│  ├── POST /v1/payments/release-escrow                      │
+│  └── POST /v1/webhooks/paynet-callback                    │
 └──────────────────────┬──────────────────────────────────────┘
                        │
                        │ Supabase Client SDK
@@ -710,13 +712,15 @@ RESTful API prensipleri ile tasarlanmış, hassas işlemler için backend servis
 **Endpoint Yapısı:**
 ```
 Backend Server (Port 3001)
-├── /api/health              # Health check
-├── /api/calculate-fees      # Ücret hesaplama (Backend'de)
-├── /api/process-payment     # Ödeme işleme (Stripe entegrasyonu)
-├── /api/release-escrow      # Escrow serbest bırakma
-└── /api/webhooks/
-    ├── stripe-callback      # Stripe webhook
-    └── cargo-status-update  # Kargo durum güncellemeleri
+├── POST /v1/payments/process              # Ödeme başlatma (Paynet)
+├── POST /v1/payments/complete-3d          # 3D Secure tamamlama
+├── GET /v1/payments/{paymentId}/status   # Payment status kontrolü
+├── GET /v1/payments/{paymentId}/webhook-data  # Webhook data çekme
+├── POST /v1/payments/release-escrow       # Escrow serbest bırakma
+└── POST /v1/webhooks/paynet-callback     # Paynet webhook receiver
+
+NOT: Backend sadece Paynet API ile iletişim kurar ve veritabanına yazmaz.
+     Tüm veritabanı kayıtları frontend/iOS tarafından webhook geldiğinde oluşturulur.
 ```
 
 **Supabase API (Direct Client Access):**
@@ -1419,7 +1423,9 @@ interface PaymentResponse {
 
 #### 5.2.3 Escrow Serbest Bırakma API
 
-**Endpoint:** `/api/release-escrow`
+**Endpoint:** `POST /v1/payments/release-escrow`
+
+**ÖNEMLİ:** Backend sadece Paynet API'ye escrow release isteği gönderir. Veritabanı güncellemeleri frontend/iOS tarafından yapılır.
 
 **Request:**
 ```typescript
@@ -1519,14 +1525,23 @@ AddDevice → Supabase Insert → Trigger/Function → Match Check → Update St
 
 **Payment Flow:**
 ```
-MatchPaymentPage (Frontend) 
-  → Backend API (/api/process-payment) 
-  → Stripe API (Secret Key) 
-  → Stripe Webhook 
-  → Backend (/api/webhooks/stripe-callback) 
-  → Supabase (Update payments, Create escrow) 
-  → Frontend (Real-time update)
+MatchPaymentPage (Frontend/iOS) 
+  → Backend API (POST /v1/payments/process) 
+  → Paynet API (Backend sadece proxy, veritabanına yazmaz)
+  → 3D Secure Doğrulama
+  → Backend API (POST /v1/payments/complete-3d)
+  → Paynet Webhook (POST /v1/webhooks/paynet-callback)
+  → Backend webhook'u alır ve saklar (veritabanına yazmaz)
+  → Frontend/iOS polling yapar (GET /v1/payments/{paymentId}/status)
+  → Frontend/iOS webhook data'yı alır (GET /v1/payments/{paymentId}/webhook-data)
+  → Frontend/iOS Supabase'e yazar (payments, escrow_accounts, devices, audit_logs)
+  → Frontend/iOS (Real-time update)
 ```
+
+**ÖNEMLİ MİMARİ PRENSİPLER:**
+- **Backend:** Sadece Paynet API ile iletişim kurar, webhook'u alır ve saklar. Veritabanına yazmaz.
+- **Frontend/iOS:** Tüm veritabanı kayıtlarını (payments, escrow_accounts) webhook geldiğinde ve ödeme başarılı olduğunda oluşturur.
+- **Güvenlik:** Ödeme tamamlanmadan veritabanına kayıt oluşturulmaz.
 
 ### 5.4 Veritabanı Şeması
 
