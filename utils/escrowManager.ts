@@ -51,7 +51,12 @@ export interface EscrowConfirmation {
 }
 
 /**
- * Yeni escrow hesabı oluştur
+ * ⚠️ DEPRECATED - Backend otomatik olarak escrow kaydını oluşturuyor
+ * 
+ * Backend, webhook geldiğinde otomatik olarak escrow kaydını oluşturuyor.
+ * Bu fonksiyon artık kullanılmamalıdır.
+ * 
+ * @deprecated Backend otomatik olarak escrow kaydını oluşturuyor
  */
 export const createEscrowAccount = async (
   paymentId: string,
@@ -113,7 +118,12 @@ export const createEscrowAccount = async (
 };
 
 /**
- * Escrow hesabını "held" durumuna getir (ödeme başarılı olduktan sonra)
+ * ⚠️ DEPRECATED - Backend otomatik olarak escrow status'unu güncelliyor
+ * 
+ * Backend, webhook geldiğinde otomatik olarak escrow status'unu 'held' yapıyor.
+ * Bu fonksiyon artık kullanılmamalıdır.
+ * 
+ * @deprecated Backend otomatik olarak escrow status'unu güncelliyor
  */
 export const holdEscrowFunds = async (
   escrowId: string,
@@ -269,48 +279,56 @@ const checkAutoReleaseConditions = async (escrowId: string): Promise<void> => {
 };
 
 /**
- * Escrow fonlarını serbest bırak (bulan kişiye ödeme yap)
+ * ⚠️ DEPRECATED - Backend API'yi kullan
+ * 
+ * Escrow fonlarını serbest bırakma işlemi artık backend API üzerinden yapılıyor.
+ * Backend otomatik olarak tüm veritabanı güncellemelerini yapar.
+ * 
+ * Yeni kullanım: `POST /v1/payments/release-escrow`
+ * 
+ * @deprecated Backend API kullanılmalı: POST /v1/payments/release-escrow
  */
 export const releaseEscrowFunds = async (
   escrowId: string,
   releaseReason: string
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
+  console.warn('[ESCROW] ⚠️ DEPRECATED - releaseEscrowFunds kullanılmamalıdır.');
+  console.warn('[ESCROW] Backend API kullanılmalı: POST /v1/payments/release-escrow');
+  
+  // Backend API'yi kullan
+  const { releaseEscrowLocal } = await import('../api/release-escrow');
+  
+  // Escrow ID'den payment ID'yi bul (okuma işlemi - hala yapılabilir)
   try {
-    console.log("[ESCROW] Escrow fonları serbest bırakılıyor...", {
-      escrowId,
-      releaseReason,
-    });
-
-    // Escrow hesabını güncelle
-    const { data, error } = await supabase
-      .from("escrow_accounts")
-      .update({
-        status: "released",
-        released_at: new Date().toISOString(),
-        release_reason: releaseReason,
-      })
-      .eq("id", escrowId)
-      .select()
+    const { data: escrow } = await supabase
+      .from('escrow_accounts')
+      .select('payment_id, device_id')
+      .eq('id', escrowId)
       .single();
-
-    if (error) {
-      console.error("[ESCROW] Serbest bırakma hatası:", error);
-      return { success: false, error: error.message };
+    
+    if (!escrow) {
+      return { success: false, error: 'Escrow record not found' };
     }
-
-    // Financial transaction kaydı oluştur
-    const transactionId = await createFinancialTransaction(
-      data,
-      "reward_payout"
-    );
-
-    console.log("[ESCROW] ✅ Fonlar başarıyla serbest bırakıldı");
-    return { success: true, transactionId };
+    
+    // Backend API'ye yönlendir
+    const result = await releaseEscrowLocal({
+      paymentId: escrow.payment_id,
+      deviceId: escrow.device_id,
+      releaseReason: releaseReason,
+      confirmationType: 'manual_release',
+      confirmedBy: '', // Backend'den alınacak
+    });
+    
+    return {
+      success: result.success,
+      transactionId: result.transactionId,
+      error: result.errorMessage,
+    };
   } catch (error) {
-    console.error("[ESCROW] Serbest bırakma hatası:", error);
+    console.error('[ESCROW] Backend API hatası:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Bilinmeyen hata",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 };
@@ -363,45 +381,19 @@ export const refundEscrowFunds = async (
 };
 
 /**
- * Financial transaction kaydı oluştur
+ * ⚠️ DEPRECATED - Backend otomatik olarak financial transaction kaydını oluşturuyor
+ * 
+ * Backend, escrow release işlemi sırasında otomatik olarak financial transaction kaydını oluşturuyor.
+ * Bu fonksiyon artık kullanılmamalıdır.
+ * 
+ * @deprecated Backend otomatik olarak financial transaction kaydını oluşturuyor
  */
 const createFinancialTransaction = async (
   escrowAccount: any,
   transactionType: string
 ): Promise<string> => {
-  try {
-    const transactionData = {
-      payment_id: escrowAccount.payment_id,
-      device_id: escrowAccount.device_id,
-      from_user_id: escrowAccount.holder_user_id,
-      to_user_id: escrowAccount.beneficiary_user_id,
-      transaction_type: transactionType,
-      amount:
-        transactionType === "refund_issued"
-          ? escrowAccount.total_amount
-          : escrowAccount.net_payout,
-      currency: "TRY",
-      status: "completed",
-      description: `Escrow ${transactionType} - ${escrowAccount.id}`,
-      completed_at: new Date().toISOString(),
-    };
-
-    const { data, error } = await supabase
-      .from("financial_transactions")
-      .insert([transactionData])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[ESCROW] Financial transaction oluşturma hatası:", error);
-      throw error;
-    }
-
-    return data.id;
-  } catch (error) {
-    console.error("[ESCROW] Financial transaction hatası:", error);
-    throw error;
-  }
+  console.warn('[ESCROW] ⚠️ DEPRECATED - createFinancialTransaction kullanılmamalıdır.');
+  throw new Error('This function is deprecated. Backend automatically creates financial transaction records.');
 };
 
 /**

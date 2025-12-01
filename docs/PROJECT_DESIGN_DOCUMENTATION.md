@@ -187,6 +187,8 @@
   - Adres (şifrelenmiş saklanır, ödeme için zorunlu)
 - Banka Bilgileri:
   - IBAN (TR ile başlayan, 26 haneli, şifrelenmiş)
+  - IBAN Validation: IBAN validation key (`IBAN_VALIDATION_API_KEY` veya `IBAN_VALIDATION_SERVICE_KEY`) ile gerçek zamanlı doğrulama yapılabilir (opsiyonel)
+  - Format kontrolü: TR ile başlayan 26 haneli, Mod 97 checksum kontrolü
   - Zorunluluk: Sadece bulan kişi için (ödül almak için)
   - Cihaz sahibinden IBAN istenmez
 
@@ -719,8 +721,8 @@ Backend Server (Port 3001)
 ├── POST /v1/payments/release-escrow       # Escrow serbest bırakma
 └── POST /v1/webhooks/paynet-callback     # Paynet webhook receiver
 
-NOT: Backend sadece Paynet API ile iletişim kurar ve veritabanına yazmaz.
-     Tüm veritabanı kayıtları frontend/iOS tarafından webhook geldiğinde oluşturulur.
+NOT: Backend, Paynet API ile iletişim kurar ve webhook geldiğinde tüm veritabanı kayıtlarını oluşturur.
+     Frontend/iOS, backend'den ödeme sonucunu alır ve sadece kullanıcıya gösterir - veritabanına yazmaz.
 ```
 
 **Supabase API (Direct Client Access):**
@@ -1334,6 +1336,7 @@ Kullanıcı Onayı Bekle
 - TC Kimlik ödeme için zorunlu
 - Adres kargo için zorunlu
 - **Güvenlik:** Tüm hassas bilgiler (TC, IBAN, Telefon, Adres) veritabanında AES-256-GCM ile şifrelenmiş olarak saklanır
+- **Encryption Key Backup:** Encryption key (`VITE_ENCRYPTION_KEY`) **manuel olarak** yedeklenmelidir. Key kaybı durumunda şifrelenmiş tüm veriler kalıcı olarak kaybolur. Detaylı backup stratejisi için yukarıdaki "Encryption Key Oluşturma" bölümüne bakın.
 - **Görüntüleme:** Kullanıcıya plain text olarak gösterilir (otomatik decrypt)
 - **Key Güvenliği:** Encryption key asla git repository'ye commit edilmemelidir
 
@@ -1482,8 +1485,27 @@ App.tsx
 - **Purpose**: Hassas işlemler, external API entegrasyonları
 
 **Backend Sorumlulukları:**
-- Ödeme gateway entegrasyonları (Stripe, PAYNET)
-- Kargo firması API entegrasyonları
+
+**1. Ödeme Süreci:**
+- Paynet ile ödeme haberleşmesini üstlenir
+- Frontend/iOS'tan gelen ödeme talebini alır
+- Paynet API ile haberleşerek başarılı/başarısız ödeme sürecini frontend/iOS'a bildirir
+- Webhook'ları alır, doğrular ve saklar
+- **Ödeme başlatıldığında payment ID oluşturur ve veritabanına yazar** (`payments` tablosuna `status = 'pending'` ile)
+- **Webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur:**
+  - `payments` tablosunu günceller
+  - `escrow_accounts` tablosuna kayıt oluşturur
+  - `devices` tablosunda status'u `payment_completed` yapar
+  - `audit_logs` tablosuna kayıt oluşturur
+  - `notifications` tablosuna bildirim kayıtları oluşturur
+- Veritabanından **okuma** yapar (kontrol amaçlı: device status, user kontrolü, tutar doğrulama)
+
+**2. Kargo Süreci:**
+- Kargo firması ile haberleşmeyi sağlar
+- Kargo firmasından alınan takip numarasını (`tracking_number`) ve teslim kodunu (`code`) veritabanına yazar
+- Kargo firmasından süreç bilgilerini alıp ilgili tablolara (`cargo_shipments`) yazar
+
+**3. Diğer:**
 - Webhook yönetimi
 - Admin işlemleri
 - Secret key yönetimi
@@ -1527,21 +1549,21 @@ AddDevice → Supabase Insert → Trigger/Function → Match Check → Update St
 ```
 MatchPaymentPage (Frontend/iOS) 
   → Backend API (POST /v1/payments/process) 
-  → Paynet API (Backend sadece proxy, veritabanına yazmaz)
+  → Backend Payment ID oluşturur ve veritabanına yazar (payments tablosuna status='pending' ile)
+  → Paynet API (3D Secure başlatma)
   → 3D Secure Doğrulama
   → Backend API (POST /v1/payments/complete-3d)
   → Paynet Webhook (POST /v1/webhooks/paynet-callback)
-  → Backend webhook'u alır ve saklar (veritabanına yazmaz)
+  → Backend webhook'u alır, doğrular, saklar ve **tüm veritabanı kayıtlarını oluşturur** (payments, escrow_accounts, devices, audit_logs, notifications)
   → Frontend/iOS polling yapar (GET /v1/payments/{paymentId}/status)
-  → Frontend/iOS webhook data'yı alır (GET /v1/payments/{paymentId}/webhook-data)
-  → Frontend/iOS Supabase'e yazar (payments, escrow_accounts, devices, audit_logs)
+  → Frontend/iOS ödeme sonucunu alır ve kullanıcıya gösterir (veritabanına yazmaz)
   → Frontend/iOS (Real-time update)
 ```
 
 **ÖNEMLİ MİMARİ PRENSİPLER:**
-- **Backend:** Sadece Paynet API ile iletişim kurar, webhook'u alır ve saklar. Veritabanına yazmaz.
-- **Frontend/iOS:** Tüm veritabanı kayıtlarını (payments, escrow_accounts) webhook geldiğinde ve ödeme başarılı olduğunda oluşturur.
-- **Güvenlik:** Ödeme tamamlanmadan veritabanına kayıt oluşturulmaz.
+- **Backend:** Paynet API ile iletişim kurar, webhook'u alır, doğrular, saklar ve **eğer ödeme başarılı (is_succeed: true) ise tüm veritabanı kayıtlarını oluşturur** (payments, escrow_accounts, devices, audit_logs, notifications).
+- **Frontend/iOS:** Backend'den ödeme sonucunu alır ve sadece kullanıcıya gösterir. **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından yapılır.
+- **Güvenlik:** Ödeme tamamlanmadan (webhook gelmeden) veritabanına kayıt oluşturulmaz. Backend, webhook geldiğinde tüm işlemleri güvenli şekilde yönetir.
 
 ### 5.4 Veritabanı Şeması
 
@@ -1619,7 +1641,31 @@ node scripts/generate-encryption-key.js
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-**Önemli:** `VITE_ENCRYPTION_KEY` environment variable'ı kritik öneme sahiptir. Bu key olmadan şifrelenmiş veriler çözülemez. Key'i güvenli bir yerde saklayın (password manager + encrypted backup).
+**ÖNEMLİ - Encryption Key Backup Stratejisi:**
+
+`VITE_ENCRYPTION_KEY` environment variable'ı kritik öneme sahiptir. Bu key olmadan şifrelenmiş veriler (TC Kimlik No, IBAN, adres bilgileri vb.) çözülemez ve kalıcı olarak kaybolur.
+
+**Backup Stratejisi:**
+1. **Manuel Yedekleme:** Encryption key **manuel olarak** güvenli bir yerde yedeklenmelidir.
+2. **Yedekleme Yöntemleri:**
+   - Password manager (1Password, LastPass, Bitwarden vb.) - **Önerilen**
+   - Şifrelenmiş dosya (encrypted file) - Offline backup için
+   - Güvenli fiziksel depolama (encrypted USB drive, safe deposit box) - Disaster recovery için
+3. **Yedekleme Sıklığı:**
+   - Key oluşturulduğunda hemen yedeklenmelidir
+   - Key değiştirildiğinde yeni key yedeklenmelidir
+   - Düzenli olarak yedeklerin erişilebilirliği kontrol edilmelidir
+4. **Güvenlik:**
+   - Key asla git repository'ye commit edilmemelidir
+   - Key asla kod içinde hardcode edilmemelidir
+   - Key sadece environment variable olarak kullanılmalıdır
+   - Yedekler şifrelenmiş formatta saklanmalıdır
+5. **Erişim Kontrolü:**
+   - Key'e erişimi olan kişi sayısı minimum tutulmalıdır
+   - Key erişimi audit log'lanmalıdır
+   - Key rotation stratejisi belirlenmelidir
+
+**Not:** Key kaybı durumunda şifrelenmiş tüm veriler kalıcı olarak kaybolur. Bu nedenle backup stratejisi kritik öneme sahiptir.
 
 #### 5.6.2 Production Build
 

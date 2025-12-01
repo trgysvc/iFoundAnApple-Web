@@ -168,7 +168,10 @@ const processPaynetPayment = async (
 
 /**
  * Ödeme durumu sorgulama
- * Not: Backend'de payment status endpoint'i yok, Supabase'den direkt okunabilir
+ * ✅ Backend API'den status okur - veritabanı yazma yok
+ * 
+ * Backend artık veritabanından okuyor ve tüm bilgileri döndürüyor.
+ * Frontend sadece status'u kontrol eder, veritabanına yazmaz.
  */
 export const checkPaymentStatus = async (
   paymentId: string,
@@ -179,22 +182,18 @@ export const checkPaymentStatus = async (
       `[PAYMENT] Ödeme durumu sorgulanıyor - ID: ${paymentId}, Provider: ${provider}`
     );
 
-    // Bu fonksiyon Supabase Edge Function'da implement edilecek
-    // Şimdilik mock response döndürüyoruz
+    // Backend API'den status sorgula
+    const { getPaymentStatus } = await import('./paynetPayment');
+    const backendStatus = await getPaymentStatus(paymentId);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
+    // Backend'den gelen response'u PaymentResponse formatına çevir
     return {
       success: true,
-      paymentId,
-      status: "completed",
-      providerPaymentId: `${provider}_${Math.random()
-        .toString(36)
-        .substring(7)}`,
-      providerResponse: {
-        status: "success",
-        paymentStatus: "SUCCESS",
-      },
+      paymentId: backendStatus.id,
+      status: backendStatus.paymentStatus === 'completed' ? 'completed' : 
+              backendStatus.paymentStatus === 'failed' ? 'failed' : 'processing',
+      providerPaymentId: backendStatus.providerTransactionId,
+      providerResponse: backendStatus,
     };
   } catch (error) {
     console.error("[PAYMENT] Ödeme durumu sorgulama hatası:", error);

@@ -123,23 +123,32 @@ export const completePaynet3D = async (
 /**
  * Payment status sorgulama
  * Backend'e GET /v1/payments/{paymentId}/status isteği gönderir
+ * 
+ * ✅ Backend artık veritabanından okuyor, tüm bilgiler burada
+ * Frontend sadece status'u kontrol eder, veritabanına yazmaz
  */
 export const getPaymentStatus = async (
   paymentId: string
 ): Promise<{
-  paymentId: string;
-  status: string;
-  providerStatus?: string;
+  id: string;
+  deviceId: string;
+  paymentStatus: 'pending' | 'completed' | 'failed';
+  escrowStatus: 'pending' | 'held' | 'released';
   webhookReceived: boolean;
+  totalAmount: number;
+  providerTransactionId?: string;
 }> => {
   try {
     console.log('[PAYNET] Payment status sorgulanıyor...', { paymentId });
 
     const response = await apiClient.get<{
-      paymentId: string;
-      status: string;
-      providerStatus?: string;
+      id: string;
+      deviceId: string;
+      paymentStatus: 'pending' | 'completed' | 'failed';
+      escrowStatus: 'pending' | 'held' | 'released';
       webhookReceived: boolean;
+      totalAmount: number;
+      providerTransactionId?: string;
     }>(`/payments/${paymentId}/status`);
 
     console.log('[PAYNET] Payment status:', response);

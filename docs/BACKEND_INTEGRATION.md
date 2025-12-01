@@ -7,16 +7,23 @@ Bu dokümantasyon, **iFoundAnApple-Web** frontend projesi için ayrı bir backen
 1. [Proje Bilgileri](#proje-bilgileri)
 2. [Veritabanı Şeması](#veritabanı-şeması)
 3. [API Endpoint'leri](#api-endpointleri)
-4. [Veri Modelleri](#veri-modelleri)
-5. [Konfigürasyon](#konfigürasyon)
-6. [Ödeme Gateway Entegrasyonu](#ödeme-gateway-entegrasyonu)
-7. [Paynet Entegrasyonu](#paynet-entegrasyonu)
-8. [Kargo API Entegrasyonu](#kargo-api-entegrasyonu)
-9. [Admin Paneli API'leri](#admin-paneli-apileri)
-10. [Webhook Endpoint'leri](#webhook-endpointleri)
-11. [Güvenlik Gereksinimleri](#güvenlik-gereksinimleri)
-12. [Local Test ve Geliştirme](#local-test-ve-geliştirme)
-13. [Örnek API İstekleri](#örnek-api-istekleri)
+4. [Frontend Entegrasyon Notları](#frontend-entegrasyon-notları)
+5. [Veri Modelleri](#veri-modelleri)
+6. [Konfigürasyon](#konfigürasyon)
+7. [Ödeme Gateway Entegrasyonu](#ödeme-gateway-entegrasyonu)
+8. [Paynet Entegrasyonu](#paynet-entegrasyonu)
+9. [Kargo API Entegrasyonu](#kargo-api-entegrasyonu)
+10. [Admin Paneli API'leri](#admin-paneli-apileri)
+11. [Webhook Endpoint'leri](#webhook-endpointleri)
+12. [Error Handling](#error-handling)
+13. [Güvenlik Gereksinimleri](#güvenlik-gereksinimleri)
+14. [Local Test ve Geliştirme](#local-test-ve-geliştirme)
+15. [Örnek Request/Response'lar](#örnek-requestresponse-lar)
+16. [Örnek API İstekleri](#örnek-api-istekleri)
+17. [Frontend-Backend Entegrasyon Noktaları](#frontend-backend-entegrasyon-noktaları)
+18. [Referans Dosyalar](#referans-dosyalar)
+19. [Backend Geliştirme Önerileri](#backend-geliştirme-önerileri)
+20. [İletişim ve Destek](#iletişim-ve-destek)
 
 ---
 
@@ -224,174 +231,490 @@ Tüm tablo yapıları, RLS politikaları ve foreign key ilişkileri için:
 ## 🔌 API Endpoint'leri
 
 ### Base URL
+
+**Development:**
 ```
-Production: https://your-backend-domain.com/api
-Development: http://localhost:3001/api
+http://localhost:3000/v1
 ```
 
+**Production:**
+```
+https://api.ifoundanapple.com/v1
+```
+
+### API Versiyonu
+
+- **Version:** 1.0.0
+- **Format:** REST API
+- **Content-Type:** `application/json`
+- **Character Encoding:** UTF-8
+
+### Swagger Dokümantasyonu
+
+Backend'de interaktif API dokümantasyonu mevcuttur:
+
+```
+http://localhost:3000/v1/docs
+```
+
+Swagger UI'da tüm endpoint'leri test edebilir, request/response formatlarını görebilirsiniz.
+
+### CORS (Cross-Origin Resource Sharing)
+
+Backend CORS aktif durumda. Frontend URL'i `.env` dosyasında `FRONTEND_URL` olarak tanımlanmalı.
+
 ### Authentication
+
 Tüm endpoint'ler (public olanlar hariç) Supabase JWT token gerektirir:
 ```
 Authorization: Bearer <supabase_jwt_token>
 ```
 
+**Token Formatı:**
+```
+Authorization: Bearer <supabase_jwt_token>
+```
+
+**Token Nasıl Alınır?**
+1. Frontend'de Supabase Auth ile kullanıcı girişi yapılır
+2. Supabase `access_token` döner
+3. Bu token her API isteğinde `Authorization` header'ında gönderilir
+
+**Örnek:**
+```javascript
+const token = supabase.auth.session()?.access_token;
+
+fetch('http://localhost:3000/v1/session', {
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+**Token Doğrulama:**
+- Token Supabase SDK ile doğrulanır
+- Token geçersiz veya süresi dolmuşsa `401 Unauthorized` döner
+- Token'da kullanıcı bilgileri (`user.id`, `user.email`, vb.) bulunur
+
+**Public Endpoints:**
+- `GET /v1/health` - Health check
+
 ### 1. Health Check
-```
-GET /api/health
-Response: { status: 'ok', message: 'Payment Server çalışıyor' }
-```
 
-### 2. Ücret Hesaplama
-```
-POST /api/calculate-fees
-Request Body:
-{
-  deviceModelId?: string;
-  deviceModelName?: string;
-  customRewardAmount?: number;
-}
+#### `GET /v1/health`
 
-Response:
+Backend'in çalışıp çalışmadığını kontrol eder.
+
+**Authentication:** Gerekmez (Public)
+
+**Response:**
+```json
 {
-  rewardAmount: number;
-  cargoFee: number;
-  serviceFee: number;
-  gatewayFee: number;
-  totalAmount: number;
-  netPayout: number;
-  originalRepairPrice: number;
-  deviceModel: string;
-  category: string;
+  "status": "ok",
+  "uptime": 12345.67,
+  "timestamp": "2025-01-15T10:30:00.000Z"
 }
 ```
+
+**Status Codes:**
+- `200 OK` - Backend çalışıyor
+
+---
+
+### 2. Authentication & Session
+
+#### `GET /v1/session`
+
+Mevcut kullanıcının session bilgilerini döner.
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Response:**
+```json
+{
+  "id": "df612602-69f0-4e3c-ac31-f23c5ada8d77",
+  "email": "user@example.com",
+  "roles": ["user"]
+}
+```
+
+**Status Codes:**
+- `200 OK` - Session bilgileri başarıyla döndü
+- `401 Unauthorized` - Geçersiz veya eksik token
+
+**Response Fields:**
+- `id` (string): Kullanıcı ID'si (UUID)
+- `email` (string): Kullanıcı e-posta adresi
+- `roles` (string[]): Kullanıcı rolleri (örn: `["user"]`, `["admin"]`)
+
+---
 
 ### 3. Ödeme İşleme
 
-**ÖNEMLİ:** Backend sadece Paynet API ile iletişim kurar ve veritabanına yazmaz. Tüm veritabanı kayıtları frontend/iOS tarafından webhook geldiğinde oluşturulur.
+**BACKEND SORUMLULUĞU (Ödeme Süreci):**
+- Backend, Paynet ile ödeme haberleşmesini üstlenir
+- Frontend/iOS'tan gelen ödeme talebini alır
+- **Payment ID oluşturur ve veritabanına yazar** (`payments` tablosuna `status = 'pending'` ile)
+- Paynet API ile haberleşerek başarılı/başarısız ödeme sürecini yönetir
+- **Webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur:**
+  - `payments` tablosunu günceller
+  - `escrow_accounts` tablosuna kayıt oluşturur
+  - `devices` tablosunda status'u `payment_completed` yapar
+  - `audit_logs` tablosuna kayıt oluşturur
+  - `notifications` tablosuna bildirim kayıtları oluşturur
+- Veritabanından **okuma** yapar (kontrol amaçlı: device status, user kontrolü, tutar doğrulama)
+- Ödeme sonucunu frontend/iOS'a bildirir
+
+**FRONTEND/IOS SORUMLULUĞU:**
+- Backend'den gelen ödeme sonucunu alır
+- Kullanıcı ekranlarını düzenleyerek kullanıcıyı bilgilendirir
+- ❌ **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından yapılır
 
 #### 3.1. Ödeme Başlatma
-```
-POST /v1/payments/process
-Headers:
-  Authorization: Bearer <JWT_TOKEN>
 
-Request Body:
+#### `POST /v1/payments/process`
+
+Eşleşmiş bir cihaz için ödeme işlemini başlatır.
+
+**BACKEND SORUMLULUĞU (Ödeme Süreci):**
+- Backend, Paynet ile ödeme haberleşmesini üstlenir
+- Frontend/iOS'tan gelen ödeme talebini alır
+- **Payment ID oluşturur ve veritabanına yazar** (`payments` tablosuna `status = 'pending'` ile)
+- Paynet API ile haberleşerek başarılı/başarısız ödeme sürecini yönetir
+- **Webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur:**
+  - `payments` tablosunu günceller
+  - `escrow_accounts` tablosuna kayıt oluşturur
+  - `devices` tablosunda status'u `payment_completed` yapar
+  - `audit_logs` tablosuna kayıt oluşturur
+  - `notifications` tablosuna bildirim kayıtları oluşturur
+- Veritabanından **okuma** yapar (kontrol amaçlı: device status, user kontrolü, tutar doğrulama)
+- Ödeme sonucunu frontend/iOS'a bildirir
+
+**FRONTEND/IOS SORUMLULUĞU:**
+- Backend'den gelen ödeme sonucunu alır
+- Kullanıcı ekranlarını düzenleyerek kullanıcıyı bilgilendirir
+- ❌ **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından yapılır
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Request Body:**
+```json
 {
-  deviceId: string;
-  totalAmount: number;
-  feeBreakdown: {
-    rewardAmount: number;
-    cargoFee: number;
-    serviceFee: number;
-    gatewayFee: number;
-    totalAmount: number;
-    netPayout: number;
-  };
-}
-
-Response:
-{
-  id: string;                    // Payment ID (backend tarafından oluşturulur)
-  deviceId: string;
-  paymentStatus: 'pending';
-  escrowStatus: 'pending';
-  totalAmount: number;
-  providerTransactionId?: string;
-  publishableKey?: string;        // Paynet publishable key
-  paymentUrl?: string;            // 3D Secure için yönlendirme URL'i
-  feeBreakdown?: {                // Frontend/iOS için saklanır
-    rewardAmount: number;
-    cargoFee: number;
-    serviceFee: number;
-    gatewayFee: number;
-    totalAmount: number;
-    netPayout: number;
-  };
+  "deviceId": "123e4567-e89b-12d3-a456-426614174000",
+  "totalAmount": 2000.0,
+  "feeBreakdown": {
+    "rewardAmount": 400.0,
+    "cargoFee": 250.0,
+    "serviceFee": 1281.4,
+    "gatewayFee": 68.6,
+    "totalAmount": 2000.0,
+    "netPayout": 400.0
+  }
 }
 ```
 
-**Backend İşlemleri:**
-- Paynet API'ye ödeme başlatma isteği gönderilir (`is_escrow: true` parametresi ile)
-- Paynet'ten dönen `paymentUrl` ve `publishableKey` frontend'e döner
-- Backend veritabanına yazmaz, sadece Paynet ile iletişim kurar
+**Request Fields:**
+- `deviceId` (string, UUID, **ZORUNLU**): Ödeme yapılacak cihazın ID'si
+- `totalAmount` (number, **ZORUNLU**): Frontend'den gelen toplam tutar (backend'de doğrulanır)
+- `feeBreakdown` (object, **ZORUNLU**): Ücret dökümü (frontend/iOS tarafından hesaplanır, webhook geldiğinde veritabanı kayıtlarını oluşturmak için kullanılır)
+  - `rewardAmount` (number): Bulan kişi ödülü (%20)
+  - `cargoFee` (number): Kargo ücreti (250.00 TL sabit)
+  - `serviceFee` (number): Hizmet bedeli (geriye kalan)
+  - `gatewayFee` (number): Gateway komisyonu (%3.43)
+  - `totalAmount` (number): Toplam tutar
+  - `netPayout` (number): Bulan kişiye gidecek net tutar
+
+**Response:**
+```json
+{
+  "id": "payment-uuid-123",
+  "deviceId": "123e4567-e89b-12d3-a456-426614174000",
+  "paymentStatus": "pending",
+  "escrowStatus": "pending",
+  "totalAmount": 2000.0,
+  "providerTransactionId": "paynet-txn-123",
+  "publishableKey": "pk_test_...",
+  "paymentUrl": "https://api.paynet.com.tr/v2/transaction/tds_initial",
+  "feeBreakdown": {
+    "rewardAmount": 400.0,
+    "cargoFee": 250.0,
+    "serviceFee": 1281.4,
+    "gatewayFee": 68.6,
+    "totalAmount": 2000.0,
+    "netPayout": 400.0
+  }
+}
+```
+
+**Response Fields:**
+- `id` (string): Payment ID (UUID) - Frontend/iOS tarafından localStorage/UserDefaults'a kaydedilir
+- `deviceId` (string): Device ID - Frontend/iOS tarafından localStorage/UserDefaults'a kaydedilir
+- `paymentStatus` (string): Ödeme durumu (`pending`, `completed`, `failed`)
+- `escrowStatus` (string): Escrow durumu (`pending`, `held`, `released`)
+- `totalAmount` (number): Toplam tutar
+- `providerTransactionId` (string, opsiyonel): PAYNET transaction ID
+- `publishableKey` (string, opsiyonel): PAYNET publishable key (frontend/iOS için)
+- `paymentUrl` (string, opsiyonel): 3D Secure ödeme URL'i
+- `feeBreakdown` (object, opsiyonel): Ücret dökümü - Frontend/iOS tarafından localStorage/UserDefaults'a kaydedilir (webhook geldiğinde kullanılır)
+
+**Status Codes:**
+- `201 Created` - Ödeme başarıyla başlatıldı
+- `400 Bad Request` - Geçersiz request veya tutar uyuşmazlığı
+- `401 Unauthorized` - Geçersiz token
+- `404 Not Found` - Cihaz bulunamadı
+
+**Önemli Notlar:**
+
+1. **Tutar Doğrulama:** Backend, frontend'den gelen `totalAmount` değerini veritabanındaki `device_models.ifoundanapple_fee` değeri ile karşılaştırır. Eğer tutarlar eşleşmezse `400 Bad Request` döner.
+
+2. **Ücret Hesaplama:** Ücretler frontend/iOS tarafından hesaplanır ve `feeBreakdown` olarak gönderilir:
+   ```
+   totalAmount = device_models.ifoundanapple_fee
+   gatewayFee = totalAmount * 0.0343 (3.43%)
+   cargoFee = 250.00 TL (sabit)
+   rewardAmount = totalAmount * 0.20 (20%)
+   serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount
+   netPayout = rewardAmount
+   ```
+
+3. **Cihaz Durumu:** Cihaz `status = 'payment_pending'` olmalıdır. Aksi halde `400 Bad Request` döner.
+
+4. **Kullanıcı Kontrolü:** Sadece cihaz sahibi (device.userId) ödeme yapabilir. Başka kullanıcı denerse `400 Bad Request` döner.
+
+5. **PAYNET Entegrasyonu:** Ödeme PAYNET 3D Secure ile başlatılır. `is_escrow: true` parametresi ile gönderilir (ödeme PAYNET tarafında tutulur).
+
+6. **Backend Veritabanı İşlemleri:** Backend, **Payment ID oluşturur ve veritabanına yazar** (`payments` tablosuna `status = 'pending'` ile). Paynet API ile iletişim kurar ve `paymentUrl`, `publishableKey` gibi bilgileri frontend/iOS'a döner.
+
+7. **Frontend/iOS İşlemleri:** Frontend/iOS, `deviceId` ve `feeBreakdown`'ı localStorage/UserDefaults'a kaydeder (sadece kullanıcı deneyimi için). **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından webhook geldiğinde yapılır.
+
+---
 
 #### 3.2. 3D Secure Tamamlama
-```
-POST /v1/payments/complete-3d
-Headers:
-  Authorization: Bearer <JWT_TOKEN>
 
-Request Body:
-{
-  paymentId: string;
-  mdStatus: string;              // 3D Secure sonucu
-  // ... diğer 3D Secure parametreleri
-}
+#### `POST /v1/payments/complete-3d`
 
-Response:
+3D Secure doğrulaması sonrası ödemeyi tamamlar. Frontend, PAYNET callback'inden gelen `session_id` ve `token_id`'yi bu endpoint'e gönderir.
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Request Body:**
+```json
 {
-  success: boolean;
-  paymentId: string;
-  paymentStatus: 'completed' | 'failed';
-  errorMessage?: string;
+  "paymentId": "123e4567-e89b-12d3-a456-426614174000",
+  "sessionId": "session_abc123xyz",
+  "tokenId": "token_xyz789abc"
 }
 ```
 
-**Backend İşlemleri:**
-- Paynet API'ye 3D Secure sonucu gönderilir
-- Backend veritabanına yazmaz
+**Request Fields:**
+- `paymentId` (string, UUID, **ZORUNLU**): Ödeme başlatma sırasında alınan payment ID
+- `sessionId` (string, **ZORUNLU**): PAYNET 3D Secure callback'inden gelen session ID
+- `tokenId` (string, **ZORUNLU**): PAYNET 3D Secure callback'inden gelen token ID
+
+**Response:**
+```json
+{
+  "success": true,
+  "paymentId": "123e4567-e89b-12d3-a456-426614174000",
+  "message": "3D Secure payment completed. Waiting for webhook confirmation."
+}
+```
+
+**Status Codes:**
+- `200 OK` - 3D Secure ödeme başarıyla tamamlandı
+- `400 Bad Request` - Geçersiz request, payment zaten işlenmiş veya kullanıcıya ait değil
+- `401 Unauthorized` - Geçersiz token
+- `404 Not Found` - Payment bulunamadı
+
+**Güvenlik Kontrolleri:**
+- Payment'ın kullanıcıya ait olduğu doğrulanır (`payer_id` kontrolü)
+- Payment'ın `pending` status'ünde olduğu kontrol edilir
+- Session ID ve Token ID PAYNET'e gönderilir
+
+**Önemli Notlar:**
+1. Bu endpoint, 3D Secure doğrulaması sonrası çağrılmalıdır
+2. Backend, Paynet API'ye 3D Secure sonucu gönderir
+3. Final payment status webhook ile güncellenir (`POST /v1/webhooks/paynet-callback`)
+4. Backend, webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur
+5. Frontend/iOS, webhook işlenene kadar payment status'u polling ile takip eder (`GET /v1/payments/{paymentId}/status`)
+
+---
 
 #### 3.3. Payment Status Kontrolü
-```
-GET /v1/payments/{paymentId}/status
-Headers:
-  Authorization: Bearer <JWT_TOKEN>
 
-Response:
+#### `GET /v1/payments/{paymentId}/status`
+
+Payment status'u ve webhook durumunu kontrol eder. Frontend/iOS tarafından webhook gelene kadar polling yapmak için kullanılır.
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Path Parameters:**
+- `paymentId` (string, UUID, **ZORUNLU**): Payment ID
+
+**Response:**
+```json
 {
-  id: string;
-  deviceId: string;
-  paymentStatus: 'pending' | 'completed' | 'failed';
-  escrowStatus: 'pending' | 'held' | 'released';
-  webhookReceived: boolean;      // Webhook geldi mi?
-  totalAmount: number;
-  providerTransactionId?: string;
+  "id": "payment-uuid-123",
+  "deviceId": "123e4567-e89b-12d3-a456-426614174000",
+  "paymentStatus": "completed",
+  "escrowStatus": "held",
+  "webhookReceived": true,
+  "totalAmount": 2000.0,
+  "providerTransactionId": "paynet-txn-123"
 }
 ```
 
-**Backend İşlemleri:**
-- Backend sadece Paynet'ten gelen webhook'u kontrol eder
-- Webhook geldi mi bilgisini frontend/iOS'a döner
-- Backend veritabanına yazmaz
+**Response Fields:**
+- `id` (string): Payment ID
+- `deviceId` (string): Device ID
+- `paymentStatus` (string): Ödeme durumu (`pending`, `completed`, `failed`)
+- `escrowStatus` (string): Escrow durumu (`pending`, `held`, `released`)
+- `webhookReceived` (boolean): Webhook geldi mi? (Frontend/iOS bu değer `true` olduğunda webhook data'yı alır)
+- `totalAmount` (number): Toplam tutar
+- `providerTransactionId` (string, opsiyonel): PAYNET transaction ID
+
+**Status Codes:**
+- `200 OK` - Payment status başarıyla alındı
+- `401 Unauthorized` - Geçersiz token
+- `404 Not Found` - Payment bulunamadı
+
+**Önemli Notlar:**
+1. Frontend/iOS tarafından webhook işlenene kadar polling yapılır (30 deneme, 10 saniye aralık önerilir)
+2. Backend, webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur
+3. `paymentStatus: 'completed'` olduğunda frontend/iOS ödeme başarılı sayfasına yönlendirilir
+4. Frontend/iOS veritabanına yazmaz - Tüm işlemler backend tarafından yapılır
+
+---
 
 #### 3.4. Webhook Data Çekme
-```
-GET /v1/payments/{paymentId}/webhook-data
-Headers:
-  Authorization: Bearer <JWT_TOKEN>
 
-Response:
+#### `GET /v1/payments/{paymentId}/webhook-data`
+
+Webhook geldiğinde, webhook payload'ını frontend/iOS'a sağlar. Frontend/iOS bu data ile veritabanı kayıtlarını oluşturur.
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Path Parameters:**
+- `paymentId` (string, UUID, **ZORUNLU**): Payment ID
+
+**Response:**
+```json
 {
-  success: boolean;
-  webhookData?: {
-    reference_no: string;
-    is_succeed: boolean;
-    amount: number;
-    netAmount: number;
-    comission: number;
-    authorization_code: string;
-    order_id: string;
-    xact_date: string;
-  };
-  error?: string;
+  "success": true,
+  "webhookData": {
+    "reference_no": "REF123456",
+    "is_succeed": true,
+    "amount": 2000.0,
+    "netAmount": 1931.4,
+    "comission": 68.6,
+    "authorization_code": "AUTH123",
+    "order_id": "ORDER123",
+    "xact_date": "2025-01-15T10:30:00Z"
+  }
 }
 ```
 
-**Backend İşlemleri:**
-- Backend sakladığı webhook data'yı frontend/iOS'a döner
-- Frontend/iOS bu data ile veritabanı kayıtlarını oluşturur
+**Response Fields:**
+- `success` (boolean): İşlem başarılı mı?
+- `webhookData` (object, opsiyonel): Webhook payload
+  - `reference_no` (string): Paynet referans numarası
+  - `is_succeed` (boolean): Ödeme başarılı mı?
+  - `amount` (number): Toplam tutar
+  - `netAmount` (number): Net tutar
+  - `comission` (number): Komisyon
+  - `authorization_code` (string): Yetkilendirme kodu
+  - `order_id` (string): Sipariş ID
+  - `xact_date` (string): İşlem tarihi (ISO 8601)
+- `error` (string, opsiyonel): Hata mesajı
 
-### 4. Escrow Serbest Bırakma
+**Status Codes:**
+- `200 OK` - Webhook data başarıyla alındı
+- `401 Unauthorized` - Geçersiz token
+- `404 Not Found` - Payment veya webhook data bulunamadı
+
+**Önemli Notlar:**
+1. Bu endpoint, webhook data'yı frontend/iOS'a sağlamak için kullanılabilir (opsiyonel)
+2. **Backend, webhook geldiğinde zaten tüm veritabanı kayıtlarını oluşturmuştur** - Bu endpoint sadece webhook data'yı görüntülemek için kullanılabilir
+3. Frontend/iOS, veritabanı kaydı oluşturmaz - Tüm işlemler backend tarafından yapılır
+4. `is_succeed: false` ise backend sadece payment status'unu `failed` olarak günceller
+
+---
+
+#### 3.5. Paynet Connection Test
+
+#### `GET /v1/payments/test-paynet-connection`
+
+PAYNET API bağlantısını ve konfigürasyonu test eder.
+
+**Authentication:** Gerekli (Bearer Token)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "PAYNET API connection tests passed. Ready for integration testing.",
+  "config": {
+    "apiUrl": "https://api.paynet.com.tr",
+    "hasApiKey": true,
+    "hasSecretKey": true,
+    "hasPublishableKey": true,
+    "secretKeyPrefix": "sk_test_...",
+    "publishableKeyPrefix": "pk_test_..."
+  },
+  "testResults": [
+    {
+      "test": "Base URL Connectivity",
+      "success": true,
+      "statusCode": 200,
+      "message": "Server is reachable (HTTP 200)"
+    },
+    {
+      "test": "Authentication Format",
+      "success": true,
+      "message": "Using HTTP Basic Authentication (PAYNET standard)"
+    },
+    {
+      "test": "Configuration",
+      "success": true,
+      "message": "All required configuration values are set"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- `200 OK` - Test sonuçları döndü
+
+**Kullanım:** Bu endpoint, PAYNET konfigürasyonunun doğru olup olmadığını kontrol etmek için kullanılır.
+
+---
+
+### 4. Admin Endpoints
+
+#### `GET /v1/admin/diagnostics`
+
+Admin tanılama endpoint'i (sadece admin kullanıcılar).
+
+**Authentication:** Gerekli (Bearer Token + Admin Role)
+
+**Response:**
+```json
+{
+  "status": "admin-ok"
+}
+```
+
+**Status Codes:**
+- `200 OK` - Admin erişimi başarılı
+- `401 Unauthorized` - Geçersiz token
+- `403 Forbidden` - Admin yetkisi yok
+
+**Admin Kontrolü:** Kullanıcının `roles` array'inde `"admin"` olmalıdır.
+
+---
+
+### 5. Escrow Serbest Bırakma
 
 **ÖNEMLİ:** Backend sadece Paynet API'ye escrow release isteği gönderir. Veritabanı güncellemeleri frontend/iOS tarafından yapılır.
 
@@ -420,10 +743,16 @@ Response:
 
 **Backend İşlemleri:**
 - Paynet API'ye escrow release isteği gönderilir (`POST /v1/transaction/escrow_status_update`)
-- Backend veritabanına yazmaz, sadece Paynet ile iletişim kurar
-- Frontend/iOS escrow release başarılı olduğunda veritabanını günceller
+- **Backend, Paynet'ten başarılı yanıt aldıktan sonra tüm veritabanı güncellemelerini yapar:**
+  - `escrow_accounts` tablosunda `status = 'released'` günceller
+  - `financial_transactions` kaydı oluşturur
+  - `devices` tablosunda `status = 'completed'` günceller
+  - `payments` tablosunda `status = 'completed'` günceller
+  - `audit_logs` tablosuna kayıt oluşturur
+  - `notifications` tablosuna bildirim kayıtları oluşturur
+- Frontend/iOS, backend'den başarılı yanıt alır ve kullanıcıya gösterir (veritabanına yazmaz)
 
-### 5. Ödeme İptal
+### 6. Ödeme İptal
 ```
 POST /api/cancel-transaction
 Request Body:
@@ -442,7 +771,7 @@ Response:
 }
 ```
 
-### 6. Ödeme İade
+### 7. Ödeme İade
 ```
 POST /api/refund-transaction
 Request Body:
@@ -462,7 +791,7 @@ Response:
 }
 ```
 
-### 7. İhtilaf Başlatma
+### 8. İhtilaf Başlatma
 ```
 POST /api/dispute-transaction
 Request Body:
@@ -481,6 +810,240 @@ Response:
   errorMessage?: string;
 }
 ```
+
+---
+
+## 🎯 Frontend Entegrasyon Notları
+
+### 1. Authentication
+
+**Token Yönetimi:**
+- Supabase Auth ile login yapın
+- `access_token`'ı her API isteğinde `Authorization` header'ında gönderin
+- Token süresi dolduğunda refresh token kullanın veya yeniden login yapın
+
+**Örnek Axios Interceptor:**
+```javascript
+import axios from 'axios';
+import { supabase } from './supabase';
+
+const api = axios.create({
+  baseURL: 'http://localhost:3000/v1',
+});
+
+api.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  return config;
+});
+```
+
+### 2. Payment Flow
+
+**Ödeme Akışı:**
+
+1. **Ödeme Başlatma:**
+   ```javascript
+   const response = await api.post('/payments/process', {
+     deviceId: '123e4567-e89b-12d3-a456-426614174000',
+     totalAmount: 2000.0,
+     feeBreakdown: {
+       rewardAmount: 400.0,
+       cargoFee: 250.0,
+       serviceFee: 1281.4,
+       gatewayFee: 68.6,
+       totalAmount: 2000.0,
+       netPayout: 400.0
+     }
+   });
+   
+   const { paymentUrl, publishableKey, id, deviceId, feeBreakdown } = response.data;
+   
+   // localStorage'a kaydet
+   localStorage.setItem('current_payment_id', id);
+   localStorage.setItem('current_device_id', deviceId);
+   localStorage.setItem('current_fee_breakdown', JSON.stringify(feeBreakdown));
+   ```
+
+2. **3D Secure Yönlendirme:**
+   - `paymentUrl`'e kullanıcıyı yönlendirin
+   - Veya `html_content` varsa iframe içinde gösterin
+
+3. **Return URL İşleme:**
+   ```javascript
+   // Callback sayfasında session_id ve token_id'yi al
+   const sessionId = searchParams.get('session_id');
+   const tokenId = searchParams.get('token_id');
+   const paymentId = localStorage.getItem('current_payment_id');
+   
+   // Backend'e 3D tamamlama isteği gönder
+   const response = await api.post('/payments/complete-3d', {
+     paymentId,
+     sessionId,
+     tokenId
+   });
+   ```
+
+4. **Webhook Bekleme:**
+   - Backend'den başarılı yanıt geldikten sonra webhook beklenir
+   - Payment status'u polling ile takip edilir
+   - Payment status `completed` olduğunda success sayfasına yönlendirilir
+
+### 3. Tutar Doğrulama
+
+**ÖNEMLİ:** Frontend'den gönderilen `totalAmount` backend'de doğrulanır. Eğer tutar veritabanındaki değerle eşleşmezse `400 Bad Request` döner.
+
+**Öneri:** Frontend'de tutarı hesaplarken, backend'deki formülü kullanın:
+```javascript
+// Frontend'de tutar hesaplama (backend ile aynı formül)
+const totalAmount = deviceModel.ifoundanapple_fee;
+const gatewayFee = totalAmount * 0.0343;
+const cargoFee = 250.0;
+const rewardAmount = totalAmount * 0.20;
+const serviceFee = totalAmount - gatewayFee - cargoFee - rewardAmount;
+```
+
+### 4. Error Handling
+
+**Tüm API isteklerinde error handling yapın:**
+```javascript
+try {
+  const response = await api.post('/payments/process', data);
+  // Success
+} catch (error) {
+  if (error.response) {
+    // Backend hatası
+    const { statusCode, message } = error.response.data;
+    if (statusCode === 400) {
+      // Validation hatası veya tutar uyuşmazlığı
+      console.error('Payment error:', message);
+    } else if (statusCode === 401) {
+      // Token hatası - yeniden login
+      await supabase.auth.signOut();
+      router.push('/login');
+    }
+  } else {
+    // Network hatası
+    console.error('Network error:', error.message);
+  }
+}
+```
+
+### 4.1. Ödeme Sürecindeki Aksaklıklar ve Önlemler
+
+Backend, Paynet dokümantasyonuna uygun olarak ([doc.paynet.com.tr](https://doc.paynet.com.tr)) aşağıdaki önlemleri almıştır:
+
+#### Paynet ile İletişim Kesilirse
+
+**Backend Önlemleri:**
+- ✅ **Retry Mekanizması:** Exponential backoff ile 3 deneme (1s, 2s, 4s gecikme)
+- ✅ **Timeout Ayarı:** 30 saniye timeout ile uzun süren istekler kesilir
+- ✅ **Aynı Reference No:** Paynet dokümantasyonuna göre, aynı `reference_no` ile retry yapılabilir - sistem önceki başarılı işlemi döndürür
+
+**Frontend/iOS Önlemleri:**
+- Ödeme başlatma başarısız olursa, kullanıcıya hata mesajı gösterilir
+- "Tekrar Dene" butonu ile kullanıcı tekrar deneme yapabilir
+- Payment kaydı `pending` durumunda kalır, kullanıcı tekrar ödeme yapabilir
+
+#### Ödeme İşlemi Olumsuz Sonuçlanırsa
+
+**Backend Önlemleri:**
+- ✅ Webhook'ta `is_succeed: false` geldiğinde otomatik işleme alınır
+- ✅ Payment status `failed` olarak güncellenir
+- ✅ Device status `payment_pending`'e döner (kullanıcı tekrar ödeme yapabilir)
+- ✅ Kullanıcıya bildirim gönderilir
+- ✅ Audit log kaydı oluşturulur
+
+**Frontend/iOS Önlemleri:**
+- Backend'den hata mesajı alınır ve kullanıcıya gösterilir
+- "Tekrar Dene" butonu ile ödeme sayfasına geri dönülür
+- Device status `payment_pending` olduğu için kullanıcı tekrar ödeme yapabilir
+
+#### Paynet Tarafında Aksaklık Sonucu Webhook Gelmezse
+
+**Backend Önlemleri:**
+- ✅ **Otomatik Payment Reconciliation:** Her 5 dakikada bir pending payment'lar kontrol edilir
+- ✅ **Webhook Storage:** Tüm webhook payload'ları `webhook_storage` tablosunda saklanır
+- ✅ **Retry Mekanizması:** Her 1 saatte bir başarısız webhook işlemleri tekrar denenir (maksimum 5 deneme)
+- ✅ **Manuel İnceleme:** 10 dakikadan eski pending payment'lar için audit log oluşturulur
+
+**Frontend/iOS Önlemleri:**
+- Polling mekanizması: 30 deneme, 10 saniye aralık (toplam 5 dakika)
+- Timeout durumunda kullanıcıya bilgi verilir
+- Backend'den payment status kontrol edilir
+
+#### Webhook İşleme Başarısız Olursa
+
+**Backend Önlemleri:**
+- ✅ Webhook `webhook_storage` tablosuna kaydedilir
+- ✅ Retry mekanizması ile otomatik tekrar deneme (maksimum 5 deneme)
+- ✅ Hata mesajı ve retry count kaydedilir
+- ✅ Her 1 saatte bir başarısız webhook'lar tekrar denenir
+
+**Referans:** Paynet dokümantasyonuna göre, bağlantı zaman aşımı durumunda aynı `reference_no` ile işlemi tekrarlayabilirsiniz. Sistem, daha önce başarılı bir işlem varsa onu döndürür. ([doc.paynet.com.tr](https://doc.paynet.com.tr/oedeme-metotlari/api-entegrasyonu/odeme))
+
+### 5. Loading States
+
+**Ödeme işlemi sırasında loading state gösterin:**
+- Ödeme başlatma: Loading
+- 3D Secure yönlendirme: Loading
+- Webhook bekleniyor: Loading
+
+### 6. Polling (Webhook Bekleme)
+
+**Webhook gelene kadar payment status'u kontrol edin:**
+```javascript
+const checkPaymentStatus = async (paymentId) => {
+  const maxAttempts = 30; // 30 deneme
+  const intervalSeconds = 1; // 1 saniye aralık
+  let attempts = 0;
+  
+  const interval = setInterval(async () => {
+    attempts++;
+    try {
+      const response = await api.get(`/payments/${paymentId}/status`);
+      
+      if (response.data.webhookReceived) {
+        clearInterval(interval);
+        // Webhook geldi, webhook data'yı al
+        const webhookResponse = await api.get(`/payments/${paymentId}/webhook-data`);
+        
+        if (webhookResponse.data.webhookData?.is_succeed) {
+          // Ödeme başarılı - veritabanı kayıtlarını oluştur
+          const feeBreakdown = JSON.parse(localStorage.getItem('current_fee_breakdown'));
+          const deviceId = localStorage.getItem('current_device_id');
+          
+          // Supabase'e kayıt oluştur
+          await createPaymentRecord(webhookResponse.data.webhookData, feeBreakdown, deviceId);
+          await createEscrowRecord(webhookResponse.data.webhookData, feeBreakdown, deviceId);
+          await updateDeviceStatus(deviceId, 'payment_completed');
+          
+          // Success sayfasına yönlendir
+          router.push('/payment/success');
+        } else {
+          // Ödeme başarısız
+          router.push('/payment/failed');
+        }
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        // Timeout - kullanıcıyı bilgilendir
+        console.error('Payment status check timeout');
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }
+  }, intervalSeconds * 1000);
+};
+```
+
+### 7. CORS
+
+Backend CORS aktif. Frontend URL'i `.env` dosyasında `FRONTEND_URL` olarak tanımlanmalıdır.
 
 ---
 
@@ -662,6 +1225,40 @@ VITE_GEMINI_API_KEY=your-gemini-api-key
 VITE_ENCRYPTION_KEY=your-encryption-key (32 karakter hex)
 ```
 
+**ÖNEMLİ - Encryption Key Backup Stratejisi:**
+
+Encryption key (`VITE_ENCRYPTION_KEY`) kritik öneme sahiptir. Bu key olmadan şifrelenmiş veriler (TC Kimlik No, IBAN, adres bilgileri vb.) çözülemez ve kalıcı olarak kaybolur.
+
+**Backup Stratejisi:**
+1. **Manuel Yedekleme:** Encryption key **manuel olarak** güvenli bir yerde yedeklenmelidir.
+2. **Yedekleme Yöntemleri:**
+   - Password manager (1Password, LastPass, Bitwarden vb.) - **Önerilen**
+   - Şifrelenmiş dosya (encrypted file) - Offline backup için
+   - Güvenli fiziksel depolama (encrypted USB drive, safe deposit box) - Disaster recovery için
+3. **Yedekleme Sıklığı:**
+   - Key oluşturulduğunda hemen yedeklenmelidir
+   - Key değiştirildiğinde yeni key yedeklenmelidir
+   - Düzenli olarak yedeklerin erişilebilirliği kontrol edilmelidir
+4. **Güvenlik:**
+   - Key asla git repository'ye commit edilmemelidir
+   - Key asla kod içinde hardcode edilmemelidir
+   - Key sadece environment variable olarak kullanılmalıdır
+   - Yedekler şifrelenmiş formatta saklanmalıdır
+5. **Erişim Kontrolü:**
+   - Key'e erişimi olan kişi sayısı minimum tutulmalıdır
+   - Key erişimi audit log'lanmalıdır
+   - Key rotation stratejisi belirlenmelidir
+
+**Not:** Key kaybı durumunda şifrelenmiş tüm veriler kalıcı olarak kaybolur. Bu nedenle backup stratejisi kritik öneme sahiptir.
+
+#### IBAN Validation
+```env
+IBAN_VALIDATION_API_KEY=your-iban-validation-api-key
+IBAN_VALIDATION_API_URL=https://api.iban.com/v1/validate (örnek)
+# veya
+IBAN_VALIDATION_SERVICE_KEY=your-iban-validation-service-key
+```
+
 ### Ücret Hesaplama Sabitleri
 ```typescript
 const FIXED_FEES = {
@@ -777,18 +1374,26 @@ Paynet API kullanımı için gerekli bilgiler:
 
 ```env
 # Paynet Configuration
+# Base URLs
 PAYNET_API_URL=https://api.paynet.com.tr
-PAYNET_API_KEY=your-api-key
-PAYNET_SECRET_KEY=your-secret-key
-PAYNET_CALLBACK_URL=https://your-domain.com/api/webhooks/paynet-callback
-PAYNET_FAILURE_URL=https://your-domain.com/payment-failed
-PAYNET_SUCCESS_URL=https://your-domain.com/payment-success
+PAYNET_TEST_API_URL=https://pts-api.paynet.com.tr
 
-# Test Environment (if available)
-PAYNET_TEST_API_URL=https://test-api.paynet.com.tr
-PAYNET_TEST_API_KEY=your-test-api-key
-PAYNET_TEST_SECRET_KEY=your-test-secret-key
+# Authentication Keys
+PAYNET_SECRET_KEY=your-secret-key  # HTTP Basic Auth için kullanılır (ZORUNLU)
+PAYNET_PUBLISHABLE_KEY=your-publishable-key  # Frontend için (opsiyonel)
+
+# Webhook & Callback URLs
+PAYNET_ALLOWED_IPS=104.21.232.181,172.67.202.100  # Paynet webhook IP'leri (opsiyonel)
+FRONTEND_URL=http://localhost:3000  # 3D Secure return URL için
+BACKEND_URL=http://localhost:3000  # Domain bilgisi için
 ```
+
+**ÖNEMLİ NOTLAR:**
+- **Production Base URL:** `https://api.paynet.com.tr/v1` veya `/v2` (endpoint'e göre)
+- **Test Base URL:** `https://pts-api.paynet.com.tr/v1` veya `/v2` (endpoint'e göre)
+- **Secret Key:** PAYNET yönetim panelinden alınır, HTTP Basic Authentication için kullanılır
+- **Publishable Key:** Frontend'de kullanılabilir (opsiyonel)
+- Tüm endpoint'ler `/v1/` veya `/v2/` prefix'i ile başlar (endpoint tipine göre)
 
 ### Paynet Ödeme Metotları
 
@@ -809,17 +1414,26 @@ Paynet, farklı ödeme entegrasyon yöntemleri sunar:
 
 Escrow sistemi için ödeme isteğinde `is_escrow: true` parametresi gönderilmelidir. Bu sayede ödeme ana firma onayıyla gerçekleşir.
 
+**ÖNEMLİ:** Aşağıdaki endpoint referansları **DEPRECATED**'dir. Yeni endpoint'ler yukarıdaki [API Endpoint'leri](#api-endpointleri) bölümünde detaylı olarak açıklanmıştır.
+
+**Yeni Endpoint:** `POST /v1/payments/process` (Detaylar için yukarıdaki [3.1. Ödeme Başlatma](#31-ödeme-başlatma) bölümüne bakın)
+
+**DEPRECATED Endpoint (Kullanılmıyor):**
 ```
-POST /api/process-payment-paynet
+POST /api/process-payment-paynet  ❌ DEPRECATED
+```
+
+**Yeni Endpoint Formatı:**
+```
+POST /v1/payments/process
 Headers:
-  Authorization: Basic <base64(secret_key:)>
+  Authorization: Bearer <JWT_TOKEN>
   Content-Type: application/json
 
 Request Body:
 {
   deviceId: string;
-  payerId: string;
-  receiverId?: string;
+  totalAmount: number;
   feeBreakdown: {
     rewardAmount: number;
     cargoFee: number;
@@ -828,327 +1442,301 @@ Request Body:
     totalAmount: number;
     netPayout: number;
   };
-  deviceInfo: {
-    model: string;
-    serialNumber: string;
-    description?: string;
-  };
-  payerInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    tcKimlikNo?: string;
-    address: {
-      street: string;
-      city: string;
-      district: string;
-      postalCode: string;
-    };
-  };
-  isEscrow: boolean; // true = Escrow işlemi, false = Normal ödeme
 }
 
 Response:
 {
-  success: boolean;
-  paymentId?: string;
-  escrowId?: string;
-  providerPaymentId?: string;
+  id: string;
+  deviceId: string;
+  paymentStatus: 'pending';
+  escrowStatus: 'pending';
+  totalAmount: number;
   providerTransactionId?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  errorMessage?: string;
+  publishableKey?: string;
+  paymentUrl?: string;
+  feeBreakdown?: {
+    rewardAmount: number;
+    cargoFee: number;
+    serviceFee: number;
+    gatewayFee: number;
+    totalAmount: number;
+    netPayout: number;
+  };
+}
   redirectUrl?: string; // 3D Secure için yönlendirme URL'i
   providerResponse?: any;
 }
 ```
 
-#### Paynet API Ödeme İsteği Formatı
+### Paynet API Endpoint'leri
 
+Backend, Paynet'in şu endpoint'lerini kullanır:
+
+1. **3D Ödeme Başlatma:** `POST /v2/transaction/tds_initial`
+2. **3D Ödeme Tamamlama:** `POST /v2/transaction/tds_charge`
+3. **Escrow Release:** `POST /v1/transaction/escrow_status_update`
+
+### Paynet 3D Secure Ödeme Formatı
+
+**Kaynak:** [Paynet 3D ile Ödeme Dokümantasyonu](https://doc.paynet.com.tr/oedeme-metotlari/api-entegrasyonu/3d-ile-odeme)
+
+#### 3D Ödeme Başlatma (tds_initial)
+
+**Endpoint:** `POST /v2/transaction/tds_initial`
+
+**Request Format (snake_case):**
 ```typescript
-// Paynet API ödeme isteği örneği
-interface PaynetPaymentRequest {
-  amount: number;                    // Ödeme tutarı (TL)
-  currency: string;                  // "TRY"
-  order_id: string;                 // Benzersiz sipariş ID
-  customer: {
-    name: string;
-    surname: string;
-    email: string;
-    phone: string;
-    tc_no?: string;                 // TC Kimlik No (opsiyonel)
-    address: string;
-    city: string;
-    district?: string;
-    postal_code?: string;
-  };
-  payment_method: {
-    card_number?: string;            // Kart numarası (3D Secure olmadan)
-    card_holder_name?: string;
-    card_expiry_month?: string;
-    card_expiry_year?: string;
-    card_cvv?: string;
-    installments?: number;           // Taksit sayısı
-  };
-  is_escrow: boolean;                // Escrow işlemi için true
-  callback_url: string;             // Webhook callback URL
-  success_url: string;              // Başarılı ödeme sonrası yönlendirme
-  failure_url: string;             // Başarısız ödeme sonrası yönlendirme
-  items?: Array<{                   // Sepet ürünleri
-    name: string;
-    quantity: number;
-    price: number;
-  }>;
+interface Paynet3DPaymentRequest {
+  amount: number;                    // Çekilecek tutar - ZORUNLU
+  reference_no: string;              // İşleme ait benzersiz referans numarası (payment_id) - ZORUNLU
+  return_url: string;                // 3D doğrulama sonucunun post edileceği URL - ZORUNLU
+  domain: string;                    // İşlemin yapıldığı uygulamanın domain bilgisi - ZORUNLU
+  is_escrow?: boolean;               // Escrow özelliği (true = ana firma onayına tabi)
+  card_holder?: string;              // Kart sahibi bilgisi (saklı kart kullanılmıyorsa zorunlu)
+  pan?: string;                      // Kart numarası (saklı kart kullanılmıyorsa zorunlu)
+  month?: string;                    // Son kullanma tarihi ay (MM formatında)
+  year?: string;                     // Son kullanma tarihi yıl (YY veya YYYY formatında)
+  cvc?: string;                      // CVV/CVC kodu
+  description?: string;              // Opsiyonel
+  installments?: number;             // Taksit sayısı (opsiyonel)
+  customer_email?: string;           // Opsiyonel
+  customer_name?: string;            // Opsiyonel
+  customer_phone?: string;           // Opsiyonel
 }
+```
 
-// Basic Authentication ile API çağrısı
-const response = await fetch('https://api.paynet.com.tr/api/payment', {
+**Response Format:**
+```json
+{
+  "success": true,
+  "transaction_id": "string",
+  "session_id": "string",
+  "post_url": "string",              // 3D doğrulama sayfası URL'i
+  "html_content": "string",          // 3D doğrulama HTML içeriği
+  "error": "string",
+  "message": "string"
+}
+```
+
+**Örnek API Çağrısı:**
+```typescript
+const authHeader = Buffer.from(`${secretKey}:`).toString('base64');
+
+const response = await fetch('https://api.paynet.com.tr/v2/transaction/tds_initial', {
   method: 'POST',
   headers: {
-    'Authorization': `Basic ${Buffer.from(secretKey + ':').toString('base64')}`,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(paynetRequest)
-});
-```
-
-### Paynet Ödeme Durumu Sorgulama
-
-```
-POST /api/check-paynet-payment-status
-Headers:
-  Authorization: Basic <base64(secret_key:)>
-  Content-Type: application/json
-
-Request Body:
-{
-  paymentId: string;              // Paynet transaction ID
-  orderId?: string;               // Sistem order ID (opsiyonel)
-}
-
-Response:
-{
-  success: boolean;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled' | 'refunded';
-  paymentDate?: string;
-  transactionId?: string;
-  orderId?: string;
-  amount?: number;
-  currency?: string;
-  isEscrow?: boolean;
-  escrowStatus?: 'pending' | 'released' | 'refunded';
-  errorMessage?: string;
-  providerResponse?: any;
-}
-```
-
-#### Paynet API Transaction Sorgulama
-
-```typescript
-// Paynet transaction sorgulama
-const response = await fetch(`https://api.paynet.com.tr/api/transaction/${transactionId}`, {
-  method: 'GET',
-  headers: {
-    'Authorization': `Basic ${Buffer.from(secretKey + ':').toString('base64')}`,
-    'Content-Type': 'application/json'
-  }
-});
-```
-
-### Paynet İptal/İade İşlemi
-
-Paynet API'de iptal ve iade işlemleri ayrı endpoint'ler olarak sunulur.
-
-#### İptal İşlemi (Tam İade)
-
-```
-POST /api/cancel-paynet-payment
-Headers:
-  Authorization: Basic <base64(secret_key:)>
-  Content-Type: application/json
-
-Request Body:
-{
-  paymentId: string;              // Paynet transaction ID
-  orderId?: string;               // Sistem order ID
-  reason: string;                 // İptal nedeni
-}
-
-Response:
-{
-  success: boolean;
-  refundId?: string;
-  status?: 'cancelled';
-  cancelledAt?: string;
-  errorMessage?: string;
-  providerResponse?: any;
-}
-```
-
-#### İade İşlemi (Kısmi veya Tam İade)
-
-```
-POST /api/refund-paynet-payment
-Headers:
-  Authorization: Basic <base64(secret_key:)>
-  Content-Type: application/json
-
-Request Body:
-{
-  paymentId: string;              // Paynet transaction ID
-  orderId?: string;               // Sistem order ID
-  amount?: number;                // İade tutarı (belirtilmezse tam iade)
-  reason: string;                 // İade nedeni
-}
-
-Response:
-{
-  success: boolean;
-  refundId?: string;
-  refundAmount?: number;
-  status?: 'refunded' | 'partial_refunded';
-  refundedAt?: string;
-  errorMessage?: string;
-  providerResponse?: any;
-}
-```
-
-#### Paynet API İptal/İade Örneği
-
-```typescript
-// İptal işlemi
-const cancelResponse = await fetch(`https://api.paynet.com.tr/api/transaction/${transactionId}/cancel`, {
-  method: 'POST',
-  headers: {
-    'Authorization': `Basic ${Buffer.from(secretKey + ':').toString('base64')}`,
+    'Authorization': `Basic ${authHeader}`,
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    reason: 'Customer request'
+    amount: 2000.0,
+    reference_no: paymentId,
+    return_url: `${frontendUrl}/payment/callback`,
+    domain: new URL(backendUrl).hostname,
+    is_escrow: true,
+    description: `Payment for device ${deviceModel}`
   })
 });
+```
 
-// İade işlemi (kısmi veya tam)
-const refundResponse = await fetch(`https://api.paynet.com.tr/api/transaction/${transactionId}/refund`, {
-  method: 'POST',
-  headers: {
-    'Authorization': `Basic ${Buffer.from(secretKey + ':').toString('base64')}`,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    amount: refundAmount, // Belirtilmezse tam iade
-    reason: 'Customer request'
-  })
-});
+#### 3D Ödeme Tamamlama (tds_charge)
+
+**Endpoint:** `POST /v2/transaction/tds_charge`
+
+**Request Format (snake_case):**
+```typescript
+interface Paynet3DCompleteRequest {
+  session_id: string;                // 3D ödeme akışının oturum bilgisi - ZORUNLU
+  token_id: string;                  // İşlemin token bilgisi - ZORUNLU
+  transaction_type?: number;         // İşlem tipi: 1 = Satış, 3 = Ön provizyon (varsayılan: 1)
+}
+```
+
+**Response Format:**
+```json
+{
+  "success": true,
+  "transaction_id": "string",
+  "status": "string",
+  "error": "string",
+  "message": "string"
+}
+```
+
+### Paynet Ödeme Akışı
+
+#### 1. Ödeme Başlatma (Backend)
+
+Frontend/iOS, `POST /v1/payments/process` endpoint'ini çağırır. Backend:
+
+1. Tutarı doğrular (veritabanından okur, **yazmaz**)
+2. **Payment ve escrow kayıtlarını oluşturmaz** (Frontend/iOS webhook geldiğinde oluşturur)
+3. PAYNET'e 3D Secure ödeme isteği gönderir (`is_escrow: true` parametresi ile)
+4. PAYNET'ten `post_url` veya `html_content` alır
+5. Frontend/iOS'a `paymentUrl` ve `feeBreakdown` döner
+
+#### 2. 3D Secure Doğrulama (Frontend)
+
+Frontend, `paymentUrl`'e kullanıcıyı yönlendirir. Kullanıcı:
+
+1. Bankanın 3D Secure sayfasında doğrulama yapar
+2. Doğrulama sonrası `return_url`'e yönlendirilir
+3. `return_url`'e `session_id` ve `token_id` POST edilir
+
+**Örnek return_url:**
+```
+http://localhost:3000/payment/callback?session_id=xxx&token_id=yyy
+```
+
+#### 3. Ödeme Tamamlama (Backend)
+
+Frontend/iOS, `session_id` ve `token_id`'yi backend'e gönderir. Backend:
+
+1. Payment'ı doğrular (kullanıcı sahipliği, status kontrolü - veritabanından okur)
+2. PAYNET'e `POST /v2/transaction/tds_charge` isteği gönderir
+3. Ödeme tamamlanır
+4. Backend, webhook geldiğinde ve ödeme başarılı olduğunda (is_succeed: true) tüm veritabanı kayıtlarını oluşturur
+5. Frontend/iOS webhook işlenene kadar polling yapar (`GET /v1/payments/{paymentId}/status`)
+
+**Endpoint:** `POST /v1/payments/complete-3d`
+
+#### 4. Webhook İşleme
+
+**Webhook İşleme Adımları (Backend):**
+
+1. **IP Doğrulama:** İstek IP'si `PAYNET_ALLOWED_IPS` listesinde olmalıdır
+2. **Signature Verification:** Opsiyonel (header'da `x-paynet-signature` varsa doğrulanır)
+3. **Idempotency Check:** `reference_no` kullanılarak duplicate webhook kontrolü yapılır
+4. **Webhook Saklama:** Backend webhook payload'ını `webhook_storage` tablosuna saklar
+5. **Payment ID Eşleştirme:** Webhook'tan gelen `reference_no` ile payment ID'yi eşleştirir
+6. **Veritabanı Kayıtları:** Eğer ödeme başarılı (is_succeed: true) ise, backend tüm veritabanı kayıtlarını oluşturur:
+   - `payments` tablosunu günceller (status, provider bilgileri, fee breakdown vb.)
+   - `escrow_accounts` tablosuna kayıt oluşturur
+   - `devices` tablosunda status'u `payment_completed` yapar
+   - `audit_logs` tablosuna kayıt oluşturur
+   - `notifications` tablosuna bildirim kayıtları oluşturur
+7. **Frontend/iOS Bildirimi:** Frontend/iOS polling yaparak ödeme sonucunu alır
+
+**Webhook İşleme Adımları (Frontend/iOS):**
+
+1. **Polling:** Frontend/iOS `GET /v1/payments/{paymentId}/status` ile ödeme durumunu kontrol eder
+2. **Sonuç Alma:** `paymentStatus: 'completed'` olduğunda ödeme başarılı sayfasına yönlendirilir
+3. ❌ **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından yapılır
+
+**Webhook URL Konfigürasyonu:**
+
+PAYNET yönetim panelinde `confirmation_url` olarak şu URL ayarlanmalıdır:
+
+```
+https://api.ifoundanapple.com/v1/webhooks/paynet-callback
 ```
 
 ### Paynet Escrow Serbest Bırakma
 
+**Kaynak:** [Paynet Escrow Durum Güncelleme](https://doc.paynet.com.tr/servisler/islem/escrow-durum-guncelleme)
+
 Escrow işlemlerinde, ödeme tamamlandıktan sonra belirli koşullar sağlandığında (cihaz teslim edildi, onaylandı vb.) escrow'dan para serbest bırakılmalıdır.
 
-```
-POST /api/release-paynet-escrow
-Headers:
-  Authorization: Basic <base64(secret_key:)>
-  Content-Type: application/json
+**Endpoint:** `POST /v1/transaction/escrow_status_update`
 
-Request Body:
-{
-  paymentId: string;              // Paynet transaction ID
-  escrowId: string;              // Sistem escrow ID
-  releaseReason: string;         // Serbest bırakma nedeni
-  confirmedBy?: string;           // Onaylayan kullanıcı ID
-}
-
-Response:
-{
-  success: boolean;
-  escrowId?: string;
-  releasedAt?: string;
-  status?: 'released';
-  errorMessage?: string;
-  providerResponse?: any;
-}
-```
-
-#### Paynet Escrow Release API
-
+**Request Format (snake_case):**
 ```typescript
-// Paynet escrow serbest bırakma (Paynet API dokümantasyonuna göre)
-// Not: Paynet'in escrow release endpoint'i dokümantasyonda belirtilmemiş olabilir
-// Bu durumda Paynet destek ekibiyle iletişime geçilmelidir
+interface PaynetEscrowStatusUpdateRequest {
+  xact_id?: string;                // PAYNET işlem ID'si (şifrelenmiş) - ZORUNLU (xact_id veya xact en az biri)
+  xact?: number;                   // PAYNET işlem ID'si (şifrelenmemiş) - ZORUNLU (xact_id veya xact en az biri)
+  status: number;                  // 2 = Onay (Release), 3 = Red (Reject) - ZORUNLU
+  note?: string;                   // Maksimum 256 karakter - OPSIYONEL
+  agent_id?: string;               // Bayi kodu - OPSIYONEL
+  agent_amount?: number;           // Bayiye aktarılacak tutar - OPSIYONEL
+}
+```
 
-// Alternatif: Cari Hesap Entegrasyonu kullanılabilir (escrow benzeri)
-const releaseResponse = await fetch(`https://api.paynet.com.tr/api/escrow/${transactionId}/release`, {
+**Status Değerleri:**
+- `2`: Onay (Approve/Release) - Escrow serbest bırakılır
+- `3`: Red (Reject) - Escrow reddedilir, ödeme iade edilir
+
+**Örnek API Çağrısı:**
+```typescript
+const authHeader = Buffer.from(`${secretKey}:`).toString('base64');
+
+const releaseResponse = await fetch('https://api.paynet.com.tr/v1/transaction/escrow_status_update', {
   method: 'POST',
   headers: {
-    'Authorization': `Basic ${Buffer.from(secretKey + ':').toString('base64')}`,
+    'Authorization': `Basic ${authHeader}`,
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    reason: releaseReason
+    xact_id: paynetTransactionId,
+    status: 2,  // 2 = Onay (Release)
+    note: 'Device received and confirmed by owner'
   })
 });
 ```
 
+**Backend Endpoint:** `POST /v1/payments/release-escrow`
+
+Backend, Paynet API'ye escrow release isteği gönderir. Veritabanı güncellemeleri frontend/iOS tarafından yapılır.
+
 ### Paynet Webhook Handler
 
-Paynet, ödeme durumu değişikliklerini webhook ile bildirir.
+**Kaynak:** [Paynet Confirmation URL Parametreleri](https://doc.paynet.com.tr/oedeme-metotlari/ortak-odeme-sayfasi/odeme-emri-olusturma/confirmation-url-adresine-post-edilen-parametreler)
 
-```
-POST /api/webhooks/paynet-callback
-Headers:
-  x-paynet-signature?: <signature>    // Paynet webhook signature (varsa)
-  Content-Type: application/json
+Paynet, ödeme tamamlandığında `confirmation_url` endpoint'inize webhook gönderir.
 
-Request Body:
+**Backend Endpoint:** `POST /v1/webhooks/paynet-callback`
+
+**Webhook Payload Formatı (snake_case):**
+```json
 {
-  transaction_id: string;
-  order_id: string;
-  status: 'success' | 'failure' | 'pending' | 'cancelled';
-  amount: number;
-  currency: string;
-  transaction_date: string;
-  is_escrow?: boolean;
-  escrow_status?: 'pending' | 'released' | 'refunded';
-  // ... diğer Paynet alanları
-}
-
-Response:
-{
-  success: boolean;
-  message: string;
-  transactionId: string;
-  status: string;
+  "reference_no": "string",        // Ödeme işleminin referans numarası (payment_id) - ZORUNLU
+  "xact_date": "string",           // Ödeme işleminin yapıldığı zaman
+  "agent_id": "string",           // Bayi kodu (opsiyonel)
+  "bank_id": "string",            // Ödemenin yapıldığı banka numarası
+  "instalment": 1,                // Taksit sayısı
+  "card_holder": "string",        // Kart sahibinin adı ve soyadı
+  "card_number": "string",        // Kart numarasının ilk 6 ve son 4 hanesi (masked)
+  "amount": 2000.0,               // Yapılan ödemenin brüt tutarı
+  "netAmount": 1931.4,            // Yapılan ödemenin net tutarı
+  "comission": 68.6,              // Hizmet bedeli tutarı
+  "comission_tax": 12.34,         // Hizmet bedeli vergisi
+  "currency": "TRY",              // Para birimi
+  "authorization_code": "string", // Bankadan dönen onay kodu
+  "order_id": "string",           // Bankadan dönen satış kodu
+  "is_succeed": true              // Ödemenin başarılı olup olmadığı - ZORUNLU
 }
 ```
+
+**Webhook İşleme Adımları:**
+
+1. **IP Doğrulama:** İstek IP'si `PAYNET_ALLOWED_IPS` listesinde olmalıdır (opsiyonel)
+2. **Signature Verification:** Opsiyonel (header'da `x-paynet-signature` varsa doğrulanır)
+3. **Idempotency Check:** `reference_no` kullanılarak duplicate webhook kontrolü yapılır
+4. **Webhook Saklama:** Backend webhook payload'ını `webhook_storage` tablosuna saklar
+5. **Payment ID Eşleştirme:** Webhook'tan gelen `reference_no` ile payment ID'yi eşleştirir
+6. **Veritabanı Kayıtları:** Eğer ödeme başarılı (is_succeed: true) ise, backend tüm veritabanı kayıtlarını oluşturur:
+   - `payments` tablosunu günceller
+   - `escrow_accounts` tablosuna kayıt oluşturur
+   - `devices` tablosunda status'u `payment_completed` yapar
+   - `audit_logs` tablosuna kayıt oluşturur
+   - `notifications` tablosuna bildirim kayıtları oluşturur
+7. **Frontend/iOS Bildirimi:** Frontend/iOS polling yaparak ödeme sonucunu alır
+
+**Response:**
+```json
+{
+  "received": true
+}
+```
+
+**ÖNEMLİ:** Backend webhook'u alır, doğrular, saklar ve **eğer ödeme başarılı (is_succeed: true) ise tüm veritabanı kayıtlarını oluşturur**. Frontend/iOS, backend'den ödeme sonucunu alır ve sadece kullanıcıya gösterir - veritabanına yazmaz.
 
 ### Paynet Signature Doğrulama
 
-```typescript
-import crypto from 'crypto';
+Webhook signature doğrulama, Paynet dokümantasyonunda belirtilmemiş olabilir. Paynet destek ekibiyle doğrulama yöntemi teyit edilmelidir.
 
-function verifyPaynetWebhook(signature: string, body: string, timestamp?: string): boolean {
-  const secretKey = process.env.PAYNET_SECRET_KEY;
-  
-  // Paynet webhook signature doğrulama yöntemi dokümantasyonda belirtilmemiş olabilir
-  // Paynet destek ekibiyle doğrulama yöntemi teyit edilmelidir
-  
-  // Örnek HMAC-SHA256 doğrulama (Paynet'in kullandığı yöntem değişebilir)
-  if (timestamp) {
-    const message = `${timestamp}.${body}`;
-    const hmac = crypto.createHmac('sha256', secretKey);
-    hmac.update(message);
-    const expectedSignature = hmac.digest('hex');
-    return signature === expectedSignature;
-  }
-  
-  // Sadece body ile doğrulama (alternatif)
-  const hmac = crypto.createHmac('sha256', secretKey);
-  hmac.update(body);
-  const expectedSignature = hmac.digest('hex');
-  return signature === expectedSignature;
-}
-```
+**Not:** Şu anda backend'de signature verification placeholder olarak implement edilmiştir. Production'a geçmeden önce Paynet'ten doğrulama yöntemi teyit edilmelidir.
+
+**IP Whitelist Kontrolü:** Webhook güvenliği için IP whitelist kontrolü yapılır. PAYNET'in IP adresleri `.env` dosyasında `PAYNET_ALLOWED_IPS` olarak tanımlanmalıdır.
 
 ### Paynet Servisleri
 
@@ -1163,13 +1751,29 @@ Paynet API aşağıdaki servisleri sunar:
 - **Fatura**: Fatura oluşturma ve yönetimi
 - **Başvuru**: API erişim başvurusu
 
+Detaylı bilgiler için: [Paynet Dokümantasyon - Servisler](https://doc.paynet.com.tr/servisler)
+
 ### Paynet Test Kartları
 
-Paynet test ortamında kullanılabilecek test kartları dokümantasyonda belirtilmiştir. [Test Kartları](https://doc.paynet.com.tr/genel-bilgiler/test-kartlari) sayfasına bakın.
+Paynet test ortamında kullanılabilecek test kartları dokümantasyonda belirtilmiştir. 
+
+**ÖNEMLİ:** Test ortamında ödeme testleri yaparken Paynet'in test kartlarını kullanın. Production ortamında gerçek kart bilgileri kullanılır.
+
+Detaylı bilgiler için: [Paynet Test Kartları](https://doc.paynet.com.tr/genel-bilgiler/test-kartlari)
 
 ### Paynet Hata Kodları
 
-Paynet API hata kodları ve açıklamaları için [Hata Kodları](https://doc.paynet.com.tr/genel-bilgiler/hata-kodlari) sayfasına bakın.
+Paynet API hata kodları ve açıklamaları dokümantasyonda belirtilmiştir.
+
+**ÖNEMLİ:** Backend'de Paynet API hatalarını uygun şekilde handle edin ve frontend/iOS'a anlamlı hata mesajları döndürün.
+
+Detaylı bilgiler için: [Paynet Hata Kodları](https://doc.paynet.com.tr/genel-bilgiler/hata-kodlari)
+
+### Paynet Publishable Key
+
+Frontend, PAYNET entegrasyonu için `publishableKey` kullanabilir. Bu key, `POST /v1/payments/process` response'unda döner.
+
+**Güvenlik:** Publishable key frontend'de kullanılabilir, ancak secret key asla frontend'e gönderilmemelidir.
 
 ### Ödeme Gateway Seçimi
 
@@ -1182,6 +1786,30 @@ Paynet API hata kodları ve açıklamaları için [Hata Kodları](https://doc.pa
 ---
 
 ## 📦 Kargo API Entegrasyonu
+
+### BACKEND SORUMLULUĞU (Kargo Süreci)
+
+**Backend, kargo firması ile haberleşmeyi sağlar:**
+
+1. ✅ **Kargo Firması ile İletişim:**
+   - Frontend/iOS'tan gelen kargo gönderi talebini alır
+   - Kargo firması API'si ile haberleşir
+   - Kargo firmasından takip numarası (`tracking_number`) ve teslim kodu (`code`) alır
+   - Kargo firmasından süreç bilgilerini alır (kargo durumu, tahmini teslimat tarihi vb.)
+
+2. ✅ **Veritabanı İşlemleri (Kargo için):**
+   - Kargo firmasından alınan `tracking_number` ve `code` bilgilerini `cargo_shipments` tablosuna **yazar**
+   - Kargo firmasından alınan süreç bilgilerini ilgili tablolara **yazar**
+   - Kargo durumu güncellemelerini yapar
+   - Kargo webhook'larını alır ve `cargo_shipments` tablosunu günceller (cargo_status, tracking_number vb.)
+
+3. ✅ **Frontend/iOS'a Bildirim:**
+   - Kargo bilgilerini frontend/iOS'a döner
+   - Frontend/iOS bu bilgiler ile süreci işleterek kullanıcıya bilgi verir
+
+**Özet:** Backend, kargo firması ile haberleşmeyi sağlar ve aldığı bilgileri (takip numarası, teslim kodu, süreç bilgileri) veritabanına yazar. Frontend/iOS bu bilgiler ile kullanıcı ekranlarını düzenler.
+
+**Not:** Ödeme API'si webhook geldiğinde ve ödeme başarılı olduğunda tüm veritabanı kayıtlarını oluşturur. Kargo API'si de kargo süreçleri için veritabanına yazma yetkisine sahiptir.
 
 ### Kargo Şirketleri
 
@@ -1238,6 +1866,9 @@ Response:
 ```
 
 #### 3. Kargo Gönderisi Oluştur
+
+**ÖNEMLİ:** Backend kargo API'si, kargo firması API'si ile iletişim kurar ve aldığı bilgileri veritabanına yazar.
+
 ```
 POST /api/cargo/create-shipment
 Request Body:
@@ -1270,12 +1901,20 @@ Request Body:
   specialInstructions?: string;
 }
 
+Backend İşlemleri:
+1. ✅ Token doğrulama
+2. ✅ Kargo firması API'sine gönderi oluşturma isteği gönderir
+3. ✅ Kargo firması API'sinden dönen `code` (teslim kodu) ve `tracking_number` (takip numarası) bilgilerini alır
+4. ✅ `cargo_shipments` tablosuna kayıt oluşturur (code, tracking_number, cargo_status vb.)
+5. ✅ Response'da shipmentId ve trackingNumber döner
+
 Response:
 {
   success: boolean;
-  shipmentId?: string;
-  trackingNumber?: string;
-  cargoLabelUrl?: string; // Kargo etiketi PDF URL'i
+  shipmentId?: string;        // cargo_shipments.id
+  code?: string;              // Kargo firması tarafından üretilen teslim kodu
+  trackingNumber?: string;    // Kargo firması tarafından üretilen takip numarası
+  cargoLabelUrl?: string;     // Kargo etiketi PDF URL'i
   cargoFee?: number;
   estimatedDeliveryDays?: number;
   errorMessage?: string;
@@ -1915,7 +2554,101 @@ async function requirePermission(permission: string) {
 
 ## 🔔 Webhook Endpoint'leri
 
+### PAYNET Webhook
+
+#### `POST /v1/webhooks/paynet-callback`
+
+PAYNET, ödeme tamamlandığında bu endpoint'e webhook gönderir.
+
+**ÖNEMLİ:** Backend webhook'u alır, doğrular ve saklar, ancak **veritabanına yazmaz**. Frontend/iOS webhook geldiğinde webhook data'yı alır (`GET /v1/payments/{paymentId}/webhook-data`) ve veritabanı kayıtlarını oluşturur.
+
+**Authentication:** Gerekmez (IP whitelist ile korunur)
+
+**IP Whitelist:** PAYNET'in IP adresleri `.env` dosyasında `PAYNET_ALLOWED_IPS` olarak tanımlanmalıdır.
+
+**Request Body (PAYNET Webhook Payload):**
+```json
+{
+  "reference_no": "payment-uuid-123",
+  "xact_date": "2025-01-15T10:30:00.000Z",
+  "agent_id": "agent-123",
+  "bank_id": "001",
+  "instalment": 1,
+  "card_holder": "JOHN DOE",
+  "card_number": "123456****5678",
+  "amount": 2000.0,
+  "netAmount": 1931.4,
+  "comission": 68.6,
+  "comission_tax": 12.34,
+  "currency": "TRY",
+  "authorization_code": "AUTH123",
+  "order_id": "ORDER123",
+  "is_succeed": true
+}
+```
+
+**Webhook Payload Fields:**
+- `reference_no` (string, **ZORUNLU**): Payment ID (backend'deki payment.id)
+- `is_succeed` (boolean, **ZORUNLU**): Ödeme başarı durumu
+- `amount` (decimal): Brüt tutar
+- `netAmount` (decimal): Net tutar
+- `comission` (decimal): Hizmet bedeli
+- `comission_tax` (decimal): Hizmet bedeli vergisi
+- `currency` (string): Para birimi (TRY)
+- `authorization_code` (string): Banka onay kodu
+- `order_id` (string): Banka satış kodu
+- `bank_id` (string): Banka numarası
+- `instalment` (int): Taksit sayısı
+- `card_holder` (string): Kart sahibi adı
+- `card_number` (string): Masked kart numarası (ilk 6 + son 4 hane)
+- `xact_date` (string): İşlem tarihi
+- `agent_id` (string, opsiyonel): Bayi kodu
+
+**Response:**
+```json
+{
+  "received": true
+}
+```
+
+**Status Codes:**
+- `200 OK` - Webhook başarıyla işlendi
+- `400 Bad Request` - Geçersiz payload veya signature
+- `401 Unauthorized` - IP adresi whitelist'te değil
+
+**Webhook İşleme Adımları (Backend):**
+
+1. **IP Doğrulama:** İstek IP'si `PAYNET_ALLOWED_IPS` listesinde olmalıdır
+2. **Signature Verification:** Opsiyonel (header'da `x-paynet-signature` varsa doğrulanır)
+3. **Idempotency Check:** `reference_no` kullanılarak duplicate webhook kontrolü yapılır
+4. **Webhook Saklama:** Backend webhook payload'ını `webhook_storage` tablosuna saklar
+5. **Payment ID Eşleştirme:** Webhook'tan gelen `reference_no` ile payment ID'yi eşleştirir
+6. **Veritabanı Kayıtları:** Eğer ödeme başarılı (is_succeed: true) ise, backend tüm veritabanı kayıtlarını oluşturur:
+   - `payments` tablosunu günceller (status, provider bilgileri, fee breakdown vb.)
+   - `escrow_accounts` tablosuna kayıt oluşturur
+   - `devices` tablosunda status'u `payment_completed` yapar
+   - `audit_logs` tablosuna kayıt oluşturur
+   - `notifications` tablosuna bildirim kayıtları oluşturur
+7. **Frontend/iOS Bildirimi:** Frontend/iOS polling yaparak ödeme sonucunu alır
+
+**Webhook İşleme Adımları (Frontend/iOS):**
+
+1. **Polling:** Frontend/iOS `GET /v1/payments/{paymentId}/status` ile ödeme durumunu kontrol eder
+2. **Sonuç Alma:** `paymentStatus: 'completed'` olduğunda ödeme başarılı sayfasına yönlendirilir
+3. ❌ **Veritabanına YAZMAZ** - Tüm veritabanı işlemleri backend tarafından yapılır
+
+**Webhook URL Konfigürasyonu:**
+
+PAYNET yönetim panelinde `confirmation_url` olarak şu URL ayarlanmalıdır:
+
+```
+https://api.ifoundanapple.com/v1/webhooks/paynet-callback
+```
+
+---
+
 ### İyzico Webhook
+
 ```
 POST /api/webhooks/iyzico-callback
 Headers:
@@ -1942,6 +2675,8 @@ Response:
 ```
 
 ### Webhook Signature Doğrulama
+
+**İyzico Signature Doğrulama:**
 ```typescript
 import crypto from 'crypto';
 
@@ -1954,13 +2689,104 @@ function verifyIyzicoWebhook(signature: string, body: string): boolean {
 }
 ```
 
+**PAYNET Signature Doğrulama:** Webhook signature doğrulama, Paynet dokümantasyonunda belirtilmemiş olabilir. Paynet destek ekibiyle doğrulama yöntemi teyit edilmelidir. Şu anda backend'de signature verification placeholder olarak implement edilmiştir.
+
 **Detaylı webhook handler için:** 📄 **`api/webhooks/iyzico-callback.ts`** dosyasına bakın.
 
-### 3D Secure Callback
+---
+
+## ⚠️ Error Handling
+
+### Error Response Formatı
+
+Tüm hatalar aşağıdaki format ile döner:
+
+```json
+{
+  "statusCode": 400,
+  "message": "Error message",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
 ```
-POST /api/webhooks/iyzico-3d-callback
+
+### HTTP Status Codes
+
+- `200 OK` - İstek başarılı
+- `201 Created` - Kayıt başarıyla oluşturuldu
+- `400 Bad Request` - Geçersiz request (validation hatası, tutar uyuşmazlığı, vb.)
+- `401 Unauthorized` - Authentication hatası (geçersiz token, token yok)
+- `403 Forbidden` - Yetki hatası (admin endpoint'ine normal kullanıcı erişimi)
+- `404 Not Found` - Kaynak bulunamadı (cihaz, ödeme, vb.)
+- `500 Internal Server Error` - Sunucu hatası
+
+### Yaygın Hata Mesajları
+
+#### 400 Bad Request
+
+**Tutar Uyuşmazlığı:**
+```json
+{
+  "statusCode": 400,
+  "message": "Amount mismatch. Expected: 2000.0, Received: 1500.0",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
 ```
-İyzico 3D Secure doğrulamasından sonra yönlendirilen endpoint.
+
+**Geçersiz Device Status:**
+```json
+{
+  "statusCode": 400,
+  "message": "Device 123e4567-e89b-12d3-a456-426614174000 is not in 'payment_pending' status. Current status: lost",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
+```
+
+**Yetkisiz Kullanıcı:**
+```json
+{
+  "statusCode": 400,
+  "message": "User df612602-69f0-4e3c-ac31-f23c5ada8d77 is not the owner of device 123e4567-e89b-12d3-a456-426614174000",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
+```
+
+#### 401 Unauthorized
+
+**Token Yok:**
+```json
+{
+  "statusCode": 401,
+  "message": "Missing or invalid token",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/session"
+}
+```
+
+**Geçersiz Token:**
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid or expired token",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/session"
+}
+```
+
+#### 404 Not Found
+
+**Cihaz Bulunamadı:**
+```json
+{
+  "statusCode": 404,
+  "message": "Device not found: 123e4567-e89b-12d3-a456-426614174000",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
+```
 
 ---
 
@@ -1978,10 +2804,18 @@ Tüm tablolarda RLS aktif olmalı. Kullanıcılar sadece kendi verilerine erişe
 - IBAN: Şifrelenmiş saklanmalı
 - Adres Bilgileri: Şifrelenmiş saklanmalı (cargo_shipments)
 
+**Encryption Key Backup Stratejisi:**
+- Encryption key (`VITE_ENCRYPTION_KEY`) **manuel olarak** yedeklenmelidir
+- Key kaybı durumunda şifrelenmiş tüm veriler kalıcı olarak kaybolur
+- Detaylı backup stratejisi için yukarıdaki "Encryption" bölümüne bakın
+
 ### Input Validation
 - Email format kontrolü
 - TC Kimlik No algoritma kontrolü (11 haneli, doğrulama algoritması)
 - IBAN format kontrolü (TR ile başlayan 26 haneli, Mod 97)
+  - **IBAN Validation Key:** `IBAN_VALIDATION_API_KEY` veya `IBAN_VALIDATION_SERVICE_KEY` environment variable'ı ile IBAN validation servisi kullanılabilir
+  - IBAN validation servisi ile gerçek zamanlı doğrulama yapılabilir (opsiyonel)
+  - Format kontrolü: TR ile başlayan 26 haneli, Mod 97 checksum kontrolü
 - Telefon numarası format kontrolü (Türkiye formatı)
 - Seri numarası format kontrolü
 
@@ -1997,6 +2831,31 @@ Tüm önemli işlemler `audit_logs` tablosuna kaydedilmeli:
 - Escrow işlemleri
 - Cihaz durumu değişiklikleri
 - Kullanıcı işlemleri
+
+### Güvenlik Notları
+
+#### 1. Token Güvenliği
+
+- Token'ları localStorage'da saklamayın (XSS riski)
+- httpOnly cookie kullanın veya secure storage kullanın
+- Token süresi dolduğunda refresh token kullanın
+
+#### 2. Tutar Doğrulama
+
+- **ASLA** frontend'den gelen tutara güvenmeyin
+- Backend her zaman veritabanından tutarı doğrular
+- Frontend'de tutar gösterimi için backend'den gelen değeri kullanın
+
+#### 3. Webhook Güvenliği
+
+- IP whitelist kontrolü yapılır
+- Signature verification (opsiyonel) yapılır
+- Idempotency kontrolü yapılır
+
+#### 4. CORS
+
+- Sadece güvenilir domain'lerden istek kabul edilir
+- `.env` dosyasında `FRONTEND_URL` tanımlanmalıdır
 
 ---
 
@@ -2105,14 +2964,14 @@ Authorization: Bearer {{token}}
   "deviceModelName": "iPhone 14 Pro"
 }
 
-### Process Payment (Test Mode)
-POST http://localhost:3001/api/process-payment
+### Process Payment (Yeni Endpoint)
+POST http://localhost:3000/v1/payments/process
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
   "deviceId": "test-device-id",
-  "payerId": "test-user-id",
+  "totalAmount": 1585.75,
   "feeBreakdown": {
     "rewardAmount": 500,
     "cargoFee": 250,
@@ -2120,24 +2979,18 @@ Authorization: Bearer {{token}}
     "gatewayFee": 85.75,
     "totalAmount": 1585.75,
     "netPayout": 500
-  },
-  "deviceInfo": {
-    "model": "iPhone 14 Pro",
-    "serialNumber": "TEST123"
-  },
-  "payerInfo": {
-    "name": "Test User",
-    "email": "test@example.com",
-    "phone": "05551234567",
-    "address": {
-      "street": "Test Street",
-      "city": "İstanbul",
-      "district": "Kadıköy",
-      "postalCode": "34000"
-    }
-  },
-  "paymentProvider": "test"
+  }
 }
+
+### Payment Status Check (Yeni Endpoint)
+GET http://localhost:3000/v1/payments/{paymentId}/status
+Authorization: Bearer {{token}}
+
+### Webhook Data (Yeni Endpoint)
+GET http://localhost:3000/v1/payments/{paymentId}/webhook-data
+Authorization: Bearer {{token}}
+
+**NOT:** Eski test endpoint'leri (`POST /api/process-payment`) artık kullanılmıyor. Yeni endpoint'ler yukarıdaki [API Endpoint'leri](#api-endpointleri) bölümünde detaylı olarak açıklanmıştır.
 ```
 
 #### 3. cURL ile Test
@@ -2151,13 +3004,13 @@ curl -X POST http://localhost:3001/api/calculate-fees \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"deviceModelName": "iPhone 14 Pro"}'
 
-# Process payment (test mode)
-curl -X POST http://localhost:3001/api/process-payment \
+# Process payment (Yeni Endpoint)
+curl -X POST http://localhost:3000/v1/payments/process \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
     "deviceId": "test-device-id",
-    "payerId": "test-user-id",
+    "totalAmount": 1585.75,
     "feeBreakdown": {
       "rewardAmount": 500,
       "cargoFee": 250,
@@ -2165,24 +3018,16 @@ curl -X POST http://localhost:3001/api/process-payment \
       "gatewayFee": 85.75,
       "totalAmount": 1585.75,
       "netPayout": 500
-    },
-    "deviceInfo": {
-      "model": "iPhone 14 Pro",
-      "serialNumber": "TEST123"
-    },
-    "payerInfo": {
-      "name": "Test User",
-      "email": "test@example.com",
-      "phone": "05551234567",
-      "address": {
-        "street": "Test Street",
-        "city": "İstanbul",
-        "district": "Kadıköy",
-        "postalCode": "34000"
-      }
-    },
-    "paymentProvider": "test"
+    }
   }'
+
+# Payment status check
+curl -X GET http://localhost:3000/v1/payments/{paymentId}/status \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Webhook data
+curl -X GET http://localhost:3000/v1/payments/{paymentId}/webhook-data \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 #### 4. npm Script ile Otomatik Test
@@ -2554,10 +3399,150 @@ npm run format
 4. **Webhook Simulation**
    ```bash
    # Postman veya curl ile webhook endpoint'ine istek gönder
-   curl -X POST http://localhost:3001/api/webhooks/paynet-callback \
+   curl -X POST http://localhost:3000/v1/webhooks/paynet-callback \
      -H "Content-Type: application/json" \
-     -d '{"transaction_id": "test123", "status": "success"}'
+     -d '{"reference_no": "payment-uuid", "is_succeed": true, "amount": 2000.0}'
    ```
+   
+   **NOT:** Webhook endpoint'i IP whitelist ile korunur. Test için PAYNET_ALLOWED_IPS'e test IP'si eklenmelidir.
+
+---
+
+## 📝 Örnek Request/Response'lar
+
+### Örnek 1: Health Check
+
+**Request:**
+```bash
+curl -X GET http://localhost:3000/v1/health
+```
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "uptime": 12345.67,
+  "timestamp": "2025-01-15T10:30:00.000Z"
+}
+```
+
+---
+
+### Örnek 2: Session Bilgisi
+
+**Request:**
+```bash
+curl -X GET http://localhost:3000/v1/session \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+**Response:**
+```json
+{
+  "id": "df612602-69f0-4e3c-ac31-f23c5ada8d77",
+  "email": "user@example.com",
+  "roles": ["user"]
+}
+```
+
+---
+
+### Örnek 3: Ödeme İşlemi
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/v1/payments/process \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "deviceId": "123e4567-e89b-12d3-a456-426614174000",
+    "totalAmount": 2000.0,
+    "feeBreakdown": {
+      "rewardAmount": 400.0,
+      "cargoFee": 250.0,
+      "serviceFee": 1281.4,
+      "gatewayFee": 68.6,
+      "totalAmount": 2000.0,
+      "netPayout": 400.0
+    }
+  }'
+```
+
+**Response (Success):**
+```json
+{
+  "id": "payment-uuid-123",
+  "deviceId": "123e4567-e89b-12d3-a456-426614174000",
+  "paymentStatus": "pending",
+  "escrowStatus": "pending",
+  "totalAmount": 2000.0,
+  "providerTransactionId": "paynet-txn-123",
+  "publishableKey": "pk_test_...",
+  "paymentUrl": "https://api.paynet.com.tr/v2/transaction/tds_initial",
+  "feeBreakdown": {
+    "rewardAmount": 400.0,
+    "cargoFee": 250.0,
+    "serviceFee": 1281.4,
+    "gatewayFee": 68.6,
+    "totalAmount": 2000.0,
+    "netPayout": 400.0
+  }
+}
+```
+
+**Response (Error - Tutar Uyuşmazlığı):**
+```json
+{
+  "statusCode": 400,
+  "message": "Amount mismatch. Expected: 2000.0, Received: 1500.0",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "path": "/v1/payments/process"
+}
+```
+
+---
+
+### Örnek 4: PAYNET Connection Test
+
+**Request:**
+```bash
+curl -X GET http://localhost:3000/v1/payments/test-paynet-connection \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "PAYNET API connection tests passed. Ready for integration testing.",
+  "config": {
+    "apiUrl": "https://api.paynet.com.tr",
+    "hasApiKey": true,
+    "hasSecretKey": true,
+    "hasPublishableKey": true,
+    "secretKeyPrefix": "sk_test_...",
+    "publishableKeyPrefix": "pk_test_..."
+  },
+  "testResults": [
+    {
+      "test": "Base URL Connectivity",
+      "success": true,
+      "statusCode": 200,
+      "message": "Server is reachable (HTTP 200)"
+    },
+    {
+      "test": "Authentication Format",
+      "success": true,
+      "message": "Using HTTP Basic Authentication (PAYNET standard)"
+    },
+    {
+      "test": "Configuration",
+      "success": true,
+      "message": "All required configuration values are set"
+    }
+  ]
+}
+```
 
 ---
 
@@ -2573,15 +3558,14 @@ curl -X POST http://localhost:3001/api/calculate-fees \
   }'
 ```
 
-### 2. Ödeme İşleme
+### 2. Ödeme İşleme (Yeni Endpoint)
 ```bash
-curl -X POST http://localhost:3001/api/process-payment \
+curl -X POST http://localhost:3000/v1/payments/process \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
     "deviceId": "device-uuid",
-    "payerId": "user-uuid",
-    "receiverId": "receiver-uuid",
+    "totalAmount": 1585.75,
     "feeBreakdown": {
       "rewardAmount": 500,
       "cargoFee": 250,
@@ -2589,29 +3573,15 @@ curl -X POST http://localhost:3001/api/process-payment \
       "gatewayFee": 85.75,
       "totalAmount": 1585.75,
       "netPayout": 500
-    },
-    "deviceInfo": {
-      "model": "iPhone 14 Pro",
-      "serialNumber": "ABC123XYZ"
-    },
-    "payerInfo": {
-      "name": "Ahmet Yılmaz",
-      "email": "ahmet@example.com",
-      "phone": "05551234567",
-      "address": {
-        "street": "Örnek Mahalle, Örnek Sokak No:1",
-        "city": "İstanbul",
-        "district": "Kadıköy",
-        "postalCode": "34000"
-      }
-    },
-    "paymentProvider": "iyzico"
+    }
   }'
 ```
 
-### 3. Escrow Serbest Bırakma
+**NOT:** Eski endpoint (`POST /api/process-payment`) artık kullanılmıyor. Yeni endpoint: `POST /v1/payments/process`
+
+### 3. Escrow Serbest Bırakma (Yeni Endpoint)
 ```bash
-curl -X POST http://localhost:3001/api/release-escrow \
+curl -X POST http://localhost:3000/v1/payments/release-escrow \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
@@ -2622,6 +3592,8 @@ curl -X POST http://localhost:3001/api/release-escrow \
   }'
 ```
 
+**NOT:** Eski endpoint (`POST /api/release-escrow`) artık kullanılmıyor. Yeni endpoint: `POST /v1/payments/release-escrow`
+
 ---
 
 ## 🔗 Frontend-Backend Entegrasyon Noktaları
@@ -2630,12 +3602,16 @@ curl -X POST http://localhost:3001/api/release-escrow \
 
 Frontend'de şu dosyalar backend API'lerini çağırır:
 
-1. **`api/calculate-fees.ts`** → `/api/calculate-fees`
-2. **`api/process-payment.ts`** → `/api/process-payment`
-3. **`api/release-escrow.ts`** → `/api/release-escrow`
-4. **`api/cancel-transaction.ts`** → `/api/cancel-transaction`
-5. **`api/refund-transaction.ts`** → `/api/refund-transaction`
-6. **`api/dispute-transaction.ts`** → `/api/dispute-transaction`
+**Yeni Endpoint'ler (Güncel):**
+1. **`utils/paynetPayment.ts`** → `POST /v1/payments/process` (Ödeme başlatma)
+2. **`utils/paynetPayment.ts`** → `POST /v1/payments/complete-3d` (3D Secure tamamlama)
+3. **`utils/paynetPayment.ts`** → `GET /v1/payments/{paymentId}/status` (Payment status kontrolü)
+4. **`utils/paynetPayment.ts`** → `GET /v1/payments/{paymentId}/webhook-data` (Webhook data çekme)
+5. **`utils/paynetPayment.ts`** → `POST /v1/payments/release-escrow` (Escrow serbest bırakma)
+
+**DEPRECATED (Kullanılmıyor):**
+- ❌ `api/process-payment.ts` → `/api/process-payment` (Deprecated)
+- ❌ `api/release-escrow.ts` → `/api/release-escrow` (Deprecated)
 
 ### Supabase Client Kullanımı
 Frontend direkt Supabase client kullanır:
@@ -2664,6 +3640,13 @@ Backend'de Supabase Service Role Key kullanılmalı (RLS bypass için gerekli ye
 ### İş Akışı Dokümantasyonu
 - **`PROCESS_FLOW.md`** - İş akışı ve süreçler
 - **`PROJECT_DESIGN_DOCUMENTATION.md`** - Proje tasarım dokümantasyonu
+
+### Ek Kaynaklar
+
+- [PAYNET API Referansı](./PAYNET_INTEGRATION.md)
+- [Backend Roadmap](./backend%20roadmap)
+- [Process Flow](./PROCESS_FLOW.md)
+- [Swagger UI](http://localhost:3000/v1/docs)
 
 ---
 
@@ -2716,6 +3699,15 @@ backend/
 
 ---
 
-**Son Güncelleme:** 2025-01-XX
+## 🆘 Destek
+
+Sorularınız için:
+- Backend geliştirici ile iletişime geçin
+- Swagger UI'da endpoint'leri test edin
+- Backend loglarını kontrol edin
+
+---
+
+**Son Güncelleme:** 2025-01-15
 **Versiyon:** 1.0.0
 
