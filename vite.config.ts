@@ -34,6 +34,12 @@ export default defineConfig(({ mode }) => {
                 return 'vendor';
               }
               
+              // Shared types - MUST be in separate chunk to avoid enum issues
+              // This must come BEFORE device-pages check to ensure types.ts is included
+              if (id.includes('types.ts')) {
+                return 'shared-types';
+              }
+              
               // UI components chunk
               if (id.includes('components/ui/')) {
                 return 'ui-components';
