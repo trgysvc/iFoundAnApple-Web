@@ -233,15 +233,15 @@ export const calculateFees = async (
       return { success: false, error: error || "Cihaz modeli bulunamadı" };
     }
 
-    // Database'den ifoundanapple_fee çek
-    const ifoundappleFee = model.ifoundanapple_fee || 0;
+    // Database'den ifoundanapple_fee çek - sadece bu kullanılmalı
+    const ifoundappleFee = model.ifoundanapple_fee;
     console.log("[FEE_CALC] Database'den ifoundanapple_fee:", ifoundappleFee);
 
-    if (ifoundappleFee <= 0) {
-      console.warn(
-        "[FEE_CALC] ifoundanapple_fee 0 veya null, fallback hesaplama yapılıyor"
-      );
-      return calculateFallbackFees(model);
+    if (!ifoundappleFee || ifoundappleFee <= 0) {
+      return {
+        success: false,
+        error: `Device model "${model.name}" does not have a valid ifoundanapple_fee. Please set the fee in the database.`
+      };
     }
 
     // Yeni ücret yapısına göre hesaplama

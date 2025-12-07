@@ -34,7 +34,6 @@ const FIXED_FEES = {
   CARGO_FEE: 250.0,
   REWARD_PERCENTAGE: 20,
   GATEWAY_FEE_PERCENTAGE: 3.43,
-  MIN_TOTAL_AMOUNT: 500,
 };
 
 export async function calculateFeesAPI(
@@ -78,15 +77,21 @@ export async function calculateFeesAPI(
       deviceModel = modelData;
     }
 
+    // Database'den ifoundanapple_fee çek - sadece bu kullanılmalı
+    const ifoundanappleFee = deviceModel.ifoundanapple_fee;
+    
+    if (!ifoundanappleFee || ifoundanappleFee <= 0) {
+      throw new Error(
+        `Device model "${deviceModel.model_name || deviceModel.name || 'Unknown'}" does not have a valid ifoundanapple_fee. Please set the fee in the database.`
+      );
+    }
+
     const totalAmountRaw =
       customRewardAmount && customRewardAmount > 0
         ? customRewardAmount
-        : deviceModel.ifoundanapple_fee || deviceModel.repair_price || 0;
+        : ifoundanappleFee;
 
-    const totalAmount = Math.max(
-      Math.round(totalAmountRaw * 100) / 100,
-      FIXED_FEES.MIN_TOTAL_AMOUNT
-    );
+    const totalAmount = Math.round(totalAmountRaw * 100) / 100;
 
     const rewardAmount =
       Math.round(
