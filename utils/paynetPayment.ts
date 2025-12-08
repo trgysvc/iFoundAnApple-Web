@@ -56,15 +56,29 @@ export const initiatePaynetPayment = async (
       totalAmount,
     };
 
-    // Backend feeBreakdown bekliyor - gönder
+    // Backend feeBreakdown bekliyor - sadece backend'in beklediği alanları gönder
+    // Backend originalRepairPrice, deviceModel ve category alanlarını kabul etmiyor
     if (feeBreakdown) {
-      requestBody.feeBreakdown = feeBreakdown;
+      requestBody.feeBreakdown = {
+        rewardAmount: feeBreakdown.rewardAmount,
+        cargoFee: feeBreakdown.cargoFee,
+        serviceFee: feeBreakdown.serviceFee,
+        gatewayFee: feeBreakdown.gatewayFee,
+        totalAmount: feeBreakdown.totalAmount,
+        netPayout: feeBreakdown.netPayout,
+        // originalRepairPrice, deviceModel ve category alanları gönderilmiyor
+      };
+      console.log('[PAYNET] Fee breakdown gönderiliyor:', JSON.stringify(requestBody.feeBreakdown, null, 2));
     }
+
+    console.log('[PAYNET] Backend\'e gönderilecek request body:', JSON.stringify(requestBody, null, 2));
 
     const response = await apiClient.post<PaynetPaymentResponse>(
       '/payments/process',
       requestBody
     );
+
+    console.log('[PAYNET] Backend\'den gelen response:', JSON.stringify(response, null, 2));
 
     console.log('[PAYNET] Ödeme başlatıldı:', {
       paymentId: response.id,

@@ -67,12 +67,25 @@ class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     console.log(`[API] ${options.method || 'GET'} ${url}`);
+    
+    // POST/PUT isteklerinde body'yi logla (hassas bilgileri maskele)
+    if ((options.method === 'POST' || options.method === 'PUT') && options.body) {
+      try {
+        const bodyObj = JSON.parse(options.body as string);
+        console.log('[API] Request body:', JSON.stringify(bodyObj, null, 2));
+      } catch (e) {
+        console.log('[API] Request body (not JSON):', (options.body as string).substring(0, 200));
+      }
+    }
 
     try {
       const response = await fetch(url, {
         ...options,
         headers,
       });
+
+      console.log('[API] Response status:', response.status, response.statusText);
+      console.log('[API] Response headers:', Object.fromEntries(response.headers.entries()));
 
       // 401 Unauthorized - Token geçersiz veya süresi dolmuş
       if (response.status === 401) {
@@ -88,9 +101,13 @@ class ApiClient {
       if (contentType && contentType.includes('application/json')) {
         try {
           data = await response.json();
-          // Debug: Hata durumunda backend'den gelen yanıtı logla
+          // Debug: Hata durumunda backend'den gelen yanıtı detaylı logla
           if (!response.ok) {
-            console.log('[API] Backend hata yanıtı:', JSON.stringify(data, null, 2));
+            console.log('[API] Backend hata yanıtı (raw):', data);
+            console.log('[API] Backend hata yanıtı (stringified):', JSON.stringify(data, null, 2));
+            console.log('[API] Status Code:', response.status);
+            console.log('[API] Error message field:', data?.message);
+            console.log('[API] Error error field:', data?.error);
           }
         } catch (parseError) {
           console.error('[API] JSON parse hatası:', parseError);
@@ -104,7 +121,7 @@ class ApiClient {
       } else {
         // JSON değilse text olarak oku
         const text = await response.text();
-        console.warn('[API] JSON olmayan yanıt:', text.substring(0, 100));
+        console.warn('[API] JSON olmayan yanıt:', text.substring(0, 200));
         const error: ApiError = {
           statusCode: response.status,
           message: `Backend API beklenmeyen yanıt döndü (${response.status}): ${response.statusText}`,
@@ -115,8 +132,20 @@ class ApiClient {
 
       // Hata durumunda (tüm HTTP error status kodları)
       if (!response.ok) {
-        // Backend'den gelen hata mesajını kullan
-        const errorMessage = data?.message || data?.error || `HTTP ${response.status}: ${response.statusText}`;
+        // Backend'den gelen hata mesajını kullan (farklı alanları kontrol et)
+        const errorMessage = data?.message || 
+                           data?.error?.message || 
+                           data?.error || 
+                           data?.errorMessage ||
+                           `HTTP ${response.status}: ${response.statusText}`;
+        
+        console.log('[API] Parsed error message:', errorMessage);
+        console.log('[API] Data structure:', {
+          hasMessage: !!data?.message,
+          hasError: !!data?.error,
+          hasErrorMessage: !!data?.errorMessage,
+          dataKeys: data ? Object.keys(data) : []
+        });
         
         // Özel durumlar için daha anlaşılır mesajlar
         let userFriendlyMessage = errorMessage;
@@ -136,7 +165,15 @@ class ApiClient {
             userFriendlyMessage = errorMessage || 'Geçersiz istek. Lütfen bilgileri kontrol edin.';
           }
         } else if (response.status === 500) {
-          userFriendlyMessage = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+          // PAYNET ile ilgili hataları kontrol et
+          if (errorMessage.includes('Unauthorized credential') || 
+              errorMessage.includes('Payment provider error') ||
+              errorMessage.includes('PAYNET')) {
+            userFriendlyMessage = 'Ödeme sağlayıcısı (PAYNET) kimlik doğrulama hatası. Lütfen yönetici ile iletişime geçin.';
+          } else {
+            // Backend'den gelen mesajı kullan, yoksa generic mesaj
+            userFriendlyMessage = errorMessage || 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+          }
         }
         
         const apiError: ApiError = {
