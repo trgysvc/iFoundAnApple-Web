@@ -9,8 +9,8 @@ import { FeeBreakdown } from './feeCalculation';
 export interface PaynetPaymentRequest {
   deviceId: string;
   totalAmount: number;
-  // Kart bilgileri (PAYNET API gereksinimleri)
-  pan: string;           // Kart numarası (13-19 haneli, sadece rakam)
+  // Kart bilgileri root seviyesinde camelCase formatında (backend DTO formatı)
+  pan: string;           // Kart numarası (13-19 haneli, sadece rakam, boşluk yok)
   month: string;         // Son kullanma ayı (MM formatı, 01-12)
   year: string;          // Son kullanma yılı (YY veya YYYY formatı)
   cvc: string;           // CVV/CVC kodu (3-4 haneli, sadece rakam)
@@ -76,21 +76,26 @@ export const initiatePaynetPayment = async (
       normalizedYear = (2000 + year2Digit).toString();
     }
 
+    // Backend'in beklediği format: kart bilgileri root seviyesinde camelCase
     const requestBody: PaynetPaymentRequest = {
       deviceId,
       totalAmount,
-      // Kart bilgileri
-      pan: cleanedPan,
-      month: cardData.month.padStart(2, '0'), // 2 haneli format garantisi
-      year: normalizedYear, // YYYY formatı
-      cvc: cardData.cvc,
-      cardHolder: cardData.cardHolder.toUpperCase().trim(),
+      // Kart bilgileri root seviyesinde (backend camelCase formatı bekliyor)
+      pan: cleanedPan, // Boşluk olmadan, sadece rakam (13-19 haneli)
+      month: cardData.month.padStart(2, '0'), // MM formatı (01-12), 2 haneli garantisi
+      year: normalizedYear, // YYYY formatı (backend YY veya YYYY kabul eder)
+      cvc: cardData.cvc, // 3-4 haneli, sadece rakam
+      cardHolder: cardData.cardHolder.toUpperCase().trim(), // Boş olamaz
     };
 
     // Backend feeBreakdown bekliyor - sadece backend'in beklediği alanları gönder
     // Backend originalRepairPrice, deviceModel ve category alanlarını kabul etmiyor
+    const requestBodyWithFeeBreakdown: any = {
+      ...requestBody,
+    };
+    
     if (feeBreakdown) {
-      (requestBody as any).feeBreakdown = {
+      requestBodyWithFeeBreakdown.feeBreakdown = {
         rewardAmount: feeBreakdown.rewardAmount,
         cargoFee: feeBreakdown.cargoFee,
         serviceFee: feeBreakdown.serviceFee,
@@ -99,12 +104,12 @@ export const initiatePaynetPayment = async (
         netPayout: feeBreakdown.netPayout,
         // originalRepairPrice, deviceModel ve category alanları gönderilmiyor
       };
-      console.log('[PAYNET] Fee breakdown gönderiliyor:', JSON.stringify((requestBody as any).feeBreakdown, null, 2));
+      console.log('[PAYNET] Fee breakdown gönderiliyor:', JSON.stringify(requestBodyWithFeeBreakdown.feeBreakdown, null, 2));
     }
 
     // Güvenlik: Kart bilgilerini log'da maskele
     const maskedRequestBody = {
-      ...requestBody,
+      ...requestBodyWithFeeBreakdown,
       pan: `${cleanedPan.substring(0, 4)}****${cleanedPan.substring(cleanedPan.length - 4)}`,
       cvc: '***'
     };
@@ -112,7 +117,7 @@ export const initiatePaynetPayment = async (
 
     const response = await apiClient.post<PaynetPaymentResponse>(
       '/payments/process',
-      requestBody as any // Type assertion çünkü feeBreakdown ayrı ekleniyor
+      requestBodyWithFeeBreakdown
     );
 
     console.log('[PAYNET] Backend\'den gelen response:', JSON.stringify(response, null, 2));
