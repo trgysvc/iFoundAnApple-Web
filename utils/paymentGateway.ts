@@ -125,10 +125,11 @@ const processPaynetPayment = async (
   });
 
   try {
-    // Backend'e ödeme başlatma isteği gönder
+    // Backend'e ödeme başlatma isteği gönder - feeBreakdown'ı da gönder
     const paynetResponse = await initiatePaynetPayment(
       request.deviceId,
-      request.feeBreakdown.totalAmount
+      request.feeBreakdown.totalAmount,
+      request.feeBreakdown  // ← feeBreakdown eklendi
     );
 
     // Payment ID'yi localStorage'a kaydet (callback için)

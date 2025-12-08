@@ -41,17 +41,29 @@ export interface PaynetComplete3DResponse {
  */
 export const initiatePaynetPayment = async (
   deviceId: string,
-  totalAmount: number
+  totalAmount: number,
+  feeBreakdown?: FeeBreakdown
 ): Promise<PaynetPaymentResponse> => {
   try {
-    console.log('[PAYNET] Ödeme başlatılıyor...', { deviceId, totalAmount });
+    console.log('[PAYNET] Ödeme başlatılıyor...', { 
+      deviceId, 
+      totalAmount, 
+      hasFeeBreakdown: !!feeBreakdown 
+    });
+
+    const requestBody: any = {
+      deviceId,
+      totalAmount,
+    };
+
+    // Backend feeBreakdown bekliyor - gönder
+    if (feeBreakdown) {
+      requestBody.feeBreakdown = feeBreakdown;
+    }
 
     const response = await apiClient.post<PaynetPaymentResponse>(
       '/payments/process',
-      {
-        deviceId,
-        totalAmount,
-      }
+      requestBody
     );
 
     console.log('[PAYNET] Ödeme başlatıldı:', {
