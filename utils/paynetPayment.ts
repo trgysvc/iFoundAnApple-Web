@@ -9,6 +9,12 @@ import { FeeBreakdown } from './feeCalculation';
 export interface PaynetPaymentRequest {
   deviceId: string;
   totalAmount: number;
+  // Kart bilgileri (PAYNET API gereksinimleri)
+  pan: string;           // Kart numarası (13-19 haneli, sadece rakam)
+  month: string;         // Son kullanma ayı (MM formatı, 01-12)
+  year: string;          // Son kullanma yılı (YY veya YYYY formatı)
+  cvc: string;           // CVV/CVC kodu (3-4 haneli, sadece rakam)
+  cardHolder: string;    // Kart sahibi adı (boş olamaz)
 }
 
 export interface PaynetPaymentResponse {
@@ -42,24 +48,49 @@ export interface PaynetComplete3DResponse {
 export const initiatePaynetPayment = async (
   deviceId: string,
   totalAmount: number,
-  feeBreakdown?: FeeBreakdown
+  feeBreakdown: FeeBreakdown,
+  cardData: {
+    pan: string;
+    month: string;
+    year: string;
+    cvc: string;
+    cardHolder: string;
+  }
 ): Promise<PaynetPaymentResponse> => {
   try {
     console.log('[PAYNET] Ödeme başlatılıyor...', { 
       deviceId, 
       totalAmount, 
-      hasFeeBreakdown: !!feeBreakdown 
+      hasFeeBreakdown: !!feeBreakdown,
+      hasCardData: !!cardData
     });
 
-    const requestBody: any = {
+    // Kart numarasından boşlukları temizle
+    const cleanedPan = cardData.pan.replace(/\s/g, '');
+    
+    // Yıl formatını kontrol et ve normalize et (2 haneli ise 4 haneliye çevir)
+    let normalizedYear = cardData.year;
+    if (normalizedYear.length === 2) {
+      // YY formatından YYYY formatına çevir (2000+ varsayarak)
+      const year2Digit = parseInt(normalizedYear, 10);
+      normalizedYear = (2000 + year2Digit).toString();
+    }
+
+    const requestBody: PaynetPaymentRequest = {
       deviceId,
       totalAmount,
+      // Kart bilgileri
+      pan: cleanedPan,
+      month: cardData.month.padStart(2, '0'), // 2 haneli format garantisi
+      year: normalizedYear, // YYYY formatı
+      cvc: cardData.cvc,
+      cardHolder: cardData.cardHolder.toUpperCase().trim(),
     };
 
     // Backend feeBreakdown bekliyor - sadece backend'in beklediği alanları gönder
     // Backend originalRepairPrice, deviceModel ve category alanlarını kabul etmiyor
     if (feeBreakdown) {
-      requestBody.feeBreakdown = {
+      (requestBody as any).feeBreakdown = {
         rewardAmount: feeBreakdown.rewardAmount,
         cargoFee: feeBreakdown.cargoFee,
         serviceFee: feeBreakdown.serviceFee,
@@ -68,14 +99,20 @@ export const initiatePaynetPayment = async (
         netPayout: feeBreakdown.netPayout,
         // originalRepairPrice, deviceModel ve category alanları gönderilmiyor
       };
-      console.log('[PAYNET] Fee breakdown gönderiliyor:', JSON.stringify(requestBody.feeBreakdown, null, 2));
+      console.log('[PAYNET] Fee breakdown gönderiliyor:', JSON.stringify((requestBody as any).feeBreakdown, null, 2));
     }
 
-    console.log('[PAYNET] Backend\'e gönderilecek request body:', JSON.stringify(requestBody, null, 2));
+    // Güvenlik: Kart bilgilerini log'da maskele
+    const maskedRequestBody = {
+      ...requestBody,
+      pan: `${cleanedPan.substring(0, 4)}****${cleanedPan.substring(cleanedPan.length - 4)}`,
+      cvc: '***'
+    };
+    console.log('[PAYNET] Backend\'e gönderilecek request body (maskelenmiş):', JSON.stringify(maskedRequestBody, null, 2));
 
     const response = await apiClient.post<PaynetPaymentResponse>(
       '/payments/process',
-      requestBody
+      requestBody as any // Type assertion çünkü feeBreakdown ayrı ekleniyor
     );
 
     console.log('[PAYNET] Backend\'den gelen response:', JSON.stringify(response, null, 2));

@@ -13,6 +13,15 @@ import {
   DeviceModelData,
 } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
+import {
+  validateCardData,
+  formatCardNumber,
+  formatMonth,
+  formatYear,
+  formatCVC,
+  formatCardHolder,
+  type CardData,
+} from "../utils/cardValidation.ts";
 
 interface PaymentFlowPageProps {
   deviceId?: string;
@@ -50,6 +59,16 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+  
+  // Kart bilgileri state'leri
+  const [cardData, setCardData] = useState<CardData>({
+    pan: "",
+    month: "",
+    year: "",
+    cvc: "",
+    cardHolder: "",
+  });
+  const [cardErrors, setCardErrors] = useState<Partial<Record<keyof CardData, string>>>({});
 
   const finalDeviceId = deviceId || urlDeviceId;
 
@@ -130,15 +149,31 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
       return;
     }
 
+    // Kart bilgileri validation
+    const validationResult = validateCardData(cardData);
+    if (!validationResult.isValid) {
+      setError(validationResult.error || "Kart bilgileri geçersiz");
+      showNotification(validationResult.error || "Kart bilgileri geçersiz", "error");
+      return;
+    }
+
     try {
       setProcessing(true);
       setError(null);
+      setCardErrors({});
 
       const paymentRequest: PaymentRequest = {
         deviceId: finalDeviceId,
         payerId: currentUser.id,
         receiverId: undefined,
         feeBreakdown: fees,
+        cardData: {
+          pan: cardData.pan,
+          month: cardData.month,
+          year: cardData.year,
+          cvc: cardData.cvc,
+          cardHolder: cardData.cardHolder,
+        },
         deviceInfo: {
           model: selectedModel,
           serialNumber: "PENDING", // Will be updated when device is found
@@ -193,6 +228,56 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
       showNotification(t("paymentFailed"), "error");
     } finally {
       setProcessing(false);
+      // Güvenlik: İşlem tamamlandıktan sonra kart bilgilerini temizle
+      setTimeout(() => {
+        setCardData({
+          pan: "",
+          month: "",
+          year: "",
+          cvc: "",
+          cardHolder: "",
+        });
+      }, 1000);
+    }
+  };
+
+  // Kart bilgileri input handlers
+  const handleCardNumberChange = (value: string) => {
+    const formatted = formatCardNumber(value);
+    setCardData((prev) => ({ ...prev, pan: formatted }));
+    if (cardErrors.pan) {
+      setCardErrors((prev) => ({ ...prev, pan: undefined }));
+    }
+  };
+
+  const handleMonthChange = (value: string) => {
+    const formatted = formatMonth(value);
+    setCardData((prev) => ({ ...prev, month: formatted }));
+    if (cardErrors.month) {
+      setCardErrors((prev) => ({ ...prev, month: undefined }));
+    }
+  };
+
+  const handleYearChange = (value: string) => {
+    const formatted = formatYear(value);
+    setCardData((prev) => ({ ...prev, year: formatted }));
+    if (cardErrors.year) {
+      setCardErrors((prev) => ({ ...prev, year: undefined }));
+    }
+  };
+
+  const handleCVCChange = (value: string) => {
+    const formatted = formatCVC(value);
+    setCardData((prev) => ({ ...prev, cvc: formatted }));
+    if (cardErrors.cvc) {
+      setCardErrors((prev) => ({ ...prev, cvc: undefined }));
+    }
+  };
+
+  const handleCardHolderChange = (value: string) => {
+    setCardData((prev) => ({ ...prev, cardHolder: value }));
+    if (cardErrors.cardHolder) {
+      setCardErrors((prev) => ({ ...prev, cardHolder: undefined }));
     }
   };
 
@@ -432,12 +517,137 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
         {step === "payment" && fees && (
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Payment Method */}
-              <div>
+              {/* Payment Method & Card Form */}
+              <div className="space-y-6">
                 <PaymentMethodSelector
                   selectedMethod={selectedPaymentMethod}
                   onMethodChange={setSelectedPaymentMethod}
                 />
+
+                {/* Kart Bilgileri Formu */}
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Kart Bilgileri
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Kart Numarası */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Kart Numarası
+                      </label>
+                      <input
+                        type="text"
+                        value={cardData.pan}
+                        onChange={(e) => handleCardNumberChange(e.target.value)}
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          cardErrors.pan ? "border-red-500" : "border-gray-300"
+                        }`}
+                        disabled={processing}
+                      />
+                      {cardErrors.pan && (
+                        <p className="mt-1 text-sm text-red-600">{cardErrors.pan}</p>
+                      )}
+                    </div>
+
+                    {/* Son Kullanma Tarihi ve CVV */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Ay (MM)
+                        </label>
+                        <input
+                          type="text"
+                          value={cardData.month}
+                          onChange={(e) => handleMonthChange(e.target.value)}
+                          placeholder="12"
+                          maxLength={2}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            cardErrors.month ? "border-red-500" : "border-gray-300"
+                          }`}
+                          disabled={processing}
+                        />
+                        {cardErrors.month && (
+                          <p className="mt-1 text-sm text-red-600">{cardErrors.month}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Yıl (YY veya YYYY)
+                        </label>
+                        <input
+                          type="text"
+                          value={cardData.year}
+                          onChange={(e) => handleYearChange(e.target.value)}
+                          placeholder="2025"
+                          maxLength={4}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                            cardErrors.year ? "border-red-500" : "border-gray-300"
+                          }`}
+                          disabled={processing}
+                        />
+                        {cardErrors.year && (
+                          <p className="mt-1 text-sm text-red-600">{cardErrors.year}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* CVV */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CVV / CVC
+                      </label>
+                      <input
+                        type="text"
+                        value={cardData.cvc}
+                        onChange={(e) => handleCVCChange(e.target.value)}
+                        placeholder="123"
+                        maxLength={4}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          cardErrors.cvc ? "border-red-500" : "border-gray-300"
+                        }`}
+                        disabled={processing}
+                      />
+                      {cardErrors.cvc && (
+                        <p className="mt-1 text-sm text-red-600">{cardErrors.cvc}</p>
+                      )}
+                    </div>
+
+                    {/* Kart Sahibi Adı */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Kart Sahibi Adı
+                      </label>
+                      <input
+                        type="text"
+                        value={cardData.cardHolder}
+                        onChange={(e) => handleCardHolderChange(e.target.value)}
+                        placeholder="JOHN DOE"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors uppercase ${
+                          cardErrors.cardHolder ? "border-red-500" : "border-gray-300"
+                        }`}
+                        disabled={processing}
+                      />
+                      {cardErrors.cardHolder && (
+                        <p className="mt-1 text-sm text-red-600">{cardErrors.cardHolder}</p>
+                      )}
+                    </div>
+
+                    {/* Güvenlik Rozeti */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                        </svg>
+                        <div>
+                          <p className="text-xs font-semibold text-gray-900">Güvenli İşlem</p>
+                          <p className="text-xs text-gray-600">Kart bilgileriniz SSL ile şifrelenir ve saklanmaz</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Final Summary & Checkout */}

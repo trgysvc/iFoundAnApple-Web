@@ -12,6 +12,14 @@ export interface PaymentRequest {
   payerId: string;
   receiverId?: string;
   feeBreakdown: FeeBreakdown;
+  // Kart bilgileri (PAYNET API gereksinimleri)
+  cardData: {
+    pan: string;           // Kart numarası
+    month: string;         // Son kullanma ayı (MM)
+    year: string;          // Son kullanma yılı (YY veya YYYY)
+    cvc: string;           // CVV/CVC kodu
+    cardHolder: string;    // Kart sahibi adı
+  };
   deviceInfo: {
     model: string;
     serialNumber: string;
@@ -77,6 +85,10 @@ export const initiatePayment = async (
       throw new Error("Eksik ödeme bilgileri");
     }
 
+    if (!request.cardData) {
+      throw new Error("Kart bilgileri eksik");
+    }
+
     if (request.feeBreakdown.totalAmount < 10) {
       throw new Error("Minimum ödeme tutarı 10 TL");
     }
@@ -125,11 +137,12 @@ const processPaynetPayment = async (
   });
 
   try {
-    // Backend'e ödeme başlatma isteği gönder - feeBreakdown'ı da gönder
+    // Backend'e ödeme başlatma isteği gönder - feeBreakdown ve kart bilgileri ile
     const paynetResponse = await initiatePaynetPayment(
       request.deviceId,
       request.feeBreakdown.totalAmount,
-      request.feeBreakdown  // ← feeBreakdown eklendi
+      request.feeBreakdown,
+      request.cardData  // ← Kart bilgileri eklendi
     );
 
     // Payment ID'yi localStorage'a kaydet (callback için)
