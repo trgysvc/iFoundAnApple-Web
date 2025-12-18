@@ -121,15 +121,26 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
   const handleCancelPendingPayment = async () => {
     if (!pendingPaymentInfo?.paymentId) return;
     
+    if (!confirm('Önceki ödeme işlemini iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+      return;
+    }
+    
     try {
       setProcessing(true);
       await cancelPendingPayment(pendingPaymentInfo.paymentId, 'Kullanıcı tarafından iptal edildi');
-      showNotification('Önceki ödeme işlemi iptal edildi. Şimdi yeni ödeme yapabilirsiniz.', "success");
+      showNotification('✅ Önceki ödeme işlemi başarıyla iptal edildi. Şimdi yeni ödeme yapabilirsiniz.', "success");
+      
+      // Pending payment bilgisini temizle ve yeniden kontrol et
       setPendingPaymentInfo(null);
       setError(null);
+      
+      // Yeniden kontrol et (artık pending olmamalı)
+      const updatedPendingInfo = await checkPendingPaymentForDevice(finalDeviceId);
+      setPendingPaymentInfo(updatedPendingInfo);
     } catch (err) {
       console.error('[PAYMENT_SUMMARY] Pending payment iptal hatası:', err);
-      showNotification('Önceki ödeme iptal edilemedi. Lütfen tekrar deneyin.', "error");
+      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      showNotification(`❌ Önceki ödeme iptal edilemedi: ${errorMessage}`, "error");
     } finally {
       setProcessing(false);
     }
@@ -221,8 +232,26 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
           navigate(`/payment/success?paymentId=${result.paymentId}`);
         }
       } else {
-        setError(result.errorMessage || t("paymentFailed"));
-        showNotification(t("paymentFailed"), "error");
+        // Ödeme başarısız - Backend'den gelen hata mesajını kullanıcı dostu göster
+        let errorMsg = result.errorMessage || t("paymentFailed");
+        
+        // Backend'den gelen özel hata mesajlarını iyileştir
+        if (errorMsg.includes('devam eden bir ödeme işlemi var') || 
+            errorMsg.includes('bekleyin')) {
+          // Pending payment hatası için özel mesaj
+          errorMsg = 'Bu cihaz için zaten devam eden bir ödeme işlemi var. Lütfen bekleyin veya önceki ödemeyi tamamlayın.';
+          
+          // Pending payment bilgisini yeniden kontrol et
+          try {
+            const pendingInfo = await checkPendingPaymentForDevice(finalDeviceId);
+            setPendingPaymentInfo(pendingInfo);
+          } catch (err) {
+            console.error('[PAYMENT_SUMMARY] Pending payment kontrolü hatası:', err);
+          }
+        }
+        
+        setError(errorMsg);
+        showNotification(errorMsg, "error");
       }
     } catch (err) {
       console.error("Payment error:", err);
@@ -331,11 +360,26 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
               </h3>
 
               {/* Pending Payment Warning */}
-              {pendingPaymentInfo?.exists && (
-                <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl">
+              {checkingPendingPayment && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+                    <p className="text-sm text-blue-700">Ödeme durumu kontrol ediliyor...</p>
+                  </div>
+                </div>
+              )}
+              
+              {pendingPaymentInfo?.exists && !checkingPendingPayment && (
+                <div className={`mb-6 p-4 rounded-xl border-2 ${
+                  pendingPaymentInfo.canRetry 
+                    ? 'bg-orange-50 border-orange-300' 
+                    : 'bg-yellow-50 border-yellow-300'
+                }`}>
                   <div className="flex items-start">
                     <svg
-                      className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5"
+                      className={`w-5 h-5 mr-3 flex-shrink-0 mt-0.5 ${
+                        pendingPaymentInfo.canRetry ? 'text-orange-600' : 'text-yellow-600'
+                      }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -346,13 +390,21 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                       />
                     </svg>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-yellow-800 mb-1">
-                        Devam Eden Ödeme İşlemi
+                      <h4 className={`text-sm font-semibold mb-1 ${
+                        pendingPaymentInfo.canRetry ? 'text-orange-800' : 'text-yellow-800'
+                      }`}>
+                        {pendingPaymentInfo.canRetry 
+                          ? 'Eski Ödeme Denemesi Bulundu' 
+                          : 'Devam Eden Ödeme İşlemi'}
                       </h4>
-                      <p className="text-sm text-yellow-700 mb-2">
-                        Bu cihaz için devam eden bir ödeme işlemi bulunmaktadır.
+                      <p className={`text-sm mb-3 ${
+                        pendingPaymentInfo.canRetry ? 'text-orange-700' : 'text-yellow-700'
+                      }`}>
+                        {pendingPaymentInfo.canRetry 
+                          ? 'Bu cihaz için daha önce başlatılmış bir ödeme işlemi var. Yeni ödeme yapmak için eski ödemeyi iptal edebilirsiniz.'
+                          : 'Bu cihaz için devam eden bir ödeme işlemi bulunmaktadır. Lütfen birkaç dakika bekleyin veya önceki ödemeyi tamamlayın.'}
                         {pendingPaymentInfo.createdAt && (
-                          <span className="block mt-1 text-xs">
+                          <span className="block mt-2 text-xs opacity-75">
                             Oluşturulma: {new Date(pendingPaymentInfo.createdAt).toLocaleString('tr-TR')}
                           </span>
                         )}
@@ -361,15 +413,22 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({
                         <button
                           onClick={handleCancelPendingPayment}
                           disabled={processing}
-                          className="text-xs text-yellow-800 underline hover:text-yellow-900 font-medium"
+                          className="w-full px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
-                          Önceki ödemeyi iptal et ve yeni ödeme yap
+                          {processing ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              İptal ediliyor...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              Önceki ödemeyi iptal et ve yeni ödeme yap
+                            </>
+                          )}
                         </button>
-                      )}
-                      {!pendingPaymentInfo.canRetry && pendingPaymentInfo.createdAt && (
-                        <p className="text-xs text-yellow-700 mt-1">
-                          Lütfen birkaç dakika bekleyin veya önceki ödemeyi tamamlayın.
-                        </p>
                       )}
                     </div>
                   </div>
