@@ -229,6 +229,80 @@ export const getPaymentStatus = async (
 };
 
 /**
+ * Cihaz için mevcut pending payment kontrolü
+ * Backend'e GET /v1/payments/device/:deviceId/pending isteği gönderir
+ */
+export const checkPendingPaymentForDevice = async (
+  deviceId: string
+): Promise<{
+  exists: boolean;
+  paymentId?: string;
+  createdAt?: string;
+  canRetry: boolean;
+}> => {
+  try {
+    console.log('[PAYNET] Pending payment kontrolü yapılıyor...', { deviceId });
+
+    const response = await apiClient.get<{
+      exists: boolean;
+      paymentId?: string;
+      createdAt?: string;
+      canRetry: boolean;
+    }>(`/payments/device/${deviceId}/pending`);
+
+    console.log('[PAYNET] Pending payment kontrolü sonucu:', response);
+
+    return response;
+  } catch (error) {
+    console.error('[PAYNET] Pending payment kontrolü hatası:', error);
+    // Hata durumunda varsayılan olarak pending yok kabul et
+    return {
+      exists: false,
+      canRetry: false,
+    };
+  }
+};
+
+/**
+ * Pending payment'ı iptal et
+ * Backend'e POST /v1/payments/:paymentId/cancel isteği gönderir
+ */
+export const cancelPendingPayment = async (
+  paymentId: string,
+  reason?: string
+): Promise<{
+  success: boolean;
+  message: string;
+}> => {
+  try {
+    console.log('[PAYNET] Pending payment iptal ediliyor...', { paymentId, reason });
+
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+    }>(`/payments/${paymentId}/cancel`, {
+      reason: reason || 'Kullanıcı tarafından iptal edildi',
+    });
+
+    console.log('[PAYNET] Pending payment iptal sonucu:', response);
+
+    return response;
+  } catch (error) {
+    console.error('[PAYNET] Pending payment iptal hatası:', error);
+    
+    if (error instanceof Error) {
+      if ('statusCode' in error) {
+        const apiError = error as unknown as ApiError;
+        throw new Error(apiError.message || 'Pending payment iptal edilemedi');
+      }
+      throw error;
+    }
+    
+    throw new Error('Pending payment iptal edilemedi. Lütfen tekrar deneyin.');
+  }
+};
+
+/**
  * PAYNET bağlantı testi
  * Backend'e GET /v1/payments/test-paynet-connection isteği gönderir
  */

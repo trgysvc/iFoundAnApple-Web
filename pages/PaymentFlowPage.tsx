@@ -13,6 +13,7 @@ import {
   DeviceModelData,
 } from "../utils/feeCalculation.ts";
 import { initiatePayment, PaymentRequest } from "../utils/paymentGateway.ts";
+import { checkPendingPaymentForDevice, cancelPendingPayment } from "../utils/paynetPayment.ts";
 import {
   validateCardData,
   formatCardNumber,
@@ -59,6 +60,13 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [pendingPaymentInfo, setPendingPaymentInfo] = useState<{
+    exists: boolean;
+    paymentId?: string;
+    createdAt?: string;
+    canRetry: boolean;
+  } | null>(null);
+  const [checkingPendingPayment, setCheckingPendingPayment] = useState(false);
   
   // Kart bilgileri state'leri
   const [cardData, setCardData] = useState<CardData>({
@@ -78,6 +86,37 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
       calculateFees();
     }
   }, [selectedModel, customRewardAmount, step]);
+
+  // Check for pending payment when deviceId is available
+  useEffect(() => {
+    const checkPending = async () => {
+      if (finalDeviceId && currentUser) {
+        setCheckingPendingPayment(true);
+        try {
+          const pendingInfo = await checkPendingPaymentForDevice(finalDeviceId);
+          setPendingPaymentInfo(pendingInfo);
+          
+          if (pendingInfo.exists && !pendingInfo.canRetry) {
+            // Çok yeni pending payment varsa kullanıcıya bilgi ver
+            const createdAt = pendingInfo.createdAt ? new Date(pendingInfo.createdAt) : null;
+            if (createdAt) {
+              const minutesAgo = Math.floor((Date.now() - createdAt.getTime()) / 60000);
+              const remainingMinutes = Math.max(0, 5 - minutesAgo);
+              if (remainingMinutes > 0) {
+                setError(`Bu cihaz için devam eden bir ödeme işlemi var. Lütfen ${remainingMinutes} dakika bekleyin veya önceki ödemeyi tamamlayın.`);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('[PAYMENT_FLOW] Pending payment kontrolü hatası:', err);
+        } finally {
+          setCheckingPendingPayment(false);
+        }
+      }
+    };
+    
+    checkPending();
+  }, [finalDeviceId, currentUser]);
 
   const calculateFees = async () => {
     if (!selectedModel) return;
@@ -132,6 +171,23 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
     setStep("payment");
   };
 
+  const handleCancelPendingPayment = async () => {
+    if (!pendingPaymentInfo?.paymentId) return;
+    
+    try {
+      setProcessing(true);
+      await cancelPendingPayment(pendingPaymentInfo.paymentId, 'Kullanıcı tarafından iptal edildi');
+      showNotification('Önceki ödeme işlemi iptal edildi. Şimdi yeni ödeme yapabilirsiniz.', "success");
+      setPendingPaymentInfo(null);
+      setError(null);
+    } catch (err) {
+      console.error('[PAYMENT_FLOW] Pending payment iptal hatası:', err);
+      showNotification('Önceki ödeme iptal edilemedi. Lütfen tekrar deneyin.', "error");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const handlePayment = async () => {
     if (!currentUser) {
       showNotification(t("paymentLoginRequired"), "error");
@@ -147,6 +203,20 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
     if (!agreementAccepted) {
       showNotification(t("acceptTermsRequired"), "error");
       return;
+    }
+
+    // Pending payment kontrolü - eğer çok yeni pending payment varsa uyar
+    if (pendingPaymentInfo?.exists && !pendingPaymentInfo.canRetry) {
+      const createdAt = pendingPaymentInfo.createdAt ? new Date(pendingPaymentInfo.createdAt) : null;
+      if (createdAt) {
+        const minutesAgo = Math.floor((Date.now() - createdAt.getTime()) / 60000);
+        const remainingMinutes = Math.max(0, 5 - minutesAgo);
+        if (remainingMinutes > 0) {
+          setError(`Bu cihaz için devam eden bir ödeme işlemi var. Lütfen ${remainingMinutes} dakika bekleyin veya önceki ödemeyi iptal edin.`);
+          showNotification(`Devam eden bir ödeme işlemi var. ${remainingMinutes} dakika bekleyin.`, "warning");
+          return;
+        }
+      }
     }
 
     // Kart bilgileri validation
@@ -710,6 +780,52 @@ const PaymentFlowPage: React.FC<PaymentFlowPageProps> = ({
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     {t("paymentConfirmation")}
                   </h3>
+
+                  {/* Pending Payment Warning */}
+                  {pendingPaymentInfo?.exists && (
+                    <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl">
+                      <div className="flex items-start">
+                        <svg
+                          className="w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-yellow-800 mb-1">
+                            Devam Eden Ödeme İşlemi
+                          </h4>
+                          <p className="text-sm text-yellow-700 mb-2">
+                            Bu cihaz için devam eden bir ödeme işlemi bulunmaktadır.
+                            {pendingPaymentInfo.createdAt && (
+                              <span className="block mt-1 text-xs">
+                                Oluşturulma: {new Date(pendingPaymentInfo.createdAt).toLocaleString('tr-TR')}
+                              </span>
+                            )}
+                          </p>
+                          {pendingPaymentInfo.canRetry && (
+                            <button
+                              onClick={handleCancelPendingPayment}
+                              disabled={processing}
+                              className="text-xs text-yellow-800 underline hover:text-yellow-900 font-medium"
+                            >
+                              Önceki ödemeyi iptal et ve yeni ödeme yap
+                            </button>
+                          )}
+                          {!pendingPaymentInfo.canRetry && pendingPaymentInfo.createdAt && (
+                            <p className="text-xs text-yellow-700 mt-1">
+                              Lütfen birkaç dakika bekleyin veya önceki ödemeyi tamamlayın.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mb-6">
                     <label className="flex items-start">

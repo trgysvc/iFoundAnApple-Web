@@ -5,7 +5,7 @@
 
 import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
-import { initiatePaynetPayment } from "./paynetPayment.ts";
+import { initiatePaynetPayment, checkPendingPaymentForDevice, cancelPendingPayment } from "./paynetPayment.ts";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -171,10 +171,28 @@ const processPaynetPayment = async (
     };
   } catch (error) {
     console.error("[PAYNET] Ödeme başlatma hatası:", error);
+    
+    // Backend'den gelen hata mesajını daha iyi handle et
+    let errorMessage = "PAYNET ödeme hatası";
+    
+    if (error instanceof Error) {
+      // Backend'den gelen özel hata mesajlarını kontrol et
+      const errorMsg = error.message;
+      
+      // Pending payment hatası kontrolü
+      if (errorMsg.includes('devam eden bir ödeme işlemi var') || 
+          errorMsg.includes('pending payment') ||
+          errorMsg.includes('bekleyin')) {
+        errorMessage = errorMsg; // Backend'den gelen mesajı olduğu gibi kullan
+      } else {
+        errorMessage = errorMsg;
+      }
+    }
+    
     return {
       success: false,
       status: "failed",
-      errorMessage: error instanceof Error ? error.message : "PAYNET ödeme hatası",
+      errorMessage,
       providerResponse: error,
     };
   }
