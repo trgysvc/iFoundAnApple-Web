@@ -1,7 +1,7 @@
 /**
  * PAYNET Payment Callback Page
  * PAYNET 3D Secure sonrasında buraya yönlendirilir
- * URL'den session_id ve token_id parametrelerini alır ve backend'e gönderir
+ * POST isteği veya URL parametrelerinden session_id ve token_id alır ve backend'e gönderir
  */
 
 import { useEffect, useState } from 'react';
@@ -18,17 +18,37 @@ export const PaymentCallbackPage = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // PAYNET'ten gelen parametreleri al
-        const sessionId = searchParams.get('session_id');
-        const tokenId = searchParams.get('token_id');
+        // PAYNET'ten gelen parametreleri al - öncelik sırası:
+        // 1. URL parametrelerinden (GET)
+        // 2. Form input'larından (POST form submit durumu)
+        // 3. POST body'den (eğer JSON ise)
+        
+        let sessionId = searchParams.get('session_id');
+        let tokenId = searchParams.get('token_id');
+        
+        // Eğer URL'de yoksa, form input'larından kontrol et (POST form submit durumu)
+        if (!sessionId || !tokenId) {
+          const sessionInput = document.querySelector('input[name="session_id"]') as HTMLInputElement;
+          const tokenInput = document.querySelector('input[name="token_id"]') as HTMLInputElement;
+          
+          if (sessionInput?.value) {
+            sessionId = sessionInput.value;
+          }
+          if (tokenInput?.value) {
+            tokenId = tokenInput.value;
+          }
+        }
         
         // Payment ID'yi localStorage'dan al
-        const paymentId = localStorage.getItem('current_payment_id');
+        const paymentId = localStorage.getItem('current_payment_id') || 
+                         localStorage.getItem('currentPaymentId'); // Fallback için eski key'i de kontrol et
         
         console.log('[CALLBACK] PAYNET parametreleri alındı:', { 
           paymentId, 
           hasSessionId: !!sessionId, 
-          hasTokenId: !!tokenId 
+          hasTokenId: !!tokenId,
+          sessionIdSource: sessionId ? (searchParams.get('session_id') ? 'URL' : 'Form') : 'none',
+          tokenIdSource: tokenId ? (searchParams.get('token_id') ? 'URL' : 'Form') : 'none'
         });
         
         if (!paymentId) {
@@ -68,6 +88,7 @@ export const PaymentCallbackPage = () => {
         
         // Payment ID'yi localStorage'dan temizle
         localStorage.removeItem('current_payment_id');
+        localStorage.removeItem('currentPaymentId'); // Eski key'i de temizle
         
         // 3 saniye sonra dashboard'a yönlendir
         setTimeout(() => {
