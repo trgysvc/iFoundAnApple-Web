@@ -145,12 +145,15 @@ const processPaynetPayment = async (
       request.cardData  // ← Kart bilgileri eklendi
     );
 
-    // Payment ID'yi localStorage'a kaydet (callback için)
+    // Payment ID'yi localStorage'a kaydet (processing sayfası için)
+    // Hem eski hem yeni key formatını kullan (backward compatibility)
     if (paynetResponse.id) {
+      localStorage.setItem('currentPaymentId', paynetResponse.id);
       localStorage.setItem('current_payment_id', paynetResponse.id);
     }
     
-    // Device ID'yi localStorage'a kaydet (webhook geldiğinde kullanılacak)
+    // Device ID'yi localStorage'a kaydet (processing sayfası için)
+    localStorage.setItem('currentDeviceId', request.deviceId);
     localStorage.setItem('current_payment_device_id', request.deviceId);
     
     // Fee breakdown'ı localStorage'a kaydet (webhook geldiğinde kullanılacak)

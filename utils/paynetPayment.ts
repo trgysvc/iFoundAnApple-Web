@@ -146,8 +146,15 @@ export const initiatePaynetPayment = async (
 };
 
 /**
+ * ⚠️ DEPRECATED - Artık kullanılmıyor
+ * 
+ * Backend artık callback'i handle ediyor ve webhook ile işlemi tamamlıyor.
+ * Frontend'de bu fonksiyon çağrılmamalı.
+ * 
  * 3D Secure doğrulaması sonrası ödemeyi tamamla
  * Backend'e POST /v1/payments/complete-3d isteği gönderir
+ * 
+ * @deprecated Backend callback'i handle ediyor, bu fonksiyon artık kullanılmıyor
  */
 export const completePaynet3D = async (
   paymentId: string,
