@@ -56,6 +56,9 @@ const DeviceDetailPage: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewInvoiceUrl, setPreviewInvoiceUrl] = useState<string | null>(null);
   const [invoiceFileType, setInvoiceFileType] = useState<'image' | 'pdf' | null>(null);
+  const [payment, setPayment] = useState<any | null>(null);
+  const [escrow, setEscrow] = useState<any | null>(null);
+  const [isLoadingPaymentData, setIsLoadingPaymentData] = useState(false);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -89,23 +92,44 @@ const DeviceDetailPage: React.FC = () => {
         setSecureFinderPhotoUrls([]);
         setSecureInvoiceUrl(null);
 
-        // Eğer cihazın ödemesi tamamlandıysa, PaymentSuccessPage'e yönlendir
-        if (foundDevice && foundDevice.status === DeviceStatus.PAYMENT_COMPLETE) {
-          console.log("DeviceDetailPage: Ödeme tamamlanmış, PaymentSuccessPage'e yönlendiriliyor");
+        // Eğer cihazın ödemesi tamamlandıysa, payment ve escrow bilgilerini çek
+        if (foundDevice && (foundDevice.status === DeviceStatus.PAYMENT_COMPLETE || foundDevice.status === 'payment_completed')) {
+          console.log("DeviceDetailPage: Ödeme tamamlanmış, payment ve escrow bilgileri çekiliyor");
+          setIsLoadingPaymentData(true);
           
-          // Payment ID'yi bul
-          const { data: paymentData } = await supabaseClient
-            .from('payments')
-            .select('id')
-            .eq('device_id', deviceId)
-            .eq('status', 'completed')
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-          
-          if (paymentData) {
-            navigate(`/payment/success?paymentId=${paymentData.id}`);
-            return;
+          try {
+            // Payment bilgilerini çek
+            const { data: paymentData, error: paymentError } = await supabaseClient
+              .from('payments')
+              .select('*')
+              .eq('device_id', deviceId)
+              .eq('payment_status', 'completed')
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            
+            if (!paymentError && paymentData) {
+              setPayment(paymentData);
+              
+              // Escrow bilgilerini çek
+              const { data: escrowData, error: escrowError } = await supabaseClient
+                .from('escrow_accounts')
+                .select('*')
+                .eq('payment_id', paymentData.id)
+                .maybeSingle();
+              
+              if (!escrowError && escrowData) {
+                setEscrow(escrowData);
+              } else if (escrowError) {
+                console.warn("Escrow kaydı bulunamadı:", escrowError.message);
+              }
+            } else if (paymentError) {
+              console.warn("Payment kaydı bulunamadı:", paymentError.message);
+            }
+          } catch (error) {
+            console.error("Failed to fetch payment/escrow data:", error);
+          } finally {
+            setIsLoadingPaymentData(false);
           }
         }
 
@@ -932,6 +956,370 @@ const DeviceDetailPage: React.FC = () => {
             </div>
           );
         }
+
+      case DeviceStatus.PAYMENT_COMPLETE:
+      case 'payment_completed':
+        console.log("DeviceDetailPage: PAYMENT_COMPLETE case executed");
+        // Sadece owner perspektifi için özel görünüm göster
+        if (!isOwnerPerspective) {
+          // Finder perspektifi için basit mesaj göster
+          return (
+            <StatusView
+              icon={<Info className="w-10 h-10" />}
+              title="Ödeme Tamamlandı"
+              description="Cihaz sahibi ödemeyi tamamladı. Kargo sürecine geçiliyor."
+            >
+              <div className="mt-8">
+                <Button
+                  onClick={() => navigate("/dashboard")}
+                  variant="secondary"
+                >
+                  {t("backToDashboard")}
+                </Button>
+              </div>
+            </StatusView>
+          );
+        }
+
+        // Owner perspektifi için detaylı görünüm
+        return (
+          <div className="min-h-screen bg-gray-50">
+            <div className="max-w-2xl mx-auto py-12">
+              {/* Başlık */}
+              <div className="text-center mb-8">
+                <div className="bg-brand-blue-light text-brand-blue p-4 rounded-full mb-6 inline-flex">
+                  <Check className="w-10 h-10" />
+                </div>
+                <h1 className="text-3xl font-bold text-brand-gray-600 mb-2">
+                  Ödemeniz Başarıyla Tamamlandı!
+                </h1>
+                <p className="text-lg text-brand-gray-500">
+                  Cihazınızın kargo firmasına teslim edilmesi bekleniliyor.
+                </p>
+              </div>
+
+              {/* Kayıp Cihaz Detayları Kartı */}
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Kayıp Cihaz Detayları
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Kayıp Tarihi:</span>
+                    <span className="font-medium">
+                      {device.lost_date
+                        ? new Date(device.lost_date).toLocaleDateString("tr-TR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
+                        : "Belirtilmemiş"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Kayıp Yeri:</span>
+                    <span className="font-medium">
+                      {device.lost_location || "Belirtilmemiş"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Modeli:</span>
+                    <span className="font-medium">{device.model}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                    <span className="font-mono text-sm">{device.serialNumber}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cihaz Rengi:</span>
+                    <span className="font-medium">{device.color}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Ek Detaylar:</span>
+                    <span className="font-medium">
+                      {device.description || "Belirtilmemiş"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">
+                      Satın Alma Kanıtı (Fatura) Dosyası:
+                    </span>
+                    {isLoadingInvoice ? (
+                      <div className="flex items-center text-gray-500">
+                        <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                        Yükleniyor...
+                      </div>
+                    ) : secureInvoiceUrl || device.invoiceDataUrl ? (
+                      <button
+                        onClick={() => {
+                          const url = secureInvoiceUrl || device.invoiceDataUrl || null;
+                          if (url) {
+                            const isPdf = device?.invoice_url?.toLowerCase().endsWith('.pdf') || 
+                                        url.toLowerCase().includes('.pdf');
+                            setInvoiceFileType(isPdf ? 'pdf' : 'image');
+                            setPreviewInvoiceUrl(url);
+                          }
+                        }}
+                        className="text-blue-600 hover:text-blue-800 font-medium underline cursor-pointer"
+                      >
+                        Ekli Dosyayı Gör
+                      </button>
+                    ) : (
+                      <span className="text-gray-500">Dosya eklenmemiş</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* İşlem Durumu Kartı */}
+              <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  İşlem Durumu
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Durum:</span>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                      Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz ödemesi alındı. Kargo firmasına teslimi bekleniliyor.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ödeme Detayları Kartı */}
+              {payment && (
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Ödeme Detayları
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ödeme ID:</span>
+                      <span className="font-mono text-sm">{payment.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Toplam Tutar:</span>
+                      <span className="font-medium">
+                        {payment.total_amount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }) || 'N/A'}
+                      </span>
+                    </div>
+                    {payment.reward_amount && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Bulan Kişi Ödülü:</span>
+                        <span className="font-medium">
+                          {payment.reward_amount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
+                      </div>
+                    )}
+                    {payment.cargo_fee && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Kargo Ücreti:</span>
+                        <span className="font-medium">
+                          {payment.cargo_fee.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
+                      </div>
+                    )}
+                    {payment.service_fee && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Hizmet Bedeli:</span>
+                        <span className="font-medium">
+                          {payment.service_fee.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
+                      </div>
+                    )}
+                    {payment.payment_gateway_fee && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Gateway Komisyonu:</span>
+                        <span className="font-medium">
+                          {payment.payment_gateway_fee.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
+                      </div>
+                    )}
+                    {payment.net_payout && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Net Ödeme:</span>
+                        <span className="font-medium">
+                          {payment.net_payout.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ödeme Durumu:</span>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                        Tamamlandı
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ödeme Sağlayıcı:</span>
+                      <span className="font-medium">{payment.payment_provider || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ödeme Tarihi:</span>
+                      <span className="font-medium">
+                        {payment.completed_at
+                          ? new Date(payment.completed_at).toLocaleDateString("tr-TR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : payment.created_at
+                          ? new Date(payment.created_at).toLocaleDateString("tr-TR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Escrow Durumu Kartı */}
+              {escrow && (
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Escrow Durumu
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Escrow ID:</span>
+                      <span className="font-mono text-sm">{escrow.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Durum:</span>
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+                        {escrow.status === 'held' ? 'Beklemede' : escrow.status === 'pending' ? 'Beklemede' : escrow.status || 'Beklemede'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Escrow Tutarı:</span>
+                      <span className="font-medium">
+                        {escrow.total_amount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }) || 'N/A'}
+                      </span>
+                    </div>
+                    {escrow.held_at && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Tutulma Tarihi:</span>
+                        <span className="font-medium">
+                          {new Date(escrow.held_at).toLocaleDateString("tr-TR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Durum Bilgisi Kartı */}
+              <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Durum Bilgisi
+                </h2>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      1
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">
+                        Cihaz için eşleşme bekleniyor
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      2
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">
+                        Cihazınız bulundu
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Ödemenizi yapmak ve takas sürecini tamamlamak için "Ödemeyi güvenle yap" Butonu
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      3
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">
+                        Cihazınızın kargo ile teslim edilmesi bekleniyor
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Kargoya verildiğinde takip numaranız burada görünecektir.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      4
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">
+                        Cihaz Teslim Alındığında
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın "Onay Butonu"
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      5
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                      <p className="text-gray-600 text-sm">
+                        Cihazınıza kavuştuğunuz için mutluyuz.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4">
+                <Button
+                  onClick={() => navigate("/dashboard")}
+                  variant="primary"
+                  className="flex-1"
+                >
+                  CİHAZLARIM LİSTESİNE GERİ DÖN
+                </Button>
+              </div>
+
+              {/* Contact Info */}
+              <div className="mt-8 text-center">
+                <p className="text-gray-600 text-sm">
+                  Sorularınız için{" "}
+                  <a
+                    href="/contact"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    iletişim sayfamızı
+                  </a>{" "}
+                  ziyaret edebilirsiniz.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
 
       case DeviceStatus.EXCHANGE_PENDING:
         return (
