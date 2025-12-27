@@ -9,7 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { getPaymentStatus } from '../utils/paynetPayment';
 
-export const PaymentProcessingPage = () => {
+const PaymentProcessingPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'checking' | 'processing' | 'success' | 'failed'>('checking');
@@ -20,6 +20,20 @@ export const PaymentProcessingPage = () => {
   const interval = 2000; // 2 saniye aralık
 
   useEffect(() => {
+    // URL parametrelerinden session_id ve token_id'yi al (backend callback'ten gelen)
+    const sessionId = searchParams.get('session_id');
+    const tokenId = searchParams.get('token_id');
+    
+    // URL parametrelerini log'la
+    if (sessionId || tokenId) {
+      console.log('[PAYMENT_PROCESSING] Callback parametreleri alındı:', {
+        hasSessionId: !!sessionId,
+        hasTokenId: !!tokenId,
+        sessionIdPrefix: sessionId ? sessionId.substring(0, 20) + '...' : null,
+        tokenIdPrefix: tokenId ? tokenId.substring(0, 20) + '...' : null,
+      });
+    }
+
     // localStorage'dan paymentId ve deviceId'yi al
     const paymentId = localStorage.getItem('currentPaymentId') || 
                      localStorage.getItem('current_payment_id');
@@ -138,7 +152,7 @@ export const PaymentProcessingPage = () => {
         pollingIntervalRef.current = null;
       }
     };
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -220,3 +234,4 @@ export const PaymentProcessingPage = () => {
   );
 };
 
+export default PaymentProcessingPage;

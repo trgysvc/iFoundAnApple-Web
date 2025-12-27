@@ -5,7 +5,7 @@
 
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-export const PaymentErrorPage = () => {
+const PaymentErrorPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const reason = searchParams.get('reason');
@@ -80,3 +80,4 @@ export const PaymentErrorPage = () => {
   );
 };
 
+export default PaymentErrorPage;
