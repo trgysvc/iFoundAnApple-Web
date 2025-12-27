@@ -1,7 +1,8 @@
 /**
  * Payment Processing Page
  * Backend 3D Secure sonrası bu sayfaya redirect ediyor
- * Bu sayfa payment status'u polling ile kontrol eder
+ * Bu sayfa sadece payment status'u polling ile kontrol eder
+ * Backend callback'i handle ediyor, frontend sadece status kontrolü yapar
  */
 
 import { useEffect, useState, useRef } from 'react';
@@ -20,23 +21,14 @@ const PaymentProcessingPage = () => {
   const interval = 2000; // 2 saniye aralık
 
   useEffect(() => {
-    // URL parametrelerinden session_id ve token_id'yi al (backend callback'ten gelen)
-    const sessionId = searchParams.get('session_id');
-    const tokenId = searchParams.get('token_id');
-    
-    // URL parametrelerini log'la
-    if (sessionId || tokenId) {
-      console.log('[PAYMENT_PROCESSING] Callback parametreleri alındı:', {
-        hasSessionId: !!sessionId,
-        hasTokenId: !!tokenId,
-        sessionIdPrefix: sessionId ? sessionId.substring(0, 20) + '...' : null,
-        tokenIdPrefix: tokenId ? tokenId.substring(0, 20) + '...' : null,
-      });
-    }
-
-    // localStorage'dan paymentId ve deviceId'yi al
-    const paymentId = localStorage.getItem('currentPaymentId') || 
+    // Önce URL'den paymentId'yi al (backend redirect'ten gelen)
+    // Yoksa localStorage'dan al (fallback)
+    const paymentId = searchParams.get('paymentId') || 
+                     searchParams.get('payment_id') ||
+                     localStorage.getItem('currentPaymentId') || 
                      localStorage.getItem('current_payment_id');
+    
+    // deviceId'yi localStorage'dan al (URL'de olmayabilir)
     const deviceId = localStorage.getItem('currentDeviceId') || 
                     localStorage.getItem('current_payment_device_id');
 
