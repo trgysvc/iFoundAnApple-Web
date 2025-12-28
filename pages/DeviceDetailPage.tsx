@@ -960,24 +960,252 @@ const DeviceDetailPage: React.FC = () => {
       case DeviceStatus.PAYMENT_COMPLETE:
       case 'payment_completed':
         console.log("DeviceDetailPage: PAYMENT_COMPLETE case executed");
-        // Sadece owner perspektifi için özel görünüm göster
+        // Finder perspektifi için detaylı görünüm
         if (!isOwnerPerspective) {
-          // Finder perspektifi için basit mesaj göster
           return (
-            <StatusView
-              icon={<Info className="w-10 h-10" />}
-              title="Ödeme Tamamlandı"
-              description="Cihaz sahibi ödemeyi tamamladı. Kargo sürecine geçiliyor."
-            >
-              <div className="mt-8">
-                <Button
-                  onClick={() => navigate("/dashboard")}
-                  variant="secondary"
-                >
-                  {t("backToDashboard")}
-                </Button>
+            <div className="min-h-screen bg-gray-50">
+              <div className="max-w-2xl mx-auto py-12">
+                {/* Başlık */}
+                <div className="text-center mb-8">
+                  <div className="text-green-500 text-6xl mb-4">✅</div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    Ödeme Süreci Tamamlandı!
+                  </h1>
+                  <p className="text-lg text-brand-blue">
+                    Lütfen en kısa sürede cihazı kargo firmasına teslim edin.
+                  </p>
+                </div>
+
+                {/* Profil Bilgileri Uyarısı */}
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <span className="text-2xl">⚠️</span>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800 mb-2">
+                        Ödülünüzü alabilmek için lütfen profil bilgilerinizi tamamlayın:
+                      </h3>
+                      <ul className="text-sm text-yellow-700 space-y-1">
+                        <li className="flex items-center">
+                          <input type="checkbox" disabled className="mr-2" />
+                          TC Kimlik Numaranızı girin
+                        </li>
+                        <li className="flex items-center">
+                          <input type="checkbox" disabled className="mr-2" />
+                          IBAN bilgilerinizi ekleyin
+                        </li>
+                      </ul>
+                      <Button
+                        onClick={() => navigate('/profile')}
+                        variant="secondary"
+                        className="mt-3 text-sm"
+                      >
+                        Profil Sayfasına Git
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bulunan Cihaz Detayları Kartı */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Bulunan Cihaz Detayları
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Tarihi:</span>
+                      <span className="font-medium">
+                        {device.found_date
+                          ? new Date(device.found_date).toLocaleDateString("tr-TR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })
+                          : "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bulunma Yeri:</span>
+                      <span className="font-medium">
+                        {device.found_location || "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Modeli:</span>
+                      <span className="font-medium">{device.model}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Seri Numarası:</span>
+                      <span className="font-mono text-sm">{device.serialNumber}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cihaz Rengi:</span>
+                      <span className="font-medium">{device.color}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Ek Detaylar:</span>
+                      <span className="font-medium">
+                        {device.description || "Belirtilmemiş"}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-gray-600">
+                        Bulunan Cihaz Fotoğrafı (Ön ve Arka):
+                      </span>
+                      <div className="mt-2 sm:mt-0 flex-1 sm:text-right">
+                        {isLoadingFinderPhotos ? (
+                          <div className="inline-flex items-center text-gray-500">
+                            <div className="animate-spin w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                            Yükleniyor...
+                          </div>
+                        ) : secureFinderPhotoUrls.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+                            {secureFinderPhotoUrls.map((url, index) => (
+                              <button
+                                key={url}
+                                type="button"
+                                onClick={() => setPreviewImage(url)}
+                                className="inline-flex items-center px-3 py-1 bg-brand-blue text-white text-xs rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2"
+                              >
+                                Fotoğraf {index + 1}
+                              </button>
+                            ))}
+                          </div>
+                        ) : finderPhotoUrls.length > 0 ? (
+                          <span className="text-xs text-brand-gray-500">
+                            Fotoğraflar kaydedildi ancak görüntüleme bağlantısı oluşturulamadı.
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 text-sm">
+                            Fotoğraf eklenmemiş
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* İşlem Durumu Kartı */}
+                <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    İşlem Durumu
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Durum:</span>
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                        Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz için ödeme tamamlandı.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Durum Bilgisi Kartı */}
+                <div className="bg-yellow-50 rounded-lg p-6 mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Durum Bilgisi
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        1
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          Cihaz için eşleşme bekleniyor
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        2
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">Eşleşme bulundu</p>
+                        <p className="text-gray-600 text-sm">
+                          Cihazın sahibinin ödeme yapması bekleniyor.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        3
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          Cihazın Kargo Firmasına Teslim Edilmesi
+                        </p>
+                        <p className="text-gray-600 text-sm">
+                          Kargo firmasına vereceğiniz <strong>Teslim Kodunuz:</strong> <span className="font-mono bg-white px-2 py-1 rounded">ABC12345</span>
+                          <br />
+                          <span className="text-xs text-gray-500">(Kargo firması API'si tarafından üretilen kod - yakında gösterilecek)</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        4
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">
+                          Cihaz Sahibi Teslim Alındığında
+                        </p>
+                        <p className="text-gray-600 text-sm">
+                          Kargo firması cihazı sahibine teslim edecek. Onay bekleniyor.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
+                        5
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                        <p className="text-gray-600 text-sm">
+                          Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-4">
+                  <Button
+                    onClick={() => navigate("/dashboard")}
+                    variant="primary"
+                    className="flex-1"
+                  >
+                    CİHAZLARIM LİSTESİNE GERİ DÖN
+                  </Button>
+                </div>
+
+                {/* Contact Info */}
+                <div className="mt-8 text-center">
+                  <p className="text-gray-600 text-sm">
+                    Sorularınız için{" "}
+                    <a
+                      href="/contact"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      iletişim sayfamızı
+                    </a>{" "}
+                    ziyaret edebilirsiniz.
+                  </p>
+                </div>
               </div>
-            </StatusView>
+            </div>
           );
         }
 
