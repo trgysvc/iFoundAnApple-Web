@@ -1363,14 +1363,6 @@ const DeviceDetailPage: React.FC = () => {
                         </span>
                       </div>
                     )}
-                    {payment.net_payout && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Net Ödeme:</span>
-                        <span className="font-medium">
-                          {payment.net_payout.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                        </span>
-                      </div>
-                    )}
                     <div className="flex justify-between">
                       <span className="text-gray-600">Ödeme Durumu:</span>
                       <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
