@@ -839,6 +839,55 @@ Kullanıcı profil bilgilerini tutan tablo.
 
 ---
 
+## 🛠 **FUNCTIONS**
+
+| Function Name | Arguments | Security |
+|---------------|-----------|----------|
+| `add_escrow_confirmation` | `uuid`, `uuid`, `varchar`, `varchar`, `text` | Def |
+| `archive_old_audit_logs` | - | Def |
+| `audit_devices_changes` | - | Def |
+| `audit_escrow_changes` | - | Def |
+| `audit_payments_changes` | - | Def |
+| `auto_distribute_payments` | - | Def |
+| `auto_match_devices` | `uuid`, `uuid`, `text`, `text` | `search_path=public` |
+| `auto_match_on_update` | - | `search_path=public` |
+| `auto_release_escrow` | - | Def |
+| `calculate_payment_breakdown` | `numeric`, `numeric`, `numeric` | Def |
+| `complete_escrow_release` | `uuid` | Def |
+| `complete_payment_distribution` | `uuid` | Def |
+| `confirm_device_delivery` | `uuid`, `uuid`, `uuid`, `uuid`, `text[]`, `text` | Def |
+| `create_audit_log` | `varchar`, `varchar`, `varchar`, `text`, `uuid`, `varchar`, `uuid`, `jsonb`, `jsonb`, `jsonb`, `varchar`, `varchar`, `inet`, `varchar`, `bool`, `text[]` | Def |
+| `create_cargo_shipment` | `uuid`, `uuid`, `varchar`, `uuid`, `uuid`, `text`, `text`, `varchar`, `numeric` | Def |
+| `create_escrow_account` | `uuid`, `uuid`, `uuid`, `uuid`, `numeric`, `numeric`, `numeric`, `numeric`, `numeric` | Def |
+| `generate_anonymous_id` | `text` | Def |
+| `get_project_snapshot` | - | Def |
+| `get_user_escrow_summary` | `uuid` | Def |
+| `grant_admin_permission` | `uuid`, `text`, `jsonb`, `timestamp`, `text` | Def |
+| `initiate_payment_distribution` | `uuid`, `varchar` | Def |
+| `is_admin` | `uuid` | Def |
+| `is_super_admin` | `uuid` | Def |
+| `jsonb_diff` | `jsonb`, `jsonb` | Def |
+| `manual_release_escrow` | `uuid`, `text` | Def |
+| `process_payment_transaction_flow` | `uuid`, `uuid`, `uuid`, `uuid`, `numeric`, `numeric`, `numeric`, `numeric`, `numeric`, `varchar` | Def |
+| `raise_dispute` | `uuid`, `uuid`, `uuid`, `uuid`, `text`, `text[]`, `text` | Def |
+| `refresh_audit_analytics` | - | Def |
+| `refresh_escrow_analytics` | - | Def |
+| `refresh_financial_summary` | - | Def |
+| `revoke_admin_permission` | `uuid` | Def |
+| `set_updated_at` | - | Def |
+| `test_admin_permissions` | - | Def |
+| `transfer_cargo_fee` | `uuid`, `varchar`, `varchar` | Def |
+| `transfer_reward_amount` | `uuid`, `uuid`, `varchar` | Def |
+| `transfer_service_fee` | `uuid`, `varchar` | Def |
+| `update_admin_permissions_updated_at` | - | Def |
+| `update_cargo_codes_updated_at` | - | Def |
+| `update_device_models_timestamp` | - | Def |
+| `update_final_payment_distributions_updated_at` | - | Def |
+| `update_updated_at_column` | - | Def |
+| `update_webhook_storage_updated_at` | - | Def |
+
+---
+
 ## 📝 **NOTLAR**
 
 1. **Duplicate Policies**: `devices` tablosunda bazı RLS politikaları duplicate olarak tanımlanmış. Temizlenmesi önerilir.

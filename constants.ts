@@ -3388,8 +3388,1102 @@ export const translations = {
       q6: "Quels sont les frais ?",
       a6: "Le détail total des frais est le suivant ;\\n\\nFrais du fournisseur de paiement sécurisé + Frais de la compagnie de transport + Récompense du trouveur + Frais de service.\\n\\nCela nous aide à couvrir les coûts opérationnels, maintenir la plateforme et assurer un environnement sécurisé pour tous."
     },
-    termsContent: "<p>La traduction française des conditions d'utilisation sera prochainement disponible.</p>",
-    privacyContent: "<p>La traduction française de la politique de confidentialité sera prochainement disponible.</p>",
+    termsContent: `
+      <h2 class="text-2xl font-bold mb-4">CONDITIONS D'UTILISATION</h2>
+      <p class="mb-4"><strong>Dernière mise à jour :</strong> 14 octobre 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. PORTÉE DU CONTRAT</h3>
+      <p class="mb-4">Ces conditions régissent la relation juridique entre la plateforme iFoundAnApple et les utilisateurs.</p>
+      
+      <p class="mb-4"><strong>Propriétaire de la plateforme :</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Contact :</strong> support@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Droit :</strong> Lois de la République de Turquie</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.1 Signification de l'acceptation</h4>
+      <p class="mb-4">En vous inscrivant sur la plateforme, en créant un compte ou en utilisant les services, vous êtes réputé avoir accepté ces conditions.</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.2 Droit de modification</h4>
+      <p class="mb-4">Nous pouvons modifier ces conditions avec un préavis de 7 jours. Les modifications sont :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Communiquées par e-mail</li>
+        <li>Annoncées sur le site web</li>
+        <li>Envoyées comme notifications dans l'application</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">2. SERVICES DE LA PLATEFORME</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">2.1 Services que nous fournissons</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Enregistrement d'appareil perdu : Enregistrer les appareils Apple dans le système</li>
+        <li>✅ Notification d'appareil trouvé : Signaler les appareils que vous avez trouvés</li>
+        <li>✅ Appariement automatique : Appariement basé sur le numéro de série</li>
+        <li>✅ Système anonyme : Vos informations d'identité sont tenues confidentielles</li>
+        <li>✅ Paiement sécurisé : Paiement sécurisé conforme PCI-DSS</li>
+        <li>✅ Système de séquestre : L'argent est conservé en sécurité</li>
+        <li>✅ Organisation du transport : Sélection et suivi des compagnies de transport</li>
+        <li>✅ Système de notifications : Mises à jour en temps réel</li>
+        <li>✅ Suggestions alimentées par l'IA : Suggestions de récompense avec Google Gemini</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">2.2 Services que nous ne fournissons pas</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Livraison de transport : Nous ne fournissons pas de services de transport</li>
+        <li>❌ Rencontres physiques : Nous ne réunissons pas physiquement les parties</li>
+        <li>❌ Réparation d'appareil : Nous ne fournissons pas de support technique</li>
+        <li>❌ Représentation légale : Nous ne fournissons pas de services juridiques</li>
+        <li>❌ Garantie : L'état ou la fonctionnalité de l'appareil n'est pas garanti</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">3. INSCRIPTION ET GESTION DE COMPTE</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Exigences d'inscription</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Doit avoir 18 ans ou plus</li>
+        <li>Adresse e-mail valide requise</li>
+        <li>Doit fournir des informations exactes</li>
+        <li>Doit résider en Turquie ou dans les pays de l'UE</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Méthodes d'inscription</h4>
+      <p class="mb-2"><strong>Inscription par e-mail :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Nom, prénom, e-mail, date de naissance et mot de passe requis</li>
+        <li>Vérification par e-mail obligatoire</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Inscription OAuth (Google / Apple) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Authentification d'identité tierce</li>
+        <li>Soumis aux conditions du fournisseur OAuth</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Sécurité du compte</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Gardez votre mot de passe fort et ne le partagez pas</li>
+        <li>Ne partagez pas vos informations de compte avec qui que ce soit</li>
+        <li>Signalez immédiatement les activités suspectes</li>
+        <li>Chaque utilisateur ne peut ouvrir qu'un seul compte</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 Activités de compte interdites</h4>
+      <p class="mb-2">Les situations suivantes entraînent la fermeture du compte :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Utilisation de fausses informations d'identité</li>
+        <li>Ouverture de comptes multiples (pour la même personne)</li>
+        <li>Utilisation du compte d'une autre personne</li>
+        <li>Utilisation de robots ou d'outils automatisés</li>
+        <li>Tentative de manipulation du système</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. RESPONSABILITÉS DU PROPRIÉTAIRE D'APPAREIL</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Propriété légale</h4>
+      <p class="mb-2">Lors de l'ajout d'un appareil perdu :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous déclarez être le propriétaire légal de l'appareil</li>
+        <li>Vous devez être en mesure de fournir des documents de propriété (facture, certificat de garantie)</li>
+        <li>Vous vous engagez à ne pas signaler un appareil volé ou faux</li>
+      </ul>
+      <p class="mb-4"><strong>Important :</strong> L'enregistrement de l'appareil est entièrement gratuit. Le paiement n'est demandé que lorsque votre appareil est trouvé et que le processus d'échange commence.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Fourniture d'informations exactes</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous devez saisir correctement le modèle de l'appareil, le numéro de série et les caractéristiques</li>
+        <li>Vous devez signaler honnêtement l'état de l'appareil</li>
+        <li>Vous devez spécifier la date et le lieu de perte aussi précisément que possible</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Obligation de paiement</h4>
+      <p class="mb-2">Lorsqu'une correspondance se produit :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous vous engagez à payer le montant de la récompense déterminé</li>
+        <li>Vous devez effectuer le paiement dans les 48 heures</li>
+        <li>Les frais comprennent les éléments suivants :
+          <ul class="list-disc pl-6 mt-2">
+            <li>Frais de service iFoundAnApple</li>
+            <li>Commission du fournisseur de paiement (coût de l'infrastructure de paiement sécurisée)</li>
+            <li>Frais de transport (pour que votre appareil vous parvienne en toute sécurité)</li>
+            <li>Récompense pour le trouveur d'appareil (en signe d'appréciation pour leur contribution bienveillante)</li>
+          </ul>
+        </li>
+        <li>Vous ne pouvez pas annuler après le paiement (sauf pour des raisons valables)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 Réception du transport</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous devez fournir des informations d'adresse correctes pour la livraison</li>
+        <li>Vous devez vérifier le colis à la réception</li>
+        <li>Vous devez appuyer sur le bouton "J'ai reçu, confirmer" dans les 7 jours</li>
+        <li>Si vous ne confirmez pas, une confirmation automatique est donnée après 7 jours</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. RESPONSABILITÉS DU TROUVeur D'APPAREIL</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Découverte honnête</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous déclarez avoir trouvé l'appareil conformément à la loi</li>
+        <li>Vous vous engagez à ne pas avoir volé l'appareil ou à l'avoir acquis par des moyens illégaux</li>
+        <li>Vous acceptez de livrer l'appareil trouvé intact et complet</li>
+      </ul>
+      <p class="mb-4"><strong>Important :</strong> L'enregistrement d'un appareil trouvé est entièrement gratuit. Ce comportement civil et honorable est inestimable pour nous.</p>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Fourniture d'informations exactes</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous devez saisir correctement les informations de l'appareil</li>
+        <li>Vous devez signaler honnêtement la date et le lieu de la découverte</li>
+        <li>Vous devez être transparent sur l'état de l'appareil</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 Expédition du transport</h4>
+      <p class="mb-2">Une fois le paiement terminé :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous devez livrer l'appareil au transporteur dans les 5 jours ouvrables</li>
+        <li>Vous devez sélectionner une compagnie de transport et saisir le numéro de suivi dans le système</li>
+        <li>Vous devez envoyer l'appareil dans son état d'origine, non endommagé</li>
+        <li>Vous vous engagez à ne pas interférer avec l'appareil (cassage de mot de passe, remplacement de pièce)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Frais de transport :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Les frais de transport (250 TL) sont payés par le propriétaire de l'appareil</li>
+        <li>Vous pouvez le livrer à la compagnie de transport comme "paiement à la livraison"</li>
+        <li>Ou vous pouvez payer d'abord et le récupérer avec la récompense</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.4 Récompense et informations IBAN/Banque</h4>
+      <p class="mb-2"><strong>Détermination de la récompense :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>La récompense qui vous sera donnée est déterminée à un taux certain et équitable basé sur la valeur marchande de l'appareil trouvé</li>
+        <li>De cette façon, nous nous assurons que vous recevez un petit cadeau en retour de votre effort et comportement exemplaire</li>
+        <li>iFoundAnApple fournit un processus d'échange sécurisé pour garantir que l'appareil atteint son propriétaire en toute sécurité et que vous recevez votre récompense complètement</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Informations IBAN/Banque :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous devez fournir un IBAN valide pour le paiement de la récompense</li>
+        <li>Vous déclarez que l'IBAN vous appartient</li>
+        <li>Vous acceptez de remplir vos obligations fiscales</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. PAIEMENTS, FRAIS ET SYSTÈME DE SÉQUESTRE</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Système de récompense</h4>
+      <p class="mb-2"><strong>Détermination de la récompense :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Le propriétaire de l'appareil détermine librement le montant de la récompense</li>
+        <li>Minimum : 500 TL, Maximum : 50 000 TL</li>
+        <li>Le système de suggestion IA peut être utilisé (optionnel, Google Gemini)</li>
+        <li>La récompense doit être un pourcentage raisonnable de la valeur marchande de l'appareil</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Moment du paiement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Le paiement doit être effectué dans les 48 heures lorsqu'une correspondance se produit</li>
+        <li>Si le paiement n'est pas effectué, la correspondance est annulée</li>
+        <li>Le paiement est pris dans le système de séquestre et conservé en sécurité</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 Frais de service</h4>
+      <p class="mb-2"><strong>Frais pour le propriétaire de l'appareil (formule v5.0) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Montant brut :</strong> Montant total reçu du client (y compris la commission PAYNET)</li>
+        <li><strong>Commission PAYNET :</strong> 3,43% du montant brut (déduite automatiquement)</li>
+        <li><strong>Montant net :</strong> Montant restant après déduction de la commission PAYNET</li>
+        <li><strong>Frais de transport :</strong> 250 TL (fixe)</li>
+        <li><strong>Récompense du trouveur :</strong> 20% du montant net</li>
+        <li><strong>Frais de service :</strong> Montant net - transport - récompense (reste)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Exemple de calcul (propriétaire d'appareil) - v5.0 :</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>Montant brut :</strong> 2 000 TL (total reçu du client)</p>
+        <p>├── <strong>Commission PAYNET :</strong> 68,60 TL (3,43%) - Déduite automatiquement</p>
+        <p>└── <strong>Montant net :</strong> 1 931,40 TL (conservé dans le système de séquestre)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Frais de transport :</strong> 250,00 TL (fixe)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Récompense du trouveur :</strong> 386,28 TL (20%)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;└── <strong>Frais de service :</strong> 1 295,12 TL (reste)</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>TOTAL :</strong> 68,60 + 250 + 386,28 + 1 295,12 = 2 000,00 TL ✅</p>
+      </div>
+
+      <p class="mb-2"><strong>Frais pour le trouveur :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Net à recevoir :</strong> Récompense au trouveur (20% du montant net)</li>
+        <li><strong>Frais de transfert :</strong> Peut s'appliquer dans le virement bancaire (environ 5-10 TL)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Exemple de calcul (trouveur) - v5.0 :</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>Montant net :</strong> 1 931,40 TL</p>
+        <p><strong>Récompense du trouveur (20%) :</strong> 386,28 TL</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>NET À RECEVOIR :</strong> 386,28 TL</p>
+      </div>
+
+      <h4 class="text-lg font-semibold mb-2">6.3 Système de séquestre</h4>
+      <p class="mb-2"><strong>Comment ça fonctionne (v5.0) :</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>Une correspondance se produit</li>
+        <li>Le propriétaire de l'appareil paie le montant brut (dans les 48 heures)</li>
+        <li>La commission PAYNET (3,43%) est déduite automatiquement</li>
+        <li>Le montant net est conservé en sécurité dans le compte de séquestre (statut : "conservé")</li>
+        <li>Le trouveur envoie le transport (dans les 5 jours ouvrables)</li>
+        <li>Le propriétaire de l'appareil reçoit le transport et appuie sur le bouton "J'ai reçu, confirmer"</li>
+        <li>Le montant net est distribué comme suit :
+          <ul class="list-disc pl-6 mt-2">
+            <li>Frais de transport (250 TL) → Compagnie de transport</li>
+            <li>Récompense du trouveur (20%) → IBAN du trouveur</li>
+            <li>Frais de service (reste) → Plateforme</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p class="mb-2"><strong>Durée du séquestre (v5.0) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Attente maximale : 30 jours</li>
+        <li>Confirmation du propriétaire : Le montant net est libéré immédiatement</li>
+        <li>Si pas de confirmation : Confirmation automatique après 7 jours</li>
+        <li>Si pas de livraison dans les 30 jours : Montant brut automatiquement remboursé (commission PAYNET déduite)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Processus de confirmation :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Seul le propriétaire de l'appareil donne la confirmation (confirmation unilatérale)</li>
+        <li>Le trouveur ne confirme pas, envoie uniquement le transport</li>
+        <li>Pas de système de confirmation bilatérale</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.4 Politique d'annulation et de remboursement</h4>
+      <p class="mb-2"><strong>Droit d'annulation :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous n'avez pas de droit de rétractation après le paiement (car le service a commencé)</li>
+        <li>L'annulation est possible par accord mutuel avant l'envoi du transport</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Conditions de remboursement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Si le trouveur n'envoie pas le transport dans les 5 jours ouvrables : Remboursement complet</li>
+        <li>Si l'appareil livré est différent : Remboursement complet + pénalité au trouveur</li>
+        <li>Annulation due à des problèmes techniques : Remboursement complet</li>
+        <li>Annulation par accord mutuel : Remboursement complet</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Déduction de remboursement (v5.0) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Si vous demandez l'annulation de la transaction pendant le processus d'échange, la commission de la passerelle de paiement (3,43%) est remboursée avec déduction</li>
+        <li>Si le montant brut est payé et le montant net est conservé en séquestre : Le montant net est entièrement remboursé</li>
+        <li>L'annulation doit être effectuée avant le début du processus de transport</li>
+        <li>Après annulation : Montant brut - Commission de la passerelle de paiement = Montant du remboursement</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Processus de remboursement :</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>La demande d'annulation/remboursement est créée</li>
+        <li>La plateforme examine (1-3 jours ouvrables)</li>
+        <li>Une décision est prise</li>
+        <li>Si le remboursement est approuvé, il est crédité au compte dans les 5-10 jours ouvrables</li>
+      </ol>
+
+      <h4 class="text-lg font-semibold mb-2">6.5 Méthodes de paiement</h4>
+      <p class="mb-2"><strong>Méthodes de paiement acceptées :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Carte de crédit (Visa, Mastercard, American Express)</li>
+        <li>Carte de débit</li>
+        <li>Carte virtuelle</li>
+        <li>Apple Pay (pour les utilisateurs iPhone, iPad, Mac)</li>
+        <li>3D Secure obligatoire (pour la sécurité)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Sécurité des paiements :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Infrastructure de paiement sécurisée certifiée PCI-DSS niveau 1</li>
+        <li>Chiffrement SSL/TLS</li>
+        <li>Vérification 3D Secure</li>
+        <li>Tokenisation (les informations de carte ne sont pas stockées chez nous)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. PROCESSUS DE TRANSPORT ET LIVRAISON</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Rôle de la plateforme</h4>
+      <p class="mb-4"><strong>Important :</strong> La plateforme n'est pas partie à la livraison. Le transport est entièrement géré par les compagnies de transport.</p>
+      
+      <p class="mb-2"><strong>Ce que la plateforme fournit :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Options de compagnies de transport (Aras, MNG, Yurtiçi, PTT)</li>
+        <li>Système de suivi du transport</li>
+        <li>Partage d'adresse de livraison (système anonyme)</li>
+        <li>Notifications de statut de transport</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Ce que la plateforme ne fournit pas :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Service de livraison physique</li>
+        <li>Organisation de coursier</li>
+        <li>Assurance transport (doit être obtenue auprès de la compagnie de transport)</li>
+        <li>Garantie de perte/dommage du transport</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 Compagnies de transport</h4>
+      <p class="mb-2"><strong>Compagnies de transport prises en charge :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Aras Cargo</li>
+        <li>MNG Cargo</li>
+        <li>Yurtiçi Cargo</li>
+        <li>PTT Cargo</li>
+      </ul>
+      <p class="mb-4">La personne qui trouve l'appareil sélectionne l'une de ces compagnies et livre l'appareil à la compagnie avec le numéro de transport reçu du système.</p>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 Système d'identité anonyme</h4>
+      <p class="mb-2">Pour protéger votre vie privée :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Un code anonyme est donné au trouveur : FND-XXX123</li>
+        <li>Un code anonyme est donné au propriétaire : OWN-YYY456</li>
+        <li>Ces codes sont utilisés dans les informations d'expédition</li>
+        <li>Les identités réelles ne sont pas partagées avec la compagnie de transport</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.4 Recommandations de sécurité du transport</h4>
+      <p class="mb-2"><strong>Pour l'expéditeur (trouveur) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Prenez des photos de l'appareil et du colis (avant la livraison)</li>
+        <li>Notez toujours le numéro de suivi</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Pour le destinataire (propriétaire) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vérifiez le colis à la réception</li>
+        <li>En cas de dommage, déposez immédiatement une réclamation</li>
+        <li>Documentez l'ouverture du colis avec vidéo/photos</li>
+        <li>Vérifiez le numéro de série de l'appareil</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.5 Suivi du transport</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous pouvez suivre le statut du transport en temps réel via la plateforme</li>
+        <li>Vous recevez des mises à jour de statut automatiques :
+          <ul class="list-disc pl-6 mt-2">
+            <li>Transport créé</li>
+            <li>Transport collecté</li>
+            <li>À l'agence de transport</li>
+            <li>En cours de livraison</li>
+            <li>Livré</li>
+          </ul>
+        </li>
+        <li>La date de livraison estimée est affichée</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.6 Problèmes de livraison</h4>
+      <p class="mb-2"><strong>Si le transport est perdu :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Contactez immédiatement la compagnie de transport</li>
+        <li>Signalez à l'équipe de support de la plateforme (support@ifoundanapple.com)</li>
+        <li>L'assurance de la compagnie de transport entre en vigueur</li>
+        <li>La plateforme peut jouer le rôle de médiateur</li>
+        <li>L'argent en séquestre est remboursé au propriétaire</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Livraison endommagée :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vérifiez le transport à la réception</li>
+        <li>En cas de dommage, déposez une réclamation auprès de l'agent de transport avant la réception</li>
+        <li>Informez immédiatement la plateforme</li>
+        <li>Fournissez des preuves photo/vidéo</li>
+        <li>Le processus de remboursement est initié</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Mauvais/appareil différent :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vérifiez le numéro de série</li>
+        <li>Si différent, ne confirmez pas</li>
+        <li>Signalez à l'équipe de support</li>
+        <li>Le processus de remboursement complet est initié</li>
+        <li>Une pénalité est appliquée au trouveur</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. ANONYMAT ET CONFIDENTIALITÉ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">8.1 Confidentialité de l'identité</h4>
+      <p class="mb-2"><strong>Avant la correspondance :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Aucune information utilisateur n'est partagée</li>
+        <li>Système complètement anonyme</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Après la correspondance :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Identité :</strong> Reste CACHÉE</li>
+        <li><strong>E-mail :</strong> Reste CACHÉ</li>
+        <li><strong>Téléphone :</strong> Partagé uniquement avec la compagnie de transport pour la livraison</li>
+        <li><strong>Adresse :</strong> Partagée uniquement avec la compagnie de transport pour la livraison</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Informations partagées pour le transport :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Nom complet</li>
+        <li>Adresse de livraison</li>
+        <li>Numéro de téléphone</li>
+        <li>Code expéditeur/destinataire anonyme (FND-XXX, OWN-XXX)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">8.2 Communication</h4>
+      <p class="mb-2"><strong>Notifications de la plateforme :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Notifications par e-mail</li>
+        <li>Notifications dans l'application</li>
+        <li>Notifications SMS (pour les situations critiques)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Communication directe :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Pas de messagerie directe entre utilisateurs</li>
+        <li>Toute communication est gérée via la plateforme</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">9. RESPONSABILITÉS ET LIMITATIONS DE LA PLATEFORME</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">9.1 Responsabilités de notre plateforme</h4>
+      <p class="mb-2"><strong>Pour les services que nous fournissons :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Maintenir l'infrastructure de la plateforme opérationnelle</li>
+        <li>Assurer la sécurité des données</li>
+        <li>Exploiter le système de paiement en toute sécurité</li>
+        <li>Gérer le séquestre correctement</li>
+        <li>Fournir le support client</li>
+        <li>Prendre des mesures de prévention de la fraude</li>
+        <li>Se conformer aux obligations légales</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.2 Limitations de responsabilité</h4>
+      <p class="mb-4"><strong>La plateforme N'EST PAS RESPONSABLE de :</strong></p>
+      
+      <p class="mb-2"><strong>Appareil et livraison :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>L'état réel de l'appareil livré</li>
+        <li>Le fait que l'appareil soit fonctionnel/utilisable</li>
+        <li>Dommages physiques ou pièces manquantes</li>
+        <li>Si l'appareil est original</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Transport :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Erreurs, retards, pertes des compagnies de transport</li>
+        <li>Livraison endommagée</li>
+        <li>Assurance transport (responsabilité de l'utilisateur)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Comportement de l'utilisateur :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Utilisateurs fournissant de fausses/informations incomplètes</li>
+        <li>Tentatives de fraude (que nous n'avons pas pu détecter)</li>
+        <li>Litiges de propriété</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Services tiers :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Interruptions du système de paiement</li>
+        <li>Problèmes du fournisseur OAuth</li>
+        <li>Interruptions du fournisseur d'accès Internet</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.3 Limitation de compensation</h4>
+      <p class="mb-2"><strong>Compensation maximale :</strong></p>
+      <p class="mb-4">Dans tous les cas, la responsabilité de la plateforme est limitée au montant des frais de service reçu dans la transaction concernée.</p>
+      <p class="mb-4"><strong>Exemple :</strong> Dans une transaction de récompense de 5 000 TL où les frais de plateforme sont de 150 TL, le montant maximum de compensation est de 150 TL.</p>
+      
+      <p class="mb-2"><strong>Dommages exclus :</strong></p>
+      <p class="mb-2">La plateforme ne peut être tenue responsable des dommages suivants :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Dommages indirects</li>
+        <li>Perte de profit</li>
+        <li>Perte de réputation</li>
+        <li>Dommages moraux</li>
+        <li>Perte de données</li>
+        <li>Perte d'activité</li>
+      </ul>
+      <p class="mb-4"><strong>Exception :</strong> Ces limitations ne s'appliquent pas si la plateforme a une négligence intentionnelle ou grave.</p>
+
+      <h4 class="text-lg font-semibold mb-2">9.4 Garantie de service et interruptions</h4>
+      <p class="mb-2"><strong>Ce que nous ne garantissons pas :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Service sans interruption</li>
+        <li>Fonctionnement sans erreur</li>
+        <li>Garantie de trouver une correspondance</li>
+        <li>Résultats dans un délai spécifique</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Maintenance planifiée :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Annoncée à l'avance (au moins 24 heures)</li>
+        <li>Généralement effectuée pendant les heures de nuit</li>
+        <li>Durée maximale de 4 heures</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Maintenance d'urgence :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Peut ne pas être annoncée à l'avance</li>
+        <li>Pour la sécurité ou les erreurs critiques</li>
+        <li>Terminée dès que possible</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">10. ACTIVITÉS INTERDITES</h3>
+      <p class="mb-2">Les activités suivantes sont strictement interdites :</p>
+      
+      <p class="mb-2"><strong>❌ Fraude :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Fourniture de fausses informations</li>
+        <li>Signalement d'appareil volé</li>
+        <li>Revendication de l'appareil d'une autre personne</li>
+        <li>Faux numéro de série</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Violations de compte :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Utilisation de fausse identité</li>
+        <li>Ouverture de comptes multiples</li>
+        <li>Utilisation du compte d'une autre personne</li>
+        <li>Robots ou outils automatisés</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Manipulation du système :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Conclure des accords hors plateforme</li>
+        <li>Tentative de contournement du système</li>
+        <li>Tentative de contournement du séquestre</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Autres :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Harcèlement, menaces</li>
+        <li>Violation de propriété intellectuelle</li>
+        <li>Virus, logiciels malveillants</li>
+        <li>Extraction de données</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Pénalités :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Fermeture de compte</li>
+        <li>Annulation de paiement</li>
+        <li>Initiation d'action légale</li>
+        <li>Remboursement des montants gagnés</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">11. SUSPENSION ET RÉSILIATION DE COMPTE</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">11.1 Fermeture initiée par la plateforme</h4>
+      <p class="mb-2"><strong>Raisons de fermeture immédiate :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Fraude ou fausses informations</li>
+        <li>Signalement d'appareil volé</li>
+        <li>Fausse identité</li>
+        <li>Fraude de paiement</li>
+        <li>Activités illégales</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Fermeture après avertissement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Fourniture continue de fausses informations</li>
+        <li>Violation des règles de la plateforme</li>
+        <li>Non-respect de l'obligation de paiement (répété)</li>
+        <li>Non-envoi du transport (sans raison valable)</li>
+      </ul>
+      
+      <p class="mb-4"><strong>Suspension :</strong> Le compte peut être temporairement suspendu pendant l'enquête sur des situations suspectes (maximum 30 jours).</p>
+
+      <h4 class="text-lg font-semibold mb-2">11.2 Fermeture de compte initiée par l'utilisateur</h4>
+      <p class="mb-2"><strong>Fermeture de votre propre compte :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vous pouvez utiliser l'option "Supprimer le compte" dans les paramètres du profil</li>
+        <li>S'il y a des transactions en cours, la fermeture ne peut pas être effectuée avant leur achèvement</li>
+        <li>S'il y a des paiements en attente en séquestre, ils doivent être finalisés</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Résultats de la fermeture de compte :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Vos données personnelles sont supprimées dans les 30 jours</li>
+        <li>Votre historique de transactions est anonymisé</li>
+        <li>Le compte fermé ne peut pas être rouvert</li>
+        <li>Les dossiers financiers sont conservés pendant 10 ans (exigence légale, anonyme)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">12. FORCE MAJEURE</h3>
+      <p class="mb-2">Dans les situations de force majeure suivantes, la plateforme ne peut être tenue responsable de ses obligations :</p>
+      
+      <p class="mb-2"><strong>Catastrophes naturelles :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Tremblement de terre, inondation, incendie, tempête</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Événements sociaux :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Guerre, terrorisme, soulèvement, couvre-feu</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Problèmes techniques :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Interruptions de l'infrastructure Internet (problèmes FAI)</li>
+        <li>Panne de courant</li>
+        <li>Interruptions du fournisseur de serveurs (Supabase)</li>
+        <li>Interruptions du système de paiement</li>
+        <li>Attaques DDoS, cyberattaques</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Changements légaux :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Changements de loi soudains, interdictions, réglementations</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Pandémie/Crise sanitaire :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Situations de maladie épidémique</li>
+        <li>Restrictions officielles</li>
+      </ul>
+      
+      <p class="mb-4">En cas de force majeure, les utilisateurs sont immédiatement informés et des solutions alternatives sont fournies.</p>
+
+      <h3 class="text-xl font-semibold mb-2">13. RÉSOLUTION DES LITIGES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">13.1 Communication et support</h4>
+      <p class="mb-2"><strong>Première étape - Notre équipe de support :</strong></p>
+      <p class="mb-2">Si vous rencontrez un problème, contactez d'abord notre équipe de support :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>E-mail :</strong> support@ifoundanapple.com</li>
+        <li><strong>Temps de réponse :</strong> 24-48 heures</li>
+        <li><strong>Temps de résolution :</strong> 5 jours ouvrables (moyenne)</li>
+      </ul>
+      
+      <p class="mb-4"><strong>Médiation :</strong> S'il y a un litige entre utilisateurs, la plateforme peut jouer le rôle de médiateur (optionnel).</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.2 Droit applicable</h4>
+      <p class="mb-4">Cet accord est soumis aux lois de la République de Turquie.</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.3 Tribunal compétent et bureaux d'exécution</h4>
+      <p class="mb-2">Pour les litiges découlant de cet accord :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Pour les utilisateurs en Turquie :</strong> Les tribunaux et bureaux d'exécution d'Istanbul (Çağlayan) sont compétents</li>
+        <li><strong>Pour les utilisateurs dans l'UE :</strong> Les tribunaux de résidence de l'utilisateur sont également compétents (en raison du GDPR)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Droits des consommateurs :</strong></p>
+      <p class="mb-4">Les consommateurs peuvent s'adresser aux comités d'arbitrage des consommateurs et aux tribunaux des consommateurs en vertu de la loi sur la protection des consommateurs.</p>
+      
+      <p class="mb-2"><strong>Comité d'arbitrage des consommateurs :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Web :</strong> https://tuketicihakemleri.ticaret.gov.tr</li>
+        <li>Le système de demande électronique est disponible</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">13.4 Résolution alternative des litiges</h4>
+      <p class="mb-2"><strong>Résolution en ligne des litiges (ODR) :</strong></p>
+      <p class="mb-2">Les consommateurs dans l'UE peuvent utiliser la plateforme ODR de l'UE :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Plateforme :</strong> https://ec.europa.eu/consumers/odr</li>
+        <li><strong>Contact :</strong> info@ifoundanapple.com</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">14. DROITS DE PROPRIÉTÉ INTELLECTUELLE</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">14.1 Droits de la plateforme</h4>
+      <p class="mb-4">Tout le contenu, le design, le logo, le code logiciel, les algorithmes sur la plateforme sont sous le droit d'auteur d'iFoundAnApple.</p>
+      
+      <p class="mb-2"><strong>Actions interdites :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Copie ou reproduction de contenu</li>
+        <li>Utilisation non autorisée du logo</li>
+        <li>Rétro-ingénierie du code source</li>
+        <li>Extraction de données (collecte automatique de données)</li>
+        <li>Utilisation non autorisée de l'API</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">14.2 Contenu utilisateur</h4>
+      <p class="mb-4">Le contenu que vous téléchargez sur la plateforme (photos, descriptions) est votre propriété intellectuelle.</p>
+      
+      <p class="mb-2"><strong>Licence que vous donnez à la plateforme :</strong></p>
+      <p class="mb-2">En téléchargeant du contenu, vous donnez à la plateforme les droits suivants :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Afficher le contenu sur la plateforme</li>
+        <li>Stocker et traiter le contenu</li>
+        <li>Sauvegarder le contenu</li>
+        <li>Optimiser techniquement (compression etc.)</li>
+      </ul>
+      <p class="mb-4">La plateforme n'utilise, ne vend ni ne partage votre contenu à d'autres fins.</p>
+
+      <h3 class="text-xl font-semibold mb-2">15. DISPOSITIONS DIVERSES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">15.1 Faire des notifications</h4>
+      <p class="mb-2"><strong>De la plateforme à vous :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>E-mail (votre adresse e-mail enregistrée)</li>
+        <li>Notification dans l'application</li>
+        <li>SMS (pour les situations d'urgence)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>De vous à la plateforme :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Général :</strong> info@ifoundanapple.com</li>
+        <li><strong>Juridique :</strong> legal@ifoundanapple.com</li>
+        <li><strong>Sécurité :</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">15.2 Intégrité de l'accord</h4>
+      <p class="mb-4">Ces conditions constituent l'accord complet entre les parties.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.3 Invalidité partielle</h4>
+      <p class="mb-4">Si une disposition des conditions est jugée invalide, les autres dispositions restent valides.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.4 Interdiction de cession</h4>
+      <p class="mb-4">Les utilisateurs ne peuvent pas céder les droits et obligations découlant de cet accord à des tiers.</p>
+      <p class="mb-4">La plateforme peut céder ses droits en cas de transfert d'entreprise, fusion ou acquisition.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.5 Dossiers électroniques</h4>
+      <p class="mb-4">Les dossiers électroniques de la plateforme constituent une preuve définitive en vertu de l'article 297 du CPC.</p>
+
+      <h3 class="text-xl font-semibold mb-2">16. INFORMATIONS DE CONTACT</h3>
+      <p class="mb-2"><strong>iFoundAnApple</strong></p>
+      
+      <p class="mb-2"><strong>Support général :</strong></p>
+      <p class="mb-4"><strong>E-mail :</strong> info@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Temps de réponse :</strong> 24-48 heures</p>
+      
+      <p class="mb-2"><strong>Affaires juridiques :</strong></p>
+      <p class="mb-4"><strong>E-mail :</strong> legal@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Sécurité :</strong></p>
+      <p class="mb-4"><strong>E-mail :</strong> security@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Site web :</strong></p>
+      <p class="mb-4">https://ifoundanapple.com</p>
+
+      <h3 class="text-xl font-semibold mb-2">17. ACCEPTATION ET APPROBATION</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ J'ai lu, compris et accepté ces conditions d'utilisation.</li>
+        <li>✅ Je déclare avoir plus de 18 ans et avoir la capacité juridique.</li>
+        <li>✅ En utilisant la plateforme, j'accepte de respecter ces conditions et la politique de confidentialité.</li>
+        <li>✅ Je consens à recevoir des notifications par e-mail, SMS et dans l'application.</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>Dernière mise à jour :</strong> 14 octobre 2025</p>
+        <p><strong>Version :</strong> 2.0</p>
+        <p><strong>Validité :</strong> Turquie et Union européenne</p>
+        <p><strong>© 2025 iFoundAnApple. Tous droits réservés.</strong></p>
+      </div>
+    `,
+    privacyContent: `
+      <h2 class="text-2xl font-bold mb-4">POLITIQUE DE CONFIDENTIALITÉ</h2>
+      <p class="mb-4"><strong>Dernière mise à jour :</strong> 14 octobre 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. RESPONSABLE DES DONNÉES</h3>
+      <p class="mb-4"><strong>iFoundAnApple</strong></p>
+      <p class="mb-4"><strong>E-mail :</strong> privacy@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Web :</strong> https://ifoundanapple.com</p>
+      <p class="mb-4">Cette politique est préparée conformément à la KVKK et au GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">2. INFORMATIONS SUR L'HÉBERGEMENT ET LE DOMAINE</h3>
+      <p class="mb-4"><strong>Propriétaire du domaine :</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Fournisseur d'hébergement :</strong> Hetzner</p>
+      <p class="mb-4"><strong>Certificat SSL :</strong> Actif (HTTPS)</p>
+      <p class="mb-4"><strong>Vérification du domaine :</strong> Hébergé sur notre propre domaine</p>
+      <p class="mb-4"><strong>IMPORTANT :</strong> Cette politique de confidentialité est hébergée sur notre propre domaine, et non sur des plateformes tierces telles que Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. DONNÉES PERSONNELLES COLLECTÉES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Inscription et authentification</h4>
+      <p class="mb-2"><strong>Inscription par e-mail :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Prénom, nom</li>
+        <li>Adresse e-mail</li>
+        <li>Mot de passe (stocké chiffré avec bcrypt)</li>
+        <li>Date de naissance</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Connexion OAuth (Google/Apple) :</strong></p>
+      <p class="mb-2">Lorsque vous vous connectez avec Google ou Apple, nous collectons les données utilisateur suivantes :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Données utilisateur Google :</strong> Nom, E-mail, Photo de profil (optionnel)</li>
+        <li><strong>Objectif :</strong> Création de compte et authentification UNIQUEMENT</li>
+        <li><strong>Protection des données :</strong> Chiffrement AES-256-GCM au repos</li>
+        <li><strong>Stockage des données :</strong> Chiffré dans notre base de données sécurisée (Supabase)</li>
+        <li><strong>Partage des données :</strong> Uniquement avec les fournisseurs de services pour la fonctionnalité de la plateforme (voir section 5.1)</li>
+        <li><strong>Rétention des données :</strong> Durée de vie du compte actif, supprimé dans les 30 jours après la suppression du compte</li>
+        <li>Pas besoin de créer un mot de passe</li>
+      </ul>
+      <p class="mb-4"><strong>IMPORTANT :</strong> Nous utilisons les données utilisateur Google UNIQUEMENT pour fournir la fonctionnalité de la plateforme. Nous NE les utilisons PAS à des fins publicitaires, de vente à des tiers ou à tout autre usage.</p>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Informations sur l'appareil</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Modèle de l'appareil (iPhone 15 Pro, MacBook Air, etc.)</li>
+        <li>Numéro de série</li>
+        <li>Couleur et description de l'appareil</li>
+        <li>Date et lieu de perte/trouvaille</li>
+        <li>Document de facture/propriété (visuel - peut être supprimé)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Informations de paiement et financières</h4>
+      <p class="mb-2"><strong>Transactions de paiement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Informations de carte de crédit/bancaire traitées par un fournisseur de paiement sécurisé (conforme PCI-DSS)</li>
+        <li>Vos informations de carte ne sont pas stockées sur nos serveurs</li>
+        <li>L'historique et les montants des transactions sont enregistrés</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Informations bancaires :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Numéro IBAN (pour le transfert de récompense)</li>
+        <li>Nom du titulaire du compte</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 Informations de profil et de contact</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Numéro d'identité nationale (optionnel, pour transactions à haute valeur)</li>
+        <li>Numéro de téléphone</li>
+        <li>Adresse de livraison (pour le transport)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.5 Données collectées automatiquement</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Adresse IP</li>
+        <li>Informations sur le navigateur et l'appareil</li>
+        <li>Informations de session</li>
+        <li>Statistiques d'utilisation de la plateforme</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. FINALITÉS D'UTILISATION DES DONNÉES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Fourniture de services</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Appariement des appareils perdus et trouvés (basé sur le numéro de série)</li>
+        <li>Gestion du compte utilisateur</li>
+        <li>Organisation et suivi du transport</li>
+        <li>Envoi de notifications</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Opérations de paiement et de séquestre</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Traitement sécurisé des paiements</li>
+        <li>Exploitation du système de séquestre</li>
+        <li>Transfert des paiements de récompense vers IBAN</li>
+        <li>Maintien des dossiers financiers</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Recommandations alimentées par l'IA</h4>
+      <p class="mb-4">Cette fonctionnalité est optionnelle. Nous utilisons uniquement les informations sur le modèle d'appareil pour les recommandations IA. Les données d'identité personnelle ne sont jamais partagées.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 Limitations d'utilisation des données</h4>
+      <p class="mb-2"><strong>Utilisation des données utilisateur Google et des données personnelles :</strong></p>
+      <p class="mb-2">Nous utilisons vos données utilisateur Google et vos informations personnelles UNIQUEMENT pour :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Fournir la fonctionnalité de la plateforme (authentification, gestion de compte)</li>
+        <li>✅ Traiter les transactions et paiements</li>
+        <li>✅ Organiser la livraison de l'appareil</li>
+        <li>✅ Envoyer des notifications de service importantes</li>
+        <li>✅ Améliorer l'expérience utilisateur</li>
+        <li>✅ Sécurité et prévention de la fraude</li>
+      </ul>
+      <p class="mb-2"><strong>Nous N'utilisons PAS vos données pour :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Publicité ciblée ou marketing</li>
+        <li>❌ Vente à des courtiers de données ou revendeurs d'informations</li>
+        <li>❌ Détermination de la solvabilité ou objectifs de prêt</li>
+        <li>❌ Publicités utilisateur ou publicité personnalisée</li>
+        <li>❌ Formation de modèles IA non liés à notre service</li>
+        <li>❌ Création de bases de données à d'autres fins</li>
+        <li>❌ Tout autre objectif au-delà de la fourniture ou l'amélioration de la fonctionnalité de la plateforme</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.5 Sécurité</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Prévention de la fraude</li>
+        <li>Vérification d'identité</li>
+        <li>Maintien des journaux d'audit</li>
+        <li>Détection de violation de sécurité</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.6 Conformité légale</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Conformité aux exigences KVKK et GDPR</li>
+        <li>Obligations de la législation fiscale (conservation des dossiers pendant 10 ans)</li>
+        <li>Décisions judiciaires et processus légaux</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. PARTAGE DE DONNÉES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Fournisseurs de services</h4>
+      <p class="mb-2"><strong>Supabase (Infrastructure backend) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Base de données, authentification, stockage de fichiers</li>
+        <li>SOC 2 Type II, conforme GDPR</li>
+        <li>Emplacement des données : USA/UE</li>
+        <li><strong>Données utilisateur Google partagées :</strong> Nom, E-mail (chiffré)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Fournisseur de paiement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Traitement des paiements, 3D Secure, séquestre</li>
+        <li>Certifié PCI-DSS niveau 1</li>
+        <li>Basé en Turquie</li>
+        <li><strong>Données utilisateur Google partagées :</strong> E-mail (pour les reçus de transaction uniquement)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google/Apple (Authentification OAuth) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Connexion tierce (optionnel)</li>
+        <li>Utilisé uniquement pour l'authentification</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google Gemini (Recommandations IA) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Seules les informations sur le modèle d'appareil sont partagées</li>
+        <li>Aucune donnée utilisateur Google (nom, e-mail) n'est partagée</li>
+        <li>Aucune information d'identité personnelle n'est partagée</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Compagnies de transport (Aras, MNG, Yurtiçi, PTT) :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Adresse de livraison et téléphone</li>
+        <li>Codes expéditeur/destinataire anonymes (FND-XXX, OWN-XXX)</li>
+        <li>Les identités réelles (nom, e-mail) sont tenues confidentielles</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Partage inter-utilisateurs</h4>
+      <p class="mb-4"><strong>IMPORTANT :</strong> Votre identité, votre e-mail et votre numéro de téléphone ne sont jamais partagés avec d'autres utilisateurs.</p>
+      
+      <p class="mb-2"><strong>Après l'appariement :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>L'identité de l'autre partie reste anonyme</li>
+        <li>Seule la notification "Correspondance trouvée" est envoyée</li>
+        <li>Seule l'adresse de livraison est partagée pour le transport (nom-prénom et adresse)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 Obligation légale</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Ordre judiciaire ou assignation</li>
+        <li>Demandes des forces de l'ordre</li>
+        <li>Autorités fiscales (pour les dossiers financiers)</li>
+        <li>Demandes de l'institution KVKK</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. SÉCURITÉ ET CONSERVATION DES DONNÉES</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Mesures de sécurité</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Chiffrement SSL/TLS (HTTPS) - TLS 1.3</li>
+        <li>Hachage des mots de passe (bcrypt)</li>
+        <li><strong>Chiffrement de la base de données au repos (AES-256-GCM)</strong></li>
+        <li><strong>Chiffrement au niveau de l'application pour les données sensibles :</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>Numéro d'identité nationale turque (TC Kimlik No)</li>
+          <li>Numéros IBAN</li>
+          <li>Numéros de téléphone</li>
+          <li>Adresses physiques</li>
+          <li>Données utilisateur Google (nom, e-mail)</li>
+        </ul>
+        <li>Politiques de sécurité au niveau des lignes (RLS)</li>
+        <li>Jetons d'authentification sécurisés OAuth 2.0</li>
+        <li>Vérification de paiement 3D Secure</li>
+        <li>Support d'authentification à deux facteurs (2FA)</li>
+        <li>Audits de sécurité réguliers et évaluations de vulnérabilité</li>
+        <li>Journaux de contrôle d'accès et surveillance</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 Périodes de conservation</h4>
+      
+      <p class="mb-2"><strong>Conservation des données utilisateur Google :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Comptes actifs :</strong> Conservées tant que votre compte est actif</li>
+        <li><strong>Comptes supprimés :</strong> Données utilisateur Google (nom, e-mail) supprimées dans les 30 jours</li>
+        <li><strong>Données financières :</strong> 10 ans (exigence légale - Loi fiscale)</li>
+        <li><strong>Vous pouvez demander la suppression :</strong> Envoyez-nous un e-mail à privacy@ifoundanapple.com</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Comptes actifs :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Conservées tant que votre compte est actif</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Comptes fermés :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Supprimées dans les 30 jours après la fermeture du compte</li>
+        <li>Dossiers financiers conservés pendant 10 ans (obligation légale)</li>
+        <li>Statistiques anonymes peuvent être conservées indéfiniment</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Dossiers de transaction :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Transactions financières : 10 ans</li>
+        <li>Dossiers de transport : 2 ans</li>
+        <li>Journaux d'audit : 5 ans</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. DROITS DES UTILISATEURS (KVKK & GDPR)</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Vos droits</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ <strong>Droit à l'information :</strong> Savoir si vos données sont traitées</li>
+        <li>✅ <strong>Droit d'accès :</strong> Obtenir une copie de vos données</li>
+        <li>✅ <strong>Droit de rectification :</strong> Corriger les informations incorrectes</li>
+        <li>✅ <strong>Droit à l'effacement :</strong> Supprimer vos données (droit à l'oubli)</li>
+        <li>✅ <strong>Droit d'opposition :</strong> Vous opposer aux activités de traitement des données</li>
+        <li>✅ <strong>Portabilité des données :</strong> Transférer vos données vers une autre plateforme</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 Méthode de demande</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>E-mail :</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Sujet :</strong> Demande KVKK/GDPR</li>
+        <li><strong>Temps de réponse :</strong> 30 jours (maximum)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 Droit de plainte</h4>
+      <p class="mb-2"><strong>Turquie :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Autorité de protection des données personnelles - https://www.kvkk.gov.tr</li>
+      </ul>
+      
+      <p class="mb-2"><strong>UE :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Autorité de protection des données du pays concerné</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. CONFIDENTIALITÉ DES ENFANTS</h3>
+      <p class="mb-4">La plateforme n'est pas destinée aux utilisateurs de moins de 18 ans. Nous ne collectons pas sciemment de données auprès de personnes de moins de 18 ans.</p>
+
+      <h3 class="text-xl font-semibold mb-2">9. COOKIES</h3>
+      <p class="mb-2"><strong>Cookies que nous utilisons :</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Gestion de session (obligatoire)</li>
+        <li>Préférences linguistiques (fonctionnel)</li>
+        <li>Sécurité (obligatoire)</li>
+      </ul>
+      <p class="mb-4">Vous pouvez gérer les cookies depuis les paramètres de votre navigateur.</p>
+
+      <h3 class="text-xl font-semibold mb-2">10. TRANSFERT INTERNATIONAL DE DONNÉES</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Supabase :</strong> Centres de données USA/UE (conforme GDPR, SCC)</li>
+        <li><strong>Fournisseur de paiement :</strong> International</li>
+        <li><strong>Google :</strong> Global (pour OAuth et IA)</li>
+      </ul>
+      <p class="mb-4">Tous les transferts sont effectués conformément aux dispositions KVKK et GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">11. CHANGEMENTS ET MISES À JOUR</h3>
+      <p class="mb-2">Nous pouvons mettre à jour cette politique de confidentialité de temps en temps. Lorsque des modifications importantes sont apportées :</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Nous publions des annonces sur le site web</li>
+        <li>Nous envoyons des notifications par e-mail</li>
+        <li>La date de "Dernière mise à jour" est modifiée</li>
+      </ul>
+      <p class="mb-4">Les mises à jour prennent effet à la date de leur publication.</p>
+
+      <h3 class="text-xl font-semibold mb-2">12. CONTACT</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Général :</strong> info@ifoundanapple.com</li>
+        <li><strong>Confidentialité :</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Sécurité :</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>© 2025 iFoundAnApple - Version 2.0</strong></p>
+      </div>
+    `,
   },
   ja: {
     // Header & Nav
@@ -3683,8 +4777,1102 @@ export const translations = {
         q6: "手数料はかかりますか？",
         a6: "総手数料の内訳は以下の通りです；\\n\\n安全な支払いプロバイダーの手数料 + 運輸会社の手数料 + 発見者の報酬 + サービス料金。\\n\\nこれは、運営費をカバーし、プラットフォームを維持し、すべての人のための安全な環境を確保するのに役立ちます。"
     },
-    termsContent: "<p>日本語版の利用規約は近日公開予定です。</p>",
-    privacyContent: "<p>日本語版のプライバシーポリシーは近日公開予定です。</p>",
+    termsContent: `
+      <h2 class="text-2xl font-bold mb-4">利用規約</h2>
+      <p class="mb-4"><strong>最終更新日：</strong> 2025年10月14日</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. 契約範囲</h3>
+      <p class="mb-4">本規約は、iFoundAnAppleプラットフォームとユーザー間の法的関係を規律します。</p>
+      
+      <p class="mb-4"><strong>プラットフォーム所有者：</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>連絡先：</strong> support@ifoundanapple.com</p>
+      <p class="mb-4"><strong>適用法：</strong> トルコ共和国法</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.1 承認の意味</h4>
+      <p class="mb-4">プラットフォームに登録し、アカウントを作成し、またはサービスを使用することで、本規約を承認したものとみなされます。</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.2 変更権</h4>
+      <p class="mb-4">7日前の通知により本規約を変更することができます。変更は以下の方法で通知されます：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>メールで通知</li>
+        <li>ウェブサイトで発表</li>
+        <li>アプリ内通知として送信</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">2. プラットフォームサービス</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">2.1 提供するサービス</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ 紛失デバイス登録：Appleデバイスをシステムに登録</li>
+        <li>✅ 発見デバイス通知：発見したデバイスを報告</li>
+        <li>✅ 自動マッチング：シリアル番号ベースのマッチング</li>
+        <li>✅ 匿名システム：身元情報は機密保持</li>
+        <li>✅ 安全な支払い：PCI-DSS準拠の安全な支払い</li>
+        <li>✅ エスクローシステム：資金は安全に保管</li>
+        <li>✅ 運輸組織：運輸会社の選択と追跡</li>
+        <li>✅ 通知システム：リアルタイム更新</li>
+        <li>✅ AI による提案：Google Gemini による報酬提案</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">2.2 提供しないサービス</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ 運輸配送：運輸サービスは提供しません</li>
+        <li>❌ 物理的な会合：当事者を物理的に集めません</li>
+        <li>❌ デバイス修理：技術サポートは提供しません</li>
+        <li>❌ 法的代理：法的サービスは提供しません</li>
+        <li>❌ 保証：デバイスの状態や機能は保証されません</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">3. 登録とアカウント管理</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 登録要件</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>18歳以上である必要があります</li>
+        <li>有効なメールアドレスが必要です</li>
+        <li>正確な情報を提供する必要があります</li>
+        <li>トルコまたはEU諸国に居住する必要があります</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 登録方法</h4>
+      <p class="mb-2"><strong>メール登録：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>名前、姓、メール、生年月日、パスワードが必要です</li>
+        <li>メール確認が必須です</li>
+      </ul>
+      
+      <p class="mb-2"><strong>OAuth登録（Google / Apple）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>サードパーティの身元認証</li>
+        <li>OAuthプロバイダーの規約に準拠</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 アカウントセキュリティ</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>パスワードを強力に保ち、共有しないでください</li>
+        <li>アカウント情報を誰とも共有しないでください</li>
+        <li>不審な活動をすぐに報告してください</li>
+        <li>各ユーザーは1つのアカウントのみ開設可能です</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 禁止されるアカウント活動</h4>
+      <p class="mb-2">以下の状況はアカウント閉鎖につながります：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>偽の身元情報の使用</li>
+        <li>複数のアカウント開設（同一人物の場合）</li>
+        <li>他人のアカウントの使用</li>
+        <li>ボットや自動化ツールの使用</li>
+        <li>システム操作の試み</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. デバイス所有者の責任</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 法的所有権</h4>
+      <p class="mb-2">紛失デバイスを追加する際：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイスの法的所有者であることを宣言します</li>
+        <li>所有証明書（請求書、保証書）を提供できる必要があります</li>
+        <li>盗難または偽のデバイスを報告していないことを約束します</li>
+      </ul>
+      <p class="mb-4"><strong>重要：</strong> デバイス登録は完全に無料です。お支払いは、デバイスが見つかり交換プロセスが開始された場合にのみ請求されます。</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 正確な情報の提供</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイスのモデル、シリアル番号、機能を正確に入力する必要があります</li>
+        <li>デバイスの状態を正直に報告する必要があります</li>
+        <li>紛失日と場所を可能な限り正確に指定する必要があります</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 支払い義務</h4>
+      <p class="mb-2">マッチングが発生した場合：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>決定された報酬額を支払うことを約束します</li>
+        <li>48時間以内に支払いを行う必要があります</li>
+        <li>手数料には以下の項目が含まれます：
+          <ul class="list-disc pl-6 mt-2">
+            <li>iFoundAnAppleサービス料</li>
+            <li>支払いプロバイダー手数料（安全な支払いインフラコスト）</li>
+            <li>運輸料（デバイスを安全に受け取るため）</li>
+            <li>デバイス発見者への報酬（親切な貢献への感謝の印として）</li>
+          </ul>
+        </li>
+        <li>支払い後は（正当な理由がない限り）キャンセルできません</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 運輸の受領</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>配送のため正しい住所情報を提供する必要があります</li>
+        <li>受け取った際に運輸を確認する必要があります</li>
+        <li>7日以内に「受領済み、確認」ボタンを押す必要があります</li>
+        <li>確認しない場合、7日後に自動確認が与えられます</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. デバイス発見者の責任</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 誠実な発見</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>法律に従ってデバイスを発見したことを宣言します</li>
+        <li>デバイスを盗んだり、違法な手段で取得したりしていないことを約束します</li>
+        <li>発見したデバイスを損傷なく完全に配送することに同意します</li>
+      </ul>
+      <p class="mb-4"><strong>重要：</strong> 発見デバイス登録は完全に無料です。この市民的で高潔な行動は非常に価値があります。</p>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 正確な情報の提供</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイス情報を正確に入力する必要があります</li>
+        <li>発見日と場所を正直に報告する必要があります</li>
+        <li>デバイスの状態について透明である必要があります</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 運輸出荷</h4>
+      <p class="mb-2">支払いが完了した後：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>営業日5日以内にデバイスを運輸に引き渡す必要があります</li>
+        <li>運輸会社を選択し、追跡番号をシステムに入力する必要があります</li>
+        <li>デバイスを元の状態で損傷なく送付する必要があります</li>
+        <li>デバイスに干渉しないことを約束します（パスワード解析、部品交換など）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>運輸料：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>運輸料（250 TL）はデバイス所有者が支払います</li>
+        <li>運輸会社に「代金引換」として引き渡すことができます</li>
+        <li>または先に支払い、報酬と一緒に返金を受けることができます</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.4 報酬とIBAN/銀行情報</h4>
+      <p class="mb-2"><strong>報酬の決定：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>お支払いする報酬は、発見されたデバイスの市場価値に基づいて一定かつ公正な率で決定されます</li>
+        <li>これにより、努力と模範的な行動への見返りとして小さな贈り物を受け取ることができます</li>
+        <li>iFoundAnAppleは、デバイスが所有者に安全に届き、報酬を完全に受け取れるよう安全な交換プロセスを提供します</li>
+      </ul>
+      
+      <p class="mb-2"><strong>IBAN/銀行情報：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>報酬支払いのために有効なIBANを提供する必要があります</li>
+        <li>IBANが自分に属することを宣言します</li>
+        <li>税務義務を履行することに同意します</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. 支払い、手数料、エスクローシステム</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 報酬システム</h4>
+      <p class="mb-2"><strong>報酬の決定：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイス所有者が自由に報酬額を決定します</li>
+        <li>最小：500 TL、最大：50,000 TL</li>
+        <li>AI提案システムを使用できます（オプション、Google Gemini）</li>
+        <li>報酬はデバイスの市場価値の合理的な割合であるべきです</li>
+      </ul>
+      
+      <p class="mb-2"><strong>支払いタイミング：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>マッチングが発生した場合、48時間以内に支払いを行う必要があります</li>
+        <li>支払いが行われない場合、マッチングはキャンセルされます</li>
+        <li>支払いはエスクローシステムに預けられ、安全に保管されます</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 サービス料</h4>
+      <p class="mb-2"><strong>デバイス所有者の手数料（v5.0式）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>総額：</strong> 顧客から受け取った総額（PAYNET手数料含む）</li>
+        <li><strong>PAYNET手数料：</strong> 総額の3.43%（自動控除）</li>
+        <li><strong>正味額：</strong> PAYNET手数料控除後の残額</li>
+        <li><strong>運輸料：</strong> 250 TL（固定）</li>
+        <li><strong>発見者報酬：</strong> 正味額の20%</li>
+        <li><strong>サービス料：</strong> 正味額 - 運輸 - 報酬（残り）</li>
+      </ul>
+
+      <p class="mb-2"><strong>計算例（デバイス所有者）- v5.0：</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>総額：</strong> 2,000 TL（顧客から受け取った合計）</p>
+        <p>├── <strong>PAYNET手数料：</strong> 68.60 TL（3.43%）- 自動控除</p>
+        <p>└── <strong>正味額：</strong> 1,931.40 TL（エスクローシステムで保管）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>運輸料：</strong> 250.00 TL（固定）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>発見者報酬：</strong> 386.28 TL（20%）</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;└── <strong>サービス料：</strong> 1,295.12 TL（残り）</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>合計：</strong> 68.60 + 250 + 386.28 + 1,295.12 = 2,000.00 TL ✅</p>
+      </div>
+
+      <p class="mb-2"><strong>発見者の手数料：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>正味受取額：</strong> 発見者への報酬（正味額の20%）</li>
+        <li><strong>振込手数料：</strong> 銀行振込で適用される場合があります（約5-10 TL）</li>
+      </ul>
+
+      <p class="mb-2"><strong>計算例（発見者）- v5.0：</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>正味額：</strong> 1,931.40 TL</p>
+        <p><strong>発見者報酬（20%）：</strong> 386.28 TL</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>正味受取額：</strong> 386.28 TL</p>
+      </div>
+
+      <h4 class="text-lg font-semibold mb-2">6.3 エスクローシステム</h4>
+      <p class="mb-2"><strong>仕組み（v5.0）：</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>マッチングが発生</li>
+        <li>デバイス所有者が総額を支払う（48時間以内）</li>
+        <li>PAYNET手数料（3.43%）が自動的に控除される</li>
+        <li>正味額がエスクロー口座に安全に保管される（ステータス：「保管中」）</li>
+        <li>発見者が運輸を送る（営業日5日以内）</li>
+        <li>デバイス所有者が運輸を受け取り、「受領済み、確認」ボタンを押す</li>
+        <li>正味額が以下のように分配される：
+          <ul class="list-disc pl-6 mt-2">
+            <li>運輸料（250 TL）→ 運輸会社</li>
+            <li>発見者報酬（20%）→ 発見者のIBAN</li>
+            <li>サービス料（残り）→ プラットフォーム</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p class="mb-2"><strong>エスクロー期間（v5.0）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>最大待機：30日</li>
+        <li>デバイス所有者確認：正味額はすぐに解放される</li>
+        <li>確認がない場合：7日後に自動確認</li>
+        <li>30日以内に配送がない場合：総額が自動返金される（PAYNET手数料控除）</li>
+      </ul>
+
+      <p class="mb-2"><strong>確認プロセス：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイス所有者のみが確認を行う（一方的な確認）</li>
+        <li>発見者は確認せず、運輸を送るのみ</li>
+        <li>双方向確認システムはない</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.4 キャンセルと返金ポリシー</h4>
+      <p class="mb-2"><strong>キャンセル権：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>支払い後は撤回権はありません（サービスが開始されたため）</li>
+        <li>運輸が送られる前の相互合意によるキャンセルが可能です</li>
+      </ul>
+      
+      <p class="mb-2"><strong>返金条件：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>発見者が営業日5日以内に運輸を送らない場合：全額返金</li>
+        <li>配送されたデバイスが異なる場合：全額返金 + 発見者への罰金</li>
+        <li>技術的問題によるキャンセル：全額返金</li>
+        <li>相互合意によるキャンセル：全額返金</li>
+      </ul>
+      
+      <p class="mb-2"><strong>返金控除（v5.0）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>交換プロセス中に取引キャンセルを要求する場合、支払いゲートウェイ手数料（3.43%）は控除されて返金されます</li>
+        <li>総額が支払われ、正味額がエスクローで保管されている場合：正味額は全額返金されます</li>
+        <li>キャンセルは運輸プロセス開始前に行う必要があります</li>
+        <li>キャンセル後：総額 - 支払いゲートウェイ手数料 = 返金額</li>
+      </ul>
+      
+      <p class="mb-2"><strong>返金プロセス：</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>キャンセル/返金リクエストが作成される</li>
+        <li>プラットフォームが審査（営業日1-3日）</li>
+        <li>決定が行われる</li>
+        <li>返金が承認された場合、営業日5-10日以内にアカウントにクレジットされます</li>
+      </ol>
+
+      <h4 class="text-lg font-semibold mb-2">6.5 支払い方法</h4>
+      <p class="mb-2"><strong>受け入れられる支払い方法：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>クレジットカード（Visa、Mastercard、American Express）</li>
+        <li>デビットカード</li>
+        <li>仮想カード</li>
+        <li>Apple Pay（iPhone、iPad、Macユーザー向け）</li>
+        <li>3D Secure必須（セキュリティのため）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>支払いセキュリティ：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>PCI-DSSレベル1認定の安全な支払いインフラ</li>
+        <li>SSL/TLS暗号化</li>
+        <li>3D Secure認証</li>
+        <li>トークン化（カード情報は当社に保存されません）</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. 運輸プロセスと配送</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 プラットフォームの役割</h4>
+      <p class="mb-4"><strong>重要：</strong> プラットフォームは運輸配送の当事者ではありません。運輸は完全に運輸会社によって処理されます。</p>
+      
+      <p class="mb-2"><strong>プラットフォームが提供するもの：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>運輸会社の選択肢（Aras、MNG、Yurtiçi、PTT）</li>
+        <li>運輸追跡システム</li>
+        <li>配送住所共有（匿名システム）</li>
+        <li>運輸ステータス通知</li>
+      </ul>
+      
+      <p class="mb-2"><strong>プラットフォームが提供しないもの：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>物理的な運輸配送サービス</li>
+        <li>運輸配送員組織</li>
+        <li>運輸保険（運輸会社から取得する必要があります）</li>
+        <li>運輸紛失/損傷保証</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 運輸会社</h4>
+      <p class="mb-2"><strong>サポートされる運輸会社：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Aras Cargo</li>
+        <li>MNG Cargo</li>
+        <li>Yurtiçi Cargo</li>
+        <li>PTT Cargo</li>
+      </ul>
+      <p class="mb-4">デバイスを発見した人は、これらの会社のいずれかを選択し、システムから受け取った運輸番号とともにデバイスを会社に引き渡します。</p>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 匿名身元システム</h4>
+      <p class="mb-2">プライバシーを保護するために：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>発見者に匿名コードが与えられる：FND-XXX123</li>
+        <li>デバイス所有者に匿名コードが与えられる：OWN-YYY456</li>
+        <li>これらのコードは運輸出荷情報で使用されます</li>
+        <li>実際の身元は運輸会社と共有されません</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.4 運輸セキュリティ推奨事項</h4>
+      <p class="mb-2"><strong>送信者（発見者）向け：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイスとパッケージの写真を撮る（配送前）</li>
+        <li>常に追跡番号を記録する</li>
+      </ul>
+      
+      <p class="mb-2"><strong>受信者（デバイス所有者）向け：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>受け取った際にパッケージを確認する</li>
+        <li>損傷がある場合、すぐに報告する</li>
+        <li>パッケージ開封を動画/写真で記録する</li>
+        <li>デバイスのシリアル番号を確認する</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.5 運輸追跡</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>プラットフォームを通じてリアルタイムで運輸ステータスを追跡できます</li>
+        <li>自動ステータス更新を受け取ります：
+          <ul class="list-disc pl-6 mt-2">
+            <li>運輸作成</li>
+            <li>運輸収集</li>
+            <li>運輸支店に到着</li>
+            <li>配送中</li>
+            <li>配送済み</li>
+          </ul>
+        </li>
+        <li>推定配送日が表示されます</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.6 配送の問題</h4>
+      <p class="mb-2"><strong>運輸が紛失した場合：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>すぐに運輸会社に連絡する</li>
+        <li>プラットフォームサポートチームに報告する（support@ifoundanapple.com）</li>
+        <li>運輸会社の保険が発動する</li>
+        <li>プラットフォームが調停役を務めることができます</li>
+        <li>エスクロー内の資金はデバイス所有者に返金される</li>
+      </ul>
+      
+      <p class="mb-2"><strong>損傷配送：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>受け取った際に運輸を確認する</li>
+        <li>損傷がある場合、受け取る前に運輸担当者に報告する</li>
+        <li>すぐにプラットフォームに通知する</li>
+        <li>写真/動画の証拠を提供する</li>
+        <li>返金プロセスが開始される</li>
+      </ul>
+      
+      <p class="mb-2"><strong>間違った/異なるデバイス：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>シリアル番号を確認する</li>
+        <li>異なる場合、確認しない</li>
+        <li>サポートチームに報告する</li>
+        <li>全額返金プロセスが開始される</li>
+        <li>発見者に罰金が適用される</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. 匿名性とプライバシー</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">8.1 身元のプライバシー</h4>
+      <p class="mb-2"><strong>マッチング前：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>ユーザー情報は共有されません</li>
+        <li>完全に匿名のシステム</li>
+      </ul>
+      
+      <p class="mb-2"><strong>マッチング後：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>身元：</strong> 非表示のまま</li>
+        <li><strong>メール：</strong> 非表示のまま</li>
+        <li><strong>電話：</strong> 配送のため運輸会社とのみ共有</li>
+        <li><strong>住所：</strong> 配送のため運輸会社とのみ共有</li>
+      </ul>
+      
+      <p class="mb-2"><strong>運輸で共有される情報：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>氏名</li>
+        <li>配送住所</li>
+        <li>電話番号</li>
+        <li>匿名送信者/受信者コード（FND-XXX、OWN-XXX）</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">8.2 通信</h4>
+      <p class="mb-2"><strong>プラットフォーム通知：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>メール通知</li>
+        <li>アプリ内通知</li>
+        <li>SMS通知（重要な状況の場合）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>直接通信：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>ユーザー間の直接メッセージングはありません</li>
+        <li>すべての通信はプラットフォームを通じて管理されます</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">9. プラットフォームの責任と制限</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">9.1 当プラットフォームの責任</h4>
+      <p class="mb-2"><strong>提供するサービスについて：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>プラットフォームインフラを運用可能に保つ</li>
+        <li>データセキュリティを確保する</li>
+        <li>支払いシステムを安全に運用する</li>
+        <li>エスクローを正しく管理する</li>
+        <li>カスタマーサポートを提供する</li>
+        <li>不正防止対策を講じる</li>
+        <li>法的義務を遵守する</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.2 責任の制限</h4>
+      <p class="mb-4"><strong>プラットフォームは以下について責任を負いません：</strong></p>
+      
+      <p class="mb-2"><strong>デバイスと配送：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>配送されたデバイスの実際の状態</li>
+        <li>デバイスが機能/使用可能であること</li>
+        <li>物理的損傷や欠落部品</li>
+        <li>デバイスがオリジナルであるかどうか</li>
+      </ul>
+      
+      <p class="mb-2"><strong>運輸：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>運輸会社の誤り、遅延、紛失</li>
+        <li>損傷配送</li>
+        <li>運輸保険（ユーザーの責任）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>ユーザーの行動：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>ユーザーが誤った/不完全な情報を提供すること</li>
+        <li>不正行為の試み（検出できなかったもの）</li>
+        <li>所有権の紛争</li>
+      </ul>
+      
+      <p class="mb-2"><strong>サードパーティサービス：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>支払いシステムの中断</li>
+        <li>OAuthプロバイダーの問題</li>
+        <li>インターネットサービスプロバイダーの中断</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.3 補償制限</h4>
+      <p class="mb-2"><strong>最大補償：</strong></p>
+      <p class="mb-4">いかなる場合でも、プラットフォームの責任は、関連する取引で受け取ったサービス料額に限定されます。</p>
+      <p class="mb-4"><strong>例：</strong> プラットフォーム料が150 TLの5,000 TLの報酬取引では、最大補償額は150 TLです。</p>
+      
+      <p class="mb-2"><strong>除外される損害：</strong></p>
+      <p class="mb-2">プラットフォームは以下の損害について責任を負えません：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>間接的損害</li>
+        <li>利益の損失</li>
+        <li>評判の損失</li>
+        <li>精神的損害</li>
+        <li>データの損失</li>
+        <li>事業の損失</li>
+      </ul>
+      <p class="mb-4"><strong>例外：</strong> プラットフォームに故意または重大な過失がある場合、これらの制限は適用されません。</p>
+
+      <h4 class="text-lg font-semibold mb-2">9.4 サービスの保証と中断</h4>
+      <p class="mb-2"><strong>保証しないもの：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>中断のないサービス</li>
+        <li>エラーのない動作</li>
+        <li>マッチング発見の保証</li>
+        <li>特定時間内の結果</li>
+      </ul>
+      
+      <p class="mb-2"><strong>計画メンテナンス：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>事前に発表される（少なくとも24時間前）</li>
+        <li>通常は夜間に行われる</li>
+        <li>最大4時間の期間</li>
+      </ul>
+      
+      <p class="mb-2"><strong>緊急メンテナンス：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>事前に発表されない場合がある</li>
+        <li>セキュリティまたは重要なエラーのため</li>
+        <li>可能な限り早く完了</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">10. 禁止される活動</h3>
+      <p class="mb-2">以下の活動は厳しく禁止されています：</p>
+      
+      <p class="mb-2"><strong>❌ 不正行為：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>偽の情報の提供</li>
+        <li>盗難デバイスの報告</li>
+        <li>他人のデバイスの主張</li>
+        <li>偽のシリアル番号</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ アカウント違反：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>偽の身元の使用</li>
+        <li>複数のアカウント開設</li>
+        <li>他人のアカウントの使用</li>
+        <li>ボットや自動化ツール</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ システム操作：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>プラットフォーム外での合意の作成</li>
+        <li>システムのバイパスの試み</li>
+        <li>エスクローのバイパスの試み</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ その他：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>嫌がらせ、脅迫</li>
+        <li>知的財産権の侵害</li>
+        <li>ウイルス、悪意のあるソフトウェア</li>
+        <li>データスクレイピング</li>
+      </ul>
+      
+      <p class="mb-2"><strong>ペナルティ：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>アカウント閉鎖</li>
+        <li>支払いキャンセル</li>
+        <li>法的措置の開始</li>
+        <li>獲得金額の返金</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">11. アカウントの停止と終了</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">11.1 プラットフォームによる閉鎖</h4>
+      <p class="mb-2"><strong>即座に閉鎖される理由：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>不正行為または偽の情報</li>
+        <li>盗難デバイスの報告</li>
+        <li>偽の身元</li>
+        <li>支払い不正</li>
+        <li>違法活動</li>
+      </ul>
+      
+      <p class="mb-2"><strong>警告後の閉鎖：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>継続的に誤った情報を提供すること</li>
+        <li>プラットフォームルールの違反</li>
+        <li>支払い義務の履行不足（繰り返し）</li>
+        <li>運輸を送らないこと（正当な理由なし）</li>
+      </ul>
+      
+      <p class="mb-4"><strong>停止：</strong> 不審な状況の調査中、アカウントは一時的に停止される場合があります（最大30日）。</p>
+
+      <h4 class="text-lg font-semibold mb-2">11.2 ユーザーによるアカウント閉鎖</h4>
+      <p class="mb-2"><strong>自分のアカウントを閉鎖する：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>プロフィール設定から「アカウント削除」オプションを使用できます</li>
+        <li>進行中の取引がある場合、完了まで閉鎖できません</li>
+        <li>エスクローに保留中の支払いがある場合、それらを完了する必要があります</li>
+      </ul>
+      
+      <p class="mb-2"><strong>アカウント閉鎖の結果：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>個人データは30日以内に削除されます</li>
+        <li>取引履歴は匿名化されます</li>
+        <li>閉鎖されたアカウントは再開できません</li>
+        <li>財務記録は10年間保持されます（法的要件、匿名）</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">12. 不可抗力</h3>
+      <p class="mb-2">以下の不可抗力状況では、プラットフォームはその義務について責任を負えません：</p>
+      
+      <p class="mb-2"><strong>自然災害：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>地震、洪水、火災、嵐</li>
+      </ul>
+      
+      <p class="mb-2"><strong>社会的事件：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>戦争、テロ、暴動、外出禁止令</li>
+      </ul>
+      
+      <p class="mb-2"><strong>技術的問題：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>インターネットインフラの中断（ISPの問題）</li>
+        <li>停電</li>
+        <li>サーバープロバイダー（Supabase）の中断</li>
+        <li>支払いシステムの中断</li>
+        <li>DDoS攻撃、サイバー攻撃</li>
+      </ul>
+      
+      <p class="mb-2"><strong>法的変更：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>突然の法律変更、禁止、規制</li>
+      </ul>
+      
+      <p class="mb-2"><strong>パンデミック/健康危機：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>伝染病の状況</li>
+        <li>公式制限</li>
+      </ul>
+      
+      <p class="mb-4">不可抗力状況では、ユーザーはすぐに通知され、代替解決策が提供されます。</p>
+
+      <h3 class="text-xl font-semibold mb-2">13. 紛争解決</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">13.1 通信とサポート</h4>
+      <p class="mb-2"><strong>第一歩 - サポートチーム：</strong></p>
+      <p class="mb-2">問題が発生した場合、まずサポートチームに連絡してください：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>メール：</strong> support@ifoundanapple.com</li>
+        <li><strong>応答時間：</strong> 24-48時間</li>
+        <li><strong>解決時間：</strong> 営業日5日（平均）</li>
+      </ul>
+      
+      <p class="mb-4"><strong>調停：</strong> ユーザー間に紛争がある場合、プラットフォームが調停役を務めることができます（オプション）。</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.2 適用法</h4>
+      <p class="mb-4">本契約はトルコ共和国法に準拠します。</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.3 管轄裁判所と執行事務所</h4>
+      <p class="mb-2">本契約から生じる紛争について：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>トルコのユーザー：</strong> イスタンブール（Çağlayan）の裁判所と執行事務所が管轄権を有します</li>
+        <li><strong>EUのユーザー：</strong> ユーザーの居住地の裁判所も管轄権を有します（GDPRのため）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>消費者権利：</strong></p>
+      <p class="mb-4">消費者は消費者保護法に基づき消費者仲裁委員会と消費者裁判所に申し立てることができます。</p>
+      
+      <p class="mb-2"><strong>消費者仲裁委員会：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>ウェブ：</strong> https://tuketicihakemleri.ticaret.gov.tr</li>
+        <li>電子申請システムが利用可能です</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">13.4 代替紛争解決</h4>
+      <p class="mb-2"><strong>オンライン紛争解決（ODR）：</strong></p>
+      <p class="mb-2">EUの消費者はEU ODRプラットフォームを使用できます：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>プラットフォーム：</strong> https://ec.europa.eu/consumers/odr</li>
+        <li><strong>連絡先：</strong> info@ifoundanapple.com</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">14. 知的財産権</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">14.1 プラットフォームの権利</h4>
+      <p class="mb-4">プラットフォーム上のすべてのコンテンツ、デザイン、ロゴ、ソフトウェアコード、アルゴリズムは、iFoundAnAppleの著作権の下にあります。</p>
+      
+      <p class="mb-2"><strong>禁止される行為：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>コンテンツのコピーや複製</li>
+        <li>ロゴの無断使用</li>
+        <li>ソースコードのリバースエンジニアリング</li>
+        <li>データスクレイピング（自動データ収集）</li>
+        <li>APIの無断使用</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">14.2 ユーザーコンテンツ</h4>
+      <p class="mb-4">プラットフォームにアップロードするコンテンツ（写真、説明）は、あなたの知的財産です。</p>
+      
+      <p class="mb-2"><strong>プラットフォームに与えるライセンス：</strong></p>
+      <p class="mb-2">コンテンツをアップロードすることで、プラットフォームに以下の権利を与えます：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>プラットフォーム上でコンテンツを表示する</li>
+        <li>コンテンツを保存および処理する</li>
+        <li>コンテンツをバックアップする</li>
+        <li>技術的に最適化する（圧縮など）</li>
+      </ul>
+      <p class="mb-4">プラットフォームは、他の目的のためにコンテンツを使用、販売、または共有しません。</p>
+
+      <h3 class="text-xl font-semibold mb-2">15. その他の規定</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">15.1 通知の作成</h4>
+      <p class="mb-2"><strong>プラットフォームからあなたへ：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>メール（登録メールアドレス）</li>
+        <li>アプリ内通知</li>
+        <li>SMS（緊急状況の場合）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>あなたからプラットフォームへ：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>一般：</strong> info@ifoundanapple.com</li>
+        <li><strong>法的：</strong> legal@ifoundanapple.com</li>
+        <li><strong>セキュリティ：</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">15.2 契約の完全性</h4>
+      <p class="mb-4">本規約は当事者間の完全な合意を構成します。</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.3 部分的な無効性</h4>
+      <p class="mb-4">規約のいずれかの規定が無効とみなされた場合でも、他の規定は有効のままです。</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.4 譲渡の禁止</h4>
+      <p class="mb-4">ユーザーは、本契約から生じる権利と義務を第三者に譲渡することはできません。</p>
+      <p class="mb-4">プラットフォームは、事業譲渡、合併、または買収の場合に権利を譲渡することができます。</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.5 電子記録</h4>
+      <p class="mb-4">プラットフォームの電子記録は、CCP第297条の下で決定的な証拠を構成します。</p>
+
+      <h3 class="text-xl font-semibold mb-2">16. 連絡先情報</h3>
+      <p class="mb-2"><strong>iFoundAnApple</strong></p>
+      
+      <p class="mb-2"><strong>一般サポート：</strong></p>
+      <p class="mb-4"><strong>メール：</strong> info@ifoundanapple.com</p>
+      <p class="mb-4"><strong>応答時間：</strong> 24-48時間</p>
+      
+      <p class="mb-2"><strong>法的問題：</strong></p>
+      <p class="mb-4"><strong>メール：</strong> legal@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>セキュリティ：</strong></p>
+      <p class="mb-4"><strong>メール：</strong> security@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>ウェブサイト：</strong></p>
+      <p class="mb-4">https://ifoundanapple.com</p>
+
+      <h3 class="text-xl font-semibold mb-2">17. 承認と承認</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ 本利用規約を読み、理解し、承認しました。</li>
+        <li>✅ 18歳以上であり、法的能力を有することを宣言します。</li>
+        <li>✅ プラットフォームを使用することで、本規約とプライバシーポリシーを遵守することに同意します。</li>
+        <li>✅ メール、SMS、アプリ内通知の受信に同意します。</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>最終更新日：</strong> 2025年10月14日</p>
+        <p><strong>バージョン：</strong> 2.0</p>
+        <p><strong>有効性：</strong> トルコと欧州連合</p>
+        <p><strong>© 2025 iFoundAnApple. 全著作権所有。</strong></p>
+      </div>
+    `,
+    privacyContent: `
+      <h2 class="text-2xl font-bold mb-4">プライバシーポリシー</h2>
+      <p class="mb-4"><strong>最終更新日：</strong> 2025年10月14日</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. データ管理者</h3>
+      <p class="mb-4"><strong>iFoundAnApple</strong></p>
+      <p class="mb-4"><strong>メール：</strong> privacy@ifoundanapple.com</p>
+      <p class="mb-4"><strong>ウェブ：</strong> https://ifoundanapple.com</p>
+      <p class="mb-4">本ポリシーはKVKKとGDPRに従って作成されています。</p>
+
+      <h3 class="text-xl font-semibold mb-2">2. ホスティングとドメイン情報</h3>
+      <p class="mb-4"><strong>ドメイン所有者：</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>ホスティングプロバイダー：</strong> Hetzner</p>
+      <p class="mb-4"><strong>SSL証明書：</strong> アクティブ（HTTPS）</p>
+      <p class="mb-4"><strong>ドメイン確認：</strong> 所有ドメインにホスティング</p>
+      <p class="mb-4"><strong>重要：</strong> 本プライバシーポリシーは、Google Sites、Facebook、Instagram、Twitterなどのサードパーティプラットフォームではなく、所有ドメインにホスティングされています。</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. 収集される個人データ</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 登録と認証</h4>
+      <p class="mb-2"><strong>メール登録：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>名、姓</li>
+        <li>メールアドレス</li>
+        <li>パスワード（bcryptで暗号化して保存）</li>
+        <li>生年月日</li>
+      </ul>
+      
+      <p class="mb-2"><strong>OAuthログイン（Google/Apple）：</strong></p>
+      <p class="mb-2">GoogleまたはAppleでサインインする際、以下のユーザーデータを収集します：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Googleユーザーデータ：</strong> 名前、メール、プロフィール写真（オプション）</li>
+        <li><strong>目的：</strong> アカウント作成と認証のみ</li>
+        <li><strong>データ保護：</strong> 保存時のAES-256-GCM暗号化</li>
+        <li><strong>データストレージ：</strong> 安全なデータベース（Supabase）に暗号化して保存</li>
+        <li><strong>データ共有：</strong> プラットフォーム機能のためのサービスプロバイダーとのみ（セクション5.1を参照）</li>
+        <li><strong>データ保持：</strong> アカウント有効期間中、アカウント削除後30日以内に削除</li>
+        <li>パスワードを作成する必要はありません</li>
+      </ul>
+      <p class="mb-4"><strong>重要：</strong> Googleユーザーデータはプラットフォーム機能を提供するためのみに使用します。広告、第三者への販売、またはその他の目的には使用しません。</p>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 デバイス情報</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイスモデル（iPhone 15 Pro、MacBook Airなど）</li>
+        <li>シリアル番号</li>
+        <li>デバイスの色と説明</li>
+        <li>紛失/発見日と場所</li>
+        <li>請求書/所有証明書（視覚的 - 削除可能）</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 支払いと財務情報</h4>
+      <p class="mb-2"><strong>支払い取引：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>安全な支払いプロバイダーによって処理されるクレジット/銀行カード情報（PCI-DSS準拠）</li>
+        <li>カード情報は当社のサーバーに保存されません</li>
+        <li>取引履歴と金額が記録されます</li>
+      </ul>
+      
+      <p class="mb-2"><strong>銀行情報：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>IBAN番号（報酬振込用）</li>
+        <li>口座名義人名</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 プロフィールと連絡先情報</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>国民ID番号（オプション、高額取引の場合）</li>
+        <li>電話番号</li>
+        <li>配送住所（運輸用）</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.5 自動収集されるデータ</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>IPアドレス</li>
+        <li>ブラウザとデバイス情報</li>
+        <li>セッション情報</li>
+        <li>プラットフォーム使用統計</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. データ使用目的</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 サービス提供</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>紛失デバイスと発見デバイスのマッチング（シリアル番号ベース）</li>
+        <li>ユーザーアカウント管理</li>
+        <li>運輸組織と追跡</li>
+        <li>通知の送信</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 支払いとエスクロー操作</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>安全な支払い処理</li>
+        <li>エスクローシステムの運用</li>
+        <li>IBANへの報酬支払いの振込</li>
+        <li>財務記録の維持</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 AI による推奨事項</h4>
+      <p class="mb-4">この機能はオプションです。AI推奨事項にはデバイスモデル情報のみを使用します。個人身元データは共有されません。</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 データ使用の制限</h4>
+      <p class="mb-2"><strong>Googleユーザーデータと個人データの使用：</strong></p>
+      <p class="mb-2">Googleユーザーデータと個人情報は以下の目的でのみ使用します：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ プラットフォーム機能の提供（認証、アカウント管理）</li>
+        <li>✅ 取引と支払いの処理</li>
+        <li>✅ デバイス配送の組織化</li>
+        <li>✅ 重要なサービス通知の送信</li>
+        <li>✅ ユーザー体験の向上</li>
+        <li>✅ セキュリティと不正防止</li>
+      </ul>
+      <p class="mb-2"><strong>データを以下の目的で使用することはありません：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ ターゲット広告やマーケティング</li>
+        <li>❌ データブローカーや情報再販業者への販売</li>
+        <li>❌ 信用価値の判断や貸付目的</li>
+        <li>❌ ユーザー広告やパーソナライズ広告</li>
+        <li>❌ 当社のサービスに関連しないAIモデルの訓練</li>
+        <li>❌ 他の目的のためのデータベース作成</li>
+        <li>❌ プラットフォーム機能の提供または改善を超えるその他の目的</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.5 セキュリティ</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>不正防止</li>
+        <li>身元確認</li>
+        <li>監査ログの維持</li>
+        <li>セキュリティ侵害の検出</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.6 法的遵守</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>KVKKとGDPR要件の遵守</li>
+        <li>税務法規の義務（10年間の記録保持）</li>
+        <li>裁判所の決定と法的プロセス</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. データ共有</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 サービスプロバイダー</h4>
+      <p class="mb-2"><strong>Supabase（バックエンドインフラ）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>データベース、認証、ファイルストレージ</li>
+        <li>SOC 2 Type II、GDPR準拠</li>
+        <li>データの場所：米国/EU</li>
+        <li><strong>共有されるGoogleユーザーデータ：</strong> 名前、メール（暗号化）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>支払いプロバイダー：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>支払い処理、3D Secure、エスクロー</li>
+        <li>PCI-DSSレベル1認定</li>
+        <li>トルコベース</li>
+        <li><strong>共有されるGoogleユーザーデータ：</strong> メール（取引領収書のみ）</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google/Apple（OAuth認証）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>サードパーティログイン（オプション）</li>
+        <li>認証のみに使用</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google Gemini（AI推奨事項）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>デバイスモデル情報のみが共有されます</li>
+        <li>Googleユーザーデータ（名前、メール）は共有されません</li>
+        <li>個人身元情報は共有されません</li>
+      </ul>
+      
+      <p class="mb-2"><strong>運輸会社（Aras、MNG、Yurtiçi、PTT）：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>配送住所と電話</li>
+        <li>匿名送信者/受信者コード（FND-XXX、OWN-XXX）</li>
+        <li>実際の身元（名前、メール）は機密保持</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 ユーザー間共有</h4>
+      <p class="mb-4"><strong>重要：</strong> 身元、メール、電話番号は他のユーザーと共有されることはありません。</p>
+      
+      <p class="mb-2"><strong>マッチング後：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>相手方の身元は匿名のまま</li>
+        <li>「マッチングが見つかりました」通知のみ送信</li>
+        <li>運輸のための配送住所のみ共有（氏名と住所）</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 法的義務</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>裁判所命令または召喚状</li>
+        <li>法執行機関の要求</li>
+        <li>税務当局（財務記録の場合）</li>
+        <li>KVKK機関の要求</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. データセキュリティと保持</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 セキュリティ対策</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>SSL/TLS暗号化（HTTPS）- TLS 1.3</li>
+        <li>パスワードハッシュ化（bcrypt）</li>
+        <li><strong>保存時のデータベース暗号化（AES-256-GCM）</strong></li>
+        <li><strong>機密データのアプリケーションレベル暗号化：</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>トルコ国民ID（TC Kimlik No）</li>
+          <li>IBAN番号</li>
+          <li>電話番号</li>
+          <li>物理的住所</li>
+          <li>Googleユーザーデータ（名前、メール）</li>
+        </ul>
+        <li>行レベルセキュリティ（RLS）ポリシー</li>
+        <li>OAuth 2.0安全認証トークン</li>
+        <li>3D Secure支払い認証</li>
+        <li>二要素認証（2FA）サポート</li>
+        <li>定期的なセキュリティ監査と脆弱性評価</li>
+        <li>アクセス制御ログと監視</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 保持期間</h4>
+      
+      <p class="mb-2"><strong>Googleユーザーデータの保持：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>アクティブなアカウント：</strong> アカウントがアクティブな間保持</li>
+        <li><strong>削除されたアカウント：</strong> Googleユーザーデータ（名前、メール）は30日以内に削除</li>
+        <li><strong>財務データ：</strong> 10年（法的要件 - 税法）</li>
+        <li><strong>削除を要求できます：</strong> privacy@ifoundanapple.com にメール</li>
+      </ul>
+      
+      <p class="mb-2"><strong>アクティブなアカウント：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>アカウントがアクティブな間保持</li>
+      </ul>
+      
+      <p class="mb-2"><strong>閉鎖されたアカウント：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>アカウント閉鎖後30日以内に削除</li>
+        <li>財務記録は10年間保持（法的義務）</li>
+        <li>匿名統計は無期限に保持可能</li>
+      </ul>
+      
+      <p class="mb-2"><strong>取引記録：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>財務取引：10年</li>
+        <li>運輸記録：2年</li>
+        <li>監査ログ：5年</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. ユーザーの権利（KVKK & GDPR）</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 あなたの権利</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ <strong>情報権：</strong> データが処理されているかどうかを知る</li>
+        <li>✅ <strong>アクセス権：</strong> データのコピーを取得する</li>
+        <li>✅ <strong>訂正権：</strong> 誤った情報を訂正する</li>
+        <li>✅ <strong>削除権：</strong> データを削除する（忘れられる権利）</li>
+        <li>✅ <strong>異議権：</strong> データ処理活動に異議を唱える</li>
+        <li>✅ <strong>データポータビリティ：</strong> データを別のプラットフォームに転送する</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 申請方法</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>メール：</strong> privacy@ifoundanapple.com</li>
+        <li><strong>件名：</strong> KVKK/GDPR申請</li>
+        <li><strong>応答時間：</strong> 30日（最大）</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 苦情を申し立てる権利</h4>
+      <p class="mb-2"><strong>トルコ：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>個人データ保護機関 - https://www.kvkk.gov.tr</li>
+      </ul>
+      
+      <p class="mb-2"><strong>EU：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>関連国のデータ保護機関</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. 子供のプライバシー</h3>
+      <p class="mb-4">プラットフォームは18歳未満のユーザーを対象としていません。18歳未満の者から意図的にデータを収集することはありません。</p>
+
+      <h3 class="text-xl font-semibold mb-2">9. クッキー</h3>
+      <p class="mb-2"><strong>使用するクッキー：</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>セッション管理（必須）</li>
+        <li>言語設定（機能）</li>
+        <li>セキュリティ（必須）</li>
+      </ul>
+      <p class="mb-4">ブラウザ設定からクッキーを管理できます。</p>
+
+      <h3 class="text-xl font-semibold mb-2">10. 国際データ転送</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Supabase：</strong> 米国/EUデータセンター（GDPR準拠、SCC）</li>
+        <li><strong>支払いプロバイダー：</strong> 国際</li>
+        <li><strong>Google：</strong> グローバル（OAuthとIA用）</li>
+      </ul>
+      <p class="mb-4">すべての転送はKVKKとGDPR規定に従って行われます。</p>
+
+      <h3 class="text-xl font-semibold mb-2">11. 変更と更新</h3>
+      <p class="mb-2">本プライバシーポリシーを随時更新する場合があります。重要な変更が行われた場合：</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>ウェブサイトで発表</li>
+        <li>メールで通知</li>
+        <li>「最終更新日」が変更される</li>
+      </ul>
+      <p class="mb-4">更新は公開日に発効します。</p>
+
+      <h3 class="text-xl font-semibold mb-2">12. 連絡先</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>一般：</strong> info@ifoundanapple.com</li>
+        <li><strong>プライバシー：</strong> privacy@ifoundanapple.com</li>
+        <li><strong>セキュリティ：</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>© 2025 iFoundAnApple - バージョン 2.0</strong></p>
+      </div>
+    `,
   },
   es: {
     // Header & Nav
@@ -3978,8 +6166,1102 @@ export const translations = {
         q6: "¿Cuáles son las tarifas?",
         a6: "El desglose total de tarifas es el siguiente;\\n\\nTarifa del proveedor de pago seguro + Tarifa de la empresa de transporte + Recompensa del buscador + Tarifa de servicio.\\n\\nEsto nos ayuda a cubrir los costes operativos, mantener la plataforma y garantizar un entorno seguro para todos."
     },
-    termsContent: "<p>La versión en español de los Términos de Servicio estará disponible próximamente.</p>",
-    privacyContent: "<p>La versión en español de la Política de Privacidad estará disponible próximamente.</p>",
+    termsContent: `
+      <h2 class="text-2xl font-bold mb-4">TÉRMINOS DE SERVICIO</h2>
+      <p class="mb-4"><strong>Última actualización:</strong> 14 de octubre de 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. ÁMBITO DEL CONTRATO</h3>
+      <p class="mb-4">Estos términos rigen la relación legal entre la plataforma iFoundAnApple y los usuarios.</p>
+      
+      <p class="mb-4"><strong>Propietario de la plataforma:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Contacto:</strong> support@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Ley:</strong> Leyes de la República de Turquía</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.1 Significado de la aceptación</h4>
+      <p class="mb-4">Al registrarse en la plataforma, crear una cuenta o utilizar los servicios, se considera que ha aceptado estos Términos.</p>
+
+      <h4 class="text-lg font-semibold mb-2">1.2 Derecho a modificar</h4>
+      <p class="mb-4">Podemos modificar estos Términos con un aviso de 7 días. Los cambios se:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Comunican por correo electrónico</li>
+        <li>Anuncian en el sitio web</li>
+        <li>Envían como notificaciones en la aplicación</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">2. SERVICIOS DE LA PLATAFORMA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">2.1 Servicios que proporcionamos</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Registro de dispositivo perdido: Registrar dispositivos Apple en el sistema</li>
+        <li>✅ Notificación de dispositivo encontrado: Reportar dispositivos encontrados</li>
+        <li>✅ Emparejamiento automático: Emparejamiento basado en número de serie</li>
+        <li>✅ Sistema anónimo: Su información de identidad se mantiene confidencial</li>
+        <li>✅ Pago seguro: Pago seguro compatible con PCI-DSS</li>
+        <li>✅ Sistema de depósito en garantía: El dinero se mantiene seguro</li>
+        <li>✅ Organización de transporte: Selección y seguimiento de empresas de transporte</li>
+        <li>✅ Sistema de notificaciones: Actualizaciones en tiempo real</li>
+        <li>✅ Sugerencias impulsadas por IA: Sugerencias de recompensa con Google Gemini</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">2.2 Servicios que no proporcionamos</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Entrega de transporte: No proporcionamos servicios de transporte</li>
+        <li>❌ Reuniones físicas: No reunimos físicamente a las partes</li>
+        <li>❌ Reparación de dispositivo: No proporcionamos soporte técnico</li>
+        <li>❌ Representación legal: No proporcionamos servicios legales</li>
+        <li>❌ Garantía: No se garantiza el estado o la funcionalidad del dispositivo</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">3. REGISTRO Y GESTIÓN DE CUENTA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Requisitos de registro</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe tener 18 años o más</li>
+        <li>Se requiere una dirección de correo electrónico válida</li>
+        <li>Debe proporcionar información precisa</li>
+        <li>Debe residir en Turquía o países de la UE</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Métodos de registro</h4>
+      <p class="mb-2"><strong>Registro por correo electrónico:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Se requiere nombre, apellido, correo electrónico, fecha de nacimiento y contraseña</li>
+        <li>Verificación por correo electrónico obligatoria</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Registro OAuth (Google / Apple):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Autenticación de identidad de terceros</li>
+        <li>Sujeto a los términos del proveedor OAuth</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Seguridad de la cuenta</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Mantenga su contraseña segura y no la comparta</li>
+        <li>No comparta la información de su cuenta con nadie</li>
+        <li>Reporte actividades sospechosas inmediatamente</li>
+        <li>Cada usuario solo puede abrir 1 cuenta</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 Actividades de cuenta prohibidas</h4>
+      <p class="mb-2">Las siguientes situaciones conducen al cierre de cuenta:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Uso de información de identidad falsa</li>
+        <li>Apertura de múltiples cuentas (para la misma persona)</li>
+        <li>Uso de la cuenta de otra persona</li>
+        <li>Uso de bots o herramientas automatizadas</li>
+        <li>Intento de manipular el sistema</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. RESPONSABILIDADES DEL PROPIETARIO DEL DISPOSITIVO</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Propiedad legal</h4>
+      <p class="mb-2">Al agregar un dispositivo perdido:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Declara que es el propietario legal del dispositivo</li>
+        <li>Debe poder proporcionar documentos de propiedad (factura, certificado de garantía)</li>
+        <li>Se compromete a no reportar un dispositivo robado o falso</li>
+      </ul>
+      <p class="mb-4"><strong>Importante:</strong> El registro del dispositivo es completamente gratuito. El pago solo se solicita cuando se encuentra su dispositivo y comienza el proceso de intercambio.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Proporcionar información precisa</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe ingresar correctamente el modelo del dispositivo, número de serie y características</li>
+        <li>Debe reportar honestamente el estado del dispositivo</li>
+        <li>Debe especificar la fecha y ubicación de la pérdida con la mayor precisión posible</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Obligación de pago</h4>
+      <p class="mb-2">Cuando ocurre un emparejamiento:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Se compromete a pagar el monto de la recompensa determinado</li>
+        <li>Debe realizar el pago dentro de 48 horas</li>
+        <li>Las tarifas incluyen los siguientes elementos:
+          <ul class="list-disc pl-6 mt-2">
+            <li>Tarifa de servicio iFoundAnApple</li>
+            <li>Comisión del proveedor de pago (costo de infraestructura de pago seguro)</li>
+            <li>Tarifa de transporte (para que su dispositivo llegue de forma segura)</li>
+            <li>Recompensa para el buscador de dispositivo (como muestra de agradecimiento por su amable contribución)</li>
+          </ul>
+        </li>
+        <li>No puede cancelar después de realizar el pago (excepto por razones válidas)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 Recibir transporte</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe proporcionar información de dirección correcta para la entrega</li>
+        <li>Debe verificar el transporte cuando lo recibe</li>
+        <li>Debe presionar el botón "Recibí, Confirmar" dentro de 7 días</li>
+        <li>Si no confirma, se da confirmación automática después de 7 días</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. RESPONSABILIDADES DEL BUSCADOR DE DISPOSITIVO</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Búsqueda honesta</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Declara que encontró el dispositivo de acuerdo con la ley</li>
+        <li>Se compromete a no haber robado el dispositivo ni haberlo adquirido por medios ilegales</li>
+        <li>Acepta entregar el dispositivo encontrado intacto y completo</li>
+      </ul>
+      <p class="mb-4"><strong>Importante:</strong> El registro de dispositivo encontrado es completamente gratuito. Este comportamiento civil y honorable es invaluable para nosotros.</p>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Proporcionar información precisa</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe ingresar correctamente la información del dispositivo</li>
+        <li>Debe reportar honestamente la fecha y ubicación del hallazgo</li>
+        <li>Debe ser transparente sobre el estado del dispositivo</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 Envío de transporte</h4>
+      <p class="mb-2">Después de completar el pago:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe entregar el dispositivo al transporte dentro de 5 días hábiles</li>
+        <li>Debe seleccionar una empresa de transporte e ingresar el número de seguimiento en el sistema</li>
+        <li>Debe enviar el dispositivo en su estado original, sin daños</li>
+        <li>Se compromete a no interferir con el dispositivo (descifrado de contraseña, reemplazo de piezas)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Tarifa de transporte:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>La tarifa de transporte (250 TL) la paga el propietario del dispositivo</li>
+        <li>Puede entregarlo a la empresa de transporte como "contra reembolso"</li>
+        <li>O puede pagar primero y recuperarlo junto con la recompensa</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.4 Recompensa e información IBAN/Banco</h4>
+      <p class="mb-2"><strong>Determinación de recompensa:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>La recompensa que se le dará se determina a una tasa cierta y justa basada en el valor de mercado del dispositivo encontrado</li>
+        <li>De esta manera, nos aseguramos de que reciba un pequeño regalo a cambio de su esfuerzo y comportamiento ejemplar</li>
+        <li>iFoundAnApple proporciona un proceso de intercambio seguro para garantizar que el dispositivo llegue a su propietario de forma segura y que reciba su recompensa por completo</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Información IBAN/Banco:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Debe proporcionar un IBAN válido para el pago de recompensa</li>
+        <li>Declara que el IBAN le pertenece</li>
+        <li>Acepta cumplir con sus obligaciones fiscales</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. PAGOS, TARIFAS Y SISTEMA DE DEPÓSITO EN GARANTÍA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Sistema de recompensa</h4>
+      <p class="mb-2"><strong>Determinación de recompensa:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>El propietario del dispositivo determina libremente el monto de la recompensa</li>
+        <li>Mínimo: 500 TL, Máximo: 50,000 TL</li>
+        <li>Se puede usar el sistema de sugerencias IA (opcional, Google Gemini)</li>
+        <li>La recompensa debe ser un porcentaje razonable del valor de mercado del dispositivo</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Momento del pago:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>El pago debe realizarse dentro de 48 horas cuando ocurre un emparejamiento</li>
+        <li>Si no se realiza el pago, se cancela el emparejamiento</li>
+        <li>El pago se toma en el sistema de depósito en garantía y se mantiene seguro</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 Tarifas de servicio</h4>
+      <p class="mb-2"><strong>Tarifas para el propietario del dispositivo (fórmula v5.0):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Monto bruto:</strong> Monto total recibido del cliente (incluyendo comisión PAYNET)</li>
+        <li><strong>Comisión PAYNET:</strong> 3.43% del monto bruto (deducida automáticamente)</li>
+        <li><strong>Monto neto:</strong> Monto restante después de la deducción de la comisión PAYNET</li>
+        <li><strong>Tarifa de transporte:</strong> 250 TL (fija)</li>
+        <li><strong>Recompensa del buscador:</strong> 20% del monto neto</li>
+        <li><strong>Tarifa de servicio:</strong> Monto neto - transporte - recompensa (resto)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Ejemplo de cálculo (propietario del dispositivo) - v5.0:</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>Monto bruto:</strong> 2,000 TL (total recibido del cliente)</p>
+        <p>├── <strong>Comisión PAYNET:</strong> 68.60 TL (3.43%) - Deducida automáticamente</p>
+        <p>└── <strong>Monto neto:</strong> 1,931.40 TL (retenido en sistema de depósito en garantía)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Tarifa de transporte:</strong> 250.00 TL (fija)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>Recompensa del buscador:</strong> 386.28 TL (20%)</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;└── <strong>Tarifa de servicio:</strong> 1,295.12 TL (resto)</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>TOTAL:</strong> 68.60 + 250 + 386.28 + 1,295.12 = 2,000.00 TL ✅</p>
+      </div>
+
+      <p class="mb-2"><strong>Tarifas para el buscador:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Neto a recibir:</strong> Recompensa al buscador (20% del monto neto)</li>
+        <li><strong>Tarifa de transferencia:</strong> Puede aplicarse en transferencia bancaria (aproximadamente 5-10 TL)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Ejemplo de cálculo (buscador) - v5.0:</strong></p>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <p><strong>Monto neto:</strong> 1,931.40 TL</p>
+        <p><strong>Recompensa del buscador (20%):</strong> 386.28 TL</p>
+        <p>─────────────────────────────────────────</p>
+        <p><strong>NETO A RECIBIR:</strong> 386.28 TL</p>
+      </div>
+
+      <h4 class="text-lg font-semibold mb-2">6.3 Sistema de depósito en garantía</h4>
+      <p class="mb-2"><strong>Cómo funciona (v5.0):</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>Ocurre un emparejamiento</li>
+        <li>El propietario del dispositivo paga el monto bruto (dentro de 48 horas)</li>
+        <li>La comisión PAYNET (3.43%) se deduce automáticamente</li>
+        <li>El monto neto se mantiene de forma segura en la cuenta de depósito en garantía (estado: "retenido")</li>
+        <li>El buscador envía el transporte (dentro de 5 días hábiles)</li>
+        <li>El propietario del dispositivo recibe el transporte y presiona el botón "Recibí, Confirmar"</li>
+        <li>El monto neto se distribuye de la siguiente manera:
+          <ul class="list-disc pl-6 mt-2">
+            <li>Tarifa de transporte (250 TL) → Empresa de transporte</li>
+            <li>Recompensa del buscador (20%) → IBAN del buscador</li>
+            <li>Tarifa de servicio (resto) → Plataforma</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p class="mb-2"><strong>Duración del depósito en garantía (v5.0):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Espera máxima: 30 días</li>
+        <li>Confirmación del propietario: El monto neto se libera inmediatamente</li>
+        <li>Si no hay confirmación: Confirmación automática después de 7 días</li>
+        <li>Si no hay entrega dentro de 30 días: Monto bruto reembolsado automáticamente (comisión PAYNET deducida)</li>
+      </ul>
+
+      <p class="mb-2"><strong>Proceso de confirmación:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Solo el propietario del dispositivo da confirmación (confirmación unilateral)</li>
+        <li>El buscador no confirma, solo envía el transporte</li>
+        <li>No hay sistema de confirmación bilateral</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.4 Política de cancelación y reembolso</h4>
+      <p class="mb-2"><strong>Derecho a cancelar:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>No tiene derecho de retractación después de realizar el pago (porque el servicio ha comenzado)</li>
+        <li>La cancelación es posible por acuerdo mutuo antes de enviar el transporte</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Condiciones de reembolso:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Si el buscador no envía el transporte dentro de 5 días hábiles: Reembolso completo</li>
+        <li>Si el dispositivo entregado es diferente: Reembolso completo + penalización al buscador</li>
+        <li>Cancelación debido a problemas técnicos: Reembolso completo</li>
+        <li>Cancelación por acuerdo mutuo: Reembolso completo</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Deducción de reembolso (v5.0):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Si solicita la cancelación de la transacción durante el proceso de intercambio, la comisión de la pasarela de pago (3.43%) se reembolsa con deducción</li>
+        <li>Si se paga el monto bruto y el monto neto se retiene en depósito en garantía: El monto neto se reembolsa por completo</li>
+        <li>La cancelación debe realizarse antes de que comience el proceso de transporte</li>
+        <li>Después de la cancelación: Monto bruto - Comisión de la pasarela de pago = Monto del reembolso</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Proceso de reembolso:</strong></p>
+      <ol class="list-decimal pl-6 mb-4">
+        <li>Se crea una solicitud de cancelación/reembolso</li>
+        <li>La plataforma revisa (1-3 días hábiles)</li>
+        <li>Se toma una decisión</li>
+        <li>Si se aprueba el reembolso, se acredita a la cuenta dentro de 5-10 días hábiles</li>
+      </ol>
+
+      <h4 class="text-lg font-semibold mb-2">6.5 Métodos de pago</h4>
+      <p class="mb-2"><strong>Métodos de pago aceptados:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Tarjeta de crédito (Visa, Mastercard, American Express)</li>
+        <li>Tarjeta de débito</li>
+        <li>Tarjeta virtual</li>
+        <li>Apple Pay (para usuarios de iPhone, iPad, Mac)</li>
+        <li>3D Secure obligatorio (por seguridad)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Seguridad del pago:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Infraestructura de pago seguro certificada PCI-DSS nivel 1</li>
+        <li>Cifrado SSL/TLS</li>
+        <li>Verificación 3D Secure</li>
+        <li>Tokenización (la información de la tarjeta no se almacena con nosotros)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. PROCESO DE TRANSPORTE Y ENTREGA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Rol de la plataforma</h4>
+      <p class="mb-4"><strong>Importante:</strong> La plataforma no es parte en la entrega de transporte. El transporte es manejado completamente por empresas de transporte.</p>
+      
+      <p class="mb-2"><strong>Lo que proporciona la plataforma:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Opciones de empresas de transporte (Aras, MNG, Yurtiçi, PTT)</li>
+        <li>Sistema de seguimiento de transporte</li>
+        <li>Compartir dirección de entrega (sistema anónimo)</li>
+        <li>Notificaciones de estado de transporte</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Lo que no proporciona la plataforma:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Servicio de entrega física de transporte</li>
+        <li>Organización de mensajeros de transporte</li>
+        <li>Seguro de transporte (debe obtenerse de la empresa de transporte)</li>
+        <li>Garantía de pérdida/daño del transporte</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 Empresas de transporte</h4>
+      <p class="mb-2"><strong>Empresas de transporte soportadas:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Aras Cargo</li>
+        <li>MNG Cargo</li>
+        <li>Yurtiçi Cargo</li>
+        <li>PTT Cargo</li>
+      </ul>
+      <p class="mb-4">La persona que encuentra el dispositivo selecciona una de estas empresas y entrega el dispositivo a la empresa con el número de transporte recibido del sistema.</p>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 Sistema de identidad anónima</h4>
+      <p class="mb-2">Para proteger su privacidad:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Se le da un código anónimo al buscador: FND-XXX123</li>
+        <li>Se le da un código anónimo al propietario: OWN-YYY456</li>
+        <li>Estos códigos se usan en la información de envío</li>
+        <li>Las identidades reales no se comparten con la empresa de transporte</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.4 Recomendaciones de seguridad del transporte</h4>
+      <p class="mb-2"><strong>Para el remitente (buscador):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Tome fotos del dispositivo y el paquete (antes de la entrega)</li>
+        <li>Siempre registre el número de seguimiento</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Para el receptor (propietario):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Verifique el paquete al recibirlo</li>
+        <li>Si hay daños, presente un informe inmediatamente</li>
+        <li>Documente la apertura del paquete con video/fotos</li>
+        <li>Verifique el número de serie del dispositivo</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.5 Seguimiento del transporte</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Puede rastrear el estado del transporte en tiempo real a través de la plataforma</li>
+        <li>Recibe actualizaciones de estado automáticas:
+          <ul class="list-disc pl-6 mt-2">
+            <li>Transporte creado</li>
+            <li>Transporte recolectado</li>
+            <li>En sucursal de transporte</li>
+            <li>En camino para entrega</li>
+            <li>Entregado</li>
+          </ul>
+        </li>
+        <li>Se muestra la fecha estimada de entrega</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.6 Problemas de entrega</h4>
+      <p class="mb-2"><strong>Si se pierde el transporte:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Contacte inmediatamente a la empresa de transporte</li>
+        <li>Reporte al equipo de soporte de la plataforma (support@ifoundanapple.com)</li>
+        <li>Entra en vigor el seguro de la empresa de transporte</li>
+        <li>La plataforma puede tomar el rol de mediador</li>
+        <li>El dinero en depósito en garantía se reembolsa al propietario</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Entrega dañada:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Verifique el transporte al recibirlo</li>
+        <li>Si hay daños, presente un informe con el oficial de transporte antes de recibirlo</li>
+        <li>Informe inmediatamente a la plataforma</li>
+        <li>Proporcione evidencia de foto/video</li>
+        <li>Se inicia el proceso de reembolso</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Dispositivo incorrecto/diferente:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Verifique el número de serie</li>
+        <li>Si es diferente, no confirme</li>
+        <li>Reporte al equipo de soporte</li>
+        <li>Se inicia el proceso de reembolso completo</li>
+        <li>Se aplica una penalización al buscador</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. ANONIMATO Y PRIVACIDAD</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">8.1 Privacidad de identidad</h4>
+      <p class="mb-2"><strong>Antes del emparejamiento:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>No se comparte información del usuario</li>
+        <li>Sistema completamente anónimo</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Después del emparejamiento:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Identidad:</strong> Permanece OCULTA</li>
+        <li><strong>Correo electrónico:</strong> Permanece OCULTO</li>
+        <li><strong>Teléfono:</strong> Solo se comparte con la empresa de transporte para entrega</li>
+        <li><strong>Dirección:</strong> Solo se comparte con la empresa de transporte para entrega</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Información compartida para transporte:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Nombre completo</li>
+        <li>Dirección de entrega</li>
+        <li>Número de teléfono</li>
+        <li>Código remitente/receptor anónimo (FND-XXX, OWN-XXX)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">8.2 Comunicación</h4>
+      <p class="mb-2"><strong>Notificaciones de la plataforma:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Notificaciones por correo electrónico</li>
+        <li>Notificaciones en la aplicación</li>
+        <li>Notificaciones SMS (para situaciones críticas)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Comunicación directa:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>No hay mensajería directa entre usuarios</li>
+        <li>Toda la comunicación se gestiona a través de la plataforma</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">9. RESPONSABILIDADES Y LIMITACIONES DE LA PLATAFORMA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">9.1 Responsabilidades de nuestra plataforma</h4>
+      <p class="mb-2"><strong>Para los servicios que proporcionamos:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Mantener la infraestructura de la plataforma operativa</li>
+        <li>Asegurar la seguridad de los datos</li>
+        <li>Operar el sistema de pago de forma segura</li>
+        <li>Gestionar el depósito en garantía correctamente</li>
+        <li>Proporcionar soporte al cliente</li>
+        <li>Tomar medidas de prevención de fraude</li>
+        <li>Cumplir con las obligaciones legales</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.2 Limitaciones de responsabilidad</h4>
+      <p class="mb-4"><strong>La plataforma NO ES RESPONSABLE de:</strong></p>
+      
+      <p class="mb-2"><strong>Dispositivo y entrega:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Estado real del dispositivo entregado</li>
+        <li>Que el dispositivo sea funcional/usable</li>
+        <li>Daños físicos o piezas faltantes</li>
+        <li>Si el dispositivo es original</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Transporte:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Errores, retrasos, pérdidas de empresas de transporte</li>
+        <li>Entrega dañada</li>
+        <li>Seguro de transporte (responsabilidad del usuario)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Comportamiento del usuario:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Usuarios que proporcionan información incorrecta/incompleta</li>
+        <li>Intentos de fraude (que no pudimos detectar)</li>
+        <li>Disputas de propiedad</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Servicios de terceros:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Interrupciones del sistema de pago</li>
+        <li>Problemas del proveedor OAuth</li>
+        <li>Interrupciones del proveedor de servicios de Internet</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">9.3 Limitación de compensación</h4>
+      <p class="mb-2"><strong>Compensación máxima:</strong></p>
+      <p class="mb-4">En cualquier caso, la responsabilidad de la plataforma está limitada al monto de la tarifa de servicio recibida en la transacción relevante.</p>
+      <p class="mb-4"><strong>Ejemplo:</strong> En una transacción de recompensa de 5,000 TL donde la tarifa de plataforma es 150 TL, el monto máximo de compensación es 150 TL.</p>
+      
+      <p class="mb-2"><strong>Daños excluidos:</strong></p>
+      <p class="mb-2">La plataforma no puede ser considerada responsable de los siguientes daños:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Daños indirectos</li>
+        <li>Pérdida de ganancias</li>
+        <li>Pérdida de reputación</li>
+        <li>Daños morales</li>
+        <li>Pérdida de datos</li>
+        <li>Pérdida de negocio</li>
+      </ul>
+      <p class="mb-4"><strong>Excepción:</strong> Estas limitaciones no se aplican si la plataforma tiene negligencia intencional o grave.</p>
+
+      <h4 class="text-lg font-semibold mb-2">9.4 Garantía de servicio e interrupciones</h4>
+      <p class="mb-2"><strong>Lo que no garantizamos:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Servicio sin interrupciones</li>
+        <li>Funcionamiento sin errores</li>
+        <li>Garantía de encontrar emparejamiento</li>
+        <li>Resultados dentro de un tiempo específico</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Mantenimiento planificado:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Anunciado con anticipación (al menos 24 horas)</li>
+        <li>Generalmente realizado durante las horas nocturnas</li>
+        <li>Duración máxima de 4 horas</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Mantenimiento de emergencia:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Puede no ser anunciado con anticipación</li>
+        <li>Para seguridad o errores críticos</li>
+        <li>Completado lo antes posible</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">10. ACTIVIDADES PROHIBIDAS</h3>
+      <p class="mb-2">Las siguientes actividades están estrictamente prohibidas:</p>
+      
+      <p class="mb-2"><strong>❌ Fraude:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Proporcionar información falsa</li>
+        <li>Reportar dispositivo robado</li>
+        <li>Reclamar el dispositivo de otra persona</li>
+        <li>Número de serie falso</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Violaciones de cuenta:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Uso de identidad falsa</li>
+        <li>Apertura de múltiples cuentas</li>
+        <li>Uso de la cuenta de otra persona</li>
+        <li>Bots o herramientas automatizadas</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Manipulación del sistema:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Hacer acuerdos fuera de la plataforma</li>
+        <li>Intentar eludir el sistema</li>
+        <li>Intentar eludir el depósito en garantía</li>
+      </ul>
+      
+      <p class="mb-2"><strong>❌ Otros:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Acoso, amenazas</li>
+        <li>Violación de propiedad intelectual</li>
+        <li>Virus, software malicioso</li>
+        <li>Extracción de datos</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Penalizaciones:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Cierre de cuenta</li>
+        <li>Cancelación de pago</li>
+        <li>Iniciación de acción legal</li>
+        <li>Reembolso de montos ganados</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">11. SUSPENSIÓN Y TERMINACIÓN DE CUENTA</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">11.1 Cierre iniciado por la plataforma</h4>
+      <p class="mb-2"><strong>Razones de cierre inmediato:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Fraude o información falsa</li>
+        <li>Reporte de dispositivo robado</li>
+        <li>Identidad falsa</li>
+        <li>Fraude de pago</li>
+        <li>Actividades ilegales</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Cierre después de advertencia:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Proporcionar continuamente información incorrecta</li>
+        <li>Violar las reglas de la plataforma</li>
+        <li>No cumplir con la obligación de pago (repetido)</li>
+        <li>No enviar transporte (sin razón válida)</li>
+      </ul>
+      
+      <p class="mb-4"><strong>Suspensión:</strong> La cuenta puede ser suspendida temporalmente mientras se investigan situaciones sospechosas (máximo 30 días).</p>
+
+      <h4 class="text-lg font-semibold mb-2">11.2 Cierre de cuenta iniciado por el usuario</h4>
+      <p class="mb-2"><strong>Cerrar su propia cuenta:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Puede usar la opción "Eliminar cuenta" desde la configuración del perfil</li>
+        <li>Si hay transacciones en curso, el cierre no puede realizarse hasta su finalización</li>
+        <li>Si hay pagos pendientes en depósito en garantía, deben finalizarse</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Resultados del cierre de cuenta:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Sus datos personales se eliminan dentro de 30 días</li>
+        <li>Su historial de transacciones se anonimiza</li>
+        <li>La cuenta cerrada no se puede reabrir</li>
+        <li>Los registros financieros se conservan durante 10 años (requisito legal, anónimo)</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">12. FUERZA MAYOR</h3>
+      <p class="mb-2">En las siguientes situaciones de fuerza mayor, la plataforma no puede ser considerada responsable de sus obligaciones:</p>
+      
+      <p class="mb-2"><strong>Desastres naturales:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Terremoto, inundación, incendio, tormenta</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Eventos sociales:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Guerra, terrorismo, levantamiento, toque de queda</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Problemas técnicos:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Interrupciones de infraestructura de Internet (problemas de ISP)</li>
+        <li>Corte de energía</li>
+        <li>Interrupciones del proveedor de servidores (Supabase)</li>
+        <li>Interrupciones del sistema de pago</li>
+        <li>Ataques DDoS, ataques cibernéticos</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Cambios legales:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Cambios repentinos de ley, prohibiciones, regulaciones</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Pandemia/Crisis de salud:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Situaciones de enfermedad epidémica</li>
+        <li>Restricciones oficiales</li>
+      </ul>
+      
+      <p class="mb-4">En situaciones de fuerza mayor, los usuarios son informados inmediatamente y se proporcionan soluciones alternativas.</p>
+
+      <h3 class="text-xl font-semibold mb-2">13. RESOLUCIÓN DE DISPUTAS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">13.1 Comunicación y soporte</h4>
+      <p class="mb-2"><strong>Primer paso - Nuestro equipo de soporte:</strong></p>
+      <p class="mb-2">Si experimenta algún problema, primero contacte a nuestro equipo de soporte:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Correo electrónico:</strong> support@ifoundanapple.com</li>
+        <li><strong>Tiempo de respuesta:</strong> 24-48 horas</li>
+        <li><strong>Tiempo de resolución:</strong> 5 días hábiles (promedio)</li>
+      </ul>
+      
+      <p class="mb-4"><strong>Mediación:</strong> Si hay una disputa entre usuarios, la plataforma puede tomar el rol de mediador (opcional).</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.2 Ley aplicable</h4>
+      <p class="mb-4">Este Acuerdo está sujeto a las leyes de la República de Turquía.</p>
+
+      <h4 class="text-lg font-semibold mb-2">13.3 Tribunal competente y oficinas de ejecución</h4>
+      <p class="mb-2">Para disputas que surjan de este Acuerdo:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Para usuarios en Turquía:</strong> Los tribunales y oficinas de ejecución de Estambul (Çağlayan) son competentes</li>
+        <li><strong>Para usuarios en la UE:</strong> Los tribunales de residencia del usuario también son competentes (debido al GDPR)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Derechos del consumidor:</strong></p>
+      <p class="mb-4">Los consumidores pueden solicitar a los Comités de Arbitraje de Consumidores y los Tribunales de Consumidores bajo la Ley de Protección del Consumidor.</p>
+      
+      <p class="mb-2"><strong>Comité de Arbitraje del Consumidor:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Web:</strong> https://tuketicihakemleri.ticaret.gov.tr</li>
+        <li>El sistema de solicitud electrónica está disponible</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">13.4 Resolución alternativa de disputas</h4>
+      <p class="mb-2"><strong>Resolución de disputas en línea (ODR):</strong></p>
+      <p class="mb-2">Los consumidores en la UE pueden usar la plataforma ODR de la UE:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Plataforma:</strong> https://ec.europa.eu/consumers/odr</li>
+        <li><strong>Contacto:</strong> info@ifoundanapple.com</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">14. DERECHOS DE PROPIEDAD INTELECTUAL</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">14.1 Derechos de la plataforma</h4>
+      <p class="mb-4">Todo el contenido, diseño, logo, código de software, algoritmos en la plataforma están bajo el copyright de iFoundAnApple.</p>
+      
+      <p class="mb-2"><strong>Acciones prohibidas:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Copiar o reproducir contenido</li>
+        <li>Uso no autorizado del logo</li>
+        <li>Ingeniería inversa del código fuente</li>
+        <li>Extracción de datos (recolección automática de datos)</li>
+        <li>Uso no autorizado de la API</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">14.2 Contenido del usuario</h4>
+      <p class="mb-4">El contenido que carga en la plataforma (fotos, descripciones) es su propiedad intelectual.</p>
+      
+      <p class="mb-2"><strong>Licencia que otorga a la plataforma:</strong></p>
+      <p class="mb-2">Al cargar contenido, otorga a la plataforma los siguientes derechos:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Mostrar contenido en la plataforma</li>
+        <li>Almacenar y procesar contenido</li>
+        <li>Respaldar contenido</li>
+        <li>Optimizar técnicamente (compresión, etc.)</li>
+      </ul>
+      <p class="mb-4">La plataforma no usa, vende ni comparte su contenido para otros propósitos.</p>
+
+      <h3 class="text-xl font-semibold mb-2">15. DISPOSICIONES VARIAS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">15.1 Hacer notificaciones</h4>
+      <p class="mb-2"><strong>De la plataforma a usted:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Correo electrónico (su dirección de correo electrónico registrada)</li>
+        <li>Notificación en la aplicación</li>
+        <li>SMS (para situaciones de emergencia)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>De usted a la plataforma:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>General:</strong> info@ifoundanapple.com</li>
+        <li><strong>Legal:</strong> legal@ifoundanapple.com</li>
+        <li><strong>Seguridad:</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">15.2 Integridad del acuerdo</h4>
+      <p class="mb-4">Estos Términos constituyen el acuerdo completo entre las partes.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.3 Nulidad parcial</h4>
+      <p class="mb-4">Si alguna disposición de los Términos se considera inválida, las demás disposiciones permanecen válidas.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.4 Prohibición de cesión</h4>
+      <p class="mb-4">Los usuarios no pueden ceder los derechos y obligaciones derivados de este acuerdo a terceros.</p>
+      <p class="mb-4">La plataforma puede ceder sus derechos en caso de transferencia comercial, fusión o adquisición.</p>
+
+      <h4 class="text-lg font-semibold mb-2">15.5 Registros electrónicos</h4>
+      <p class="mb-4">Los registros electrónicos de la plataforma constituyen evidencia definitiva bajo el artículo 297 del CPC.</p>
+
+      <h3 class="text-xl font-semibold mb-2">16. INFORMACIÓN DE CONTACTO</h3>
+      <p class="mb-2"><strong>iFoundAnApple</strong></p>
+      
+      <p class="mb-2"><strong>Soporte general:</strong></p>
+      <p class="mb-4"><strong>Correo electrónico:</strong> info@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Tiempo de respuesta:</strong> 24-48 horas</p>
+      
+      <p class="mb-2"><strong>Asuntos legales:</strong></p>
+      <p class="mb-4"><strong>Correo electrónico:</strong> legal@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Seguridad:</strong></p>
+      <p class="mb-4"><strong>Correo electrónico:</strong> security@ifoundanapple.com</p>
+      
+      <p class="mb-2"><strong>Sitio web:</strong></p>
+      <p class="mb-4">https://ifoundanapple.com</p>
+
+      <h3 class="text-xl font-semibold mb-2">17. ACEPTACIÓN Y APROBACIÓN</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ He leído, entendido y aceptado estos Términos de Servicio.</li>
+        <li>✅ Declaro que tengo más de 18 años y tengo capacidad legal.</li>
+        <li>✅ Al usar la plataforma, acepto cumplir con estos Términos y la Política de Privacidad.</li>
+        <li>✅ Consiento en recibir notificaciones por correo electrónico, SMS y en la aplicación.</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>Última actualización:</strong> 14 de octubre de 2025</p>
+        <p><strong>Versión:</strong> 2.0</p>
+        <p><strong>Validez:</strong> Turquía y Unión Europea</p>
+        <p><strong>© 2025 iFoundAnApple. Todos los derechos reservados.</strong></p>
+      </div>
+    `,
+    privacyContent: `
+      <h2 class="text-2xl font-bold mb-4">POLÍTICA DE PRIVACIDAD</h2>
+      <p class="mb-4"><strong>Última actualización:</strong> 14 de octubre de 2025</p>
+
+      <h3 class="text-xl font-semibold mb-2">1. CONTROLADOR DE DATOS</h3>
+      <p class="mb-4"><strong>iFoundAnApple</strong></p>
+      <p class="mb-4"><strong>Correo electrónico:</strong> privacy@ifoundanapple.com</p>
+      <p class="mb-4"><strong>Web:</strong> https://ifoundanapple.com</p>
+      <p class="mb-4">Esta política está preparada de acuerdo con KVKK y GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">2. INFORMACIÓN DE ALOJAMIENTO Y DOMINIO</h3>
+      <p class="mb-4"><strong>Propietario del dominio:</strong> iFoundAnApple</p>
+      <p class="mb-4"><strong>Proveedor de alojamiento:</strong> Hetzner</p>
+      <p class="mb-4"><strong>Certificado SSL:</strong> Activo (HTTPS)</p>
+      <p class="mb-4"><strong>Verificación del dominio:</strong> Alojado en nuestro dominio propio</p>
+      <p class="mb-4"><strong>IMPORTANTE:</strong> Esta política de privacidad está alojada en nuestro dominio propio, no en plataformas de terceros como Google Sites, Facebook, Instagram, Twitter.</p>
+
+      <h3 class="text-xl font-semibold mb-2">3. DATOS PERSONALES RECOPILADOS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">3.1 Registro y autenticación</h4>
+      <p class="mb-2"><strong>Registro por correo electrónico:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Nombre, apellido</li>
+        <li>Dirección de correo electrónico</li>
+        <li>Contraseña (almacenada encriptada con bcrypt)</li>
+        <li>Fecha de nacimiento</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Inicio de sesión OAuth (Google/Apple):</strong></p>
+      <p class="mb-2">Cuando inicia sesión con Google o Apple, recopilamos los siguientes datos de usuario:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Datos de usuario de Google:</strong> Nombre, Correo electrónico, Foto de perfil (opcional)</li>
+        <li><strong>Propósito:</strong> Creación de cuenta y autenticación SOLAMENTE</li>
+        <li><strong>Protección de datos:</strong> Cifrado AES-256-GCM en reposo</li>
+        <li><strong>Almacenamiento de datos:</strong> Cifrado en nuestra base de datos segura (Supabase)</li>
+        <li><strong>Compartir datos:</strong> Solo con proveedores de servicios para la funcionalidad de la plataforma (ver Sección 5.1)</li>
+        <li><strong>Retención de datos:</strong> Duración de la cuenta activa, eliminado dentro de 30 días después de la eliminación de la cuenta</li>
+        <li>No es necesario crear una contraseña</li>
+      </ul>
+      <p class="mb-4"><strong>IMPORTANTE:</strong> Usamos los datos de usuario de Google SOLAMENTE para proporcionar la funcionalidad de la plataforma. NO los usamos para publicidad, venta a terceros o cualquier otro propósito.</p>
+
+      <h4 class="text-lg font-semibold mb-2">3.2 Información del dispositivo</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Modelo del dispositivo (iPhone 15 Pro, MacBook Air, etc.)</li>
+        <li>Número de serie</li>
+        <li>Color y descripción del dispositivo</li>
+        <li>Fecha y ubicación de pérdida/hallazgo</li>
+        <li>Documento de factura/propiedad (visual - puede eliminarse)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.3 Información de pago y financiera</h4>
+      <p class="mb-2"><strong>Transacciones de pago:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Información de tarjeta de crédito/bancaria procesada por un proveedor de pago seguro (compatible con PCI-DSS)</li>
+        <li>Su información de tarjeta no se almacena en nuestros servidores</li>
+        <li>Se registran el historial y los montos de las transacciones</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Información bancaria:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Número IBAN (para transferencia de recompensa)</li>
+        <li>Nombre del titular de la cuenta</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.4 Información de perfil y contacto</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Número de identificación nacional (opcional, para transacciones de alto valor)</li>
+        <li>Número de teléfono</li>
+        <li>Dirección de entrega (para transporte)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">3.5 Datos recopilados automáticamente</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Dirección IP</li>
+        <li>Información del navegador y dispositivo</li>
+        <li>Información de sesión</li>
+        <li>Estadísticas de uso de la plataforma</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">4. FINALIDADES DE USO DE DATOS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">4.1 Prestación de servicios</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Emparejamiento de dispositivos perdidos y encontrados (basado en número de serie)</li>
+        <li>Gestión de cuenta de usuario</li>
+        <li>Organización y seguimiento del transporte</li>
+        <li>Envío de notificaciones</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.2 Operaciones de pago y depósito en garantía</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Procesamiento seguro de pagos</li>
+        <li>Operación del sistema de depósito en garantía</li>
+        <li>Transferencia de pagos de recompensa a IBAN</li>
+        <li>Mantenimiento de registros financieros</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.3 Recomendaciones impulsadas por IA</h4>
+      <p class="mb-4">Esta característica es opcional. Usamos solo información del modelo del dispositivo para recomendaciones IA. Los datos de identidad personal nunca se comparten.</p>
+
+      <h4 class="text-lg font-semibold mb-2">4.4 Limitaciones de uso de datos</h4>
+      <p class="mb-2"><strong>Uso de datos de usuario de Google y datos personales:</strong></p>
+      <p class="mb-2">Usamos sus datos de usuario de Google e información personal SOLAMENTE para:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ Proporcionar funcionalidad de la plataforma (autenticación, gestión de cuenta)</li>
+        <li>✅ Procesar transacciones y pagos</li>
+        <li>✅ Organizar la entrega del dispositivo</li>
+        <li>✅ Enviar notificaciones importantes del servicio</li>
+        <li>✅ Mejorar la experiencia del usuario</li>
+        <li>✅ Seguridad y prevención de fraude</li>
+      </ul>
+      <p class="mb-2"><strong>NO usamos sus datos para:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>❌ Publicidad dirigida o marketing</li>
+        <li>❌ Venta a corredores de datos o revendedores de información</li>
+        <li>❌ Determinación de solvencia o propósitos de préstamo</li>
+        <li>❌ Anuncios de usuario o publicidad personalizada</li>
+        <li>❌ Entrenamiento de modelos IA no relacionados con nuestro servicio</li>
+        <li>❌ Creación de bases de datos para otros propósitos</li>
+        <li>❌ Cualquier otro propósito más allá de proporcionar o mejorar la funcionalidad de la plataforma</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.5 Seguridad</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Prevención de fraude</li>
+        <li>Verificación de identidad</li>
+        <li>Mantenimiento de registros de auditoría</li>
+        <li>Detección de violación de seguridad</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">4.6 Cumplimiento legal</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Cumplimiento de los requisitos KVKK y GDPR</li>
+        <li>Obligaciones de la legislación fiscal (conservación de registros durante 10 años)</li>
+        <li>Decisiones judiciales y procesos legales</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">5. COMPARTIR DATOS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">5.1 Proveedores de servicios</h4>
+      <p class="mb-2"><strong>Supabase (Infraestructura backend):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Base de datos, autenticación, almacenamiento de archivos</li>
+        <li>SOC 2 Tipo II, compatible con GDPR</li>
+        <li>Ubicación de datos: EE. UU./UE</li>
+        <li><strong>Datos de usuario de Google compartidos:</strong> Nombre, Correo electrónico (cifrado)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Proveedor de pago:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Procesamiento de pagos, 3D Secure, depósito en garantía</li>
+        <li>Certificado PCI-DSS nivel 1</li>
+        <li>Con sede en Turquía</li>
+        <li><strong>Datos de usuario de Google compartidos:</strong> Correo electrónico (solo para recibos de transacción)</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google/Apple (Autenticación OAuth):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Inicio de sesión de terceros (opcional)</li>
+        <li>Usado solo para autenticación</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Google Gemini (Recomendaciones IA):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Solo se comparte información del modelo del dispositivo</li>
+        <li>No se comparten datos de usuario de Google (nombre, correo electrónico)</li>
+        <li>No se comparte información de identidad personal</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Empresas de transporte (Aras, MNG, Yurtiçi, PTT):</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Dirección de entrega y teléfono</li>
+        <li>Códigos remitente/receptor anónimos (FND-XXX, OWN-XXX)</li>
+        <li>Las identidades reales (nombre, correo electrónico) se mantienen confidenciales</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.2 Compartir entre usuarios</h4>
+      <p class="mb-4"><strong>IMPORTANTE:</strong> Su identidad, correo electrónico y número de teléfono nunca se comparten con otros usuarios.</p>
+      
+      <p class="mb-2"><strong>Después del emparejamiento:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>La identidad de la otra parte permanece anónima</li>
+        <li>Solo se envía la notificación "Emparejamiento encontrado"</li>
+        <li>Solo se comparte la dirección de entrega para transporte (nombre-apellido y dirección)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">5.3 Obligación legal</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Orden judicial o citación</li>
+        <li>Solicitudes de aplicación de la ley</li>
+        <li>Autoridades fiscales (para registros financieros)</li>
+        <li>Solicitudes de la Institución KVKK</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">6. SEGURIDAD Y RETENCIÓN DE DATOS</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">6.1 Medidas de seguridad</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Cifrado SSL/TLS (HTTPS) - TLS 1.3</li>
+        <li>Hash de contraseñas (bcrypt)</li>
+        <li><strong>Cifrado de base de datos en reposo (AES-256-GCM)</strong></li>
+        <li><strong>Cifrado a nivel de aplicación para datos sensibles:</strong></li>
+        <ul class="list-disc pl-6 mb-4">
+          <li>ID Nacional Turco (TC Kimlik No)</li>
+          <li>Números IBAN</li>
+          <li>Números de teléfono</li>
+          <li>Direcciones físicas</li>
+          <li>Datos de usuario de Google (nombre, correo electrónico)</li>
+        </ul>
+        <li>Políticas de seguridad a nivel de fila (RLS)</li>
+        <li>Tokens de autenticación seguros OAuth 2.0</li>
+        <li>Verificación de pago 3D Secure</li>
+        <li>Soporte de autenticación de dos factores (2FA)</li>
+        <li>Auditorías de seguridad regulares y evaluaciones de vulnerabilidad</li>
+        <li>Registros de control de acceso y monitoreo</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">6.2 Períodos de retención</h4>
+      
+      <p class="mb-2"><strong>Retención de datos de usuario de Google:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Cuentas activas:</strong> Retenidas mientras su cuenta esté activa</li>
+        <li><strong>Cuentas eliminadas:</strong> Datos de usuario de Google (nombre, correo electrónico) eliminados dentro de 30 días</li>
+        <li><strong>Datos financieros:</strong> 10 años (requisito legal - Ley Fiscal)</li>
+        <li><strong>Puede solicitar eliminación:</strong> Envíenos un correo a privacy@ifoundanapple.com</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Cuentas activas:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Retenidas mientras su cuenta esté activa</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Cuentas cerradas:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Eliminadas dentro de 30 días después del cierre de cuenta</li>
+        <li>Registros financieros retenidos durante 10 años (obligación legal)</li>
+        <li>Las estadísticas anónimas pueden retenerse indefinidamente</li>
+      </ul>
+      
+      <p class="mb-2"><strong>Registros de transacciones:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Transacciones financieras: 10 años</li>
+        <li>Registros de transporte: 2 años</li>
+        <li>Registros de auditoría: 5 años</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">7. DERECHOS DEL USUARIO (KVKK & GDPR)</h3>
+      
+      <h4 class="text-lg font-semibold mb-2">7.1 Sus derechos</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li>✅ <strong>Derecho a la información:</strong> Saber si sus datos están siendo procesados</li>
+        <li>✅ <strong>Derecho de acceso:</strong> Obtener una copia de sus datos</li>
+        <li>✅ <strong>Derecho de rectificación:</strong> Corregir información incorrecta</li>
+        <li>✅ <strong>Derecho al borrado:</strong> Eliminar sus datos (derecho al olvido)</li>
+        <li>✅ <strong>Derecho de oposición:</strong> Oponerse a las actividades de procesamiento de datos</li>
+        <li>✅ <strong>Portabilidad de datos:</strong> Transferir sus datos a otra plataforma</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.2 Método de solicitud</h4>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Correo electrónico:</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Asunto:</strong> Solicitud KVKK/GDPR</li>
+        <li><strong>Tiempo de respuesta:</strong> 30 días (máximo)</li>
+      </ul>
+
+      <h4 class="text-lg font-semibold mb-2">7.3 Derecho a presentar quejas</h4>
+      <p class="mb-2"><strong>Turquía:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Autoridad de Protección de Datos Personales - https://www.kvkk.gov.tr</li>
+      </ul>
+      
+      <p class="mb-2"><strong>UE:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Autoridad de Protección de Datos del país relevante</li>
+      </ul>
+
+      <h3 class="text-xl font-semibold mb-2">8. PRIVACIDAD DE NIÑOS</h3>
+      <p class="mb-4">La plataforma no está destinada a usuarios menores de 18 años. No recopilamos intencionalmente datos de personas menores de 18 años.</p>
+
+      <h3 class="text-xl font-semibold mb-2">9. COOKIES</h3>
+      <p class="mb-2"><strong>Cookies que usamos:</strong></p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Gestión de sesión (obligatorio)</li>
+        <li>Preferencias de idioma (funcional)</li>
+        <li>Seguridad (obligatorio)</li>
+      </ul>
+      <p class="mb-4">Puede administrar las cookies desde la configuración de su navegador.</p>
+
+      <h3 class="text-xl font-semibold mb-2">10. TRANSFERENCIA INTERNACIONAL DE DATOS</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>Supabase:</strong> Centros de datos EE. UU./UE (compatible con GDPR, SCC)</li>
+        <li><strong>Proveedor de pago:</strong> Internacional</li>
+        <li><strong>Google:</strong> Global (para OAuth e IA)</li>
+      </ul>
+      <p class="mb-4">Todas las transferencias se realizan de acuerdo con las disposiciones KVKK y GDPR.</p>
+
+      <h3 class="text-xl font-semibold mb-2">11. CAMBIOS Y ACTUALIZACIONES</h3>
+      <p class="mb-2">Podemos actualizar esta Política de Privacidad de vez en cuando. Cuando se realizan cambios importantes:</p>
+      <ul class="list-disc pl-6 mb-4">
+        <li>Publicamos anuncios en el sitio web</li>
+        <li>Enviamos notificaciones por correo electrónico</li>
+        <li>Se cambia la fecha de "Última actualización"</li>
+      </ul>
+      <p class="mb-4">Las actualizaciones entran en vigor en la fecha en que se publican.</p>
+
+      <h3 class="text-xl font-semibold mb-2">12. CONTACTO</h3>
+      <ul class="list-disc pl-6 mb-4">
+        <li><strong>General:</strong> info@ifoundanapple.com</li>
+        <li><strong>Privacidad:</strong> privacy@ifoundanapple.com</li>
+        <li><strong>Seguridad:</strong> security@ifoundanapple.com</li>
+      </ul>
+
+      <div class="bg-gray-100 p-4 rounded mt-6">
+        <p><strong>© 2025 iFoundAnApple - Versión 2.0</strong></p>
+      </div>
+    `,
   },
 };
 
