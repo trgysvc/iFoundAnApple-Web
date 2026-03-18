@@ -287,6 +287,31 @@ export const translations = {
     contactTitle: "Contact Us",
     contactIntro: "If you have any questions or need support, please reach out to us. We're here to help!",
     contactEmail: "info@ifoundanapple.com",
+    supportTitle: "Support",
+    supportIntro: "We're here to help you get your Apple devices back securely. Find answers to common questions or reach out to our team.",
+    supportContactTitle: "Contact Information",
+    supportContactDesc: "The best way to reach us for any support related inquiries.",
+    supportEmailLabel: "Email Support",
+    supportEmail: "support@ifoundanapple.com",
+    supportFAQTitle: "Frequently Asked Questions",
+    supportGuideTitle: "User Guide",
+    supportGuideSteps: [
+      "Register your lost device with its serial number.",
+      "Wait for an anonymous match with a finder.",
+      "Make a secure escrow payment once matched.",
+      "Follow the instructions for a safe exchange through our partner courier.",
+      "Confirm receipt to release the reward to the finder."
+    ],
+    supportFAQContent: {
+      q1: "How does the matching process work?",
+      a1: "Our system matches lost device reports with found device reports using device models and serial numbers. Both parties remain anonymous throughout the process.",
+      q2: "Is my payment safe?",
+      a2: "Yes, your payment is held in our secure escrow system and is only released to the finder after you confirm receipt of your device.",
+      q3: "How is the shipping handled?",
+      a3: "We provide secure shipping codes for use with our partner couriers. This ensures the device is tracked and delivered safely without sharing personal addresses directly between users."
+    },
+    supportPrivacyNote: "Note: You can delete your account and all associated data at any time from your profile settings. We value your privacy and data security.",
+    supportLegalLinksTitle: "Legal Links",
     faqIntro: "Find answers to common questions about our platform.",
     faqContent: {
       q1: "How does the matching process work?",
@@ -1685,6 +1710,31 @@ export const translations = {
     contactTitle: "Bize Ulaşın",
     contactIntro: "Herhangi bir sorunuz veya desteğe ihtiyacınız olursa, lütfen bize ulaşın. Yardım etmek için buradayız!",
     contactEmail: "info@ifoundanapple.com",
+    supportTitle: "Destek",
+    supportIntro: "Apple cihazlarınızı güvenle geri almanıza yardımcı olmak için buradayız. Sıkça sorulan soruların yanıtlarını bulun veya ekibimize ulaşın.",
+    supportContactTitle: "İletişim Bilgileri",
+    supportContactDesc: "Destekle ilgili tüm sorularınız için bize ulaşmanın en iyi yolu.",
+    supportEmailLabel: "E-posta Desteği",
+    supportEmail: "support@ifoundanapple.com",
+    supportFAQTitle: "Sıkça Sorulan Sorular",
+    supportGuideTitle: "Kullanıcı Kılavuzu",
+    supportGuideSteps: [
+      "Kayıp cihazınızı seri numarasıyla kaydedin.",
+      "Bir bulan kişiyle anonim eşleşmeyi bekleyin.",
+      "Eşleşme sağlandığında güvenli emanet (escrow) ödemesini yapın.",
+      "Anlaşmalı kargo aracılığıyla güvenli değişim talimatlarını izleyin.",
+      "Cihazı teslim aldığınızı onaylayarak ödülü bulana aktarın."
+    ],
+    supportFAQContent: {
+      q1: "Kayıp bir cihaz bulduğumda ne yapmalıyım?",
+      a1: "Cihazı platformumuza seri numarasıyla bildirin. Sistemimiz otomatik olarak gerçek sahibiyle eşleşme sağlayacaktır.",
+      q2: "Ödemem güvende mi?",
+      a2: "Evet, ödemeniz güvenli emanet (escrow) sistemimizde tutulur ve siz cihazı teslim alıp onaylayana kadar bulana aktarılmaz.",
+      q3: "Kargo kodu nasıl oluşturulur?",
+      a3: "Eşleşme ve ödeme tamamlandığında sistem size özel bir kargo kodu üretir. Bu kod ile anlaşmalı kargolarımız üzerinden güvenli ve anonim gönderim yapabilirsiniz."
+    },
+    supportPrivacyNote: "Not: Hesabınızı ve ilişkili tüm verilerinizi istediğiniz zaman profil ayarlarından silebilirsiniz. Gizliliğinize ve veri güvenliğinize önem veriyoruz.",
+    supportLegalLinksTitle: "Yasal Bağlantılar",
     faqIntro: "Platformumuz hakkında sık sorulan soruların cevaplarını bulun.",
      faqContent: {
       q1: "Eşleştirme süreci nasıl işliyor?",

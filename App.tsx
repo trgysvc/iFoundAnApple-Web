@@ -28,6 +28,7 @@ import {
   TermsPage,
   PrivacyPage,
   ContactPage,
+  SupportPage,
   preloadCriticalRoutes,
   preloadUserRoutes,
   preloadAdminRoutes,
@@ -127,6 +128,11 @@ const AppContent: React.FC = () => {
           <Route path="/contact" element={
             <LazyRouteWrapper>
               <ContactPage />
+            </LazyRouteWrapper>
+          } />
+          <Route path="/support" element={
+            <LazyRouteWrapper>
+              <SupportPage />
             </LazyRouteWrapper>
           } />
 

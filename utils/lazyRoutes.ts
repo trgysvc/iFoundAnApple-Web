@@ -11,6 +11,7 @@ export const FAQPage = lazy(() => import('../pages/FAQPage'));
 export const TermsPage = lazy(() => import('../pages/TermsPage'));
 export const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
 export const ContactPage = lazy(() => import('../pages/ContactPage'));
+export const SupportPage = lazy(() => import('../pages/SupportPage'));
 
 // Dashboard/User pages - Medium priority
 export const DashboardPage = lazy(() => import('../pages/DashboardPage'));
@@ -75,4 +76,5 @@ export const preloadStaticRoutes = () => {
   preloadRoute(() => import('../pages/TermsPage'));
   preloadRoute(() => import('../pages/PrivacyPage'));
   preloadRoute(() => import('../pages/ContactPage'));
+  preloadRoute(() => import('../pages/SupportPage'));
 };

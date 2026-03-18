@@ -6,9 +6,8 @@
  * Ödeme başlatıldığında veritabanına kayıt OLUŞTURULMAZ.
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { getSecureConfig } from './security';
 import { FeeBreakdown } from './feeCalculation';
+import { getPaymentStatus } from './paynetPayment';
 
 export interface PaynetWebhookPayload {
   reference_no: string; // Payment ID
@@ -45,7 +44,7 @@ export interface PaymentRecordData {
  * @deprecated Backend otomatik olarak tüm kayıtları oluşturuyor
  */
 export async function createPaymentRecordsFromWebhook(
-  data: PaymentRecordData
+  _data: PaymentRecordData
 ): Promise<{ success: boolean; paymentId?: string; escrowId?: string; error?: string }> {
   console.warn('[WEBHOOK_HANDLER] ⚠️ DEPRECATED - createPaymentRecordsFromWebhook kullanılmamalıdır.');
   console.warn('[WEBHOOK_HANDLER] Backend otomatik olarak tüm kayıtları oluşturuyor:');
@@ -80,7 +79,6 @@ export async function checkPaymentStatus(
   try {
     // Backend API'den status sorgula
     // Backend veritabanından okuyor, tüm bilgiler burada
-    const { getPaymentStatus } = await import('./paynetPayment');
     const backendStatus = await getPaymentStatus(paymentId);
 
     // Backend'den gelen response'u formatla

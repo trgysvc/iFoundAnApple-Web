@@ -5,7 +5,7 @@
 
 import { FeeBreakdown } from "./feeCalculation.ts";
 import { releaseEscrowLocal } from "../api/release-escrow.ts";
-import { initiatePaynetPayment, checkPendingPaymentForDevice, cancelPendingPayment } from "./paynetPayment.ts";
+import { initiatePaynetPayment, getPaymentStatus } from "./paynetPayment.ts";
 
 export interface PaymentRequest {
   deviceId: string;
@@ -60,7 +60,7 @@ export interface EscrowReleaseRequest {
 export interface EscrowReleaseResponse {
   success: boolean;
   transactionId?: string;
-  status: "released" | "failed";
+  status: "released" | "failed" | "pending";
   errorMessage?: string;
   netPayoutAmount?: number;
 }
@@ -218,7 +218,6 @@ export const checkPaymentStatus = async (
     );
 
     // Backend API'den status sorgula
-    const { getPaymentStatus } = await import('./paynetPayment');
     const backendStatus = await getPaymentStatus(paymentId);
 
     // Backend'den gelen response'u PaymentResponse formatına çevir
