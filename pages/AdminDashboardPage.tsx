@@ -4,6 +4,7 @@ import { useAppContext } from '../contexts/AppContext.tsx';
 import { UserRole } from '../types';
 import Container from '../components/ui/Container.tsx';
 import { Users, Smartphone, BarChart2 } from 'lucide-react';
+import CargoOpsPanel from '../components/admin/CargoOpsPanel.tsx';
 
 const AdminDashboardPage: React.FC = () => {
     const { users, devices, t } = useAppContext();
@@ -119,6 +120,10 @@ const AdminDashboardPage: React.FC = () => {
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <div className="mt-8">
+                <CargoOpsPanel />
             </div>
         </Container>
     );

@@ -245,6 +245,17 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  /**
+   * PATCH isteği
+   */
+  async patch<T>(endpoint: string, body?: any, options?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
 }
 
 // Singleton instance
