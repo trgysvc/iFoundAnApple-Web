@@ -18,7 +18,7 @@ interface AdminCargoShipment {
   cargo_company: string;
   tracking_number: string | null;
   status: string;
-  cargo_code: string | null;
+  code: string | null;
   cargo_fee: number;
   created_at: string;
   device: { model: string; serialNumber: string } | null;
@@ -132,7 +132,7 @@ const CargoOpsPanel: React.FC = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 font-mono">{shipment.cargo_code || '-'}</td>
+                    <td className="px-4 py-3 font-mono">{shipment.code || '-'}</td>
                     <td className="px-4 py-3">{statusLabels[shipment.status] || shipment.status}</td>
                     <td className="px-4 py-3">
                       {needsTracking ? (
