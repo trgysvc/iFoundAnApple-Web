@@ -58,6 +58,7 @@ const DeviceDetailPage: React.FC = () => {
   const [invoiceFileType, setInvoiceFileType] = useState<'image' | 'pdf' | null>(null);
   const [payment, setPayment] = useState<any | null>(null);
   const [escrow, setEscrow] = useState<any | null>(null);
+  const [cargoShipment, setCargoShipment] = useState<any | null>(null);
   const [isLoadingPaymentData, setIsLoadingPaymentData] = useState(false);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
@@ -122,6 +123,21 @@ const DeviceDetailPage: React.FC = () => {
                 setEscrow(escrowData);
               } else if (escrowError) {
                 console.warn("Escrow kaydı bulunamadı:", escrowError.message);
+              }
+
+              // Kargo teslimat kodunu çek
+              const { data: cargoData, error: cargoError } = await supabaseClient
+                .from('cargo_shipments')
+                .select('*')
+                .eq('payment_id', paymentData.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+              if (!cargoError && cargoData) {
+                setCargoShipment(cargoData);
+              } else if (cargoError) {
+                console.warn("Kargo kaydı bulunamadı:", cargoError.message);
               }
             } else if (paymentError) {
               console.warn("Payment kaydı bulunamadı:", paymentError.message);
@@ -1145,9 +1161,12 @@ const DeviceDetailPage: React.FC = () => {
                           Cihazın Kargo Firmasına Teslim Edilmesi
                         </p>
                         <p className="text-gray-600 text-sm">
-                          Kargo firmasına vereceğiniz <strong>Teslim Kodunuz:</strong> <span className="font-mono bg-white px-2 py-1 rounded">ABC12345</span>
-                          <br />
-                          <span className="text-xs text-gray-500">(Kargo firması API'si tarafından üretilen kod - yakında gösterilecek)</span>
+                          Kargo firmasına vereceğiniz <strong>Teslim Kodunuz:</strong>{" "}
+                          {cargoShipment?.code ? (
+                            <span className="font-mono bg-white px-2 py-1 rounded">{cargoShipment.code}</span>
+                          ) : (
+                            <span className="text-gray-400">Hazırlanıyor...</span>
+                          )}
                         </p>
                       </div>
                     </div>
