@@ -40,6 +40,8 @@ export const translations = {
     step4Desc: "Follow our guidelines for a safe exchange. Once confirmed, the finder receives the reward.",
     // Auth Pages
     loginTitle: "Login to your Account",
+    continueWithGoogleOrApple: "Continue with Google or Apple",
+    oauthLoginError: "Something went wrong signing you in. Please try again.",
     registerTitle: "Create an Account",
     email: "Email",
     password: "Password",
@@ -1465,6 +1467,8 @@ export const translations = {
     step4Desc: "Güvenli bir takas için yönergelerimizi izleyin. Takas onaylandığında, bulan kişi ödülü alır.",
     // Auth Pages
     loginTitle: "Hesabınıza Giriş Yapın",
+    continueWithGoogleOrApple: "Google veya Apple ile devam edin",
+    oauthLoginError: "Giriş yapılırken bir sorun oluştu. Lütfen tekrar deneyin.",
     registerTitle: "Hesap Oluşturun",
     email: "E-posta",
     password: "Şifre",
@@ -2891,6 +2895,8 @@ export const translations = {
     step4Desc: "Следуйте нашим рекомендациям для безопасного обмена. После подтверждения нашедший получает вознаграждение.",
     // Auth Pages
     loginTitle: "Войдите в свой аккаунт",
+    continueWithGoogleOrApple: "Продолжить с Google или Apple",
+    oauthLoginError: "Не удалось выполнить вход. Пожалуйста, попробуйте снова.",
     registerTitle: "Создайте аккаунт",
     email: "Email",
     password: "Пароль",
@@ -3187,6 +3193,8 @@ export const translations = {
     step4Desc: "Suivez nos directives pour un échange en toute sécurité. Une fois confirmé, le trouveur reçoit la récompense.",
     // Auth Pages
     loginTitle: "Connectez-vous à votre compte",
+    continueWithGoogleOrApple: "Continuer avec Google ou Apple",
+    oauthLoginError: "Une erreur est survenue lors de la connexion. Veuillez réessayer.",
     registerTitle: "Créer un compte",
     email: "E-mail",
     password: "Mot de passe",
@@ -4576,6 +4584,8 @@ export const translations = {
     step4Desc: "安全な交換のために私たちのガイドラインに従ってください。確認後、発見者は報酬を受け取ります。",
     // Auth Pages
     loginTitle: "アカウントにログイン",
+    continueWithGoogleOrApple: "GoogleまたはAppleで続ける",
+    oauthLoginError: "ログイン中に問題が発生しました。もう一度お試しください。",
     registerTitle: "アカウントを作成",
     email: "メールアドレス",
     password: "パスワード",
@@ -5965,6 +5975,8 @@ export const translations = {
     step4Desc: "Sigue nuestras pautas para un intercambio seguro. Una vez confirmado, el encontrador recibe la recompensa.",
     // Auth Pages
     loginTitle: "Inicia sesión en tu cuenta",
+    continueWithGoogleOrApple: "Continuar con Google o Apple",
+    oauthLoginError: "Ocurrió un problema al iniciar sesión. Por favor, inténtalo de nuevo.",
     registerTitle: "Crear una cuenta",
     email: "Correo electrónico",
     password: "Contraseña",

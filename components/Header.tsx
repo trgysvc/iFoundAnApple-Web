@@ -365,17 +365,10 @@ const Header: React.FC = () => {
               <div className="space-x-2">
                 <Button
                   onClick={() => navigate("/login")}
-                  variant="secondary"
-                  size="sm"
-                >
-                  {t("login")}
-                </Button>
-                <Button
-                  onClick={() => navigate("/register")}
                   variant="primary"
                   size="sm"
                 >
-                  {t("register")}
+                  {t("login")}
                 </Button>
               </div>
             )}

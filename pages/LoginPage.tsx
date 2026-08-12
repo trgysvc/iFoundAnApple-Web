@@ -1,20 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext.tsx";
 import Container from "../components/ui/Container.tsx";
-import Input from "../components/ui/Input.tsx";
 import Button from "../components/ui/Button.tsx";
 
 const LoginPage: React.FC = () => {
-  const { login, t, signInWithOAuth, currentUser, resetPassword } = useAppContext();
+  const { t, signInWithOAuth, currentUser } = useAppContext();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const [resetMessage, setResetMessage] = useState("");
-  const [isResetting, setIsResetting] = useState(false);
 
   // Redirect if user is already logged in
   React.useEffect(() => {
@@ -38,99 +31,14 @@ const LoginPage: React.FC = () => {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    const success = await login(email, password);
-    if (success) {
-      navigate("/dashboard");
-    } else {
-      setError(t("invalidEmailOrPassword")); // Use translation for consistency
-    }
-  };
-
   const handleSocialLogin = async (provider: "google" | "apple") => {
     setError("");
-    await signInWithOAuth(provider);
-    // Supabase handles the redirect, so no local navigation needed here
-  };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setResetMessage("");
-    setIsResetting(true);
-    
-    const result = await resetPassword(resetEmail);
-    setIsResetting(false);
-    
-    if (result.success) {
-      setResetMessage(t("passwordResetEmailSent"));
-      setTimeout(() => {
-        setShowForgotPassword(false);
-        setResetEmail("");
-        setResetMessage("");
-      }, 3000);
-    } else {
-      setResetMessage(result.error || t("passwordResetError"));
+    const result = await signInWithOAuth(provider);
+    // On success, Supabase handles the redirect, so no local navigation needed here.
+    if (result && !result.success) {
+      setError(result.error || t("oauthLoginError"));
     }
   };
-
-  // Forgot password form
-  if (showForgotPassword) {
-    return (
-      <Container className="max-w-md">
-        <div className="bg-white p-8 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-bold text-center text-brand-gray-600 mb-6">
-            {t("forgotPasswordTitle")}
-          </h2>
-          <p className="text-sm text-brand-gray-500 mb-6 text-center">
-            {t("forgotPasswordDescription")}
-          </p>
-          {resetMessage && (
-            <p className={`p-3 rounded-md text-sm mb-4 ${
-              resetMessage.includes("sent") || resetMessage.includes("gönderildi")
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}>
-              {resetMessage}
-            </p>
-          )}
-          <form onSubmit={handleForgotPassword} className="space-y-6">
-            <Input
-              label={t("email")}
-              id="reset-email"
-              type="email"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-              required
-            />
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowForgotPassword(false);
-                  setResetEmail("");
-                  setResetMessage("");
-                }}
-                className="flex-1"
-                variant="secondary"
-              >
-                {t("cancel")}
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1"
-                size="lg"
-                disabled={isResetting}
-              >
-                {isResetting ? t("sending") : t("sendResetLink")}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Container>
-    );
-  }
 
   return (
     <Container className="max-w-md">
@@ -138,57 +46,14 @@ const LoginPage: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-brand-gray-600 mb-6">
           {t("loginTitle")}
         </h2>
+        <p className="text-sm text-brand-gray-500 mb-6 text-center">
+          {t("continueWithGoogleOrApple")}
+        </p>
         {error && (
           <p className="bg-red-100 text-red-700 p-3 rounded-md text-sm mb-4">
             {error}
           </p>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Input
-            label={t("email")}
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <div>
-            <Input
-              label={t("password")}
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <div className="mt-2 text-right">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForgotPassword(true);
-                  setResetEmail(email);
-                }}
-                className="text-sm text-brand-blue hover:underline"
-              >
-                {t("forgotPassword")}
-              </button>
-            </div>
-          </div>
-          <Button type="submit" className="w-full" size="lg">
-            {t("login")}
-          </Button>
-        </form>
-
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-brand-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-brand-gray-500">
-              {t("orContinueWith")}
-            </span>
-          </div>
-        </div>
 
         <div className="space-y-4">
           <Button
@@ -227,16 +92,6 @@ const LoginPage: React.FC = () => {
             {t("loginWithApple")}
           </Button>
         </div>
-
-        <p className="mt-6 text-center text-sm text-brand-gray-500">
-          {t("dontHaveAccount")}{" "}
-          <Link
-            to="/register"
-            className="font-medium text-brand-blue hover:underline"
-          >
-            {t("register")}
-          </Link>
-        </p>
       </div>
     </Container>
   );

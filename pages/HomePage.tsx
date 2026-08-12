@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
                     {t('heroSubtitle')}
                 </p>
                 <div className="mt-8">
-                    <Button onClick={() => navigate(currentUser ? '/dashboard' : '/register')} size="lg">
+                    <Button onClick={() => navigate(currentUser ? '/dashboard' : '/login')} size="lg">
                         {t('getStarted')}
                     </Button>
                 </div>

@@ -3,8 +3,6 @@ import { lazy } from 'react';
 // Public pages - High priority (preload)
 export const HomePage = lazy(() => import('../pages/HomePage'));
 export const LoginPage = lazy(() => import('../pages/LoginPage'));
-export const RegisterPage = lazy(() => import('../pages/RegisterPage'));
-export const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 
 // Static/Info pages - Low priority
 export const FAQPage = lazy(() => import('../pages/FAQPage'));
@@ -43,10 +41,9 @@ export const preloadRoute = (routeImport: () => Promise<any>) => {
 
 // Preload critical routes
 export const preloadCriticalRoutes = () => {
-  // Preload login/register for quick access
+  // Preload login for quick access
   preloadRoute(() => import('../pages/LoginPage'));
-  preloadRoute(() => import('../pages/RegisterPage'));
-  
+
   // Preload dashboard for logged-in users
   preloadRoute(() => import('../pages/DashboardPage'));
   

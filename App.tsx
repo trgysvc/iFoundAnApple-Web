@@ -10,8 +10,6 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 import {
   HomePage,
   LoginPage,
-  RegisterPage,
-  ResetPasswordPage,
   DashboardPage,
   AddDevicePage,
   PaymentFlowPage,
@@ -98,17 +96,10 @@ const AppContent: React.FC = () => {
               <LoginPage />
             </LazyRouteWrapper>
           } />
-          <Route path="/register" element={
-            <LazyRouteWrapper>
-              <RegisterPage />
-            </LazyRouteWrapper>
-          } />
-          <Route path="/reset-password" element={
-            <LazyRouteWrapper>
-              <ResetPasswordPage />
-            </LazyRouteWrapper>
-          } />
-          
+          {/* Email/password auth removed — old links redirect to the OAuth-only login page */}
+          <Route path="/register" element={<Navigate to="/login" replace />} />
+          <Route path="/reset-password" element={<Navigate to="/login" replace />} />
+
           {/* Info Pages */}
           <Route path="/faq" element={
             <LazyRouteWrapper>

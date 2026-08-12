@@ -36,13 +36,10 @@ interface AppContextType {
   setLanguage: (lang: Language) => void;
   t: (key: string, replacements?: Record<string, string | number>) => string;
   currentUser: User | null;
-  login: (email: string, pass: string) => Promise<boolean>;
   logout: () => void;
-  register: (
-    user: Omit<User, "id" | "password_hash" | "role">,
-    pass: string
-  ) => Promise<boolean>;
-  signInWithOAuth: (provider: "google" | "apple") => Promise<void>;
+  signInWithOAuth: (
+    provider: "google" | "apple"
+  ) => Promise<{ success: boolean; error?: string }>;
   devices: Device[];
   addDevice: (
     device: Omit<Device, "id" | "userId" | "status">,
@@ -69,7 +66,6 @@ interface AppContextType {
     address?: string;
     iban?: string;
   }) => Promise<boolean>;
-  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   supabaseClient: any;
 }
 
@@ -639,58 +635,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  const login = async (email: string, pass: string): Promise<boolean> => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pass,
-    });
-    if (error) {
-      secureLogger.error("Login error:", error);
-      return false;
-    }
-    if (data.user) {
-      const parsedNames = parseOAuthUserName(data.user.user_metadata);
-      const fullName = data.user.user_metadata.full_name || 
-                      `${parsedNames.firstName || ''} ${parsedNames.lastName || ''}`.trim() ||
-                      data.user.email!;
-      
-      setCurrentUser({
-        id: data.user.id,
-        email: data.user.email!,
-        fullName: fullName,
-        firstName: parsedNames.firstName,
-        lastName: parsedNames.lastName,
-        role: UserRole.USER,
-      });
-      
-      // Ensure user has a profile record
-      const profile = await fetchUserProfile(data.user.id);
-      if (!profile) {
-        secureLogger.info("Creating profile for user without profile record");
-        await createUserProfile(data.user.id, {
-          firstName: parsedNames.firstName,
-          lastName: parsedNames.lastName,
-        });
-      }
-      
-      return true;
-    }
-    return false;
-  };
-
-  const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    
-    if (error) {
-      secureLogger.error("Password reset error:", error);
-      return { success: false, error: error.message };
-    }
-    
-    return { success: true };
-  };
-
   const logout = async () => {
     console.log("logout: Starting logout process...");
 
@@ -716,7 +660,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const signInWithOAuth = async (provider: "google" | "apple") => {
+  const signInWithOAuth = async (
+    provider: "google" | "apple"
+  ): Promise<{ success: boolean; error?: string }> => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
@@ -725,55 +671,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     if (error) {
       console.error(`Error signing in with ${provider}:`, error.message);
+      return { success: false, error: error.message };
     }
-    // Supabase will handle the redirect, so no need for explicit setCurrentUser here
-  };
-
-  const register = async (
-    userData: Omit<User, "id" | "password_hash" | "role">,
-    pass: string
-  ): Promise<boolean> => {
-    const { data: signUpData, error } = await supabase.auth.signUp({
-      email: userData.email,
-      password: pass,
-      options: {
-        data: {
-          first_name: userData.firstName,
-          last_name: userData.lastName,
-          full_name: userData.fullName || `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
-        },
-      },
-    });
-    if (error) {
-      console.error("Registration error:", error.message);
-      return false;
-    }
-    if (signUpData.user) {
-      const fullName = signUpData.user.user_metadata.full_name || signUpData.user.email!;
-      setCurrentUser({
-        id: signUpData.user.id,
-        email: signUpData.user.email!,
-        fullName: fullName,
-        firstName: signUpData.user.user_metadata.first_name || userData.firstName,
-        lastName: signUpData.user.user_metadata.last_name || userData.lastName,
-        role: UserRole.USER,
-      });
-      
-      // Create user profile record
-      try {
-        await createUserProfile(signUpData.user.id, {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-        });
-        secureLogger.info("User profile created successfully for new user");
-      } catch (profileError) {
-        secureLogger.error("Error creating user profile:", profileError);
-        // Don't fail registration if profile creation fails
-      }
-      
-      return true;
-    }
-    return false;
+    // Supabase redirects the browser to the provider, so we won't actually
+    // reach here on success — but return a value for type-safety/testing.
+    return { success: true };
   };
 
   const addDevice = async (
@@ -1785,9 +1687,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguage,
     t,
     currentUser,
-    login,
     logout,
-    register,
     signInWithOAuth,
     devices,
     addDevice,
@@ -1803,7 +1703,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchUserProfile,
     showNotification,
     updateUserProfile,
-    resetPassword,
     supabaseClient: supabase,
   };
 
