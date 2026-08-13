@@ -132,8 +132,8 @@ const DashboardPage: React.FC = () => {
               📱 Tüm Cihazlarınız
             </h2>
             <div className="space-y-4">
-              {userDevices
-                .sort((a, b) => b.id.localeCompare(a.id))
+              {[...userDevices]
+                .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
                 .map((device) => {
                   console.log(
                     "DashboardPage: Rendering DeviceCard for device:",

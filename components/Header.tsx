@@ -198,10 +198,10 @@ const Header: React.FC = () => {
                               handleNotificationClick(n.id, n.link)
                             }
                             className={`p-3 border-b border-brand-gray-100 cursor-pointer hover:bg-brand-gray-100 ${
-                              !n.is_read ? "bg-brand-blue-light" : ""
-                            }`}
+                              n.type === "warning" ? "border-l-4 border-l-amber-500" : ""
+                            } ${!n.is_read ? "bg-brand-blue-light" : ""}`}
                           >
-                            <p className="text-sm text-brand-gray-600">
+                            <p className={`text-sm ${n.type === "warning" ? "text-amber-800 font-medium" : "text-brand-gray-600"}`}>
                               {t(
                                 `notifications.${n.message_key}`,
                                 n.replacements

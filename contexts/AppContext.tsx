@@ -48,8 +48,6 @@ interface AppContextType {
   ) => Promise<boolean>;
   getUserDevices: (userId: string) => Promise<Device[]>;
   getDeviceById: (deviceId: string) => Promise<Device | undefined>;
-  makePayment: (deviceId: string) => Promise<void>;
-  confirmExchange: (deviceId: string, userId: string) => void;
   notifications: AppNotification[];
   markNotificationAsRead: (notificationId: string) => void;
   markAllAsReadForCurrentUser: () => void;
@@ -163,6 +161,23 @@ const parseOAuthUserName = (userMetadata: any): { firstName?: string; lastName?:
   return { firstName: undefined, lastName: undefined };
 };
 
+// Derives the app-level role from Supabase Auth app_metadata (set via the
+// Admin API — never user-editable). Mirrors the backend's AdminGuard check
+// (app_metadata.role / app_metadata.roles containing "admin").
+const getRoleFromAppMetadata = (appMetadata: any): UserRole => {
+  const role = appMetadata?.role;
+  const roles = appMetadata?.roles;
+  const roleList = Array.isArray(roles)
+    ? roles
+    : typeof roles === 'string'
+      ? roles.split(',').map((r: string) => r.trim())
+      : [];
+  if (role === UserRole.ADMIN || roleList.includes(UserRole.ADMIN)) {
+    return UserRole.ADMIN;
+  }
+  return UserRole.USER;
+};
+
 // Detect browser language and return appropriate default language
 const getDefaultLanguage = (): Language => {
   // Check if there's already a saved language preference
@@ -232,7 +247,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           fullName: fullName,
           firstName: parsedNames.firstName,
           lastName: parsedNames.lastName,
-          role: UserRole.USER,
+          role: getRoleFromAppMetadata(session.user.app_metadata),
         });
       }
     });
@@ -263,7 +278,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           fullName: fullName,
           firstName: parsedNames.firstName,
           lastName: parsedNames.lastName,
-          role: UserRole.USER,
+          role: getRoleFromAppMetadata(session.user.app_metadata),
         };
 
         secureLogger.info("Parsed user metadata", {
@@ -688,6 +703,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       return false;
     }
     console.log("addDevice: Current User ID:", currentUser.id);
+
+    // Aynı kullanıcı aynı cihaz (model+serialNumber) için ikinci bir kayıt açamaz
+    // (ne kayıp ne bulunan tarafında - kendi cihazınla eşleşmeni önlemenin
+    // ötesinde, çift kayıt açmayı en baştan engelliyoruz).
+    const { data: existingDevice } = await supabase
+      .from("devices")
+      .select("id")
+      .eq("userId", currentUser.id)
+      .eq("model", deviceData.model)
+      .eq("serialNumber", deviceData.serialNumber)
+      .maybeSingle();
+
+    if (existingDevice) {
+      throw new Error("Bu cihaz için zaten bir kaydınız var.");
+    }
+
+    // Kötüye kullanımı önlemek için: son 24 saatte en fazla 2 cihaz kaydı
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { count: recentDeviceCount } = await supabase
+      .from("devices")
+      .select("id", { count: "exact", head: true })
+      .eq("userId", currentUser.id)
+      .gte("created_at", oneDayAgo);
+
+    if ((recentDeviceCount ?? 0) >= 2) {
+      throw new Error("Günde en fazla 2 cihaz kaydı yapabilirsiniz. Lütfen daha sonra tekrar deneyin.");
+    }
 
     // First, let's check if the devices table exists and get its structure
     const { data: tableInfo, error: tableError } = await supabase
@@ -1148,224 +1190,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     return device;
   };
 
-  // --- Core Logic: Payment ---
-  // When the owner makes a payment for a matched device.
-  const makePayment = async (deviceId: string) => {
-    console.log("makePayment: Processing payment for device:", deviceId);
-    console.log("makePayment: Current user:", currentUser?.id);
-
-    try {
-      // First, get the current device from the database to ensure we have the latest data
-      const { data: dbOwnerDevice, error: ownerError } = await supabase
-        .from("devices")
-        .select("*")
-        .eq("id", deviceId)
-        .single();
-
-      if (ownerError || !dbOwnerDevice) {
-        console.error("Error fetching owner device:", ownerError);
-        return;
-      }
-
-      // Database uses camelCase - direct assignment
-      const ownerDevice: Device = dbOwnerDevice as Device;
-
-      console.log("makePayment: Owner device found:", ownerDevice);
-
-      // Find the corresponding finder's device in the database
-      const { data: finderDevice, error: finderError } = await supabase
-        .from("devices")
-        .select("*")
-        .eq("serialNumber", ownerDevice.serialNumber)
-        .eq("model", ownerDevice.model)
-        .eq("status", DeviceStatus.MATCHED)
-        .neq("id", ownerDevice.id)
-        .maybeSingle();
-
-      if (finderError) {
-        console.error("Error finding matching device:", finderError);
-        return;
-      }
-
-      if (!finderDevice) {
-        console.error("No matching finder device found");
-        return;
-      }
-
-      // Database uses camelCase - direct assignment
-      const mappedFinderDevice: Device = finderDevice as Device;
-
-      console.log("makePayment: Finder device found:", mappedFinderDevice);
-
-      // Update both devices to EXCHANGE_PENDING status in the database
-      const { error: updateOwnerError } = await supabase
-        .from("devices")
-        .update({ status: DeviceStatus.EXCHANGE_PENDING })
-        .eq("id", ownerDevice.id);
-
-      if (updateOwnerError) {
-        console.error("Error updating owner device:", updateOwnerError);
-        return;
-      }
-
-      const { error: updateFinderError } = await supabase
-        .from("devices")
-        .update({ status: DeviceStatus.EXCHANGE_PENDING })
-        .eq("id", mappedFinderDevice.id);
-
-      if (updateFinderError) {
-        console.error("Error updating finder device:", updateFinderError);
-        return;
-      }
-
-      console.log("makePayment: Both devices updated to EXCHANGE_PENDING");
-
-      // Update local state
-      setDevices((prev) => {
-        return prev.map((d) => {
-          if (d.id === ownerDevice.id || d.id === mappedFinderDevice.id) {
-            return { ...d, status: DeviceStatus.EXCHANGE_PENDING };
-          }
-          return d;
-        });
-      });
-
-      // Refresh devices from Supabase to ensure consistency
-      if (currentUser) {
-        const refreshedDevices = await getUserDevices(currentUser.id);
-        setDevices(refreshedDevices);
-      }
-
-      // Send notification to the finder that payment has been received
-      addNotification(
-        mappedFinderDevice.userId,
-        "paymentReceivedFinder",
-        `/device/${mappedFinderDevice.id}`,
-        { model: mappedFinderDevice.model }
-      );
-
-      console.log("makePayment: Payment processed successfully");
-    } catch (error) {
-      console.error("Error in makePayment:", error);
-    }
-  };
-
-  // --- Core Logic: Exchange Confirmation ---
-  // A two-party confirmation system for the physical exchange.
-  const confirmExchange = async (deviceId: string, userId: string) => {
-    try {
-      // First, get the current device from Supabase
-      const { data: deviceData, error: deviceError } = await supabase
-        .from("devices")
-        .select("*")
-        .eq("id", deviceId)
-        .single();
-
-      if (deviceError || !deviceData) {
-        console.error("Error fetching device for confirmation:", deviceError);
-        return;
-      }
-
-      const device = deviceData as Device;
-      const alreadyConfirmed = device.exchangeConfirmedBy?.includes(userId);
-      if (alreadyConfirmed) return; // Prevent double confirmation.
-
-      // Find the matching device in Supabase
-      const { data: matchingDeviceData, error: matchingError } = await supabase
-        .from("devices")
-        .select("*")
-        .eq("serialNumber", device.serialNumber)
-        .eq("model", device.model)
-        .neq("id", device.id)
-        .single();
-
-      if (matchingError || !matchingDeviceData) {
-        console.error("Error finding matching device:", matchingError);
-        return;
-      }
-
-      const matchingDevice = matchingDeviceData as Device;
-
-      // Add the current user's ID to the list of confirmations
-      const updatedConfirmedBy = [
-        ...(device.exchangeConfirmedBy || []),
-        userId,
-      ];
-
-      let finalStatus = device.status;
-
-      // If both parties have confirmed, the transaction is complete
-      if (updatedConfirmedBy.length === 2) {
-        finalStatus = DeviceStatus.COMPLETED;
-        
-        // Update both devices in Supabase
-        await supabase
-          .from("devices")
-          .update({ 
-            status: finalStatus,
-            exchangeConfirmedBy: updatedConfirmedBy
-          })
-          .eq("id", device.id);
-        
-        await supabase
-          .from("devices")
-          .update({ 
-            status: finalStatus,
-            exchangeConfirmedBy: updatedConfirmedBy
-          })
-          .eq("id", matchingDevice.id);
-
-        // Send final notifications to both parties
-        addNotification(
-          device.userId,
-          "transactionCompletedOwner",
-          `/device/${device.id}`,
-          { model: device.model }
-        );
-        addNotification(
-          matchingDevice.userId,
-          "transactionCompletedFinder",
-          `/device/${matchingDevice.id}`,
-          { model: matchingDevice.model }
-        );
-      }
-      // If only one party has confirmed, notify the other party
-      else if (updatedConfirmedBy.length === 1) {
-        // Update both devices in Supabase
-        await supabase
-          .from("devices")
-          .update({ 
-            exchangeConfirmedBy: updatedConfirmedBy
-          })
-          .eq("id", device.id);
-        
-        await supabase
-          .from("devices")
-          .update({ 
-            exchangeConfirmedBy: updatedConfirmedBy
-          })
-          .eq("id", matchingDevice.id);
-
-        const otherUserId = device.userId === userId ? matchingDevice.userId : device.userId;
-        const otherUserDevice = device.userId === userId ? matchingDevice : device;
-        addNotification(
-          otherUserId,
-          "exchangeConfirmationNeeded",
-          `/device/${otherUserDevice.id}`,
-          { model: otherUserDevice.model }
-        );
-      }
-
-      // Refresh devices from Supabase to ensure consistency
-      if (currentUser) {
-        const refreshedDevices = await getUserDevices(currentUser.id);
-        setDevices(refreshedDevices);
-      }
-    } catch (error) {
-      console.error("Error in confirmExchange:", error);
-    }
-  };
-
   const markNotificationAsRead = useCallback(async (notificationId: string) => {
     const { error } = await supabase
       .from("notifications")
@@ -1693,8 +1517,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     addDevice,
     getUserDevices,
     getDeviceById,
-    makePayment,
-    confirmExchange,
     notifications,
     markNotificationAsRead,
     markAllAsReadForCurrentUser,

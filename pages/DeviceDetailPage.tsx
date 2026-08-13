@@ -7,14 +7,17 @@ import Button from "../components/ui/Button.tsx";
 import NotFoundPage from "./NotFoundPage.tsx";
 import { getSecureInvoiceUrl, getSecureFileUrl } from "../utils/fileUpload.ts";
 import { supabase as supabaseClient } from "../utils/supabaseClient.ts";
+import apiClient from "../utils/apiClient.ts";
 import {
   ArrowLeft,
   Hourglass,
-  ArrowRightLeft,
   PartyPopper,
   Info,
   Paperclip,
   Check,
+  AlertOctagon,
+  RotateCcw,
+  XCircle,
 } from "lucide-react";
 
 // A generic view for displaying status information and actions.
@@ -39,7 +42,6 @@ const DeviceDetailPage: React.FC = () => {
   const {
     currentUser,
     getDeviceById,
-    confirmExchange,
     t,
     notifications,
     markNotificationAsRead,
@@ -60,6 +62,16 @@ const DeviceDetailPage: React.FC = () => {
   const [escrow, setEscrow] = useState<any | null>(null);
   const [cargoShipment, setCargoShipment] = useState<any | null>(null);
   const [isLoadingPaymentData, setIsLoadingPaymentData] = useState(false);
+  const [isConfirmingReceipt, setIsConfirmingReceipt] = useState(false);
+  const [confirmReceiptError, setConfirmReceiptError] = useState<string | null>(null);
+  const [showDisputeForm, setShowDisputeForm] = useState(false);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [isDisputing, setIsDisputing] = useState(false);
+  const [disputeError, setDisputeError] = useState<string | null>(null);
+  const [showCancelForm, setShowCancelForm] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   console.log("DeviceDetailPage: Component mounted with deviceId:", deviceId);
   console.log("DeviceDetailPage: Current location:", location.pathname);
@@ -83,6 +95,62 @@ const DeviceDetailPage: React.FC = () => {
     );
   };
 
+  const handleConfirmReceipt = async () => {
+    if (!device) return;
+    setIsConfirmingReceipt(true);
+    setConfirmReceiptError(null);
+    try {
+      await apiClient.patch(`/cargo/shipments/${device.id}/received`);
+      const refreshed = await getDeviceById(device.id);
+      setDevice(refreshed);
+    } catch (error) {
+      console.error("Failed to confirm receipt:", error);
+      setConfirmReceiptError(
+        error instanceof Error ? error.message : "Teslim alma onayı başarısız oldu."
+      );
+    } finally {
+      setIsConfirmingReceipt(false);
+    }
+  };
+
+  const handleDispute = async () => {
+    if (!device || !disputeReason.trim()) return;
+    setIsDisputing(true);
+    setDisputeError(null);
+    try {
+      await apiClient.patch(`/cargo/shipments/${device.id}/dispute`, { reason: disputeReason.trim() });
+      const refreshed = await getDeviceById(device.id);
+      setDevice(refreshed);
+    } catch (error) {
+      console.error("Failed to dispute receipt:", error);
+      setDisputeError(
+        error instanceof Error ? error.message : "İtiraz gönderilemedi."
+      );
+    } finally {
+      setIsDisputing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!device) return;
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      await apiClient.patch(`/cargo/shipments/${device.id}/cancel`, {
+        ...(cancelReason.trim() ? { reason: cancelReason.trim() } : {}),
+      });
+      const refreshed = await getDeviceById(device.id);
+      setDevice(refreshed);
+    } catch (error) {
+      console.error("Failed to cancel transaction:", error);
+      setCancelError(
+        error instanceof Error ? error.message : "İptal işlemi başarısız oldu."
+      );
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   useEffect(() => {
     const fetchDevice = async () => {
       if (deviceId) {
@@ -93,57 +161,40 @@ const DeviceDetailPage: React.FC = () => {
         setSecureFinderPhotoUrls([]);
         setSecureInvoiceUrl(null);
 
-        // Eğer cihazın ödemesi tamamlandıysa, payment ve escrow bilgilerini çek
-        if (foundDevice && (foundDevice.status === DeviceStatus.PAYMENT_COMPLETE || foundDevice.status === 'payment_completed')) {
+        // Ödeme tamamlandıktan sonraki tüm durumlarda (kargo süreci dahil)
+        // payment/escrow/cargo bilgilerini çek — sadece "payment just completed"
+        // anında değil, cargo_shipped/delivered/confirmed/completed durumlarında da.
+        const statusesWithPaymentData = [
+          DeviceStatus.PAYMENT_COMPLETE,
+          'cargo_shipped',
+          'delivered',
+          'confirmed',
+          DeviceStatus.COMPLETED,
+        ];
+        if (foundDevice && statusesWithPaymentData.includes(foundDevice.status as any)) {
           console.log("DeviceDetailPage: Ödeme tamamlanmış, payment ve escrow bilgileri çekiliyor");
           setIsLoadingPaymentData(true);
-          
+
           try {
-            // Payment bilgilerini çek
-            const { data: paymentData, error: paymentError } = await supabaseClient
-              .from('payments')
-              .select('*')
-              .eq('device_id', deviceId)
-              .eq('payment_status', 'completed')
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            
-            if (!paymentError && paymentData) {
-              setPayment(paymentData);
-              
-              // Escrow bilgilerini çek
-              const { data: escrowData, error: escrowError } = await supabaseClient
-                .from('escrow_accounts')
-                .select('*')
-                .eq('payment_id', paymentData.id)
-                .maybeSingle();
-              
-              if (!escrowError && escrowData) {
-                setEscrow(escrowData);
-              } else if (escrowError) {
-                console.warn("Escrow kaydı bulunamadı:", escrowError.message);
-              }
+            // payments.device_id her zaman sahibin cihaz kaydını referans alır ve
+            // devices/payments/cargo_shipments tabloları RLS ile sahibine kilitli —
+            // bulan kişinin (finder) tarayıcısı sahip satırını asla doğrudan okuyamaz.
+            // Backend service-role client ile bu eşleştirmeyi kendisi çözüyor.
+            const summary = await apiClient.get<{ payment: any; escrow: any; cargoShipment: any }>(
+              `/cargo/shipments/${deviceId}/summary`
+            );
 
-              // Kargo teslimat kodunu çek
-              const { data: cargoData, error: cargoError } = await supabaseClient
-                .from('cargo_shipments')
-                .select('*')
-                .eq('payment_id', paymentData.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-              if (!cargoError && cargoData) {
-                setCargoShipment(cargoData);
-              } else if (cargoError) {
-                console.warn("Kargo kaydı bulunamadı:", cargoError.message);
-              }
-            } else if (paymentError) {
-              console.warn("Payment kaydı bulunamadı:", paymentError.message);
+            if (summary.payment) {
+              setPayment(summary.payment);
+            }
+            if (summary.escrow) {
+              setEscrow(summary.escrow);
+            }
+            if (summary.cargoShipment) {
+              setCargoShipment(summary.cargoShipment);
             }
           } catch (error) {
-            console.error("Failed to fetch payment/escrow data:", error);
+            console.error("Failed to fetch payment/escrow/cargo summary:", error);
           } finally {
             setIsLoadingPaymentData(false);
           }
@@ -253,9 +304,6 @@ const DeviceDetailPage: React.FC = () => {
   const isFinderPerspective =
     deviceRole === "finder" ||
     (!deviceRole && device.status === DeviceStatus.REPORTED);
-  const hasCurrentUserConfirmed = device.exchangeConfirmedBy?.includes(
-    currentUser.id
-  );
   const finderPhotoUrls =
     device.invoice_url && device.invoice_url.length > 0
       ? device.invoice_url
@@ -524,7 +572,6 @@ const DeviceDetailPage: React.FC = () => {
     console.log("DeviceDetailPage: DeviceStatus values:", {
       PAYMENT_PENDING: DeviceStatus.PAYMENT_PENDING,
       MATCHED: DeviceStatus.MATCHED,
-      EXCHANGE_PENDING: DeviceStatus.EXCHANGE_PENDING,
       COMPLETED: DeviceStatus.COMPLETED,
       LOST: DeviceStatus.LOST,
       REPORTED: DeviceStatus.REPORTED,
@@ -974,10 +1021,30 @@ const DeviceDetailPage: React.FC = () => {
         }
 
       case DeviceStatus.PAYMENT_COMPLETE:
-      case 'payment_completed':
+      case 'cargo_shipped':
+      case 'delivered':
+      case 'confirmed':
         console.log("DeviceDetailPage: PAYMENT_COMPLETE case executed");
         // Finder perspektifi için detaylı görünüm
         if (!isOwnerPerspective) {
+          const finderCargoStatus = cargoShipment?.cargo_status || cargoShipment?.status;
+          const finderIsPicked = ['picked_up', 'in_transit', 'out_for_delivery', 'delivered', 'confirmed'].includes(finderCargoStatus);
+          const finderIsDelivered = finderCargoStatus === 'delivered' || finderCargoStatus === 'confirmed';
+          const finderIsConfirmed = device.status === 'confirmed';
+
+          let finderHeaderTitle = 'Ödeme Süreci Tamamlandı!';
+          let finderHeaderDesc = 'Lütfen en kısa sürede cihazı kargo firmasına teslim edin.';
+          if (finderIsConfirmed) {
+            finderHeaderTitle = 'İşlem Tamamlandı!';
+            finderHeaderDesc = 'Cihaz sahibi teslim aldığını onayladı. Ödülünüzün serbest bırakılması bekleniyor.';
+          } else if (finderIsDelivered) {
+            finderHeaderTitle = 'Kargo Teslim Edildi!';
+            finderHeaderDesc = 'Cihaz sahibinin onayı bekleniyor.';
+          } else if (finderIsPicked) {
+            finderHeaderTitle = 'Cihaz Kargoda!';
+            finderHeaderDesc = 'Cihazınız sahibine doğru yolda.';
+          }
+
           return (
             <div className="min-h-screen bg-gray-50">
               <div className="max-w-2xl mx-auto py-12">
@@ -985,10 +1052,10 @@ const DeviceDetailPage: React.FC = () => {
                 <div className="text-center mb-8">
                   <div className="text-green-500 text-6xl mb-4">✅</div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Ödeme Süreci Tamamlandı!
+                    {finderHeaderTitle}
                   </h1>
                   <p className="text-lg text-brand-blue">
-                    Lütfen en kısa sürede cihazı kargo firmasına teslim edin.
+                    {finderHeaderDesc}
                   </p>
                 </div>
 
@@ -1117,7 +1184,14 @@ const DeviceDetailPage: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Durum:</span>
                       <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                        Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz için ödeme tamamlandı.
+                        Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz için{" "}
+                        {finderIsConfirmed
+                          ? "işlem tamamlandı. Ödülünüzün serbest bırakılması bekleniyor."
+                          : finderIsDelivered
+                            ? "kargo teslim edildi, sahibinin onayı bekleniyor."
+                            : finderIsPicked
+                              ? "kargo yolda."
+                              : "ödeme tamamlandı."}
                       </span>
                     </div>
                   </div>
@@ -1130,72 +1204,97 @@ const DeviceDetailPage: React.FC = () => {
                   </h2>
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        1
+                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        ✓
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">
-                          Cihaz için eşleşme bekleniyor
+                          Cihaz için eşleşme bulundu
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        2
+                      <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        ✓
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">Eşleşme bulundu</p>
+                        <p className="font-medium text-gray-900">Ödeme tamamlandı</p>
                         <p className="text-gray-600 text-sm">
-                          Cihazın sahibinin ödeme yapması bekleniyor.
+                          Cihaz sahibi ödemeyi tamamladı.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        3
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">
-                          Cihazın Kargo Firmasına Teslim Edilmesi
-                        </p>
-                        <p className="text-gray-600 text-sm">
-                          Kargo firmasına vereceğiniz <strong>Teslim Kodunuz:</strong>{" "}
-                          {cargoShipment?.code ? (
-                            <span className="font-mono bg-white px-2 py-1 rounded">{cargoShipment.code}</span>
-                          ) : (
-                            <span className="text-gray-400">Hazırlanıyor...</span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
+                    {(() => {
+                      const cargoStatus = cargoShipment?.cargo_status || cargoShipment?.status;
+                      const isPicked = cargoStatus === 'picked_up' || cargoStatus === 'in_transit' || cargoStatus === 'out_for_delivery' || cargoStatus === 'delivered' || cargoStatus === 'confirmed';
+                      const isDelivered = cargoStatus === 'delivered' || cargoStatus === 'confirmed';
+                      const isConfirmedByOwner = device.status === 'confirmed';
 
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        4
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">
-                          Cihaz Sahibi Teslim Alındığında
-                        </p>
-                        <p className="text-gray-600 text-sm">
-                          Kargo firması cihazı sahibine teslim edecek. Onay bekleniyor.
-                        </p>
-                      </div>
-                    </div>
+                      return (
+                        <>
+                          <div className="flex items-start space-x-3">
+                            <div className={`flex-shrink-0 w-6 h-6 ${isPicked ? 'bg-green-500' : 'bg-orange-500'} text-white rounded-full flex items-center justify-center text-sm font-bold`}>
+                              {isPicked ? '✓' : '3'}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">
+                                Cihazın Kargo Firmasına Teslim Edilmesi
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {isPicked ? (
+                                  <>Cihazı kargoya teslim ettiniz{cargoShipment?.cargo_company && cargoShipment.cargo_company !== 'pending' ? ` (${cargoShipment.cargo_company})` : ''}.</>
+                                ) : (
+                                  <>
+                                    Kargo firmasına vereceğiniz <strong>Teslim Kodunuz:</strong>{" "}
+                                    {cargoShipment?.code ? (
+                                      <span className="font-mono bg-white px-2 py-1 rounded">{cargoShipment.code}</span>
+                                    ) : (
+                                      <span className="text-gray-400">Hazırlanıyor...</span>
+                                    )}
+                                  </>
+                                )}
+                              </p>
+                            </div>
+                          </div>
 
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                        5
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
-                        <p className="text-gray-600 text-sm">
-                          Takas tamamlandığında ödülünüz hesabınıza aktarılacak.
-                        </p>
-                      </div>
-                    </div>
+                          <div className="flex items-start space-x-3">
+                            <div className={`flex-shrink-0 w-6 h-6 ${isConfirmedByOwner ? 'bg-green-500' : isDelivered ? 'bg-orange-500 text-white' : 'bg-gray-300 text-gray-600'} text-white rounded-full flex items-center justify-center text-sm font-bold`}>
+                              {isConfirmedByOwner ? '✓' : '4'}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">
+                                Cihaz Sahibi Teslim Alındığında
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {isConfirmedByOwner
+                                  ? 'Cihaz sahibi teslim aldığını onayladı.'
+                                  : isDelivered
+                                    ? 'Kargo firması teslim etti. Cihaz sahibinin onayı bekleniyor.'
+                                    : isPicked
+                                      ? 'Cihaz yolda. Sahibine ulaştığında burası güncellenecek.'
+                                      : 'Kargo firması cihazı sahibine teslim edecek. Onay bekleniyor.'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start space-x-3">
+                            <div className={`flex-shrink-0 w-6 h-6 ${isConfirmedByOwner ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'} rounded-full flex items-center justify-center text-sm font-bold`}>
+                              {isConfirmedByOwner ? '✓' : '5'}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                              <p className="text-gray-600 text-sm">
+                                {isConfirmedByOwner
+                                  ? 'Ödülünüzün serbest bırakılması bekleniyor (hizmet bedeli düşülerek).'
+                                  : 'Takas tamamlandığında ödülünüz hesabınıza aktarılacak.'}
+                              </p>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -1229,6 +1328,24 @@ const DeviceDetailPage: React.FC = () => {
         }
 
         // Owner perspektifi için detaylı görünüm
+        const ownerCargoStatus = cargoShipment?.cargo_status || cargoShipment?.status;
+        const ownerIsPicked = ['picked_up', 'in_transit', 'out_for_delivery', 'delivered', 'confirmed'].includes(ownerCargoStatus);
+        const ownerIsDelivered = ownerCargoStatus === 'delivered' || ownerCargoStatus === 'confirmed';
+        const ownerIsConfirmed = device.status === 'confirmed';
+
+        let ownerHeaderTitle = 'Ödemeniz Başarıyla Tamamlandı!';
+        let ownerHeaderDesc = 'Cihazınızın kargo firmasına teslim edilmesi bekleniyor.';
+        if (ownerIsConfirmed) {
+          ownerHeaderTitle = 'İşlem Tamamlandı!';
+          ownerHeaderDesc = 'Teslim aldığınızı onayladınız. Ödülün bulan kişiye serbest bırakılması bekleniyor.';
+        } else if (ownerIsDelivered) {
+          ownerHeaderTitle = 'Cihazınız Teslim Edildi!';
+          ownerHeaderDesc = 'Lütfen cihazı kontrol edip aşağıdan teslim aldığınızı onaylayın.';
+        } else if (ownerIsPicked) {
+          ownerHeaderTitle = 'Cihazınız Yolda!';
+          ownerHeaderDesc = 'Bulan kişi cihazı kargoya teslim etti.';
+        }
+
         return (
           <div className="min-h-screen bg-gray-50">
             <div className="max-w-2xl mx-auto py-12">
@@ -1238,10 +1355,10 @@ const DeviceDetailPage: React.FC = () => {
                   <Check className="w-10 h-10" />
                 </div>
                 <h1 className="text-3xl font-bold text-brand-gray-600 mb-2">
-                  Ödemeniz Başarıyla Tamamlandı!
+                  {ownerHeaderTitle}
                 </h1>
                 <p className="text-lg text-brand-gray-500">
-                  Cihazınızın kargo firmasına teslim edilmesi bekleniliyor.
+                  {ownerHeaderDesc}
                 </p>
               </div>
 
@@ -1327,7 +1444,14 @@ const DeviceDetailPage: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Durum:</span>
                     <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                      Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz ödemesi alındı. Kargo firmasına teslimi bekleniliyor.
+                      Kayıtlı {device.serialNumber} seri numaralı {device.model} cihaz{" "}
+                      {ownerIsConfirmed
+                        ? "teslim alındı ve onaylandı. Ödülün bulan kişiye serbest bırakılması bekleniyor."
+                        : ownerIsDelivered
+                          ? "teslim edildi. Onayınız bekleniyor."
+                          : ownerIsPicked
+                            ? "kargoda, size doğru yolda."
+                            : "ödemesi alındı. Kargo firmasına teslimi bekleniliyor."}
                     </span>
                   </div>
                 </div>
@@ -1466,69 +1590,193 @@ const DeviceDetailPage: React.FC = () => {
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      1
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        Cihaz için eşleşme bekleniyor
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      2
+                    <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      ✓
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">
                         Cihazınız bulundu
                       </p>
-                      <p className="text-gray-600 text-sm">
-                        Ödemenizi yapmak ve takas sürecini tamamlamak için "Ödemeyi güvenle yap" Butonu
-                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      3
+                    <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      ✓
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">
-                        Cihazınızın kargo ile teslim edilmesi bekleniyor
+                        Ödeme tamamlandı
                       </p>
                       <p className="text-gray-600 text-sm">
-                        Kargoya verildiğinde takip numaranız burada görünecektir.
+                        Ödemenizi güvenle tamamladınız.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      4
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        Cihaz Teslim Alındığında
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın "Onay Butonu"
-                      </p>
-                    </div>
-                  </div>
+                  {(() => {
+                    const cargoStatus = cargoShipment?.cargo_status || cargoShipment?.status;
+                    const isPicked = cargoStatus === 'picked_up' || cargoStatus === 'in_transit' || cargoStatus === 'out_for_delivery' || cargoStatus === 'delivered' || cargoStatus === 'confirmed';
+                    const isDelivered = cargoStatus === 'delivered' || cargoStatus === 'confirmed';
 
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">
-                      5
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
-                      <p className="text-gray-600 text-sm">
-                        Cihazınıza kavuştuğunuz için mutluyuz.
-                      </p>
-                    </div>
-                  </div>
+                    let step3Title = 'Cihazınızın kargo ile teslim edilmesi bekleniyor';
+                    let step3Desc = 'Bulan kişi cihazı kargo firmasına teslim ettiğinde burası güncellenecek.';
+                    if (cargoStatus === 'picked_up') {
+                      step3Title = 'Cihazınız kargo firmasına teslim edildi';
+                      step3Desc = cargoShipment?.cargo_company && cargoShipment.cargo_company !== 'pending'
+                        ? `${cargoShipment.cargo_company}${cargoShipment.tracking_number ? ' — Takip No: ' + cargoShipment.tracking_number : ''}`
+                        : 'Kargo firması bilgisi yakında eklenecek.';
+                    } else if (cargoStatus === 'in_transit' || cargoStatus === 'out_for_delivery') {
+                      step3Title = 'Cihazınız yolda';
+                      step3Desc = cargoStatus === 'out_for_delivery' ? 'Cihazınız dağıtıma çıktı.' : 'Cihazınız kargoda, size doğru yolda.';
+                    } else if (isDelivered) {
+                      step3Title = 'Kargo firması cihazı teslim etti';
+                      step3Desc = 'Aşağıdan teslim aldığınızı onaylayın.';
+                    }
+
+                    return (
+                      <div className="flex items-start space-x-3">
+                        <div className={`flex-shrink-0 w-6 h-6 ${isDelivered ? 'bg-green-500 text-white' : isPicked ? 'bg-orange-500 text-white' : 'bg-gray-300 text-gray-600'} rounded-full flex items-center justify-center text-sm font-bold`}>
+                          {isDelivered ? '✓' : '3'}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{step3Title}</p>
+                          <p className="text-gray-600 text-sm">{step3Desc}</p>
+                          {!isPicked && (
+                            <div className="mt-3">
+                              {cancelError && (
+                                <p className="text-red-600 text-sm mb-2">{cancelError}</p>
+                              )}
+                              {!showCancelForm ? (
+                                <Button
+                                  onClick={() => setShowCancelForm(true)}
+                                  variant="secondary"
+                                  size="sm"
+                                >
+                                  İşlemi İptal Et
+                                </Button>
+                              ) : (
+                                <div className="max-w-sm">
+                                  <p className="text-xs text-gray-500 mb-2">
+                                    Cihaz henüz kargoya verilmedi. İptal ederseniz ödemeniz anında iade edilir.
+                                  </p>
+                                  <textarea
+                                    value={cancelReason}
+                                    onChange={(e) => setCancelReason(e.target.value)}
+                                    placeholder="İptal sebebi (opsiyonel)"
+                                    className="w-full border rounded px-2 py-1 text-sm"
+                                    rows={2}
+                                  />
+                                  <div className="flex gap-2 mt-2">
+                                    <Button
+                                      onClick={handleCancel}
+                                      disabled={isCancelling}
+                                      variant="secondary"
+                                      size="sm"
+                                    >
+                                      {isCancelling ? "İptal ediliyor..." : "İptali Onayla ve İade Al"}
+                                    </Button>
+                                    <Button
+                                      onClick={() => setShowCancelForm(false)}
+                                      variant="secondary"
+                                      size="sm"
+                                    >
+                                      Vazgeç
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {(() => {
+                    const isDelivered = cargoShipment?.cargo_status === 'delivered' || cargoShipment?.status === 'delivered';
+                    const isConfirmedByOwner = device.status === 'confirmed';
+
+                    return (
+                      <>
+                        <div className="flex items-start space-x-3">
+                          <div className={`flex-shrink-0 w-6 h-6 ${isConfirmedByOwner ? 'bg-green-500 text-white' : isDelivered ? 'bg-orange-500 text-white' : 'bg-gray-300 text-gray-600'} rounded-full flex items-center justify-center text-sm font-bold`}>
+                            {isConfirmedByOwner ? '✓' : '4'}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900">
+                              Cihaz Teslim Alındığında
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              {isConfirmedByOwner
+                                ? 'Teslim aldığınızı onayladınız.'
+                                : 'Cihazın seri numarasını kontrol edip teslim aldığınızı onaylayın.'}
+                            </p>
+                            {isDelivered && !isConfirmedByOwner && (
+                              <div className="mt-3">
+                                {confirmReceiptError && (
+                                  <p className="text-red-600 text-sm mb-2">{confirmReceiptError}</p>
+                                )}
+                                <div className="flex flex-wrap gap-2">
+                                  <Button
+                                    onClick={handleConfirmReceipt}
+                                    disabled={isConfirmingReceipt}
+                                    size="sm"
+                                  >
+                                    {isConfirmingReceipt ? "Onaylanıyor..." : "Evet, Cihazımı Teslim Aldım"}
+                                  </Button>
+                                  <Button
+                                    onClick={() => setShowDisputeForm((v) => !v)}
+                                    variant="secondary"
+                                    size="sm"
+                                  >
+                                    Sorun Var, İtiraz Et
+                                  </Button>
+                                </div>
+                                {showDisputeForm && (
+                                  <div className="mt-3 max-w-sm">
+                                    {disputeError && (
+                                      <p className="text-red-600 text-sm mb-2">{disputeError}</p>
+                                    )}
+                                    <textarea
+                                      value={disputeReason}
+                                      onChange={(e) => setDisputeReason(e.target.value)}
+                                      placeholder="Sorunu kısaca açıklayın (örn: gelen cihaz kayıp cihazım değil)"
+                                      className="w-full border rounded px-2 py-1 text-sm"
+                                      rows={3}
+                                    />
+                                    <Button
+                                      onClick={handleDispute}
+                                      disabled={isDisputing || !disputeReason.trim()}
+                                      variant="secondary"
+                                      size="sm"
+                                      className="mt-2"
+                                    >
+                                      {isDisputing ? "Gönderiliyor..." : "İtirazı Gönder"}
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                          <div className={`flex-shrink-0 w-6 h-6 ${isConfirmedByOwner ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'} rounded-full flex items-center justify-center text-sm font-bold`}>
+                            {isConfirmedByOwner ? '✓' : '5'}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900">İşlem Tamamlandı</p>
+                            <p className="text-gray-600 text-sm">
+                              {isConfirmedByOwner
+                                ? 'Cihazınıza kavuştuğunuz için mutluyuz. Ödülün bulan kişiye serbest bırakılması bekleniyor (hizmet bedeli düşülerek).'
+                                : 'Cihazınıza kavuştuğunuz için mutluyuz.'}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -1560,54 +1808,6 @@ const DeviceDetailPage: React.FC = () => {
           </div>
         );
 
-      case DeviceStatus.EXCHANGE_PENDING:
-        return (
-          <StatusView
-            icon={<ArrowRightLeft className="w-10 h-10" />}
-            title={t("paymentReceived")}
-            description={
-              isOwnerPerspective
-                ? t("paymentSecureExchange")
-                : t("finderPaymentSecureExchange")
-            }
-          >
-            <div className="mt-8 text-left max-w-lg mx-auto bg-brand-gray-100 p-6 rounded-lg space-y-4">
-              <h4 className="text-lg font-semibold text-brand-gray-600 text-center">
-                {t("secureExchangeGuidelines")}
-              </h4>
-              <p className="text-sm text-brand-gray-500">
-                1. {t("guideline1")}
-              </p>
-              <p className="text-sm text-brand-gray-500">
-                2. {t("guideline2")}
-              </p>
-              <p className="text-sm text-brand-gray-500">
-                3. {t("guideline3")}
-              </p>
-              <p className="text-sm text-brand-gray-500">
-                4. {t("guideline4")}
-              </p>
-            </div>
-
-            <div className="mt-8">
-              <Button
-                onClick={() => confirmExchange(device.id, currentUser.id)}
-                size="lg"
-                disabled={hasCurrentUserConfirmed}
-              >
-                {hasCurrentUserConfirmed ? (
-                  <>
-                    <Check className="w-5 h-5 mr-2" />
-                    {t("waitingForOtherParty")}
-                  </>
-                ) : (
-                  t("confirmExchange")
-                )}
-              </Button>
-            </div>
-          </StatusView>
-        );
-
       case DeviceStatus.COMPLETED:
         return (
           <StatusView
@@ -1625,6 +1825,78 @@ const DeviceDetailPage: React.FC = () => {
                 onClick={() => navigate("/dashboard")}
                 variant="secondary"
               >
+                {t("backToDashboard")}
+              </Button>
+            </div>
+          </StatusView>
+        );
+
+      case DeviceStatus.FAILED_DELIVERY:
+        return (
+          <StatusView
+            icon={<AlertOctagon className="w-10 h-10" />}
+            title="Teslimat Başarısız"
+            description={
+              isOwnerPerspective
+                ? "Kargo firması cihazı adresinize teslim edemedi. Lütfen adres bilgilerinizi kontrol edin — kargo firması tekrar deneyecek veya sizinle iletişime geçecek."
+                : "Cihaz sahibine teslimat başarısız oldu. Kargo süreci ekibimiz tarafından takip ediliyor, ek bir işlem yapmanıza gerek yok."
+            }
+          >
+            <div className="mt-8">
+              <Button onClick={() => navigate("/dashboard")} variant="secondary">
+                {t("backToDashboard")}
+              </Button>
+            </div>
+          </StatusView>
+        );
+
+      case DeviceStatus.RETURNED:
+        return (
+          <StatusView
+            icon={<RotateCcw className="w-10 h-10" />}
+            title={isOwnerPerspective ? "Cihaz İade Edildi" : "Cihaz Size İade Ediliyor"}
+            description={
+              isOwnerPerspective
+                ? "Cihaz, teslimat sorunları nedeniyle bulan kişiye iade ediliyor. Sorularınız için destek ekibimizle iletişime geçebilirsiniz."
+                : "Cihaz size geri gönderiliyor. Kargo ücreti iadesi ile ilgili sorularınız için destek ekibimizle iletişime geçebilirsiniz."
+            }
+          >
+            <div className="mt-8">
+              <Button onClick={() => navigate("/dashboard")} variant="secondary">
+                {t("backToDashboard")}
+              </Button>
+            </div>
+          </StatusView>
+        );
+
+      case DeviceStatus.DISPUTED:
+        return (
+          <StatusView
+            icon={<AlertOctagon className="w-10 h-10" />}
+            title={isOwnerPerspective ? "İtirazınız Alındı" : "İtiraz Bildirildi"}
+            description={
+              isOwnerPerspective
+                ? "Teslim aldığınız cihazla ilgili itirazınız incelemeye alındı. Ekibimiz en kısa sürede sizinle iletişime geçecek."
+                : "Cihaz sahibi, teslim aldığı cihazla ilgili bir itirazda bulundu. Ekibimiz durumu inceliyor, gerekirse sizinle iletişime geçilecek."
+            }
+          >
+            <div className="mt-8">
+              <Button onClick={() => navigate("/dashboard")} variant="secondary">
+                {t("backToDashboard")}
+              </Button>
+            </div>
+          </StatusView>
+        );
+
+      case DeviceStatus.CANCELLED:
+        return (
+          <StatusView
+            icon={<XCircle className="w-10 h-10" />}
+            title="İşlem İptal Edildi"
+            description="Bu takas işlemi iptal edildi."
+          >
+            <div className="mt-8">
+              <Button onClick={() => navigate("/dashboard")} variant="secondary">
                 {t("backToDashboard")}
               </Button>
             </div>

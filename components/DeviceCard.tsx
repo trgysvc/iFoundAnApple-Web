@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Device, DeviceStatus } from '../types';
 import { useAppContext } from '../contexts/AppContext.tsx';
-import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, Package, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Smartphone, Laptop, CheckCircle, Clock, AlertTriangle, Package, ChevronRight, ShieldCheck, XCircle, RotateCcw, AlertOctagon } from 'lucide-react';
 
 interface DeviceCardProps {
   device: Device;
@@ -14,9 +14,14 @@ const statusConfigMap = {
   [DeviceStatus.MATCHED]: { color: 'bg-yellow-100 text-yellow-800', icon: <Clock className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_PENDING]: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
   [DeviceStatus.PAYMENT_COMPLETE]: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
-  ['payment_completed']: { color: 'bg-indigo-100 text-indigo-800', icon: <Package className="w-4 h-4" /> },
-  [DeviceStatus.EXCHANGE_PENDING]: { color: 'bg-purple-100 text-purple-800', icon: <Package className="w-4 h-4" /> },
+  ['cargo_shipped']: { color: 'bg-blue-100 text-blue-800', icon: <Package className="w-4 h-4" /> },
+  ['delivered']: { color: 'bg-orange-100 text-orange-800', icon: <Package className="w-4 h-4" /> },
+  ['confirmed']: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
   [DeviceStatus.COMPLETED]: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-4 h-4" /> },
+  [DeviceStatus.FAILED_DELIVERY]: { color: 'bg-red-100 text-red-800', icon: <AlertOctagon className="w-4 h-4" /> },
+  [DeviceStatus.RETURNED]: { color: 'bg-amber-100 text-amber-800', icon: <RotateCcw className="w-4 h-4" /> },
+  [DeviceStatus.DISPUTED]: { color: 'bg-red-100 text-red-800', icon: <AlertOctagon className="w-4 h-4" /> },
+  [DeviceStatus.CANCELLED]: { color: 'bg-gray-200 text-gray-700', icon: <XCircle className="w-4 h-4" /> },
 };
 
 const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
@@ -35,10 +40,15 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
             return t('statusAwaitingMatchFinder');
           case DeviceStatus.MATCHED: return t('Matched');
           case DeviceStatus.PAYMENT_PENDING: return t('PaymentPending');
-          case DeviceStatus.PAYMENT_COMPLETE: return t('PaymentComplete');
-          case 'payment_completed': return 'Ödeme Alındı, Kargo Bekleniyor';
-          case DeviceStatus.EXCHANGE_PENDING: return t('ExchangePending');
+          case DeviceStatus.PAYMENT_COMPLETE: return 'Ödeme Alındı, Kargo Bekleniyor';
+          case 'cargo_shipped': return 'Kargoda';
+          case 'delivered': return 'Teslim Edildi, Onay Bekleniyor';
+          case 'confirmed': return 'Teslim Onaylandı';
           case DeviceStatus.COMPLETED: return t('Completed');
+          case DeviceStatus.FAILED_DELIVERY: return 'Teslimat Başarısız';
+          case DeviceStatus.RETURNED: return 'İade Edildi';
+          case DeviceStatus.DISPUTED: return 'İtiraz Edildi';
+          case DeviceStatus.CANCELLED: return 'İptal Edildi';
           default: return status;
       }
   }

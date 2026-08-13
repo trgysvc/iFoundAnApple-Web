@@ -389,7 +389,9 @@ const AddDevicePage: React.FC = () => {
       }
     } catch (error) {
       console.error("AddDevicePage: Unexpected error in addDevice:", error);
-      setError("An unexpected error occurred. Please try again.");
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred. Please try again."
+      );
     }
   };
 

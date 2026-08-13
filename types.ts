@@ -43,9 +43,12 @@ export enum DeviceStatus {
   REPORTED = "reported", // Finder adds device
   MATCHED = "matched", // System finds a match
   PAYMENT_PENDING = "payment_pending", // Owner needs to pay
-  PAYMENT_COMPLETE = "payment_complete", // Owner has paid
-  EXCHANGE_PENDING = "exchange_pending", // Physical exchange in progress
+  PAYMENT_COMPLETE = "payment_completed", // Owner has paid
   COMPLETED = "completed", // Exchange confirmed by both
+  CANCELLED = "cancelled", // Transaction cancelled before/during shipping
+  RETURNED = "returned", // Device being sent back to the finder
+  FAILED_DELIVERY = "failed_delivery", // Carrier attempted delivery to owner and failed
+  DISPUTED = "disputed", // Owner disputes what arrived, ops must resolve
 }
 
 export interface Device {
@@ -77,4 +80,5 @@ export interface AppNotification {
   is_read: boolean;
   created_at: string; // ISO string
   replacements?: Record<string, string | number>;
+  type?: "info" | "warning" | string;
 }

@@ -4,7 +4,6 @@
  */
 
 import { FeeBreakdown } from "./feeCalculation.ts";
-import { releaseEscrowLocal } from "../api/release-escrow.ts";
 import { initiatePaynetPayment, getPaymentStatus } from "./paynetPayment.ts";
 
 export interface PaymentRequest {
@@ -47,22 +46,6 @@ export interface PaymentResponse {
   errorMessage?: string;
   redirectUrl?: string; // 3D Secure için
   providerResponse?: any;
-}
-
-export interface EscrowReleaseRequest {
-  paymentId: string;
-  deviceId: string;
-  receiverId: string;
-  releaseReason: string;
-  confirmedBy: string[];
-}
-
-export interface EscrowReleaseResponse {
-  success: boolean;
-  transactionId?: string;
-  status: "released" | "failed" | "pending";
-  errorMessage?: string;
-  netPayoutAmount?: number;
 }
 
 /**
@@ -231,88 +214,6 @@ export const checkPaymentStatus = async (
     };
   } catch (error) {
     console.error("[PAYMENT] Ödeme durumu sorgulama hatası:", error);
-    return {
-      success: false,
-      status: "failed",
-      errorMessage: error instanceof Error ? error.message : "Bilinmeyen hata",
-    };
-  }
-};
-
-/**
- * Escrow fonları serbest bırakma (Bulan kişiye ödeme)
- */
-export const releaseEscrowFunds = async (
-  request: EscrowReleaseRequest,
-  provider: PaymentProvider = "paynet"
-): Promise<EscrowReleaseResponse> => {
-  try {
-    console.log("[ESCROW] Fonlar serbest bırakılıyor...", {
-      paymentId: request.paymentId,
-      deviceId: request.deviceId,
-      receiverId: request.receiverId,
-    });
-
-    // Input validation
-    if (
-      !request.paymentId ||
-      !request.receiverId ||
-      !request.confirmedBy.length
-    ) {
-      throw new Error("Escrow serbest bırakma için gerekli bilgiler eksik");
-    }
-
-    // Use the local API function
-    const escrowRequest = {
-      paymentId: request.paymentId,
-      deviceId: request.deviceId,
-      releaseReason: request.releaseReason,
-      confirmationType: "manual_release" as const,
-      confirmedBy: request.confirmedBy[0], // Use first confirmed by user
-      additionalNotes: `Released via ${provider}`,
-    };
-
-    return await releaseEscrowLocal(escrowRequest);
-  } catch (error) {
-    console.error("[ESCROW] Escrow serbest bırakma hatası:", error);
-    return {
-      success: false,
-      status: "failed",
-      errorMessage: error instanceof Error ? error.message : "Bilinmeyen hata",
-    };
-  }
-};
-
-/**
- * Ödeme iadesi (Takas iptal durumunda)
- */
-export const refundPayment = async (
-  paymentId: string,
-  reason: string,
-  provider: PaymentProvider = "paynet"
-): Promise<PaymentResponse> => {
-  try {
-    console.log(
-      `[REFUND] Ödeme iadesi başlatılıyor - ID: ${paymentId}, Reason: ${reason}`
-    );
-
-    // Bu fonksiyon Supabase Edge Function'da implement edilecek
-    // Şimdilik mock response döndürüyoruz
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return {
-      success: true,
-      paymentId,
-      status: "completed",
-      providerResponse: {
-        status: "success",
-        refundStatus: "SUCCESS",
-        refundId: `refund_${Date.now()}`,
-      },
-    };
-  } catch (error) {
-    console.error("[REFUND] Ödeme iadesi hatası:", error);
     return {
       success: false,
       status: "failed",
